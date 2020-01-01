@@ -70,8 +70,7 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "vendor",
-        required: true
+        ref: "vendors",
     },
     events: {
         type:[{
