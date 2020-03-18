@@ -15,7 +15,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) =>  
       const decoded: string | object = await jwt.verify(token,CONFIG.JWT_KEY);
       // @ts-ignore
       if (!decoded.id) {
-        res.status(400).send({ message: "something went wrong, please login again" });
+        res.status(403).send({ message: "something went wrong, please login again" });
         return
       }
       // @ts-ignore

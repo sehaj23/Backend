@@ -7,6 +7,23 @@ import verifyToken from "../middleware/jwt";
 
 const loginRouter = Router()
 
+loginRouter.get("/", verifyToken, async (req: Request, res: Response) => {
+    console.log("C");
+    
+    try{
+        const admins = await Admin.findAll()
+        res.send(admins)      
+    }catch(e){
+        res.status(403)
+        res.send(e.message)
+    }
+})
+
+loginRouter.get("/s", verifyToken, async (req: Request, res: Response) => {
+    console.log("C");
+    res.send([{name: "Preet"}])
+})
+
 loginRouter.post("/", async (req: Request, res: Response) => {
     try{
         console.log(req.body);
@@ -28,7 +45,7 @@ loginRouter.post("/", async (req: Request, res: Response) => {
             return
         }
         admin.password = ""
-        const token = await jwt.sign({admin}, CONFIG.JWT_KEY)
+        const token = await jwt.sign(admin.toJSON(), CONFIG.JWT_KEY)
         res.send({token})
     }catch(e){
         res.status(403)
