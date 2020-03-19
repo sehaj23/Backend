@@ -3,7 +3,7 @@ import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, D
 export interface AdminI{
     id?: number | null
     username: string
-    password: string
+    password?: string
     role: string
 }
 

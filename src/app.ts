@@ -7,7 +7,7 @@ import * as path from "path"
 import { sequelize } from "./database"
 import Photo, { PhotoI } from "./models/photo.model"
 import Event, { EventI } from "./models/event.model"
-import loginRouter from "./controller/login.controller"
+import indexRouter from "./controller/index.controller"
 const app = express()
 
 const accessLogStream = fs.createWriteStream('access.log', { flags: 'a' })
@@ -22,7 +22,7 @@ sequelize.authenticate().then(() => {
     console.log(`Error: ${err.message}`)
 })
 
-app.use("/api/login", loginRouter)
+app.use("/api", indexRouter)
 app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('/*', function (req, res) {

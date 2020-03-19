@@ -7,22 +7,7 @@ import verifyToken from "../middleware/jwt";
 
 const loginRouter = Router()
 
-loginRouter.get("/", verifyToken, async (req: Request, res: Response) => {
-    console.log("C");
-    
-    try{
-        const admins = await Admin.findAll()
-        res.send(admins)      
-    }catch(e){
-        res.status(403)
-        res.send(e.message)
-    }
-})
 
-loginRouter.get("/s", verifyToken, async (req: Request, res: Response) => {
-    console.log("C");
-    res.send([{name: "Preet"}])
-})
 
 loginRouter.post("/", async (req: Request, res: Response) => {
     try{
@@ -53,30 +38,6 @@ loginRouter.post("/", async (req: Request, res: Response) => {
     }
 })
 
-loginRouter.post("/create", async (req: Request, res: Response) => {
-    try{
-        const { username, password, role } = req.body
-        if(!username || !password || !role){
-            res.status(403)
-            res.send({message: "Send all data"})
-            return
-        }
 
-        const passwordHash = crypto.createHash("md5").update(password).digest("hex")
-
-        const adminData: AdminI = {
-            username,
-            password: passwordHash,
-            role
-        } 
-
-        const admin = await Admin.create(adminData)
-        admin.password = ""
-        res.send(admin)
-    }catch(e){
-        res.status(403)
-        res.send({message: `${CONFIG.RES_ERROR} ${e.message}`})
-    }
-})
 
 export default loginRouter
