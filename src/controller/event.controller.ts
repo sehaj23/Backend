@@ -10,7 +10,7 @@ import Event, { EventI } from "../models/event.model";
 const eventRouter = Router()
 
 eventRouter.post("/", verifyToken, async (req: Request, res: Response) => {
-    try{
+    try {
         const {
             name,
             description,
@@ -20,7 +20,7 @@ eventRouter.post("/", verifyToken, async (req: Request, res: Response) => {
             endDate,
             location,
         } = req.body
-        
+
         const e: EventI = {
             name,
             description,
@@ -32,52 +32,53 @@ eventRouter.post("/", verifyToken, async (req: Request, res: Response) => {
         }
 
         const event = await Event.create(e)
-        
+
         res.send(event)
-    }catch(e){
+    } catch (e) {
         res.status(403)
-        res.send({message: `${CONFIG.RES_ERROR} ${e.message}`})
+        res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
     }
 })
 
 
 eventRouter.get("/", verifyToken, async (req: Request, res: Response) => {
-    console.log("C");
-    
-    try{
-        const admins = await  Admin.findAll()
-        const filter = admins.map((a) => {
-            a.password = ""
-            return a
-        } )
-        res.send(filter)      
-    }catch(e){
+    try {
+        const events = await Event.findAll()
+        res.send(events)
+    } catch (e) {
         res.status(403)
         res.send(e.message)
     }
 })
 
 eventRouter.put("/", verifyToken, async (req: Request, res: Response) => {
-    try{
-        const { id, username, role } = req.body
-        if(!username || !id || !role){
-            res.status(403)
-            res.send({message: "Send all data"})
-            return
-        }
-
-        const adminData: AdminI = {
-            username,
-            role
-        }
-
-        const [num,  admin] = await Admin.update(adminData, {where : {id}}) // to return the updated data do - returning: true
-        adminData.id = id        
+    try {
+        const { id, name,
+            start_date,
+            end_date,
+            location,
+            entry_procedure,
+            exhibition_house,
+            description } = req.body
         
-        res.send(adminData)
-    }catch(e){
+
+        const eventData: EventI = {
+            name,
+            start_date,
+            end_date,
+            location,
+            entry_procedure,
+            exhibition_house,
+            description
+        }
+
+        const [num, event] = await Event.update(eventData, { where: { id } }) // to return the updated data do - returning: true
+        eventData.id = id
+
+        res.send(eventData)
+    } catch (e) {
         res.status(403)
-        res.send({message: `${CONFIG.RES_ERROR} ${e.message}`})
+        res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
     }
 })
 
