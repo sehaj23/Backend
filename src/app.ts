@@ -3,17 +3,21 @@ import * as bobyParser from "body-parser"
 import * as morgan from "morgan"
 import * as fs from "fs"
 import * as path from "path"
-
+import * as dotenv from "dotenv"
 import { sequelize } from "./database"
 import Photo, { PhotoI } from "./models/photo.model"
 import Event, { EventI } from "./models/event.model"
 import indexRouter from "./controller/index.controller"
+
 const app = express()
+
+dotenv.config()
 
 const accessLogStream = fs.createWriteStream('access.log', { flags: 'a' })
 
 // setup the logger
-app.use(morgan('combined', { stream: accessLogStream }))
+// app.use(morgan('combined', { stream: accessLogStream }))
+app.use(morgan('dev'))
 
 app.use(bobyParser.json())
 sequelize.authenticate().then(() => {
@@ -113,9 +117,12 @@ app.get("/aaapp", async (req: express.Request, res: express.Response) => {
 
 const PORT = 8080
 
+
+
 app.listen(PORT, async () => {
     try {
         // await sequelize.sync({ force: true })
+        // await sequelize.sync({alter: true})
     } catch (error) {
 
     }

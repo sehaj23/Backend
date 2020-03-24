@@ -2,3 +2,6 @@ node_modules
 dist
 upload.sh
 access.log
+.env
+combined.log
+error.log

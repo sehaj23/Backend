@@ -8,14 +8,14 @@ export interface VendorI{
     id?: number | null
     name: string
     email: string
-    password: string
-    contant_number: string
+    password?: string
+    contact_number: string
     premium?: boolean
 }
 
 @Table({
     timestamps: true,
-    tableName: "venodr"
+    tableName: "vendor"
 })
 class Vendor extends Model<Vendor> implements VendorI{
     
@@ -43,7 +43,7 @@ class Vendor extends Model<Vendor> implements VendorI{
     @AllowNull(false)
     @NotEmpty
     @Column
-    contant_number!: string
+    contact_number!: string
 
     @AllowNull(false)
     @Default(false)

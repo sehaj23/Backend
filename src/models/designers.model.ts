@@ -13,7 +13,7 @@ export interface DesignersI{
     start_price: number
     end_price: number
     outfit_types: string[]
-    speciality: number
+    speciality: string
     location: string
     insta_link?: string
     fb_link?: string
@@ -73,7 +73,7 @@ class Designer extends Model<Designer> implements DesignersI{
     @AllowNull(false)
     @NotEmpty
     @Column
-    speciality!: number;
+    speciality!: string;
 
     @AllowNull(false)
     @NotEmpty
