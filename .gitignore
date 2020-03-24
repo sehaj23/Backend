@@ -1,6 +1,7 @@
 node_modules
 dist
 upload.sh
+after_upload.sh
 access.log
 .env
 combined.log

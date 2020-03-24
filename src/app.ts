@@ -131,7 +131,7 @@ const PORT = 8080
 
 app.listen(PORT, async () => {
     try {
-        await sequelize.sync({ force: true })
+        // await sequelize.sync({ force: true })
         // await sequelize.sync({alter: true})
     } catch (error) {
 
