@@ -47,6 +47,23 @@ vendorRouter.get("/", verifyToken, async (req: Request, res: Response) => {
     }
 })
 
+vendorRouter.get("/:id", verifyToken, async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        if(!id){
+            const msg = 'Id not found for vendor.'
+            logger.error(msg)
+            res.status(403)
+            res.send(msg)
+        }
+        const event = await Vendor.findByPk(id)
+        res.send(event)
+    } catch (e) {
+        res.status(403)
+        res.send(e.message)
+    }
+})
+
 vendorRouter.put("/", verifyToken, async (req: Request, res: Response) => {
     try {
         const { 

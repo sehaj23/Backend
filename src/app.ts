@@ -26,12 +26,22 @@ sequelize.authenticate().then(() => {
     console.log(`Error: ${err.message}`)
 })
 
+
 app.use("/api", indexRouter)
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.get('/*', function (req, res) {
+app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
+
+// this is for 404
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.name = "404";
+    res.status(404)
+    res.send(err);
+});
+
 app.get("/p", async (req: express.Request, res: express.Response) => {
 
     const eId = 1
@@ -121,7 +131,7 @@ const PORT = 8080
 
 app.listen(PORT, async () => {
     try {
-        // await sequelize.sync({ force: true })
+        await sequelize.sync({ force: true })
         // await sequelize.sync({alter: true})
     } catch (error) {
 

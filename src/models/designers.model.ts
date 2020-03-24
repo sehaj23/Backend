@@ -88,12 +88,12 @@ class Designer extends Model<Designer> implements DesignersI{
 
     @AllowNull(false)
     @NotEmpty
-    @Column
+    @Column(DataType.TIME)
     start_working_hours!: Date;
 
     @AllowNull(false)
     @NotEmpty
-    @Column
+    @Column(DataType.TIME)
     end_working_hours!: Date;
 
     @AllowNull(false)
