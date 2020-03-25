@@ -5,6 +5,7 @@ import verifyToken from "../middleware/jwt";
 import Vendor, { VendorI } from "../models/vendor.model";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
+import Designer from "../models/designers.model";
 
 const vendorRouter = Router()
 
@@ -56,7 +57,7 @@ vendorRouter.get("/:id", verifyToken, async (req: Request, res: Response) => {
             res.status(403)
             res.send(msg)
         }
-        const event = await Vendor.findByPk(id)
+        const event = await Vendor.findByPk(id, {include: [Designer]})
         res.send(event)
     } catch (e) {
         res.status(403)
