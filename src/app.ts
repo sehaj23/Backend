@@ -7,7 +7,7 @@ import * as dotenv from "dotenv"
 import { sequelize } from "./database"
 import Photo, { PhotoI } from "./models/photo.model"
 import Event, { EventI } from "./models/event.model"
-import indexRouter from "./controller/index.controller"
+import indexRouter from "./service/index.controller"
 
 const app = express()
 
