@@ -22,6 +22,7 @@ export interface DesignersI{
     photo_ids?: number[]
     approved?: boolean
     vendor_id: number
+    events?: Event[]
 }
 
 @Table({
@@ -111,7 +112,7 @@ class Designer extends Model<Designer> implements DesignersI{
     vendor_id!: number
 
     @BelongsToMany(() => Event, () => EventDesigner)
-    designers?: Array<Event & {EventDesigner: EventDesigner}>
+    events?: Array<Event & {EventDesigner: EventDesigner}>
 
 }
 
