@@ -44,6 +44,17 @@ export default class EventService{
 
     static get = async (req: Request, res: Response) => {
         try {
+            let {limit, offset} = req.query;
+            const events = await Event.findAndCountAll({offset, limit})
+            res.send(events);
+        } catch (e) {
+            res.status(403)
+            res.send(e.message)
+        }
+    }
+
+    /*static get = async (req: Request, res: Response) => {
+        try {
             let designerEvents = await EventDesigner.findAll();
             const result = await Promise.all(designerEvents.map(item => this.getDesignerEvent(req, item)));
             res.send(result);
@@ -56,7 +67,7 @@ export default class EventService{
     async getDesignerEvent(req: Request, item: object){
         let {limit, offset} = req.query;
         const events = await Event.findAndCountAll({offset, limit})
-    }
+    }*/
 
 
 
