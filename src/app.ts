@@ -7,7 +7,7 @@ import * as dotenv from "dotenv"
 import { sequelize } from "./database"
 import Photo, { PhotoI } from "./models/photo.model"
 import Event, { EventI } from "./models/event.model"
-import indexRouter from "./controller/index.controller"
+import router from "./routes/index.routes"
 
 const app = express()
 
@@ -27,7 +27,7 @@ sequelize.authenticate().then(() => {
 })
 
 
-app.use("/api", indexRouter)
+app.use("/api", router)
 app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('/', function (req, res) {

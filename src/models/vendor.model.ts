@@ -12,6 +12,8 @@ export interface VendorI{
     contact_number: string
     premium?: boolean
     designers?: Designer[]
+    makeupArtist?: MakeupArtist[]
+    salons?: Salon[]
 }
 
 @Table({
@@ -55,7 +57,7 @@ class Vendor extends Model<Vendor> implements VendorI{
     designers?: Designer[]
 
     @HasMany(() => MakeupArtist)
-    makeupArtis?: MakeupArtist[]
+    makeupArtist?: MakeupArtist[]
 
     @HasMany(() => Salon)
     salons?: Salon[]
