@@ -36,14 +36,9 @@ export default class AdminService{
     }
 
     static get = async (req: Request, res: Response) => {
-    
         try{
-            const admins = await Admin.findAll()
-            const filter = admins.map((a) => {
-                a.password = ""
-                return a
-            } )
-            res.send(filter)      
+            const admins = await Admin.findAll({attributes: {exclude: ["password"]}})
+            res.send(admins)      
         }catch(e){
             res.status(403)
             res.send(e.message)

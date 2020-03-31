@@ -7,6 +7,8 @@ import Designer, { DesignersI } from "../models/designers.model";
 import Admin, {AdminI} from "../models/admin.model";
 import Event, {EventI} from "../models/event.model";
 import Vendor, {VendorI} from "../models/vendor.model";
+import MakeupArtist from "../models/makeupArtist.model";
+import Salon from "../models/salon.model";
 
 const vendorRouter = Router()
 
@@ -58,7 +60,7 @@ export default class VendorService{
                 res.status(403)
                 res.send(msg)
             }
-            const event = await Vendor.findByPk(id, {include: [Designer]})
+            const event = await Vendor.findByPk(id, {include: [Designer, MakeupArtist, Salon], attributes: {exclude: ["password"]}})
             res.send(event)
         } catch (e) {
             res.status(403)

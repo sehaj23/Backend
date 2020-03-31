@@ -13,8 +13,7 @@ export interface MakeupArtistI{
     email: string
     start_price: number
     end_price: number
-    outfit_types: string[]
-    speciality: number
+    speciality: string[]
     location: string
     insta_link?: string
     fb_link?: string
@@ -67,15 +66,11 @@ class MakeupArtist extends Model<MakeupArtist> implements MakeupArtistI{
     @Column
     end_price!: number;
 
-    @AllowNull(false)
-    @NotEmpty
-    @Column(DataType.ARRAY(DataType.STRING))
-    outfit_types!: string[];
 
     @AllowNull(false)
     @NotEmpty
-    @Column
-    speciality!: number;
+    @Column(DataType.ARRAY(DataType.STRING))
+    speciality!: string[];
 
     @AllowNull(false)
     @NotEmpty
@@ -90,12 +85,12 @@ class MakeupArtist extends Model<MakeupArtist> implements MakeupArtistI{
 
     @AllowNull(false)
     @NotEmpty
-    @Column
+    @Column(DataType.TIME)
     start_working_hours!: Date;
 
     @AllowNull(false)
     @NotEmpty
-    @Column
+    @Column(DataType.TIME)
     end_working_hours!: Date;
 
     @AllowNull(false)
