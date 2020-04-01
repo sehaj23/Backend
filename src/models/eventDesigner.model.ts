@@ -12,7 +12,7 @@ export interface EventDesignerI{
 
 @Table({
     timestamps: true,
-    tableName: "event_makeup_artist"
+    tableName: "event_designer"
 })
 class EventDesigner extends Model<EventDesigner> implements EventDesignerI{
     

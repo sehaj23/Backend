@@ -5,6 +5,7 @@ import * as crypto from "crypto"
 import logger from "../utils/logger";
 import Designer, { DesignersI } from "../models/designers.model";
 import EventDesigner, {EventDesignerI} from "../models/eventDesigner.model";
+import Event from "../models/event.model";
 
 const designerRouter = Router()
 
@@ -58,7 +59,7 @@ export default class DesignerService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await Designer.findAll()
+            const events = await Designer.findAll({include: [EventDesigner]})
             res.send(events)
         } catch (e) {
             res.status(403)
@@ -133,18 +134,8 @@ export default class DesignerService{
     //associating designers to events
     static addDesignerEvent = async (req: Request, res: Response) => {
         try {
-            const {
-                event_id,
-                designer_id
-            }: EventDesignerI = req.body
-
-            const d: EventDesignerI = {
-                event_id,
-                designer_id
-            }
-
+            const d: EventDesignerI = req.body
             const designerEvent = await EventDesigner.create(d)
-
             res.send(designerEvent)
         } catch (e) {
             logger.error(`${e.message}`)
@@ -156,9 +147,11 @@ export default class DesignerService{
     //get data of associated
     static getDesignerEvent = async (req: Request, res: Response) => {
         try {
-            const designerEvent = await EventDesigner.findAll()
+            const designerEvent = await EventDesigner.findAll({include: [Event]})
             res.send(designerEvent)
         } catch (e) {
+            console.log(e);
+            logger.error(`${e.message}`)
             res.status(403)
             res.send(e.message)
         }

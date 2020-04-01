@@ -44,8 +44,9 @@ export default class EventService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            let {limit, offset} = req.query;
-            const events = await Event.findAndCountAll({offset, limit})
+            // let {limit, offset} = req.query;
+            // const events = await Event.findAndCountAll({offset, limit})
+            const events = await Event.findAll()
             res.send(events);
         } catch (e) {
             res.status(403)
