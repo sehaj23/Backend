@@ -13,42 +13,8 @@ export default class DesignerService{
 
     static post = async (req: Request, res: Response) => {
         try {
-            const {
-                brand_name,
-                designer_name,
-                contact_number,
-                email,
-                start_price,
-                end_price,
-                outfit_types,
-                speciality,
-                location,
-                insta_link,
-                fb_link,
-                start_working_hours,
-                end_working_hours,
-                vendor_id
-            }: DesignersI = req.body
-
-            const d: DesignersI = {
-                brand_name,
-                designer_name,
-                contact_number,
-                email,
-                start_price,
-                end_price,
-                outfit_types,
-                speciality,
-                location,
-                insta_link,
-                fb_link,
-                start_working_hours,
-                end_working_hours,
-                vendor_id
-            }
-
+            const d: DesignersI = req.body
             const designer = await Designer.create(d)
-
             res.send(designer)
         } catch (e) {
             logger.error(`${e.message}`)
@@ -147,7 +113,7 @@ export default class DesignerService{
     //get data of associated
     static getDesignerEvent = async (req: Request, res: Response) => {
         try {
-            const designerEvent = await EventDesigner.findAll({include: [Event]})
+            const designerEvent = await EventDesigner.findAll()
             res.send(designerEvent)
         } catch (e) {
             console.log(e);

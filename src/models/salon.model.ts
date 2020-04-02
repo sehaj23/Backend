@@ -11,16 +11,15 @@ export interface SalonI{
     email: string
     start_price: number
     end_price: number
-    outfit_types: string[]
-    speciality: number
+    speciality: string[]
     location: string
     insta_link?: string
     fb_link?: string
-    start_working_hours: Date
-    end_working_hours: Date
+    start_working_hours: Date[]
+    end_working_hours: Date[]
     photo_ids?: number[]
     approved?: boolean
-    services?: Salon[]
+    services?: SalonService[]
     vendor_id: number
 }
 
@@ -68,13 +67,9 @@ class Salon extends Model<Salon> implements SalonI{
     @AllowNull(false)
     @NotEmpty
     @Column(DataType.ARRAY(DataType.STRING))
-    outfit_types!: string[];
+    speciality!: string[];
 
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    speciality!: number;
-
+    
     @AllowNull(false)
     @NotEmpty
     @Column
@@ -88,13 +83,13 @@ class Salon extends Model<Salon> implements SalonI{
 
     @AllowNull(false)
     @NotEmpty
-    @Column
-    start_working_hours!: Date;
+    @Column(DataType.ARRAY(DataType.TIME))
+    start_working_hours!: Date[];
 
     @AllowNull(false)
     @NotEmpty
-    @Column
-    end_working_hours!: Date;
+    @Column(DataType.ARRAY(DataType.TIME))
+    end_working_hours!: Date[];
 
     @AllowNull(false)
     @NotEmpty
@@ -111,7 +106,7 @@ class Salon extends Model<Salon> implements SalonI{
     vendor_id!: number
 
     @HasMany(() => SalonService)
-    services?: Salon[]
+    services?: SalonService[]
 
 }
 

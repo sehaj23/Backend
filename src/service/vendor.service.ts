@@ -10,8 +10,6 @@ import Vendor, {VendorI} from "../models/vendor.model";
 import MakeupArtist from "../models/makeupArtist.model";
 import Salon from "../models/salon.model";
 
-const vendorRouter = Router()
-
 export default class VendorService{
     static post = async (req: Request, res: Response) => {
         try {
@@ -63,6 +61,7 @@ export default class VendorService{
             const event = await Vendor.findByPk(id, {include: [Designer, MakeupArtist, Salon], attributes: {exclude: ["password"]}})
             res.send(event)
         } catch (e) {
+            logger.error(e.message)
             res.status(403)
             res.send(e.message)
         }

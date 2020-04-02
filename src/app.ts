@@ -5,11 +5,43 @@ import * as fs from "fs"
 import * as path from "path"
 import * as dotenv from "dotenv"
 import { sequelize } from "./database"
-import Photo, { PhotoI } from "./models/photo.model"
-import Event, { EventI } from "./models/event.model"
 import router from "./routes/index.routes"
+import * as aws from "aws-sdk"
+import * as multer from "multer"
+import * as multerS3 from "multer-s3"
 
 const app = express()
+
+const spacesEndpoint = new aws.Endpoint('nyc3.digitaloceanspaces.com');
+const s3 = new aws.S3({
+  //@ts-ignore
+  endpoint: spacesEndpoint,
+  accessKeyId: "DQC6AT6WECGTVTPBMEPW",
+  secretAccessKey: "1aG2MQPG1CBJS01q/y6pjLwRVNgzPwfkNkvWa3XCrp8"
+});
+
+const upload = multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: 'zattire',
+      acl: 'public-read',
+      key: function (request, file, cb) {
+        console.log(file);
+        cb(null, file.originalname);
+      }
+    })
+  }).array('upload', 1);
+
+  app.post('/upload', function (request, response, next) {
+    upload(request, response, function (error) {
+      if (error) {
+        console.log(error);
+        return response.redirect("/error");
+      }
+      console.log('File uploaded successfully.');
+      response.redirect("/success");
+    });
+  });
 
 dotenv.config()
 
@@ -26,7 +58,6 @@ sequelize.authenticate().then(() => {
     console.log(`Error: ${err.message}`)
 })
 
-
 app.use("/api", router)
 app.use(express.static(path.join(__dirname, '../build')));
 
@@ -42,97 +73,12 @@ app.use(function(req, res, next) {
     res.send(err);
 });
 
-app.get("/p", async (req: express.Request, res: express.Response) => {
-
-    const eId = 1
-    const e = await Event.findByPk(eId)
-    if (e != null)
-        if (e?.photo_ids !== undefined) {
-            const p = await Photo.findAll({ where: { id: e.photo_ids } })
-            res.send({
-                e,
-                p
-            })
-            return
-        }
-
-    if (e != null) {
-
-        // const photo: PhotoI ={
-        //     name: "My Pic",
-        //     url: "http",
-        //     photo_type: 'Original'
-        // }
-
-        // const p = await Photo.create(photo)
-        // console.log(p)
-        // if(e.photo_ids === undefined || e.photo_ids == null){
-        //     const nwA = [p.id!]
-        //     e.photo_ids = nwA
-        // }else
-        //     e.photo_ids?.push(p.id!)
-        // const newE = await e.save()
-        // console.log(newE);
-        res.send({
-            // newE,
-            e,
-            // p
-        })
-    } else {
-        res.send(e)
-    }
-})
-
-app.get("/aaapp", async (req: express.Request, res: express.Response) => {
-
-    const event: EventI = {
-        name: "Cool Event",
-        start_date: new Date('02-27-2019 10:00'),
-        end_date: new Date('02-27-2019 12:00'),
-        location: "Taj, Delhi",
-        entry_procedure: "Rs. 500 per person",
-        exhibition_house: "Chhabra House of Design",
-        description: "It is a cool event",
-    }
-
-    try {
-        const e = await Event.create(event)
-        console.log(e);
-        const photo: PhotoI = {
-            name: "My Pic",
-            url: "http",
-            photo_type: 'Original'
-        }
-
-        const p = await Photo.create(photo)
-        console.log(p)
-        if (e.photo_ids === undefined || e.photo_ids == null) {
-            const nwA = [p.id!]
-            e.photo_ids = nwA
-        } else
-            e.photo_ids?.push(p.id!)
-        const newE = await e.save()
-        console.log(newE);
-        res.send({
-            newE,
-            e,
-            p
-        })
-    } catch (error) {
-        console.log(error);
-
-    }
-
-})
-
 const PORT = 8080
-
-
 
 app.listen(PORT, async () => {
     try {
         // await sequelize.sync({ force: true })
-        // await sequelize.sync({alter: true})
+        await sequelize.sync({alter: true})
     } catch (error) {
 
     }

@@ -12,9 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.651.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jwt-then": "^1.0.1",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
     "reflect-metadata": "^0.1.13",
@@ -27,6 +30,8 @@
     "@types/express": "^4.17.2",
     "@types/jwt-then": "^1.0.0",
     "@types/morgan": "^1.9.0",
+    "@types/multer": "^1.4.2",
+    "@types/multer-s3": "^2.7.7",
     "@types/validator": "^12.0.1",
     "morgan": "^1.10.0"
   }

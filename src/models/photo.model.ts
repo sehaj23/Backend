@@ -9,6 +9,8 @@ export interface PhotoI{
     name: string
     url: string
     photo_type: PhotoType
+    tags: string[]
+    approved?: boolean
 }
 
 @Table({
@@ -38,6 +40,17 @@ class Photo extends Model<Photo> implements PhotoI{
     @Default('Original')
     @Column(DataType.ENUM('Original' , 'ToShow'))
     photo_type!: PhotoType;
+
+    @AllowNull(false)
+    @NotEmpty
+    @Column(DataType.ARRAY(DataType.STRING))
+    tags!: string[];
+
+    @AllowNull(false)
+    @NotEmpty
+    @Default(false)
+    @Column
+    approved?: boolean
 }
 
 export default Photo

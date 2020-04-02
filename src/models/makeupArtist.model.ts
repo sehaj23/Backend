@@ -17,8 +17,8 @@ export interface MakeupArtistI{
     location: string
     insta_link?: string
     fb_link?: string
-    start_working_hours: Date
-    end_working_hours: Date
+    start_working_hours: Date[]
+    end_working_hours: Date[]
     photo_ids?: number[]
     approved?: boolean
     services?: MakeupArtistService[]
@@ -85,13 +85,13 @@ class MakeupArtist extends Model<MakeupArtist> implements MakeupArtistI{
 
     @AllowNull(false)
     @NotEmpty
-    @Column(DataType.TIME)
-    start_working_hours!: Date;
+    @Column(DataType.ARRAY(DataType.TIME))
+    start_working_hours!: Date[];
 
     @AllowNull(false)
     @NotEmpty
-    @Column(DataType.TIME)
-    end_working_hours!: Date;
+    @Column(DataType.ARRAY(DataType.TIME))
+    end_working_hours!: Date[];
 
     @AllowNull(false)
     @NotEmpty
