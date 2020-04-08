@@ -1,13 +1,24 @@
-import {Sequelize} from 'sequelize-typescript';
 import * as dotenv from "dotenv"
+import * as mongoose from "mongoose"
 
 dotenv.config()
 
-const user: string = (process.env.DB_USER) ? process.env.DB_USER : 'postgres'
-const password: string = (process.env.DB_PASS) ? process.env.DB_PASS : 'postgres'
+const uri: string = process.env.DB_URI ?? "mongodb://127.0.0.1:27017/zattire";
 
-export const sequelize = new Sequelize('zattire', user, password, {
-  host: 'localhost',
-  dialect: 'postgres',
-  models: [__dirname + '/models']
+const user: string = process.env.DB_USER ?? 'postgres'
+const password: string = process.env.DB_PASS ?? 'postgres'
+
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}, (err: any) => {
+  if (err) {
+    console.log(err.message);
+  } else {
+    console.log("Successfully Connected!");
+  }
 });
+
+export default mongoose

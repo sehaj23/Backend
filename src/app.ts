@@ -4,11 +4,12 @@ import * as morgan from "morgan"
 import * as fs from "fs"
 import * as path from "path"
 import * as dotenv from "dotenv"
-import { sequelize } from "./database"
 import router from "./routes/index.routes"
 import * as aws from "aws-sdk"
 import * as multer from "multer"
 import * as multerS3 from "multer-s3"
+import NewVendor from "./models/newVendor.model"
+import logger from "./utils/logger"
 
 const app = express()
 
@@ -49,14 +50,10 @@ const accessLogStream = fs.createWriteStream('access.log', { flags: 'a' })
 
 // setup the logger
 // app.use(morgan('combined', { stream: accessLogStream }))
-app.use(morgan('dev'))
+app.use(morgan(':remote-addr - :method :url :status :res[content-length] - :response-time ms'))
 
 app.use(bobyParser.json())
-sequelize.authenticate().then(() => {
-    console.log("Database connected...")
-}).catch((err: any) => {
-    console.log(`Error: ${err.message}`)
-})
+
 
 app.use("/api", router)
 app.use(express.static(path.join(__dirname, '../build')));
@@ -64,6 +61,35 @@ app.use(express.static(path.join(__dirname, '../build')));
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
+
+app.post("/create-vendor", async (req: express.Request, res: express.Response) => {
+  const { name }= req.body
+  console.log(req.body)
+  const data = {
+    name
+  }
+  try{
+    const nv = await NewVendor.create(data)
+    res.send(nv)
+  }catch(e){
+    logger.error(e.message)
+    res.status(403)
+    res.send({error: e.message})
+  }
+})
+
+app.put("/update-vendor/:id", async (req: express.Request, res: express.Response) => {
+  const _id = req.params.id
+  
+  try{
+    const nv = await NewVendor.update({_id}, req.body)
+    res.send(nv)
+  }catch(e){
+    logger.error(e.message)
+    res.status(403)
+    res.send({error: e.message})
+  }
+})
 
 // this is for 404
 app.use(function(req, res, next) {
@@ -76,11 +102,5 @@ app.use(function(req, res, next) {
 const PORT = 8080
 
 app.listen(PORT, async () => {
-    try {
-        // await sequelize.sync({ force: true })
-        // await sequelize.sync({alter: true})
-    } catch (error) {
-
-    }
     console.log(`Server is running http://localhost:${PORT}`)
 })

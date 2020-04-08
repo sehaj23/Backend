@@ -3,9 +3,11 @@ import CONFIG from "../config";
 import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
-import Designer, { DesignersI } from "../models/designers.model";
-import EventDesigner, {EventDesignerI} from "../models/eventDesigner.model";
+import Designer from "../models/designers.model";
+import EventDesigner from "../models/eventDesigner.model";
 import Event from "../models/event.model";
+import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
+import EventDesignerI from "../interfaces/eventDesigner.model";
 
 const designerRouter = Router()
 
@@ -25,7 +27,7 @@ export default class DesignerService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await Designer.findAll({include: [EventDesigner]})
+            const events = await Designer.find()
             res.send(events)
         } catch (e) {
             res.status(403)
@@ -42,7 +44,7 @@ export default class DesignerService{
             res.status(403)
             res.send(msg)
         }
-        const event = await Designer.findByPk(id)
+        const event = await Designer.findById(id)
         res.send(event)
         } catch (e) {
             res.status(403)
@@ -52,43 +54,11 @@ export default class DesignerService{
 
     static put = async (req: Request, res: Response) => {
         try {
-            const {
-                id,
-                brand_name,
-                designer_name,
-                contact_number,
-                email,
-                start_price,
-                end_price,
-                outfit_types,
-                speciality,
-                location,
-                insta_link,
-                fb_link,
-                start_working_hours,
-                end_working_hours,
-                vendor_id
-            }: DesignersI = req.body
+            const designerData: DesignersSI = req.body
+            const _id = req.body._id
 
-            const designerData: DesignersI = {
-                brand_name,
-                designer_name,
-                contact_number,
-                email,
-                start_price,
-                end_price,
-                outfit_types,
-                speciality,
-                location,
-                insta_link,
-                fb_link,
-                start_working_hours,
-                end_working_hours,
-                vendor_id
-            }
-
-            const [num, vendor] = await Designer.update(designerData, { where: { id: id! } }) // to return the updated data do - returning: true
-            designerData.id = id
+            const [num, vendor] = await Designer.update(designerData, { where: { _id: _id } }) // to return the updated data do - returning: true
+            designerData._id = _id
 
             res.send(designerData)
         } catch (e) {
@@ -113,7 +83,7 @@ export default class DesignerService{
     //get data of associated
     static getDesignerEvent = async (req: Request, res: Response) => {
         try {
-            const designerEvent = await EventDesigner.findAll()
+            const designerEvent = await EventDesigner.find()
             res.send(designerEvent)
         } catch (e) {
             console.log(e);

@@ -1,9 +1,10 @@
 import { Router, Request, Response } from "express";
-import Admin, { AdminI } from "../models/admin.model";
+import Admin from "../models/admin.model";
 import * as jwt from "jwt-then"
 import CONFIG from "../config";
 import * as crypto from "crypto"
 import verifyToken from "../middleware/jwt";
+import AdminI, { AdminSI } from "../interfaces/admin.interface";
 
 const adminRouter = Router()
 
@@ -37,7 +38,7 @@ export default class AdminService{
 
     static get = async (req: Request, res: Response) => {
         try{
-            const admins = await Admin.findAll({attributes: {exclude: ["password"]}})
+            const admins = await Admin.find().select("-password`") //Admin.findAll({attributes: {exclude: ["password"]}})
             res.send(admins)      
         }catch(e){
             res.status(403)
@@ -58,9 +59,8 @@ export default class AdminService{
                 username,
                 role
             }
-    
-            const [num,  admin] = await Admin.update(adminData, {where : {id}}) // to return the updated data do - returning: true
-            adminData.id = id        
+
+            const [num,  admin] = await Admin.update(adminData, {where : {_id: id}}) // to return the updated data do - returning: true
             
             res.send(adminData)
         }catch(e){

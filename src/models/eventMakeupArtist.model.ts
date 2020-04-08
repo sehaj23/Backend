@@ -1,39 +1,21 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType, Default, BelongsTo, ForeignKey } from "sequelize-typescript";
 import Event from "./event.model";
 import MakeupArtist from "./makeupArtist.model";
+import mongoose from "../database";
+import EventMakeupArtistSI from "../interfaces/eventMakeupArtist.interface";
 
-type PhotoType = 'Original' | 'ToShow'
 
-export interface EventMakeupArtistI{
-    id?: number | null
-    event_id: number
-    makeup_artist_id: number
-}
-
-@Table({
-    timestamps: true,
-    tableName: "event_makeup_artist"
+const EventMakeupArtistShema = new mongoose.Schema({
+    event_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        res: "event"
+    },
+    makeup_artist_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        res: "makeup_artist"
+    }
+}, {
+    timestamps: true
 })
-class EventMakeupArtist extends Model<EventMakeupArtist> implements EventMakeupArtistI{
-    
- 
-    @AutoIncrement
-    @PrimaryKey
-    @Column
-    id?: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @ForeignKey(() => Event)
-    @Column
-    event_id!: number;
-
-
-    @AllowNull(false)
-    @NotEmpty
-    @ForeignKey(() => MakeupArtist)
-    @Column
-    makeup_artist_id!: number;
-
-}
+const EventMakeupArtist = mongoose.model<EventMakeupArtistSI>("event_makeup_artist", EventMakeupArtistShema)
 export default EventMakeupArtist

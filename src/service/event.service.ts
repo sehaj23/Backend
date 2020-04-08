@@ -3,9 +3,10 @@ import CONFIG from "../config";
 import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
-import Designer, { DesignersI } from "../models/designers.model";
-import EventDesigner, {EventDesignerI} from "../models/eventDesigner.model";
-import Event, {EventI} from "../models/event.model";
+import Designer from "../models/designers.model";
+import EventDesigner from "../models/eventDesigner.model";
+import Event from "../models/event.model";
+import EventI, { EventSI } from "../interfaces/event.interface";
 
 const eventRouter = Router()
 
@@ -13,25 +14,8 @@ export default class EventService{
 
     static post = async (req: Request, res: Response) => {
         try {
-            const {
-                name,
-                description,
-                entryProcedure,
-                exhibitionHouse,
-                startDate,
-                endDate,
-                location,
-            } = req.body
-
-            const e: EventI = {
-                name,
-                description,
-                entry_procedure: entryProcedure,
-                exhibition_house: exhibitionHouse,
-                start_date: startDate,
-                end_date: endDate,
-                location
-            }
+           
+            const e: EventI = req.body
 
             const event = await Event.create(e)
 
@@ -46,7 +30,7 @@ export default class EventService{
         try {
             // let {limit, offset} = req.query;
             // const events = await Event.findAndCountAll({offset, limit})
-            const events = await Event.findAll()
+            const events = await Event.find()
             res.send(events);
         } catch (e) {
             res.status(403)
@@ -74,14 +58,14 @@ export default class EventService{
 
     static getId =  async (req: Request, res: Response) => {
         try {
-            const id = req.params.id
-            if(!id){
+            const _id = req.params.id
+            if(!_id){
                 const msg = 'Id not found for vendor.'
                 logger.error(msg)
                 res.status(403)
                 res.send(msg)
             }
-            const event = await Event.findByPk(id)
+            const event = await Event.findById(_id)
             res.send(event)
         } catch (e) {
             res.status(403)
@@ -91,27 +75,10 @@ export default class EventService{
 
     static put = async (req: Request, res: Response) => {
         try {
-            const { id, name,
-                start_date,
-                end_date,
-                location,
-                entry_procedure,
-                exhibition_house,
-                description } = req.body
-
-
-            const eventData: EventI = {
-                name,
-                start_date,
-                end_date,
-                location,
-                entry_procedure,
-                exhibition_house,
-                description
-            }
-
-            const [num, event] = await Event.update(eventData, { where: { id } }) // to return the updated data do - returning: true
-            eventData.id = id
+            const eventData: EventSI = req.body
+            const _id = req.body.id
+            const [num, event] = await Event.update(eventData, { where: { _id } }) // to return the updated data do - returning: true
+            eventData._id = _id
 
             res.send(eventData)
         } catch (e) {

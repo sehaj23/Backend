@@ -1,93 +1,60 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType, Default, HasMany } from "sequelize-typescript";
+import mongoose from "../database";
+import { BookingSI } from "../interfaces/booking.interface";
 
 
-type Provider = 'MUA' | 'Salon' | 'Designer'
-type BookinStatus = 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed'
-type BookingPaymentType = 'COD' | 'Online'
-type BookingLoaction = 'Customer Place' | 'Vendor Place'
 
-export interface BookingI{
-    id?: number | null
-    user_id: number
-    provider_id: number // it can be anything MUA, Designer, Salon
-    service_id: number
-    provider_type: Provider
-    status: BookinStatus
-    price: number
-    payment_type: BookingPaymentType
-    balance?: number
-    time: Date
-    location: BookingLoaction
-}
-
-@Table({
-    timestamps: true,
-    tableName: "booking"
+const BookingSchema = new mongoose.Schema({
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'user',
+        required: true
+    },
+    provider_id: {
+        type: String,
+        required:true
+    },
+    provider_type: {
+        type: String,
+        enum: ['MUA' , 'Salon' , 'Designer'],
+        default: 'MUA'
+    },
+    service_id: {
+        type:String
+    },
+    status: {
+        type: String,
+        enum: ['Requested' , 'Confirmed' , 'Vendor Cancelled' , 'Customer Cancelled' , 'Completed'],
+        default:'Requested'
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    payment_type: {
+        type: String,
+        enum: ['COD' , 'Online'],
+        default: 'COD'
+    },
+    balance:{
+        type: Number,
+        required: true,
+        default: 0
+    },
+    date_time: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
+    location: {
+        type: String,
+        enum: ['Customer Place' , 'Vendor Place'],
+        default: 'Vendor Place'
+    }
+}, {
+    timestamps: true
 })
-class Booking extends Model<Booking> implements BookingI{
-    
- 
-    @AutoIncrement
-    @PrimaryKey
-    @Column
-    id?: number
 
-    
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    user_id!: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    provider_id!: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    service_id!: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @Default('MUA')
-    @Column(DataType.ENUM('MUA' , 'Salon' , 'Designer'))
-    provider_type!: Provider
-
-    
-    @AllowNull(false)
-    @NotEmpty
-    @Default('Requested')
-    @Column(DataType.ENUM('Requested' , 'Confirmed' , 'Vendor Cancelled' , 'Customer Cancelled' , 'Completed'))
-    status!: BookinStatus
-
-
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    price!: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @Default('COD')
-    @Column(DataType.ENUM('COD' , 'Online'))
-    payment_type!: BookingPaymentType
-
-    @AllowNull(false)
-    @Default(0)
-    @NotEmpty
-    @Column
-    balance?: number
-
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    time!: Date
-
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    location!: BookingLoaction
-}
+const Booking = mongoose.model<BookingSI>("booking", BookingSchema)
 
 export default Booking

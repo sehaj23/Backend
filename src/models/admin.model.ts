@@ -1,36 +1,22 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType } from "sequelize-typescript";
+import mongoose from "../database";
+import AdminI, { AdminSI } from "../interfaces/admin.interface";
 
-export interface AdminI{
-    id?: number | null
-    username: string
-    password?: string
-    role: string
-}
 
-@Table({
-    timestamps: true,
-    tableName: "admin"
+
+const AdminSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    password: { type: String, required: true },
+    role: {
+        type: String,
+        enum : ["admin", "sub-admin"],
+        default: "admin"
+    }
+}, {
+    timestamps: true
 })
-class Admin extends Model<Admin> implements AdminI{
-    @AutoIncrement
-    @PrimaryKey
-    @Column
-    id?: number
 
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    username!: string;
-    
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    password!: string;
 
-    @AllowNull(false)
-    @NotEmpty
-    @Column
-    role!: string;
-}
+const Admin = mongoose.model<AdminSI>("admin", AdminSchema)
 
 export default Admin

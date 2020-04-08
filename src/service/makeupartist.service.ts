@@ -3,9 +3,11 @@ import CONFIG from "../config";
 import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
-import Designer, { DesignersI } from "../models/designers.model";
-import EventDesigner, {EventDesignerI} from "../models/eventDesigner.model";
-import MakeupArtist, { MakeupArtistI } from "../models/makeupArtist.model";
+import Designer from "../models/designers.model";
+import EventDesigner from "../models/eventDesigner.model";
+import MakeupArtist from "../models/makeupArtist.model";
+import MakeupArtistSI, { MakeupArtistI } from "../interfaces/makeupArtist.interface";
+import EventDesignerI from "../interfaces/eventDesigner.model";
 
 const designerRouter = Router()
 
@@ -26,7 +28,7 @@ export default class MakeupartistServiceC{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await MakeupArtist.findAll()
+            const events = await MakeupArtist.find()
             res.send(events)
         } catch (e) {
             res.status(403)
@@ -43,7 +45,7 @@ export default class MakeupartistServiceC{
             res.status(403)
             res.send(msg)
         }
-        const event = await MakeupArtist.findByPk(id)
+        const event = await MakeupArtist.findById(id)
         res.send(event)
         } catch (e) {
             res.status(403)
@@ -53,7 +55,7 @@ export default class MakeupartistServiceC{
 
     static put = async (req: Request, res: Response) => {
         try {
-            const ma: MakeupArtistI = req.body 
+            const ma: MakeupArtistSI = req.body 
 
             const [num, vendor] = await MakeupArtist.update(ma, { where: { id: ma.id! } }) // to return the updated data do - returning: true
             ma.id = ma.id
@@ -91,7 +93,7 @@ export default class MakeupartistServiceC{
     //get data of associated
     static getMakeupArtistEvent = async (req: Request, res: Response) => {
         try {
-            const designerEvent = await EventDesigner.findAll()
+            const designerEvent = await EventDesigner.find()
             res.send(designerEvent)
         } catch (e) {
             res.status(403)

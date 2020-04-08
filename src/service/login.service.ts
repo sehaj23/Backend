@@ -1,9 +1,7 @@
 import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
-import Designer, { DesignersI } from "../models/designers.model";
-import Admin, {AdminI} from "../models/admin.model";
-import Event, {EventI} from "../models/event.model";
+import Admin from "../models/admin.model";
 import {Router, Request, Response} from "express";
 import * as jwt from "jwt-then";
 import CONFIG from "../config";

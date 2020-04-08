@@ -1,39 +1,20 @@
-import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType, Default, BelongsTo, ForeignKey } from "sequelize-typescript";
-import Event from "./event.model";
-import Designer from "./designers.model";
+import mongoose from "../database";
+import { EventDesignerSI } from "../interfaces/eventDesigner.model";
 
-type PhotoType = 'Original' | 'ToShow'
 
-export interface EventDesignerI{
-    id?: number | null
-    event_id: number
-    designer_id: number
-}
-
-@Table({
-    timestamps: true,
-    tableName: "event_designer"
+const EventDesignerSchema = new mongoose.Schema({
+    event_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "event"
+    },
+    designer_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "designer"
+    }
+}, {
+    timestamps: true
 })
-class EventDesigner extends Model<EventDesigner> implements EventDesignerI{
-    
- 
-    @AutoIncrement
-    @PrimaryKey
-    @Column
-    id?: number
 
-    @AllowNull(false)
-    @NotEmpty
-    @ForeignKey(() => Event)
-    @Column
-    event_id!: number;
+const EventDesigner = mongoose.model<EventDesignerSI>("event_designer", EventDesignerSchema)
 
-
-    @AllowNull(false)
-    @NotEmpty
-    @ForeignKey(() => Designer)
-    @Column
-    designer_id!: number;
-
-}
 export default EventDesigner
