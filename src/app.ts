@@ -14,6 +14,7 @@ import * as cors from "cors"
 
 const app = express()
 app.use(cors())
+
 const spacesEndpoint = new aws.Endpoint('nyc3.digitaloceanspaces.com');
 const s3 = new aws.S3({
   //@ts-ignore
