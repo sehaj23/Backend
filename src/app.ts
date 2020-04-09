@@ -112,7 +112,7 @@ app.use(function(req, res, next) {
     res.send(err);
 });
 
-const PORT = 8082
+const PORT = 8080
 
 app.listen(PORT, async () => {
     console.log(`Server is running http://localhost:${PORT}`)
