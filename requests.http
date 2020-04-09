@@ -5,13 +5,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hb
 
 ###
 
-POST http://localhost:8080/api/admin
+POST http://139.59.9.25:8080/api/admin
 content-type: application/json
 
 {
     "username": "kashish",
     "password": "kashish1",
     "role": "admin"
+}
+
+####
+
+POST http://139.59.9.25:8080/api/login
+content-type: application/json
+
+{
+    "username": "kashish",
+    "password": "kashish1"
 }
 
 ####

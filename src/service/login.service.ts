@@ -22,9 +22,7 @@ export default class LoginService {
                 return
             }
             const passwordHash = crypto.createHash("md5").update(password).digest("hex")
-
-
-            const admin = await Admin.findOne({where: {username, password: passwordHash}})
+            const admin = await Admin.findOne({username, password: passwordHash})
             if(admin == null){
                 res.status(403)
                 res.send({message: "Username password does not match"})

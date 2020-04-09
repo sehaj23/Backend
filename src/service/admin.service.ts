@@ -5,6 +5,7 @@ import CONFIG from "../config";
 import * as crypto from "crypto"
 import verifyToken from "../middleware/jwt";
 import AdminI, { AdminSI } from "../interfaces/admin.interface";
+import logger from "../utils/logger";
 
 const adminRouter = Router()
 
@@ -41,6 +42,7 @@ export default class AdminService{
             const admins = await Admin.find().select("-password`") //Admin.findAll({attributes: {exclude: ["password"]}})
             res.send(admins)      
         }catch(e){
+            logger.error(e.message)
             res.status(403)
             res.send(e.message)
         }

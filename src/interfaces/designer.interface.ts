@@ -1,4 +1,5 @@
 import mongoose from "../database"
+import { PhotoI } from "./photo.interface";
 
 
 export interface DesignersI{
@@ -16,9 +17,9 @@ export interface DesignersI{
     fb_link?: string
     start_working_hours: Date[]
     end_working_hours: Date[]
-    photo_ids?: number[]
+    photo_ids?: PhotoI[]
     approved?: boolean
-    vendor_id: number
+    vendor_id: string // the id of the vendor _id
 }
 
 export interface DesignersSI extends DesignersI, mongoose.Document{}

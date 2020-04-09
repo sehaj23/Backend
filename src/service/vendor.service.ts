@@ -30,9 +30,11 @@ export default class VendorService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await Vendor.find()
-            res.send(events)
+            const vendor = await Vendor.find()
+            res.send(vendor)
         } catch (e) {
+            logger.error(e.message)
+            console.log(e.message);
             res.status(403)
             res.send(e.message)
         }
@@ -66,6 +68,7 @@ export default class VendorService{
 
             res.send(vendorData)
         } catch (e) {
+            logger.error(e.message)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
