@@ -35,16 +35,16 @@ const upload = multer({
     })
   }).array('upload', 1);
 
-  app.post('/upload', function (request, response, next) {
-    upload(request, response, function (error) {
-      if (error) {
-        console.log(error);
-        return response.redirect("/error");
-      }
-      console.log('File uploaded successfully.');
-      response.redirect("/success");
-    });
+app.post('/upload', function (request, response, next) {
+  upload(request, response, function (error) {
+    if (error) {
+      console.log(error);
+      return response.redirect("/error");
+    }
+    console.log('File uploaded successfully.');
+    response.redirect("/success");
   });
+});
 
 dotenv.config()
 
