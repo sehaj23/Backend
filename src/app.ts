@@ -10,9 +10,10 @@ import * as multer from "multer"
 import * as multerS3 from "multer-s3"
 import NewVendor from "./models/newVendor.model"
 import logger from "./utils/logger"
+import * as cors from "cors"
 
 const app = express()
-
+app.use(cors())
 const spacesEndpoint = new aws.Endpoint('nyc3.digitaloceanspaces.com');
 const s3 = new aws.S3({
   //@ts-ignore
@@ -56,9 +57,19 @@ app.use(bobyParser.json())
 
 
 app.use("/api", router)
+app.get("/app/get-vendor", async (req: express.Request, res: express.Response) => {
+  try{
+    const nv = await NewVendor.find()
+    res.send(nv)
+  }catch(e){
+    logger.error(e.message)
+    res.status(403)
+    res.send({error: e.message})
+  }
+})
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.get('/', function (req, res) {
+app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
@@ -90,6 +101,7 @@ app.put("/update-vendor/:id", async (req: express.Request, res: express.Response
     res.send({error: e.message})
   }
 })
+
 
 // this is for 404
 app.use(function(req, res, next) {
