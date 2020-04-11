@@ -12,6 +12,7 @@ import NewVendor from "./models/newVendor.model";
 import logger from "./utils/logger";
 import * as cors from "cors";
 
+
 const app = express();
 app.use(cors());
 
