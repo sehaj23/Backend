@@ -40,7 +40,7 @@ app.post("/upload", function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
       console.log(error);
-      return response.send("/error");
+      return response.send(`/error/${error}`);
     }
     console.log("File uploaded successfully.");
     response.send("/success");
