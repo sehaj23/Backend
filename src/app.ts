@@ -43,7 +43,8 @@ app.post("/upload", function (request, response, next) {
       return response.send(`/error/${error}`);
     }
     console.log("File uploaded successfully.");
-    response.send(`/success/${response}`);
+    //@ts-ignore
+    response.send(`/success/${request.file.location}`);
   });
 });
 
