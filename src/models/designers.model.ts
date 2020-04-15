@@ -78,6 +78,6 @@ const DesignerSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Designer = mongoose.model<DesignersSI>("designer", DesignerSchema)
+const Designer = mongoose.model<DesignersSI>("designers", DesignerSchema)
 
 export default Designer

@@ -28,7 +28,7 @@ export default class VendorService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const vendor = await Vendor.find().populate('designers')
+            const vendor = await Vendor.find().populate('designers').exec()
             res.send(vendor)
         } catch (e) {
             logger.error(e.message)
