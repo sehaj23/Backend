@@ -4,7 +4,6 @@ import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
 import Designer from "../models/designers.model";
-import EventDesigner from "../models/eventDesigner.model";
 import Event from "../models/event.model";
 import EventI, { EventSI } from "../interfaces/event.interface";
 
