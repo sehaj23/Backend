@@ -33,7 +33,7 @@ export default class MakeupartistServiceC{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await MakeupArtist.find()
+            const events = await MakeupArtist.find().populate('events').exec()
             res.send(events)
         } catch (e) {
             res.status(403)
@@ -50,7 +50,7 @@ export default class MakeupartistServiceC{
             res.status(403)
             res.send(msg)
         }
-        const event = await MakeupArtist.findById(id)
+        const event = await MakeupArtist.findById(id).populate('events').exec()
         res.send(event)
         } catch (e) {
             res.status(403)
