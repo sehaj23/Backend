@@ -19,7 +19,7 @@ export default class DesignerService{
             const d: DesignersI = req.body
             const designer = await Designer.create(d)
             const _id = designer.vendor_id
-            await Vendor.findOneAndUpdate({_id}, {$push: {designer: designer._id}})
+            await Vendor.findOneAndUpdate({_id}, {$push: {designers: designer._id}})
             res.send(designer)
         } catch (e) {
             logger.error(`${e.message}`)
