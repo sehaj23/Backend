@@ -73,6 +73,12 @@ const DesignerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendor"
     },
+    events: {
+        type:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "events"
+        }]
+    }
 
 }, {
     timestamps: true

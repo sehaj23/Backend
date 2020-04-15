@@ -4,11 +4,11 @@ import verifyToken from "../middleware/jwt";
 import * as crypto from "crypto"
 import logger from "../utils/logger";
 import Designer from "../models/designers.model";
-import EventDesigner from "../models/eventDesigner.model";
 import Event from "../models/event.model";
 import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import Vendor from "../models/vendor.model";
+import mongoose from "../database";
 
 
 export default class DesignerService{
@@ -29,7 +29,7 @@ export default class DesignerService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const events = await Designer.find()
+            const events = await Designer.find().populate('events').exec()
             res.send(events)
         } catch (e) {
             res.status(403)
@@ -46,7 +46,7 @@ export default class DesignerService{
             res.status(403)
             res.send(msg)
         }
-        const designer = await Designer.findById(id)
+        const designer = await Designer.findById(id).populate('events').exec()
         res.send(designer)
         } catch (e) {
             res.status(403)
@@ -73,7 +73,10 @@ export default class DesignerService{
     static addDesignerEvent = async (req: Request, res: Response) => {
         try {
             const d: EventDesignerI = req.body
-            const designerEvent = await EventDesigner.create(d)
+            const eventid= mongoose.Types.ObjectId(d.event_id)
+            const designerId= mongoose.Types.ObjectId(d.designer_id)
+            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}})
+            await Designer.findOneAndUpdate({_id: designerId}, {$push: {events: eventid}})
             res.send(designerEvent)
         } catch (e) {
             logger.error(`${e.message}`)
@@ -84,15 +87,15 @@ export default class DesignerService{
 
     //get data of associated
     static getDesignerEvent = async (req: Request, res: Response) => {
-        try {
-            const designerEvent = await EventDesigner.find()
-            res.send(designerEvent)
-        } catch (e) {
-            console.log(e);
-            logger.error(`${e.message}`)
-            res.status(403)
-            res.send(e.message)
-        }
+        // try {
+        //     const designerEvent = await EventDesigner.find()
+        //     res.send(designerEvent)
+        // } catch (e) {
+        //     console.log(e);
+        //     logger.error(`${e.message}`)
+        //     res.status(403)
+        //     res.send(e.message)
+        // }
     }
 
 }
