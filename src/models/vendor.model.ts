@@ -27,7 +27,7 @@ const VendorSchema = new mongoose.Schema({
     designers: {
         type:[{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "designer"
+            ref: "designers"
         }]
     }
 }, {
