@@ -8,6 +8,7 @@ import EventDesigner from "../models/eventDesigner.model";
 import MakeupArtist from "../models/makeupArtist.model";
 import MakeupArtistSI, { MakeupArtistI } from "../interfaces/makeupArtist.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+import Vendor from "../models/vendor.model";
 
 const designerRouter = Router()
 
@@ -18,6 +19,8 @@ export default class MakeupartistServiceC{
             console.log(req.body);
             const ma: MakeupArtistI = req.body 
             const makeupartist = await MakeupArtist.create(ma)
+            const _id = makeupartist.vendor_id
+            await Vendor.findOneAndUpdate({_id}, {$push: {makeup_artists: makeupartist._id}})
             res.send(makeupartist)
         } catch (e) {
             logger.error(`${e.message}`)

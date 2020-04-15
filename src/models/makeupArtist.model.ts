@@ -70,12 +70,13 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "vendor"
+        ref: "vendor",
+        required: true
     },
 }, {
     timestamps: true
 })
 
-const MakeupArtist = mongoose.model<MakeupArtistSI>("makeup_artist", MakeupArtistSchema)
+const MakeupArtist = mongoose.model<MakeupArtistSI>("makeup_artists", MakeupArtistSchema)
 
 export default MakeupArtist

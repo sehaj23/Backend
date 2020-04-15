@@ -10,7 +10,6 @@ import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import Vendor from "../models/vendor.model";
 
-const designerRouter = Router()
 
 export default class DesignerService{
 
@@ -47,8 +46,8 @@ export default class DesignerService{
             res.status(403)
             res.send(msg)
         }
-        const event = await Designer.findById(id)
-        res.send(event)
+        const designer = await Designer.findById(id)
+        res.send(designer)
         } catch (e) {
             res.status(403)
             res.send(e.message)
