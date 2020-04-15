@@ -8,6 +8,7 @@ import EventDesigner from "../models/eventDesigner.model";
 import Event from "../models/event.model";
 import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+import Vendor from "../models/vendor.model";
 
 const designerRouter = Router()
 
@@ -17,6 +18,8 @@ export default class DesignerService{
         try {
             const d: DesignersI = req.body
             const designer = await Designer.create(d)
+            const _id = designer.vendor_id
+            await Vendor.findOneAndUpdate({_id}, {$push: {designer: designer._id}})
             res.send(designer)
         } catch (e) {
             logger.error(`${e.message}`)

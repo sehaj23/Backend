@@ -24,6 +24,12 @@ const VendorSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    designers: {
+        type:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "designer"
+        }]
+    }
 }, {
     timestamps: true
 })
