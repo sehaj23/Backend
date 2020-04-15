@@ -28,8 +28,16 @@ export default class VendorService{
 
     static get = async (req: Request, res: Response) => {
         try {
-            const vendor = await Vendor.find().populate('designers').exec()
-            res.send(vendor)
+            Vendor.find().populate('designers').exec((e, rec) => {
+                if(e){
+                    logger.error(e.message)
+                    console.log(e.message);
+                    res.status(403)
+                    res.send(e.message)
+                    return
+                }
+                res.send(rec)
+            })
         } catch (e) {
             logger.error(e.message)
             console.log(e.message);
@@ -47,7 +55,7 @@ export default class VendorService{
                 res.status(403)
                 res.send(msg)
             }
-            const event = await Vendor.findById(_id)
+            const event = await Vendor.findById(_id).populate('designers').exec()
             res.send(event)
         } catch (e) {
             logger.error(e.message)
