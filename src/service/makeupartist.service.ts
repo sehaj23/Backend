@@ -23,6 +23,7 @@ export default class MakeupartistServiceC{
             const makeupartist = await MakeupArtist.create(ma)
             const _id = makeupartist.vendor_id
             await Vendor.findOneAndUpdate({_id}, {$push: {makeup_artists: makeupartist._id}})
+            
             res.send(makeupartist)
         } catch (e) {
             logger.error(`${e.message}`)
