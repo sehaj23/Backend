@@ -31,7 +31,7 @@ const upload = multer({
     acl: "public-read",
     key: function (request, file, cb) {
       console.log(file);
-      cb(null, file.originalname);
+      cb(null, `images/${Date.now()}_${file.originalname}`);
     },
   }),
 }).array("upload", 1);
@@ -43,8 +43,11 @@ app.post("/upload", function (request, response, next) {
       return response.send(`/error/${error}`);
     }
     console.log("File uploaded successfully.");
-    //@ts-ignore
-    response.send(`/success/${request.file.location}`);
+    const location = request.files[0].location
+    response.send({
+      location,
+      success: true
+    });
   });
 });
 
