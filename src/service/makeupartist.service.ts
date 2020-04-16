@@ -51,7 +51,7 @@ export default class MakeupartistServiceC{
             res.status(403)
             res.send(msg)
         }
-        const event = await MakeupArtist.findById(id).populate('events').exec()
+        const event = await MakeupArtist.findById(id).populate('photo_ids').populate('events').exec()
         res.send(event)
         } catch (e) {
             res.status(403)
@@ -62,11 +62,9 @@ export default class MakeupartistServiceC{
     static put = async (req: Request, res: Response) => {
         try {
             const ma: MakeupArtistSI = req.body 
-
-            const [num, vendor] = await MakeupArtist.update(ma, { where: { id: ma.id! } }) // to return the updated data do - returning: true
-            ma.id = ma.id
-
-            res.send(ma)
+            const _id = req.params.id
+            const newMakeupArtist = await MakeupArtist.findByIdAndUpdate({_id},  ma, { new: true }) // to return the updated data do - returning: true
+            res.send(newMakeupArtist)
         } catch (e) {
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
