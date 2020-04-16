@@ -37,7 +37,7 @@ const EventSchema = new mongoose.Schema({
     photo_ids: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "photo"
+            ref: "photos"
         }]
     },
     designers: {

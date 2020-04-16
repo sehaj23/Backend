@@ -27,6 +27,6 @@ const PhotoSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Photo = mongoose.model<PhotoSI>("photo", PhotoSchema)
+const Photo = mongoose.model<PhotoSI>("photos", PhotoSchema)
 
 export default Photo
