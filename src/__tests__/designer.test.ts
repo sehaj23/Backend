@@ -1,7 +1,7 @@
 import app from "../app";
 import * as request from "supertest"
 import { VendorI } from "../interfaces/vendor.interface";
-import * as db from "../database"
+import mongoose, * as db from "../database"
 import { DesignersI } from "../interfaces/designer.interface";
 import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";

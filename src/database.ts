@@ -11,7 +11,7 @@ const password: string = process.env.DB_PASS ?? "postgres";
 
 export const connectt = () => {
   console.log("*************")
-    console.log(`process.env.DB_PASS: ${process.env.DB_PASS}`)
+    console.log(`process.env.DB_URI: ${process.env.DB_URI}`)
     console.log("*************")
   if (process.env.NODE_ENV === "test") {
     
