@@ -6,7 +6,7 @@ import * as db from "../database"
 beforeAll( async (done) => {
     await db.connectt()
     done()
-}, 5000)
+})
 
 describe('Vendor service test', () => {
     
@@ -25,7 +25,7 @@ describe('Vendor service test', () => {
         expect(res.body.password).not.toEqual(v.password)
         expect(res.status).toEqual(200)
         done()
-    }, 5000)
+    })
 
     test('Vendor Post Less data', async done => {
         const v = {
@@ -34,7 +34,7 @@ describe('Vendor service test', () => {
         const res = await request(app).post("/api/vendor").send(v)
         expect(res.status).toEqual(403)
         done()
-    }, 5000)
+    })
 
     test('Vendor Get Array', async done => {
         const v: VendorI = {
@@ -66,7 +66,7 @@ describe('Vendor service test', () => {
         expect(res2.body.contact_number).toEqual(v.contact_number)
         expect(res2.body.email).toEqual(v.email)
         done()
-    }, 5000)
+    })
 
     test('Vendor Put', async done => {
         const v: VendorI = {
@@ -87,11 +87,11 @@ describe('Vendor service test', () => {
         expect(res2.body.contact_number).toEqual(v2.contact_number)
         expect(res2.body.email).toEqual(v2.email)
         done()
-    }, 5000)
+    })
     
 })
 afterAll(async (done) => {
     await db.disconnect()
     
     done()
-}, 5000)
+})

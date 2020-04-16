@@ -9,7 +9,7 @@ import EventDesignerI from "../interfaces/eventDesigner.model";
 beforeAll( async (done) => {
     await db.connectt()
     done()
-}, 5000)
+})
 
 describe('Designer service test', () => {
     
@@ -53,8 +53,9 @@ describe('Designer service test', () => {
         }
         const res = await request(app).post("/api/vendor").send(v)
         vendorId = res.body._id
+        dataToSend.vendor_id = vendorId
         done()
-    }, 5000)
+    })
     
     test('Designers Post', async done => {
         const res = await request(app).post("/api/designer").send(dataToSend)
@@ -66,7 +67,7 @@ describe('Designer service test', () => {
         expect(res.body.start_price).toEqual(dataToSend.start_price)
         expect(res.status).toEqual(200)
         done()
-    }, 5000)
+    })
 
     test('Add Event to designer', async done => {
         
@@ -81,7 +82,7 @@ describe('Designer service test', () => {
         const res2 = await request(app).post("/api/designer/event").send(data)
         expect(res2.status).toEqual(200)
         done()
-    }, 5000)
+    })
 
     test('Check for Event in Designer', async done => {
         const res = await request(app).get(`/api/designer/${designerId}`)
@@ -92,7 +93,7 @@ describe('Designer service test', () => {
         expect(event.exhibition_house).toEqual(e.exhibition_house)
         expect(event.name).toEqual(e.name)
         done()
-    }, 5000)
+    })
 
     test('Update Designer PUT', async done => {
         dataToSend.brand_name = "The Brand"
@@ -103,7 +104,7 @@ describe('Designer service test', () => {
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
         done()
-    }, 5000)
+    })
 
     // test('Vendor Get Id', async done => {
     //     const v: VendorI = {
@@ -150,4 +151,4 @@ afterAll(async (done) => {
     await db.disconnect()
     
     done()
-}, 5000)
+})

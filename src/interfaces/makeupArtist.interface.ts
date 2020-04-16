@@ -8,7 +8,7 @@ export interface MakeupArtistI{
     email: string
     start_price: number
     end_price: number
-    services: ServiceI[]
+    services?: ServiceI[]
     speciality: string[]
     location: string
     insta_link?: string

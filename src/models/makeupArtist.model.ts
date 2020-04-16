@@ -44,11 +44,9 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     insta_link:{
         type: String,
-        required: true,
     },
     fb_link:{
         type: String,
-        required: true,
     },
     start_working_hours: {
         type: [Date],
@@ -71,6 +69,7 @@ const MakeupArtistSchema = new mongoose.Schema({
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendors",
+        required: true
     },
     events: {
         type:[{

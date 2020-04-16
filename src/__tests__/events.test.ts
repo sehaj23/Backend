@@ -10,7 +10,7 @@ import { PhotoI } from "../interfaces/photo.interface";
 beforeAll( async (done) => {
     await db.connectt()
     done()
-}, 5000)
+})
 
 describe('Events service test', () => {
     
@@ -53,6 +53,19 @@ describe('Events service test', () => {
         "url": "this is some url"
     }
 
+    beforeAll(async (done) => {
+        const res = await request(app).post("/api/event").send(e)
+        expect(res.body._id).toBeDefined()
+        designerId = res.body._id
+        expect(res.body.name).toEqual(e.name)
+        expect(res.body.start_date_time).toBeDefined()
+        expect(res.body.description).toEqual(e.description)
+        expect(res.body.approved).toEqual(true)
+        expect(res.status).toEqual(200)
+        eventId = res.body._id
+        done()
+    })
+
     
     test('Events Post', async done => {
         const res = await request(app).post("/api/event").send(e)
@@ -65,14 +78,14 @@ describe('Events service test', () => {
         expect(res.status).toEqual(200)
         eventId = res.body._id
         done()
-    }, 5000)
+    })
 
     test('Event Get', async done => {
         const res = await request(app).get(`/api/event/${eventId}`)
         expect(res.status).toEqual(200)
         expect(res.body._id).toBeDefined()
         done()
-    }, 5000)
+    })
 
     test('Event Put', async done => {
         e.description = "This is swag"
@@ -84,7 +97,7 @@ describe('Events service test', () => {
         expect(res.body.description).toEqual(e.description)
         expect(res.body.approved).toEqual(true)
         done()
-    }, 5000)
+    })
 
     test('Event Put Photo', async done => {
         const res = await request(app).put(`/api/event/${eventId}/photo`).send(photo)
@@ -106,7 +119,7 @@ describe('Events service test', () => {
         expect(gotPhoto.tags).toEqual(photo.tags)
 
         done()
-    }, 5000)
+    })
 
     test('Event Get Photos', async done => {
         const res = await request(app).get(`/api/event/${eventId}/photo`)
@@ -121,7 +134,7 @@ describe('Events service test', () => {
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
         expect(gotPhoto.tags).toEqual(photo.tags)
         done()
-    }, 5000)
+    })
 
 
 })
@@ -129,4 +142,4 @@ afterAll(async (done) => {
     await db.disconnect()
     
     done()
-}, 5000)
+})
