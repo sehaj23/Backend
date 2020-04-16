@@ -11,6 +11,9 @@ const password: string = process.env.DB_PASS ?? "postgres";
 
 export const connectt = () => {
   if (process.env.NODE_ENV === "test") {
+    console.log("*************")
+    console.log(`process.env.DB_PASS: ${process.env.DB_PASS}`)
+    console.log("*************")
     const mockgoose = new Mockgoose(mongoose)
     return mockgoose.prepareStorage().then(() => {
       mongoose.connect(
