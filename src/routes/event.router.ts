@@ -6,6 +6,6 @@ const eventRouter = Router()
 eventRouter.get("/", verifyToken, EventService.get)
 eventRouter.get("/:id", verifyToken, EventService.getId)
 eventRouter.post("/", verifyToken, EventService.post)
-eventRouter.put("/", verifyToken, EventService.put)
+eventRouter.put("/:id", verifyToken, EventService.put)
 
 export default eventRouter

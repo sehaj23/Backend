@@ -74,12 +74,11 @@ export default class EventService{
 
     static put = async (req: Request, res: Response) => {
         try {
-            const eventData: EventSI = req.body
-            const _id = req.body.id
-            const [num, event] = await Event.update(eventData, { where: { _id } }) // to return the updated data do - returning: true
-            eventData._id = _id
+            const eventData: EventI = req.body
+            const _id = req.params.id
+            const newEvent = await Event.findByIdAndUpdate({_id},  eventData, { new: true }) // to return the updated data do - returning: true
 
-            res.send(eventData)
+            res.send(newEvent)
         } catch (e) {
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })

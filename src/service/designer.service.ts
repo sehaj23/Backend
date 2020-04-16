@@ -56,13 +56,10 @@ export default class DesignerService{
 
     static put = async (req: Request, res: Response) => {
         try {
-            const designerData: DesignersSI = req.body
-            const _id = req.body._id
-
-            const [num, vendor] = await Designer.update(designerData, { where: { _id: _id } }) // to return the updated data do - returning: true
-            designerData._id = _id
-
-            res.send(designerData)
+            const designerData: DesignersI = req.body
+            const _id = req.params.id
+            const newVendor = await Designer.findByIdAndUpdate( {_id}, designerData, {new: true}) // to return the updated data do - returning: true
+            res.send(newVendor)
         } catch (e) {
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
@@ -84,18 +81,4 @@ export default class DesignerService{
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
-
-    //get data of associated
-    static getDesignerEvent = async (req: Request, res: Response) => {
-        // try {
-        //     const designerEvent = await EventDesigner.find()
-        //     res.send(designerEvent)
-        // } catch (e) {
-        //     console.log(e);
-        //     logger.error(`${e.message}`)
-        //     res.status(403)
-        //     res.send(e.message)
-        // }
-    }
-
 }

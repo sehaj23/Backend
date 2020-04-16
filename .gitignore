@@ -6,3 +6,4 @@ access.log
 .env
 combined.log
 error.log
+coverage

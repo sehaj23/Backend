@@ -6,5 +6,6 @@ const vendorRouter = Router()
 vendorRouter.post("/", verifyToken, VendorService.post)
 vendorRouter.get("/", verifyToken, VendorService.get)
 vendorRouter.get("/:id", verifyToken, VendorService.getId)
+vendorRouter.put("/:id", verifyToken, VendorService.put)
 
 export default vendorRouter

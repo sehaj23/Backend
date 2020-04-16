@@ -6,9 +6,11 @@
        "emitDecoratorMetadata":true,
        "experimentalDecorators":true,
        "outDir":"dist/",
-       "listFiles":false,
+       "listFiles":true,
        "noEmitHelpers":false,
-       "suppressImplicitAnyIndexErrors": false
+       "alwaysStrict": true,
+       "suppressImplicitAnyIndexErrors": false,
+       "noImplicitAny": false
     },
     "include":[ 
        "src/**/*"

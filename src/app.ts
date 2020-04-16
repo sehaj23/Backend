@@ -51,9 +51,11 @@ app.post("/upload", function (request, response, next) {
   });
 });
 
+
 dotenv.config();
 
 const accessLogStream = fs.createWriteStream("access.log", { flags: "a" });
+
 
 // setup the logger
 // app.use(morgan('combined', { stream: accessLogStream }))
@@ -116,6 +118,11 @@ app.put(
   }
 );
 
+
+app.get("/", (req, res) =>{
+  res.send("hello")
+})
+
 // this is for 404
 app.use(function (req, res, next) {
   var err = new Error("Not Found");
@@ -124,8 +131,4 @@ app.use(function (req, res, next) {
   res.send(err);
 });
 
-const PORT = 8082;
-
-app.listen(PORT, async () => {
-  console.log(`Server is running http://localhost:${PORT}`);
-});
+export default app

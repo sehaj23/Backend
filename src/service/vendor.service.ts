@@ -59,13 +59,13 @@ export default class VendorService{
 
     static put = async (req: Request, res: Response) => {
         try {
+            const vendorData: VendorI = req.body
 
-            const vendorData: VendorSI = req.body
-            const _id = vendorData.$isDefault
-            const [num, vendor] = await Vendor.update(vendorData, { where: { id: _id! } }) // to return the updated data do - returning: true
-            vendorData.id = _id
-
-            res.send(vendorData)
+            const _id = req.params.id
+            const newVendorData = await Vendor.findOneAndUpdate({_id}, vendorData, {
+                new: true
+            }) // to return the updated data do - returning: true
+            res.send(newVendorData)
         } catch (e) {
             logger.error(e.message)
             res.status(403)

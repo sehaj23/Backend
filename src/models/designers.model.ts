@@ -33,7 +33,6 @@ const DesignerSchema = new mongoose.Schema({
     },
     outfit_types: {
         type: [{type: String}],
-        required: true
     },
     speciality: {
         type: [{type: String}],
@@ -45,11 +44,9 @@ const DesignerSchema = new mongoose.Schema({
     },
     insta_link:{
         type: String,
-        required: true,
     },
     fb_link:{
         type: String,
-        required: true,
     },
     start_working_hours: {
         type: [Date],
