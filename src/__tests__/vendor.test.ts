@@ -2,7 +2,6 @@ import app from "../app";
 import * as request from "supertest"
 import { VendorI } from "../interfaces/vendor.interface";
 import * as db from "../database"
-jest.setTimeout(30000)
 beforeAll( async (done) => {
     await db.connectt()
     done()

@@ -7,15 +7,14 @@ import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { MakeupArtistI } from "../interfaces/makeupArtist.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
-jest.setTimeout(30000)
 beforeAll(async (done) => {
     await db.connectt();
     done();
 });
 
 describe("Makeup Artist service test", () => {
-    let vendorId;
-    let makeupArtistId;
+    let vendorId: string;
+    let makeupArtistId: string;
 
     const date = new Date();
     let dataToSend: MakeupArtistI;
