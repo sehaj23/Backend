@@ -2,15 +2,15 @@ image: node:10.15.0
 pipelines: 
   default: 
     - step: 
+        name: Testing
         script: 
           - npm ci
           - node dbtest.js
-    - step:
-        script:
           - npm run test 
         services: 
           - mongo
     - step:
+        name: deploying
         script:
           - curl http://deploy:Deploy12@3139.59.9.25:8081/job/admin-dashboard/build?token=buildadmin2
 
