@@ -5,9 +5,14 @@ pipelines:
         script: 
           - npm ci
           - node dbtest.js
+    - step:
+        script:
           - npm run test 
         services: 
-          - mongo 
+          - mongo
+    - step:
+        script:
+          - curl http://deploy:Deploy12@3139.59.9.25:8081/job/admin-dashboard/build?token=buildadmin2
 
 definitions: 
   services: 
