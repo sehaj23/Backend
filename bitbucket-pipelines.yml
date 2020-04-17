@@ -11,7 +11,7 @@ pipelines:
           - mongo
     - step:
         name: Deploying
-        deployment: admin-backend
+        deployment: Production
         script:
           - curl http://deploy:Deploy123@139.59.9.25:8081/job/admin-dashboard/build?token=buildadmin2
 
