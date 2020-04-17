@@ -1,0 +1,14 @@
+image: node:10.15.0
+pipelines: 
+  default: 
+    - step: 
+        script: 
+          - npm ci
+          - npm test 
+        services: 
+          - mongo 
+
+definitions: 
+  services: 
+    mongo: 
+      image: mongo
