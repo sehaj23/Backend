@@ -7,4 +7,3 @@ access.log
 combined.log
 error.log
 coverage
-src/env.ts
