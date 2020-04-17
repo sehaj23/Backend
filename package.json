@@ -7,7 +7,7 @@
     "start": "ts-node src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start:dev": "nodemon -x ts-node src/server.ts",
-    "test": "DB_NAME=zattire_test && NODE_ENV=test && jest --no-cache --forceExit --detectOpenHandles --maxWorkers=50%"
+    "test": "NODE_ENV=test && jest --no-cache --forceExit --detectOpenHandles --maxWorkers=50%"
   },
   "jest": {
     "testEnvironment": "node",

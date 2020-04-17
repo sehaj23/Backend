@@ -15,10 +15,6 @@ const user: string = process.env.DB_USER ?? "postgres";
 const password: string = process.env.DB_PASS ?? "postgres";
 
 export const connectt = () => {
-  console.log("*************")
-    console.log(`process.env.DB_URI: ${uri}`) 
-    console.log("*************")
-
     return mongoose.connect(
       uri,
       {
