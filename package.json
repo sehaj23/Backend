@@ -17,7 +17,7 @@
       "tsx",
       "ts"
     ],
-    "testTimeout": 10000,
+    "testTimeout": 30000,
     "collectCoverageFrom": [
       "**/service/*.{ts,js,jsx}",
       "!**/node_modules/**",
