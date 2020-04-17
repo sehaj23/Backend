@@ -6,6 +6,7 @@ import { DesignersI } from "../interfaces/designer.interface";
 import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { PhotoI } from "../interfaces/photo.interface";
+jest.setTimeout(30000)
 
 beforeAll( async (done) => {
     await db.connectt()

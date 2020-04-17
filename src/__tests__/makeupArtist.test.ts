@@ -7,7 +7,7 @@ import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { MakeupArtistI } from "../interfaces/makeupArtist.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
-
+jest.setTimeout(30000)
 beforeAll(async (done) => {
     await db.connectt();
     done();

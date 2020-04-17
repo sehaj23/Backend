@@ -5,6 +5,7 @@ import mongoose, * as db from "../database"
 import { DesignersI } from "../interfaces/designer.interface";
 import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+jest.setTimeout(30000)
 
 beforeAll( async (done) => {
     await db.connectt()
