@@ -4,6 +4,7 @@ pipelines:
     - step: 
         script: 
           - npm ci
+          - node dbtest.js
           - npm run test 
         services: 
           - mongo 
