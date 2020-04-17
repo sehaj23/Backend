@@ -15,6 +15,22 @@ export const connectt = () => {
   console.log("*************")
     console.log(`process.env.DB_URI: ${uri}`) 
     console.log("*************")
+
+    return mongoose.connect(
+      uri,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      },
+      (err: any) => {
+        if (err) {
+          console.log(err.message);
+        } else {
+          console.log("Successfully Connected!");
+        }
+      }
+    );
   if (process.env.NODE_ENV === "test") {
     
     const mockgoose = new Mockgoose(mongoose)
