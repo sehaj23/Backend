@@ -7,7 +7,7 @@
     "start": "ts-node src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start:dev": "nodemon -x ts-node src/server.ts",
-    "test": "NODE_ENV=test && jest --no-cache --forceExit --detectOpenHandles --maxWorkers=50% --setupFiles dotenv/config"
+    "test": "NODE_ENV=test && jest --no-cache --forceExit --detectOpenHandles --maxWorkers=50%"
   },
   "jest": {
     "testEnvironment": "node",
@@ -17,7 +17,7 @@
       "tsx",
       "ts"
     ],
-    "testTimeout": 30000,
+    "setupFilesAfterEnv": ["./jest.setup.js"] ,
     "collectCoverageFrom": [
       "**/service/*.{ts,js,jsx}",
       "!**/node_modules/**",
