@@ -6,7 +6,7 @@ import Env from "./env";
 dotenv.config();
 
 
-const uri: string = process.env.DB_URI ?? "mongodb://127.0.0.1:27017/zattireee";
+const uri: string = process.env.DB_URI ?? "mongodb://127.0.0.1:27017/zattireede";
 
 const user: string = process.env.DB_USER ?? "postgres";
 const password: string = process.env.DB_PASS ?? "postgres";
