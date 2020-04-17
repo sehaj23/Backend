@@ -10,9 +10,9 @@ pipelines:
         services: 
           - mongo
     - step:
-        name: deploying
+        name: Deploying
         script:
-          - curl http://deploy:Deploy12@3139.59.9.25:8081/job/admin-dashboard/build?token=buildadmin2
+          - curl http://deploy:Deploy123@139.59.9.25:8081/job/admin-dashboard/build?token=buildadmin2
 
 definitions: 
   services: 
