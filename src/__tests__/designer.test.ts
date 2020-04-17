@@ -149,6 +149,5 @@ describe('Designer service test', () => {
 })
 afterAll(async (done) => {
     await db.disconnect()
-    
     done()
 }, TIME)
