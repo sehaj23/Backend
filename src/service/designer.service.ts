@@ -21,7 +21,7 @@ export default class DesignerService extends BaseService{
             const d: EventDesignerI = req.body
             const eventid= mongoose.Types.ObjectId(d.event_id)
             const designerId= mongoose.Types.ObjectId(d.designer_id)
-            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}})
+            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}}, {new: true})
             await Designer.findOneAndUpdate({_id: designerId}, {$push: {events: eventid}})
             res.send(designerEvent)
         } catch (e) {
