@@ -7,6 +7,7 @@ import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { MakeupArtistI } from "../interfaces/makeupArtist.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
+import { PhotoI } from "../interfaces/photo.interface";
 beforeAll(async (done) => {
     await db.connectt();
     done();
@@ -105,6 +106,51 @@ describe("Makeup Artist service test", () => {
         expect(res.status).toEqual(200);
         done();
     });
+
+    // this is for the photos
+    const photo: PhotoI = {
+        "name": "My Pic",
+        "description": "Desc of pic",
+        "tags": ["Cool", "Blue"],
+        "url": "this is some url"
+    }
+
+    test('Designer PUT Photo', async done => {
+        const res = await request(app).put(`/api/makeupArtist/${makeupArtistId}/photo`).send(photo)
+        // this is same
+        expect(res.status).toEqual(200)
+        expect(res.body._id).toBeDefined()
+        expect(res.body.name).toEqual(dataToSend.name)
+        expect(res.body.description).toEqual(dataToSend.description)
+        expect(res.body.approved).toEqual(false)
+
+        // checking for new photos
+        expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
+        expect(res.body.photo_ids.length).toEqual(1)
+        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        expect(gotPhoto.description).toEqual(photo.description)
+        expect(gotPhoto.name).toEqual(photo.name)
+        expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
+        expect(gotPhoto.tags).toEqual(photo.tags)
+
+        done()
+    })
+
+    test('Event Get Photos', async done => {
+        const res = await request(app).get(`/api/makeupArtist/${makeupArtistId}/photo`)
+        expect(res.status).toEqual(200)
+        expect(res.body._id).toBeDefined()
+        expect(res.body._id).toEqual(makeupArtistId)
+        expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
+        expect(res.body.photo_ids.length).toEqual(1)
+        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        expect(gotPhoto.description).toEqual(photo.description)
+        expect(gotPhoto.name).toEqual(photo.name)
+        expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
+        expect(gotPhoto.tags).toEqual(photo.tags)
+        done()
+    })
+
 });
 afterAll(async (done) => {
     await db.disconnect();

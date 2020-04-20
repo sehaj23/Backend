@@ -9,6 +9,8 @@ import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import Vendor from "../models/vendor.model";
 import mongoose from "../database";
+import { PhotoI } from "../interfaces/photo.interface";
+import Photo from "../models/photo.model";
 
 
 export default class DesignerService{
@@ -79,6 +81,35 @@ export default class DesignerService{
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    static putPhoto = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            const _id = req.params.id
+            // saving photos 
+            const photo = await Photo.create(photoData)
+            // adding it to event
+            const newdesigner = await Designer.findByIdAndUpdate({_id},  {$push: { photo_ids: photo._id }}, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            res.send(newdesigner)
+        } catch (e) {
+            logger.error(`Designer Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+
+    static getPhoto = async (req: Request, res: Response) => {
+        try {
+            const _id = req.params.id
+            const designerPhotos = await Designer.findById(_id).select("photo_ids").populate("photo_ids").exec()
+            res.send(designerPhotos);
+        } catch (e) {
+            logger.error(`Designer Get Photo ${e.message}`)
+            res.status(403)
+            res.send(e.message)
         }
     }
 }

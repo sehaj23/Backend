@@ -121,7 +121,7 @@ describe('Events service test', () => {
         done()
     })
 
-    test('Event Get Photos', async done => {
+    test('Event Get Photos', async (done) => {
         const res = await request(app).get(`/api/event/${eventId}/photo`)
         expect(res.status).toEqual(200)
         expect(res.body._id).toBeDefined()

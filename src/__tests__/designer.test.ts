@@ -5,6 +5,7 @@ import mongoose, * as db from "../database"
 import { DesignersI } from "../interfaces/designer.interface";
 import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+import { PhotoI } from "../interfaces/photo.interface";
 const TIME = 30000
 beforeAll( async (done) => {
     await db.connectt()
@@ -106,45 +107,51 @@ describe('Designer service test', () => {
         done()
     }, TIME)
 
-    // test('Vendor Get Id', async done => {
-    //     const v: VendorI = {
-    //         name: "Preet",
-    //         password: "Preet123",
-    //         "contact_number": "123456789",
-    //         "email": "preetsc276@gmail.com"
-    //     }
-    //     const res = await request(app).post("/api/vendor").send(v)
-    //     expect(res.body._id).toBeDefined()
-        
-    //     const _id = res.body._id
 
-    //     const res2 = await request(app).get(`/api/vendor/${_id}`)
-    //     expect(res2.body.name).toEqual(v.name)
-    //     expect(res2.body.contact_number).toEqual(v.contact_number)
-    //     expect(res2.body.email).toEqual(v.email)
-    //     done()
-    // })
+    // this is for the photos
+    const photo: PhotoI = {
+        "name": "My Pic",
+        "description": "Desc of pic",
+        "tags": ["Cool", "Blue"],
+        "url": "this is some url"
+    }
 
-    // test('Vendor Put', async done => {
-    //     const v: VendorI = {
-    //         name: "Preet Ji",
-    //         password: "Preet123",
-    //         "contact_number": "123456789",
-    //         "email": "preetsc272@gmail.com"
-    //     }
-    //     const res = await request(app).post("/api/vendor").send(v)
-    //     expect(res.body._id).toBeDefined()
-        
-    //     const _id = res.body._id
-    //     const v2: VendorI = v
-    //     v2.name = "Preet YO"
+    test('Designer PUT Photo', async done => {
+        const res = await request(app).put(`/api/designer/${designerId}/photo`).send(photo)
+        // this is same
+        expect(res.status).toEqual(200)
+        expect(res.body._id).toBeDefined()
+        expect(res.body.brand_name).toEqual(dataToSend.brand_name)
+        expect(res.body.description).toEqual(dataToSend.description)
+        expect(res.body.approved).toEqual(false)
 
-    //     const res2 = await request(app).put(`/api/vendor/${_id}`).send(v2)
-    //     expect(res2.body.name).toEqual(v2.name)
-    //     expect(res2.body.contact_number).toEqual(v2.contact_number)
-    //     expect(res2.body.email).toEqual(v2.email)
-    //     done()
-    // })
+        // checking for new photos
+        expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
+        expect(res.body.photo_ids.length).toEqual(1)
+        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        expect(gotPhoto.description).toEqual(photo.description)
+        expect(gotPhoto.name).toEqual(photo.name)
+        expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
+        expect(gotPhoto.tags).toEqual(photo.tags)
+
+        done()
+    }, TIME)
+
+    test('Event Get Photos', async done => {
+        const res = await request(app).get(`/api/designer/${designerId}/photo`)
+        expect(res.status).toEqual(200)
+        expect(res.body._id).toBeDefined()
+        expect(res.body._id).toEqual(designerId)
+        expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
+        expect(res.body.photo_ids.length).toEqual(1)
+        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        expect(gotPhoto.description).toEqual(photo.description)
+        expect(gotPhoto.name).toEqual(photo.name)
+        expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
+        expect(gotPhoto.tags).toEqual(photo.tags)
+        done()
+    })
+    
     
 })
 afterAll(async (done) => {

@@ -11,6 +11,8 @@ import Vendor from "../models/vendor.model";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
 import mongoose from "../database";
 import Event from "../models/event.model";
+import { PhotoI } from "../interfaces/photo.interface";
+import Photo from "../models/photo.model";
 
 const designerRouter = Router()
 
@@ -97,6 +99,35 @@ export default class MakeupartistServiceC{
         //     res.status(403)
         //     res.send(e.message)
         // }
+    }
+
+    static putPhoto = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            const _id = req.params.id
+            // saving photos 
+            const photo = await Photo.create(photoData)
+            // adding it to event
+            const newMakeupArtist = await MakeupArtist.findByIdAndUpdate({_id},  {$push: { photo_ids: photo._id }}, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            res.send(newMakeupArtist)
+        } catch (e) {
+            logger.error(`MakeupArtist Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+
+    static getPhoto = async (req: Request, res: Response) => {
+        try {
+            const _id = req.params.id
+            const makeupArtistPhotos = await MakeupArtist.findById(_id).select("photo_ids").populate("photo_ids").exec()
+            res.send(makeupArtistPhotos);
+        } catch (e) {
+            logger.error(`MakeupArtist Get Photo ${e.message}`)
+            res.status(403)
+            res.send(e.message)
+        }
     }
 
 }
