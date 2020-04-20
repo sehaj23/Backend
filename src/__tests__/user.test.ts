@@ -8,7 +8,7 @@ beforeAll( async (done) => {
 })
 
 describe('User service test', () => {
-    
+  /*  
     test('User Post', async done => {
         const v: UserI = {
             name: "Preet",
@@ -23,7 +23,7 @@ describe('User service test', () => {
         expect(res.status).toEqual(200)
         done()
     })
-/*
+
     test('User Post Less data', async done => {
         const v = {
             name: "Preet",
