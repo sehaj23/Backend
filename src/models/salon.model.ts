@@ -31,24 +31,20 @@ const SalonSchema = new mongoose.Schema({
         type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "service"
-        }],
-        required: true
+        }]
     },
     speciality: {
-        type: [{type: String}],
-        required: true
+        type: [{type: String}]
     },
     location:{
         type: String,
         required: true,
     },
     insta_link:{
-        type: String,
-        required: true,
+        type: String
     },
     fb_link:{
-        type: String,
-        required: true,
+        type: String
     },
     start_working_hours: {
         type: [Date],
@@ -70,7 +66,8 @@ const SalonSchema = new mongoose.Schema({
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "vendor"
+        ref: "vendor",
+        required: true
     },
 }, {
     timestamps: true
