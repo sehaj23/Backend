@@ -23,7 +23,7 @@ describe('User service test', () => {
         expect(res.status).toEqual(200)
         done()
     })
-
+/*
     test('User Post Less data', async done => {
         const v = {
             name: "Preet",
@@ -81,6 +81,8 @@ describe('User service test', () => {
         expect(res2.body.email).toEqual(v2.email)
         done()
     })
+    
+    */
     
 })
 afterAll(async (done) => {
