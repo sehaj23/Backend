@@ -3,9 +3,11 @@ import verifyToken from "../middleware/jwt";
 import VendorService from "../service/vendor.service";
 
 const vendorRouter = Router()
-vendorRouter.post("/", verifyToken, VendorService.post)
-vendorRouter.get("/", verifyToken, VendorService.get)
-vendorRouter.get("/:id", verifyToken, VendorService.getId)
-vendorRouter.put("/:id", verifyToken, VendorService.put)
+const vs = new VendorService()
+
+vendorRouter.post("/", verifyToken, vs.post)
+vendorRouter.get("/", verifyToken, vs.get)
+vendorRouter.get("/:id", verifyToken, vs.getId)
+vendorRouter.put("/:id", verifyToken, vs.put)
 
 export default vendorRouter

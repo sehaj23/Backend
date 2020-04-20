@@ -137,7 +137,7 @@ describe('Designer service test', () => {
         done()
     }, TIME)
 
-    test('Event Get Photos', async done => {
+    test('Designer Get Photos', async done => {
         const res = await request(app).get(`/api/designer/${designerId}/photo`)
         expect(res.status).toEqual(200)
         expect(res.body._id).toBeDefined()

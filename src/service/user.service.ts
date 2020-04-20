@@ -1,0 +1,43 @@
+import { Router, Request, Response } from "express";
+import BaseService from "./base.service";
+import User from "../models/user.model";
+import { PhotoI } from "../interfaces/photo.interface";
+import Photo from "../models/photo.model";
+import logger from "../utils/logger";
+import CONFIG from "../config";
+
+export default class UserService extends BaseService{
+    constructor(){
+        super(User)
+    }
+
+    putPhoto = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            const _id = req.params.id
+            // saving photos 
+            const photo = await Photo.create(photoData)
+            // adding it to event
+            const newEvent = await this.model.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`${this.modelName} Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    
+    getPhoto = async (req: Request, res: Response) => {
+        try {
+            const _id = req.params.id
+            const eventPhotos = await this.model.findById(_id).select("photo").populate("photo").exec()
+            res.send(eventPhotos);
+        } catch (e) {
+            logger.error(`${this.modelName} Get Photo ${e.message}`)
+            res.status(403)
+            res.send(e.message)
+        }
+    }
+
+}

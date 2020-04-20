@@ -7,7 +7,6 @@ import verifyToken from "../middleware/jwt";
 import AdminI, { AdminSI } from "../interfaces/admin.interface";
 import logger from "../utils/logger";
 
-const adminRouter = Router()
 
 export default class AdminService{
 

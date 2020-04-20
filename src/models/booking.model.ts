@@ -1,6 +1,7 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType, Default, HasMany } from "sequelize-typescript";
 import mongoose from "../database";
 import { BookingSI } from "../interfaces/booking.interface";
+import { INTEGER } from "sequelize/types";
 
 
 
@@ -19,12 +20,44 @@ const BookingSchema = new mongoose.Schema({
         enum: ['MUA' , 'Salon' , 'Designer'],
         default: 'MUA'
     },
-    service_id: {
-        type:String
+    services: {
+        type: [{
+            service_id: {
+                type: String,
+                required: true
+            },
+            service_name: {
+                type: String,
+                required: true
+            },
+            service_real_price: {
+                type: Number,
+                required: true
+            },
+            service_discount: {
+                type: Number,
+            },
+            service_discount_code: {
+                type: String,
+            },
+            service_total_price: {
+                type: Number,
+                required: true
+            },
+            zattire_commission: {
+                type: Number,
+                required: true
+            },
+            vendor_commission: {
+                type: Number,
+                required: true
+            }
+        }],
+        required: true
     },
     status: {
         type: String,
-        enum: ['Requested' , 'Confirmed' , 'Vendor Cancelled' , 'Customer Cancelled' , 'Completed'],
+        enum: ['Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed'],
         default:'Requested'
     },
     price: {

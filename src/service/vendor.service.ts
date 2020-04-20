@@ -7,9 +7,15 @@ import Vendor from "../models/vendor.model";
 import MakeupArtist from "../models/makeupArtist.model";
 import Salon from "../models/salon.model";
 import { VendorI, VendorSI } from "../interfaces/vendor.interface";
+import BaseService from "./base.service";
 
-export default class VendorService{
-    static post = async (req: Request, res: Response) => {
+export default class VendorService extends BaseService{
+
+    constructor(){
+        super(Vendor)
+    }
+
+    post = async (req: Request, res: Response) => {
         try {
             const v: VendorI = req.body
 
@@ -26,50 +32,5 @@ export default class VendorService{
         }
     }
 
-    static get = async (req: Request, res: Response) => {
-        try {
-            const vendors = await Vendor.find().populate('designers').populate('makeup_artists').exec()
-            res.send(vendors)
-                
-        } catch (e) {
-            logger.error(e.message)
-            console.log(e.message);
-            res.status(403)
-            res.send(e.message)
-        }
-    }
-
-    static getId = async (req: Request, res: Response) => {
-        try {
-            const _id = req.params.id
-            if(!_id){
-                const msg = 'Id not found for vendor.'
-                logger.error(msg)
-                res.status(403)
-                res.send(msg)
-            }
-            const event = await Vendor.findById(_id).populate('designers').populate('makeup_artists').exec()
-            res.send(event)
-        } catch (e) {
-            logger.error(e.message)
-            res.status(403)
-            res.send(e.message)
-        }
-    }
-
-    static put = async (req: Request, res: Response) => {
-        try {
-            const vendorData: VendorI = req.body
-
-            const _id = req.params.id
-            const newVendorData = await Vendor.findOneAndUpdate({_id}, vendorData, {
-                new: true
-            }) // to return the updated data do - returning: true
-            res.send(newVendorData)
-        } catch (e) {
-            logger.error(e.message)
-            res.status(403)
-            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
-        }
-    }
+    
 }

@@ -3,13 +3,14 @@ import verifyToken from "../middleware/jwt";
 import DesignerService from "../service/designer.service";
 
 const designerRouter = Router()
-designerRouter.get("/", verifyToken, DesignerService.get)
-designerRouter.get("/:id", verifyToken, DesignerService.getId)
-designerRouter.post("/", verifyToken, DesignerService.post)
-designerRouter.put("/:id", verifyToken, DesignerService.put)
-designerRouter.post("/event", verifyToken, DesignerService.addDesignerEvent)
-designerRouter.put("/:id/photo", verifyToken, DesignerService.putPhoto)
-designerRouter.get("/:id/photo", verifyToken, DesignerService.getPhoto)
+const ds = new DesignerService()
+designerRouter.get("/", verifyToken, ds.get)
+designerRouter.get("/:id", verifyToken, ds.getId)
+designerRouter.post("/", verifyToken, ds.post)
+designerRouter.put("/:id", verifyToken, ds.put)
+designerRouter.post("/event", verifyToken, ds.addDesignerEvent)
+designerRouter.put("/:id/photo", verifyToken, ds.putPhoto)
+designerRouter.get("/:id/photo", verifyToken, ds.getPhoto)
 
 // designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
 

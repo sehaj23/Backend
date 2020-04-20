@@ -5,6 +5,7 @@ import eventRouter from "./event.router";
 import loginRouter from "./login.router";
 import vendorRouter from "./vendor.router";
 import makeupArtistRouter from "./makeupArtist.route";
+import userRouter from "./user.router";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/event", eventRouter);
 router.use("/login", loginRouter);
 router.use("/vendor", vendorRouter);
 router.use("/makeupArtist", makeupArtistRouter)
+router.use("/user", userRouter)
 
 export default router
