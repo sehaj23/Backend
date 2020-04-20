@@ -52,7 +52,7 @@ export default class BaseService{
         res.status(403)
         res.send(msg)
     }
-    const event = await this.model.findById(id).select("-password").populate("designers").populate("makeup_artists").populate("photo_ids").populate("designers").populate("makeup_artists").populate('photo_ids').populate('events').exec()
+    const event = await this.model.findById(id).select("-password").populate("designers").populate("makeup_artists").populate("photo_ids").populate('events').exec()
     res.send(event)
     } catch (e) {
         logger.error(`${this.modelName} Get ${e.message}`)
