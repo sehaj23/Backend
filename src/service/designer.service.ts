@@ -22,6 +22,11 @@ export default class DesignerService extends BaseService{
             const eventid= mongoose.Types.ObjectId(d.event_id)
             const designerId= mongoose.Types.ObjectId(d.designer_id)
             const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}}, {new: true})
+            if(designerEvent == null){
+                logger.error(`Not able to update event`)
+                res.status(403)
+                res.send({ message: `Not able to update event: eventid -  ${eventid}, event_id: ${d.event_id}` })
+            }
             const newDesigner = await Designer.findOneAndUpdate({_id: designerId}, {$push: {events: eventid}}, {new: true})
             res.send({newDesigner, designerEvent})
         } catch (e) {
