@@ -1,5 +1,7 @@
 import ServiceI from "./service.interface";
 import mongoose from "../database";
+import { EmployeeI } from "./employee.interface";
+
 
 export interface SalonI{
     name: string
@@ -9,6 +11,7 @@ export interface SalonI{
     start_price: number
     end_price: number
     services?: ServiceI[]
+    employees?: EmployeeI[]
     speciality: string[]
     location: string
     insta_link?: string
@@ -17,7 +20,7 @@ export interface SalonI{
     end_working_hours: Date[]
     photo_ids?: number[]
     approved?: boolean
-    vendor_id: number
+    vendor_id: string
 }
 
 export default interface SalonSI extends SalonI, mongoose.Document{}

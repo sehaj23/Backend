@@ -30,7 +30,13 @@ const SalonSchema = new mongoose.Schema({
     services: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "service"
+            ref: "services"
+        }]
+    },
+    employees: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "employees"
         }]
     },
     speciality: {

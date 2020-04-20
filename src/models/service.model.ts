@@ -11,9 +11,13 @@ const ServiceSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
+    },
+    photo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "services"
     }
 })
 
-const Service = mongoose.model<ServiceSI>("service", ServiceSchema)
+const Service = mongoose.model<ServiceSI>("services", ServiceSchema)
 
 export default Service
