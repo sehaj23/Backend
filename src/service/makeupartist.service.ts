@@ -18,6 +18,22 @@ export default class MakeupartistServiceC extends BaseService{
     constructor(){
         super(MakeupArtist)
     }
+
+    post = async (req: Request, res: Response) => {
+        try {
+            console.log(req.body);
+            const ma: MakeupArtistI = req.body 
+            const makeupartist = await MakeupArtist.create(ma)
+            const _id = makeupartist.vendor_id
+            await Vendor.findOneAndUpdate({_id}, {$push: {makeup_artists: makeupartist._id}})
+            
+            res.send(makeupartist)
+        } catch (e) {
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
     
 
     //associating designers to events
