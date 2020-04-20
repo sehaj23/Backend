@@ -16,6 +16,7 @@ router.use("/designer", designerRouter);
 router.use("/event", eventRouter);
 router.use("/login", loginRouter);
 router.use("/vendor", vendorRouter);
+
 router.use("/makeupArtist", makeupArtistRouter)
 router.use("/user", userRouter)
 router.use("/booking", bookingRouter)
