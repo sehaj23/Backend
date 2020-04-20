@@ -98,6 +98,7 @@ describe('Designer service test', () => {
 
     test('Update Designer PUT', async done => {
         dataToSend.brand_name = "The Brand"
+        expect(designerId).toBeDefined()
         const res = await request(app).put(`/api/designer/${designerId}`).send(dataToSend)
         expect(res.status).toEqual(200)
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
