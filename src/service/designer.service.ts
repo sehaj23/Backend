@@ -52,5 +52,25 @@ export default class DesignerService extends BaseService{
         }
     }
 
+    deleteDesignerEvent = async (req: Request, res: Response) => {
+        try {
+            const d: EventDesignerI = req.body
+            const eventid= mongoose.Types.ObjectId(d.event_id)
+            const designerId= mongoose.Types.ObjectId(d.designer_id)
+            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$pull: {designers: designerId}}, {new: true})
+            if(designerEvent == null){
+                logger.error(`Not able to update event`)
+                res.status(403)
+                res.send({ message: `Not able to update event: eventid -  ${eventid}, event_id: ${d.event_id}` })
+            }
+            const newDesigner = await Designer.findOneAndUpdate({_id: designerId}, {$pull: {events: eventid}}, {new: true})
+            res.send({newDesigner, designerEvent})
+        } catch (e) {
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
     
 }

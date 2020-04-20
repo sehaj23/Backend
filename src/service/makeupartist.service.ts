@@ -52,4 +52,20 @@ export default class MakeupartistServiceC extends BaseService{
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+
+    deleteMakeupArtistEvent = async (req: Request, res: Response) => {
+        try {
+            const data : EventMakeupArtistI = req.body
+
+            const eventId = mongoose.Types.ObjectId(data.event_id)
+            const makeupArtistId = mongoose.Types.ObjectId(data.makeup_artist_id)
+            const d = await Event.findOneAndUpdate({_id: eventId}, {$pull: {makeup_artists: makeupArtistId} })
+            await MakeupArtist.findOneAndUpdate({_id: makeupArtistId}, {$pull: {events: eventId}})
+            res.send(d)
+        } catch (e) {
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
 }
