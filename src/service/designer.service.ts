@@ -37,14 +37,17 @@ export default class DesignerService extends BaseService{
             const d: EventDesignerI = req.body
             const eventid= mongoose.Types.ObjectId(d.event_id)
             const designerId= mongoose.Types.ObjectId(d.designer_id)
-            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}}, {new: true})
+            const designerEventReq =  Event.findByIdAndUpdate(eventid, {$push: {designers: designerId}}, {new: true})
+            
+            const newDesignerReq = Designer.findByIdAndUpdate(designerId, {$push: {events: eventid}}, {new: true})
+            const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
             if(designerEvent == null){
                 logger.error(`Not able to update event`)
                 res.status(403)
                 res.send({ message: `Not able to update event: eventid -  ${eventid}, event_id: ${d.event_id}` })
+                return
             }
-            const newDesigner = await Designer.findOneAndUpdate({_id: designerId}, {$push: {events: eventid}}, {new: true})
-            res.send({newDesigner, designerEvent})
+            res.send(designerEvent)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
@@ -55,17 +58,27 @@ export default class DesignerService extends BaseService{
     deleteDesignerEvent = async (req: Request, res: Response) => {
         try {
             const d: EventDesignerI = req.body
-            const eventid= mongoose.Types.ObjectId(d.event_id)
-            const designerId= mongoose.Types.ObjectId(d.designer_id)
-            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$pull: {designers: designerId}}, {new: true})
-            if(designerEvent == null){
-                logger.error(`Not able to update event`)
-                res.status(403)
-                res.send({ message: `Not able to update event: eventid -  ${eventid}, event_id: ${d.event_id}` })
-            }
-            const newDesigner = await Designer.findOneAndUpdate({_id: designerId}, {$pull: {events: eventid}}, {new: true})
-            res.send({newDesigner, designerEvent})
+            const eventid= d.event_id
+            const designerId= d.designer_id
+            const designerEventReq =  Event.updateOne({ _id: eventid  }, { $pull: { "designers" : designerId}})
+            const newDesignerReq = Designer.updateOne({_id: designerId}, { $pull: { "events" : eventid}})
+            
+            const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
+            // console.log(designerEvent)
+            // console.log(newDesigner)
+            // if(designerEvent.nModified === 0 || newDesigner.nModified === 0){
+            //     logger.error(`IDs do not match`)
+            //     res.status(403)
+            //     res.send({ message: `IDs do not match` })
+            //     return
+            // }
+
+            res.status(204)
+            res.send(true)
         } catch (e) {
+            console.log("**************")
+            console.log(e.message)
+            console.log("**************")
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })

@@ -14,27 +14,6 @@ beforeAll( async (done) => {
 
 describe('Events service test', () => {
     
-    let vendorId
-    let designerId
-
-    const date = new Date()
-    const dataToSend: DesignersI = {
-        "brand_name": "zz",
-        "contact_number": "1234567890",
-        "description": "desc",
-        "designer_name": "Preet",
-        "email": "emailsaa@gmail.com",
-        "end_price": 20000,
-        "start_price": 10000,
-        "start_working_hours":[date, null, null, null],
-        "end_working_hours": [date, null, null, null],
-        "location": "Chicago",
-        "speciality": ["DM"],
-        "outfit_types": ["Cool otfits"],
-        "vendor_id": vendorId
-    }
-
-    const date1 = new Date()
     let eventId
     const e: EventI = {
         name: "The great event",
@@ -56,7 +35,6 @@ describe('Events service test', () => {
     beforeAll(async (done) => {
         const res = await request(app).post("/api/event").send(e)
         expect(res.body._id).toBeDefined()
-        designerId = res.body._id
         expect(res.body.name).toEqual(e.name)
         expect(res.body.start_date_time).toBeDefined()
         expect(res.body.description).toEqual(e.description)
@@ -70,7 +48,6 @@ describe('Events service test', () => {
     test('Events Post', async done => {
         const res = await request(app).post("/api/event").send(e)
         expect(res.body._id).toBeDefined()
-        designerId = res.body._id
         expect(res.body.name).toEqual(e.name)
         expect(res.body.start_date_time).toBeDefined()
         expect(res.body.description).toEqual(e.description)

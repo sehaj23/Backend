@@ -21,6 +21,8 @@ export const connectt = () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
+        poolSize: 10,
+        useFindAndModify: true
       },
       (err: any) => {
         if (err) {

@@ -12,6 +12,7 @@ import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
 import mongoose from "../database";
 import Event from "../models/event.model";
 import BaseService from "./base.service";
+import { EventSI } from "../interfaces/event.interface";
 
 export default class MakeupartistServiceC extends BaseService{
 
@@ -21,7 +22,6 @@ export default class MakeupartistServiceC extends BaseService{
 
     post = async (req: Request, res: Response) => {
         try {
-            console.log(req.body);
             const ma: MakeupArtistI = req.body 
             const makeupartist = await MakeupArtist.create(ma)
             const _id = makeupartist.vendor_id
@@ -43,9 +43,10 @@ export default class MakeupartistServiceC extends BaseService{
 
             const eventId = mongoose.Types.ObjectId(data.event_id)
             const makeupArtistId = mongoose.Types.ObjectId(data.makeup_artist_id)
-            const d = await Event.findOneAndUpdate({_id: eventId}, {$push: {makeup_artists: makeupArtistId} })
-            await MakeupArtist.findOneAndUpdate({_id: makeupArtistId}, {$push: {events: eventId}})
-            res.send(d)
+            const eventReq = Event.findByIdAndUpdate( eventId, {$push: {makeup_artists: makeupArtistId} })
+            const muaReq = MakeupArtist.findByIdAndUpdate(makeupArtistId, {$push: {events: eventId}})
+            const [e, mua] = await Promise.all([eventReq, muaReq])
+            res.send(e)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
@@ -59,9 +60,18 @@ export default class MakeupartistServiceC extends BaseService{
 
             const eventId = mongoose.Types.ObjectId(data.event_id)
             const makeupArtistId = mongoose.Types.ObjectId(data.makeup_artist_id)
-            const d = await Event.findOneAndUpdate({_id: eventId}, {$pull: {makeup_artists: makeupArtistId} })
-            await MakeupArtist.findOneAndUpdate({_id: makeupArtistId}, {$pull: {events: eventId}})
-            res.send(d)
+            const eventReq =  Event.updateOne({_id: eventId}, {$pull: {makeup_artists: makeupArtistId} })
+            const muaReq =  MakeupArtist.updateOne({_id: makeupArtistId}, {$pull: {events: eventId}})
+            const [e, mua] = await Promise.all([eventReq, muaReq]) 
+            
+            if(e.nModified === 0 ){
+                logger.error(`IDs do not match`)
+                res.status(403)
+                res.send({ message: `IDs do not match` })
+                return
+            }
+            res.status(204)
+            res.send(true)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
