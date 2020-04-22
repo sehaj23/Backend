@@ -37,7 +37,7 @@ export default class SalonService extends BaseService{
         try {
             const d: ServiceI = req.body
             const _id = req.params.id
-            if(!d.salon_id ){
+            if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
                 res.status(403)
                 res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
@@ -47,6 +47,29 @@ export default class SalonService extends BaseService{
             const service = await Service.create(d)
             const service_id = service._id
             const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id}, {service: {$push: service_id}}, {new: true})
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+
+    }
+    
+  deleteSalonService = async (req: Request, res: Response) => {
+        try {
+            const sid = req.params.sid
+            const _id = req.params.id
+          if(!_id || !sid){
+                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                return
+            }
+            const osid = mongoose.Schema.Types.ObjectId(sid)
+
+       
+            const newSalon = await Salon.findOneAndUpdate({_id, service {$in : [osid]}}, {service: {$pull: osid}}, {new: true})
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
