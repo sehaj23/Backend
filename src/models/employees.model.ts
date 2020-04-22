@@ -5,8 +5,10 @@ const EmployeeSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     services: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "services"
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "services"
+        }]
     },
     photo: {
         type: mongoose.Schema.Types.ObjectId,

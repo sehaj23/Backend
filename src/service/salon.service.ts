@@ -36,7 +36,7 @@ export default class SalonService extends BaseService{
     addSalonService = async (req: Request, res: Response) => {
         try {
             const d: ServiceI = req.body
-            const _id = req.params.id
+            const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
                 res.status(403)
@@ -47,7 +47,7 @@ export default class SalonService extends BaseService{
             const service = await Service.create(d)
             const service_id = mongoose.Types.ObjectId(service._id)
             //@ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id, services: {$nin: [service_id]}}, {services: {$push: service_id}}, {new: true})
+            const newSalon = await Salon.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true})
             if(newSalon === null){
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -78,7 +78,7 @@ export default class SalonService extends BaseService{
 
        
             // @ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({_id, services : {$in : [osid]}}, {services: {$pull: osid}}, {new: true})
+            const newSalon = await Salon.findOneAndUpdate({_id, services : {$in : [osid]}}, {$pull: {services : osid}}, {new: true})
             if(newSalon === null){
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
