@@ -14,7 +14,15 @@ const ServiceSchema = new mongoose.Schema({
     },
     photo: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "services"
+        ref: "photos"
+    },
+    salon_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "salons"
+    },
+    mua_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "makeup_artists"
     }
 })
 

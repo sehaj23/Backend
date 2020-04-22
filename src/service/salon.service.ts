@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
 import CONFIG from "../config";
 import logger from "../utils/logger";
-import Designer from "../models/designers.model";
 import Event from "../models/event.model";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import mongoose from "../database";
@@ -10,6 +9,8 @@ import { DesignersI } from "../interfaces/designer.interface";
 import Vendor from "../models/vendor.model";
 import Salon from "../models/salon.model";
 import { SalonI } from "../interfaces/salon.interface";
+import ServiceI from "../interfaces/service.interface";
+import Service from "../models/service.model";
 
 
 export default class SalonService extends BaseService{
@@ -32,21 +33,48 @@ export default class SalonService extends BaseService{
         }
     }
 
+    addSalonService = async (req: Request, res: Response) => {
+        try {
+            const d: ServiceI = req.body
+            const _id = req.params.id
+            if(!d.salon_id ){
+                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                return
+            }
 
-    //associating designers to events
-    addDesignerEvent = async (req: Request, res: Response) => {
+            const service = await Service.create(d)
+            const service_id = service._id
+            const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id}, {service: {$push: service_id}}, {new: true})
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+
+    }
+
+    //associating salons to events
+    addSalonEvent = async (req: Request, res: Response) => {
         try {
             const d: EventDesignerI = req.body
             const eventid= mongoose.Types.ObjectId(d.event_id)
             const designerId= mongoose.Types.ObjectId(d.designer_id)
-            const designerEvent = await Event.findOneAndUpdate({ _id: eventid  }, {$push: {designers: designerId}}, {new: true})
-            if(designerEvent == null){
+            const designerEventReq =  Event.findOneAndUpdate({_id: eventid, designers: { $nin: [designerId] } }, {$push: {designers: designerId}}, {new: true})
+            
+            const newSalonReq = Salon.findOneAndUpdate({_id: designerId, events: { $nin: [eventid] } }, {$push: {events: eventid}}, {new: true})
+            const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newSalonReq])
+            if(designerEvent === null || newDesigner === null){
                 logger.error(`Not able to update event`)
-                res.status(403)
+                res.status(400)
                 res.send({ message: `Not able to update event: eventid -  ${eventid}, event_id: ${d.event_id}` })
+                return
             }
-            const newDesigner = await Designer.findOneAndUpdate({_id: designerId}, {$push: {events: eventid}}, {new: true})
-            res.send({newDesigner, designerEvent})
+            console.log(designerEvent)
+            console.log(newDesigner)
+            res.send(designerEvent)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)

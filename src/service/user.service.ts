@@ -37,10 +37,10 @@ export default class UserService extends BaseService{
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
-            const newEvent = await this.model.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            const newEvent = await User.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {
-            logger.error(`${this.modelName} Put Photo ${e.message}`)
+            logger.error(`User Put Photo ${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
@@ -50,10 +50,10 @@ export default class UserService extends BaseService{
     getPhoto = async (req: Request, res: Response) => {
         try {
             const _id = req.params.id
-            const eventPhotos = await this.model.findById(_id).select("photo").populate("photo").exec()
+            const eventPhotos = await User.findById(_id).select("photo").populate("photo").exec()
             res.send(eventPhotos);
         } catch (e) {
-            logger.error(`${this.modelName} Get Photo ${e.message}`)
+            logger.error(`User Get Photo ${e.message}`)
             res.status(403)
             res.send(e.message)
         }
