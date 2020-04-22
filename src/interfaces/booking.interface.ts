@@ -20,9 +20,9 @@ export interface BookingServiceI{
 export interface BookingI{
     user_id: string
     provider_id: string // it can be anything MUA, Designer, Salon
-    services: [BookingServiceI]
+    services?: [BookingServiceI]
     provider_type: Provider
-    status: BookinStatus
+    status?: BookinStatus
     price: number
     payment_type: BookingPaymentType
     balance?: number
