@@ -5,7 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hb
 
 ###
 
-POST http://139.59.9.25:8080/api/admin
+POST http://139.59.9.25:8082/api/admin
 content-type: application/json
 
 {

@@ -11,7 +11,7 @@ export default class BookinkService extends BaseService{
         super(Booking)
     }
 
-    post = (req: Request, res: Response) => {
+    post = async (req: Request, res: Response) => {
         const d: BookingI = req.body
         if(!d.salon_id && !d.makeup_artist_id && !d.designer_id){
             const errMsg = `Atleast one provider is is reqired out of 3`
@@ -20,8 +20,19 @@ export default class BookinkService extends BaseService{
             res.send({message: errMsg})
             return
         }
-        return super.post(req, res)
-        
+        try {
+           
+            const e = req.body
+
+            const event = await Booking.create(e)
+
+            res.send(event)
+        } catch (e) {
+            logger.error(`Post ${e.message}`)
+            res.status(403)
+            res.send({ message: `${e.message}` })
+        }
+
     }
 
 }
