@@ -9,7 +9,7 @@ makeupArtistRouter.get("/:id", verifyToken, ma.getId)
 makeupArtistRouter.post("/", verifyToken, ma.post)
 makeupArtistRouter.put("/:id", verifyToken, ma.put)
 makeupArtistRouter.post("/event", verifyToken, ma.addMakeupArtistEvent)
-makeupArtistRouter.delete("/event", verifyToken, ma.deleteMakeupArtistEvent)
+makeupArtistRouter.post("/event/delete", verifyToken, ma.deleteMakeupArtistEvent)
 makeupArtistRouter.put("/:id/photo", verifyToken, ma.putPhoto)
 makeupArtistRouter.get("/:id/photo", verifyToken, ma.getPhoto)
 

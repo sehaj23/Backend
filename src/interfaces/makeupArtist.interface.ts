@@ -1,5 +1,6 @@
 import mongoose from "../database";
 import ServiceI from "./service.interface";
+import EventI from "./event.interface";
 
 export interface MakeupArtistI{
     name: string
@@ -9,6 +10,7 @@ export interface MakeupArtistI{
     start_price: number
     end_price: number
     services?: ServiceI[]
+    events?: EventI[]
     speciality: string[]
     location: string
     insta_link?: string
