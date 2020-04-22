@@ -21,6 +21,7 @@ export default class BookinkService extends BaseService{
             return
         }
         return super.post(req, res)
+        
     }
 
 }
