@@ -61,15 +61,15 @@ export default class SalonService extends BaseService{
             const sid = req.params.sid
             const _id = req.params.id
           if(!_id || !sid){
-                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                logger.error(`Salon Id is missing salon_id:  & mua_id: `)
                 res.status(403)
-                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                res.send({ message: `Salon Id is missing salon_id: ` })
                 return
             }
-            const osid = mongoose.Schema.Types.ObjectId(sid)
+            const osid = mongoose.Types.ObjectId(sid)
 
        
-            const newSalon = await Salon.findOneAndUpdate({_id, service {$in : [osid]}}, {service: {$pull: osid}}, {new: true})
+            const newSalon = await Salon.findOneAndUpdate({_id, service : {$in : [osid]}}, {service: {$pull: osid}}, {new: true})
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
