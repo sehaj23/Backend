@@ -11,6 +11,8 @@ import Salon from "../models/salon.model";
 import { SalonI } from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
 import Service from "../models/service.model";
+import { EmployeeI } from "../interfaces/employee.interface";
+import Employee from "../models/employees.model";
 
 
 export default class SalonService extends BaseService{
@@ -33,6 +35,40 @@ export default class SalonService extends BaseService{
         }
     }
 
+    addSalonEmployee = async (req: Request, res: Response) => {
+        try {
+            const d: EmployeeI = req.body
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            if(!_id){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+
+            //@ts-ignore
+            d.services = (d.services as string[]).map( (s: string, i: number) => mongoose.Types.ObjectId(s))
+
+            const emp = await Employee.create(d)
+            const empId = mongoose.Types.ObjectId(emp._id)
+            //@ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, employees: {$nin: [empId]}}, { $push : {employees  : empId}}, {new: true}).populate("employees").exec()
+            if(newSalon === null){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
     addSalonService = async (req: Request, res: Response) => {
         try {
             const d: ServiceI = req.body
@@ -47,7 +83,7 @@ export default class SalonService extends BaseService{
             const service = await Service.create(d)
             const service_id = mongoose.Types.ObjectId(service._id)
             //@ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true})
+            const newSalon = await Salon.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
             if(newSalon === null){
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -55,13 +91,13 @@ export default class SalonService extends BaseService{
                 res.send({ message: errMsg })
                 return
             }
+            console.log(newSalon)
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
-
     }
     
   deleteSalonService = async (req: Request, res: Response) => {
