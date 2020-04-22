@@ -48,7 +48,7 @@ export default class SalonService extends BaseService{
             const service_id = service._id
             const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id, services: {$nin: [service_id]}}, {services: {$push: service_id}}, {new: true})
             if(newSalon === null){
-                const errMsg = `no data with this _id and service was found`
+                const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
@@ -78,6 +78,13 @@ export default class SalonService extends BaseService{
        
             // @ts-ignore
             const newSalon = await Salon.findOneAndUpdate({_id, services : {$in : [osid]}}, {services: {$pull: osid}}, {new: true})
+            if(newSalon === null){
+                const errMsg = `Delete Service: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
