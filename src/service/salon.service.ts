@@ -45,7 +45,8 @@ export default class SalonService extends BaseService{
             }
 
             const service = await Service.create(d)
-            const service_id = service._id
+            const service_id = mongoose.Types.ObjectId(service._id)
+            //@ts-ignore
             const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id, services: {$nin: [service_id]}}, {services: {$push: service_id}}, {new: true})
             if(newSalon === null){
                 const errMsg = `Add Services: no data with this _id and service was found`
