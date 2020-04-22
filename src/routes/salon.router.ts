@@ -12,6 +12,7 @@ salonRouter.post("/event", verifyToken, ss.addSalonEvent)
 salonRouter.put("/:id/service", verifyToken, ss.addSalonService)
 salonRouter.put("/:id/service/delete/:sid", verifyToken, ss.deleteSalonService)
 salonRouter.put("/:id/employee", verifyToken, ss.addSalonEmployee)
+salonRouter.put("/:id/employee/delete/:eid", verifyToken, ss.deleteSalonEmployee)
 salonRouter.put("/:id/photo", verifyToken, ss.putPhoto)
 salonRouter.get("/:id/photo", verifyToken, ss.getPhoto)
 
