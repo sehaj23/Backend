@@ -4,7 +4,7 @@ import mongoose from "../database";
 export interface EmployeeI{
     name: string
     phone: string
-    services: ServiceI[]
+    services: ServiceI[] | string[] // - from frontend just send services ids
     photo?: string
 }
 
