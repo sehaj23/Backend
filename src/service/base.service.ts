@@ -34,7 +34,7 @@ export default class BaseService{
         try {
             // let {limit, offset} = req.query;
             // const this.models = await this.model.findAndCountAll({offset, limit})
-            const events = await this.model.find().select("-password").populate("users").populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
+            const events = await this.model.find().select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
             res.send(events);
         } catch (e) {
             logger.error(`${this.modelName} Get ${e.message}`)
@@ -45,15 +45,16 @@ export default class BaseService{
 
     getId =  async (req: Request, res: Response) => {
         try {
-        const id = req.params.id
-        if(!id){
-        const msg = 'Id not found for vendor.'
-        logger.error(msg)
-        res.status(403)
-        res.send(msg)
-    }
-    const event = await this.model.findById(id).select("-password").populate("users").populate("services").populate('events').populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
-    res.send(event)
+            const id = req.params.id
+            if(!id){
+            const msg = 'Id not found for vendor.'
+            logger.error(msg)
+            res.status(403)
+            res.send(msg)
+        }
+        const event = await this.model.findById(id).select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
+        console.log(event)
+        res.send(event)
     } catch (e) {
         logger.error(`${this.modelName} Get ${e.message}`)
         res.status(403)

@@ -31,7 +31,7 @@ const MakeupArtistSchema = new mongoose.Schema({
     services: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "service"
+            ref: "services"
         }],
     },
     speciality: {

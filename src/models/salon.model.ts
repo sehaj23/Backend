@@ -80,6 +80,6 @@ const SalonSchema = new mongoose.Schema({
 })
 
 
-const Salon = mongoose.model<SalonSI>("salon", SalonSchema)
+const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 
 export default Salon
