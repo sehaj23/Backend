@@ -46,7 +46,14 @@ export default class SalonService extends BaseService{
 
             const service = await Service.create(d)
             const service_id = service._id
-            const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id}, {service: {$push: service_id}}, {new: true})
+            const newSalon = await Salon.findOneAndUpdate({_id: d.salon_id, services: {$nin: [service_id]}}, {services: {$push: service_id}}, {new: true})
+            if(newSalon === null){
+                const errMsg = `no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
@@ -69,7 +76,8 @@ export default class SalonService extends BaseService{
             const osid = mongoose.Types.ObjectId(sid)
 
        
-            const newSalon = await Salon.findOneAndUpdate({_id, service : {$in : [osid]}}, {service: {$pull: osid}}, {new: true})
+            // @ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, services : {$in : [osid]}}, {services: {$pull: osid}}, {new: true})
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
