@@ -8,17 +8,20 @@ import { INTEGER } from "sequelize/types";
 const BookingSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'user',
+        ref: 'users',
         required: true
     },
-    provider_id: {
-        type: String,
-        required:true
+    makeup_artist_id: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'makeup_artists',
     },
-    provider_type: {
-        type: String,
-        enum: ['MUA' , 'Salon' , 'Designer'],
-        default: 'MUA'
+    designer_id:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'designers',
+    },
+    salon_id: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'salons',
     },
     services: {
         type: [{

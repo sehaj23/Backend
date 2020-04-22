@@ -19,9 +19,10 @@ export interface BookingServiceI{
 
 export interface BookingI{
     user_id: string
-    provider_id: string // it can be anything MUA, Designer, Salon
+    makeup_artist_id?: string // it can be anything MUA, Designer, Salon
+    designer_id?: string // it can be anything MUA, Designer, Salon
+    salon_id?: string // it can be anything MUA, Designer, Salon
     services?: [BookingServiceI]
-    provider_type: Provider
     status?: BookinStatus
     price: number
     payment_type: BookingPaymentType
