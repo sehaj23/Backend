@@ -8,6 +8,7 @@ import makeupArtistRouter from "./makeupArtist.route";
 import userRouter from "./user.router";
 import bookingRouter from "./booking.router"
 import salonRouter from "./salon.router";
+import offerRouter from "./offer.router";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/makeupArtist", makeupArtistRouter)
 router.use("/user", userRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
+router.use("/offer", offerRouter)
 
 export default router
