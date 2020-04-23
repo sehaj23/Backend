@@ -75,6 +75,15 @@ const SalonSchema = new mongoose.Schema({
         ref: "vendor",
         required: true
     },
+    commision_percentage: {
+        type: Number
+    },
+    commision_cap:{
+        type: Number
+    },
+    commision_fixed_price:{
+        type: Number
+    }
 }, {
     timestamps: true
 })

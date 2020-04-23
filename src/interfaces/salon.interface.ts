@@ -21,6 +21,9 @@ export interface SalonI{
     photo_ids?: number[]
     approved?: boolean
     vendor_id: string
+    commision_percentage?: number,
+    commision_cap?: number
+    commision_fixed_price?: number
 }
 
 export default interface SalonSI extends SalonI, mongoose.Document{}

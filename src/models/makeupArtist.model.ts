@@ -76,6 +76,15 @@ const MakeupArtistSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "events"
         }]
+    },
+    commision_percentage: {
+        type: Number
+    },
+    commision_cap:{
+        type: Number
+    },
+    commision_fixed_price:{
+        type: Number
     }
 }, {
     timestamps: true

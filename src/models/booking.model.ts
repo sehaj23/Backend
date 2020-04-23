@@ -26,7 +26,7 @@ const BookingSchema = new mongoose.Schema({
     services: {
         type: [{
             service_id: {
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
                 required: true
             },
             service_name: {
