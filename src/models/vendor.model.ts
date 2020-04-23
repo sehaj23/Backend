@@ -35,6 +35,12 @@ const VendorSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "makeup_artists"
         }]
+    },
+    salons: {
+        type:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "salons"
+        }]
     }
 }, {
     timestamps: true

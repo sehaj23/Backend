@@ -34,7 +34,7 @@ export default class BaseService{
         try {
             // let {limit, offset} = req.query;
             // const this.models = await this.model.findAndCountAll({offset, limit})
-            const events = await this.model.find().select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
+            const events = await this.model.find().select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
             res.send(events);
         } catch (e) {
             logger.error(`${this.modelName} Get ${e.message}`)
@@ -52,7 +52,7 @@ export default class BaseService{
             res.status(403)
             res.send(msg)
         }
-        const event = await this.model.findById(id).select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("designers").populate("makeup_artists").populate("photo_ids").populate("salons").exec()
+        const event = await this.model.findById(id).select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
         console.log(event)
         res.send(event)
     } catch (e) {
