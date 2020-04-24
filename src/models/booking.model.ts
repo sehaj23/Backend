@@ -29,6 +29,9 @@ const BookingSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 required: true
             },
+            employee_id:{
+                type: mongoose.Schema.Types.ObjectId,
+            },
             service_name: {
                 type: String,
                 required: true
