@@ -135,9 +135,7 @@ export default class SalonService extends BaseService{
                 return
             }
 
-            //@ts-ignore
-            d.services = (d.services as string[]).map( (s: string, i: number) => mongoose.Types.ObjectId(s))
-
+            
             const emp = await Employee.findByIdAndDelete(eid)
             //@ts-ignore
             const newSalon = await Salon.findOneAndUpdate({_id, employees: {$in: [eid]}}, { $pull : {employees  : eid}}, {new: true}).populate("employees").exec()
