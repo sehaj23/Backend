@@ -15,6 +15,8 @@ salonRouter.put("/:id/employee", verifyToken, ss.addSalonEmployee)
 salonRouter.put("/:id/employee/delete/:eid", verifyToken, ss.deleteSalonEmployee)
 salonRouter.put("/:id/photo", verifyToken, ss.putPhoto)
 salonRouter.get("/:id/photo", verifyToken, ss.getPhoto)
+salonRouter.get("/:id/offer", verifyToken, ss.getOffer)
+salonRouter.get("/:id/service", verifyToken, ss.getService)
 
 // designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
 

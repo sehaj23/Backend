@@ -13,6 +13,7 @@ import ServiceI from "../interfaces/service.interface";
 import Service from "../models/service.model";
 import { EmployeeI } from "../interfaces/employee.interface";
 import Employee from "../models/employees.model";
+import Offer from "../models/offer.model";
 
 
 export default class SalonService extends BaseService{
@@ -32,6 +33,59 @@ export default class SalonService extends BaseService{
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    getOffer = async (req: Request, res: Response) => {
+        try{
+            const id = req.params.id
+            if(!id){
+                const errMsg = `id is missing from the params`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            const offers = await Offer.find({salon_id: id})
+            if(offers === null || offers.length === 0){
+                const errMsg = `no offers found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            res.send(offers)
+        }catch(e){
+            logger.error(`Booking Offer ${e.message}`)
+            res.status(403)
+            res.send({ message: `${e.message}` })
+        }
+    }
+
+
+    getService = async (req: Request, res: Response) => {
+        try{
+            const id = req.params.id
+            if(!id){
+                const errMsg = `id is missing from the params`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            const services = await Service.find({salon_id: id})
+            if(services === null || services.length === 0){
+                const errMsg = `no service found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            res.send(services)
+        }catch(e){
+            logger.error(`Booking service ${e.message}`)
+            res.status(403)
+            res.send({ message: `${e.message}` })
         }
     }
 

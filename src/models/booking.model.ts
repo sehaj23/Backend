@@ -54,6 +54,10 @@ const BookingSchema = new mongoose.Schema({
             vendor_commission: {
                 type: Number,
                 required: true
+            },
+            service_time: {
+                type: Date,
+                required: true
             }
         }],
         required: true

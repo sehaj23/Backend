@@ -15,14 +15,15 @@ export interface BookingServiceI{
     service_total_price: number,
     zattire_commission: number,
     vendor_commission: number,
+    service_time: Date
 }
 
 export interface BookingI{
     user_id: string
-    makeup_artist_id?: string // it can be anything MUA, Designer, Salon
-    designer_id?: string // it can be anything MUA, Designer, Salon
-    salon_id?: string // it can be anything MUA, Designer, Salon
-    services?: [BookingServiceI]
+    makeup_artist_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
+    designer_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
+    salon_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
+    services?: BookingServiceI[]
     status?: BookinStatus
     price: number
     payment_type: BookingPaymentType

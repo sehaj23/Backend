@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jwt_1 = require("../middleware/jwt");
+const salon_service_1 = require("../service/salon.service");
+const salonRouter = express_1.Router();
+const ss = new salon_service_1.default();
+salonRouter.get("/", jwt_1.default, ss.get);
+salonRouter.get("/:id", jwt_1.default, ss.getId);
+salonRouter.post("/", jwt_1.default, ss.post);
+salonRouter.put("/:id", jwt_1.default, ss.put);
+salonRouter.post("/event", jwt_1.default, ss.addSalonEvent);
+salonRouter.put("/:id/service", jwt_1.default, ss.addSalonService);
+salonRouter.put("/:id/service/delete/:sid", jwt_1.default, ss.deleteSalonService);
+salonRouter.put("/:id/employee", jwt_1.default, ss.addSalonEmployee);
+salonRouter.put("/:id/employee/delete/:eid", jwt_1.default, ss.deleteSalonEmployee);
+salonRouter.put("/:id/photo", jwt_1.default, ss.putPhoto);
+salonRouter.get("/:id/photo", jwt_1.default, ss.getPhoto);
+// designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
+exports.default = salonRouter;

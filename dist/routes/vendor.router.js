@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jwt_1 = require("../middleware/jwt");
+const vendor_service_1 = require("../service/vendor.service");
+const vendorRouter = express_1.Router();
+const vs = new vendor_service_1.default();
+vendorRouter.post("/", jwt_1.default, vs.post);
+vendorRouter.get("/", jwt_1.default, vs.get);
+vendorRouter.get("/:id", jwt_1.default, vs.getId);
+vendorRouter.put("/:id", jwt_1.default, vs.put);
+exports.default = vendorRouter;

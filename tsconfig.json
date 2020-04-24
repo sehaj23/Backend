@@ -10,7 +10,8 @@
        "noEmitHelpers":false,
        "alwaysStrict": true,
        "suppressImplicitAnyIndexErrors": false,
-       "noImplicitAny": false
+       "noImplicitAny": false,
+       "diagnostics": true
     },
     "include":[ 
        "src/**/*"

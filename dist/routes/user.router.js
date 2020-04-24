@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jwt_1 = require("../middleware/jwt");
+const user_service_1 = require("../service/user.service");
+const userRouter = express_1.Router();
+const us = new user_service_1.default();
+userRouter.post("/", jwt_1.default, us.post);
+userRouter.get("/", jwt_1.default, us.get);
+userRouter.get("/:id", jwt_1.default, us.getId);
+userRouter.put("/:id", jwt_1.default, us.put);
+userRouter.put("/:id/photo", jwt_1.default, us.putPhoto);
+userRouter.get("/:id/photo", jwt_1.default, us.getPhoto);
+exports.default = userRouter;
