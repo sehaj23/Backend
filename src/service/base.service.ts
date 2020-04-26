@@ -92,6 +92,7 @@ export default class BaseService{
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
+            //@ts-ignore
             const newEvent = await this.model.findByIdAndUpdate({_id},  {$push: { photo_ids: photo._id }}, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {

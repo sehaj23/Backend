@@ -16,5 +16,7 @@ salonRouter.put("/:id/employee", jwt_1.default, ss.addSalonEmployee);
 salonRouter.put("/:id/employee/delete/:eid", jwt_1.default, ss.deleteSalonEmployee);
 salonRouter.put("/:id/photo", jwt_1.default, ss.putPhoto);
 salonRouter.get("/:id/photo", jwt_1.default, ss.getPhoto);
+salonRouter.get("/:id/offer", jwt_1.default, ss.getOffer);
+salonRouter.get("/:id/service", jwt_1.default, ss.getService);
 // designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
 exports.default = salonRouter;

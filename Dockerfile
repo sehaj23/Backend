@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:10.20.1-alpine3.11
 # Env
 ENV NODE_ENV test
 
@@ -12,7 +12,7 @@ RUN npm run vcheck
 # Copy all other source code to work directory
 COPY . .
 # TypeScript
-# RUN npm run build
+RUN npm run build
 EXPOSE 8082
 
 # Start

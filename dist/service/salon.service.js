@@ -18,6 +18,7 @@ const vendor_model_1 = require("../models/vendor.model");
 const salon_model_1 = require("../models/salon.model");
 const service_model_1 = require("../models/service.model");
 const employees_model_1 = require("../models/employees.model");
+const offer_model_1 = require("../models/offer.model");
 class SalonService extends base_service_1.default {
     constructor() {
         super(salon_model_1.default);
@@ -33,6 +34,58 @@ class SalonService extends base_service_1.default {
                 logger_1.default.error(`${e.message}`);
                 res.status(403);
                 res.send({ message: `${config_1.default.RES_ERROR} ${e.message}` });
+            }
+        });
+        this.getOffer = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                if (!id) {
+                    const errMsg = `id is missing from the params`;
+                    logger_1.default.error(errMsg);
+                    res.status(400);
+                    res.send({ message: errMsg });
+                    return;
+                }
+                const offers = yield offer_model_1.default.find({ salon_id: id });
+                if (offers === null || offers.length === 0) {
+                    const errMsg = `no offers found`;
+                    logger_1.default.error(errMsg);
+                    res.status(400);
+                    res.send({ message: errMsg });
+                    return;
+                }
+                res.send(offers);
+            }
+            catch (e) {
+                logger_1.default.error(`Booking Offer ${e.message}`);
+                res.status(403);
+                res.send({ message: `${e.message}` });
+            }
+        });
+        this.getService = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                if (!id) {
+                    const errMsg = `id is missing from the params`;
+                    logger_1.default.error(errMsg);
+                    res.status(400);
+                    res.send({ message: errMsg });
+                    return;
+                }
+                const services = yield service_model_1.default.find({ salon_id: id });
+                if (services === null || services.length === 0) {
+                    const errMsg = `no service found`;
+                    logger_1.default.error(errMsg);
+                    res.status(400);
+                    res.send({ message: errMsg });
+                    return;
+                }
+                res.send(services);
+            }
+            catch (e) {
+                logger_1.default.error(`Booking service ${e.message}`);
+                res.status(403);
+                res.send({ message: `${e.message}` });
             }
         });
         this.addSalonEmployee = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -78,8 +131,6 @@ class SalonService extends base_service_1.default {
                     res.send({ message: errMsg });
                     return;
                 }
-                //@ts-ignore
-                d.services = d.services.map((s, i) => database_1.default.Types.ObjectId(s));
                 const emp = yield employees_model_1.default.findByIdAndDelete(eid);
                 //@ts-ignore
                 const newSalon = yield salon_model_1.default.findOneAndUpdate({ _id, employees: { $in: [eid] } }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec();

@@ -49,7 +49,7 @@ class BaseService {
                     res.send(msg);
                     return;
                 }
-                const event = yield this.model.findById(id).select("-password").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec();
+                const event = yield this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec();
                 if (event === null) {
                     const msg = `${this.modelName} no data found with this id `;
                     logger_1.default.error(msg);

@@ -6,3 +6,4 @@ access.log
 combined.log
 error.log
 coverage
+dist

@@ -25,6 +25,9 @@ const BookingSchema = new database_1.default.Schema({
                     type: database_1.default.Schema.Types.ObjectId,
                     required: true
                 },
+                employee_id: {
+                    type: database_1.default.Schema.Types.ObjectId,
+                },
                 service_name: {
                     type: String,
                     required: true

@@ -1,18 +1,17 @@
 import { Router, Request, Response } from "express";
 import CONFIG from "../config";
-import verifyToken from "../middleware/jwt";
-import * as crypto from "crypto"
 import logger from "../utils/logger";
-import Designer from "../models/designers.model";
 import MakeupArtist from "../models/makeupArtist.model";
-import MakeupArtistSI, { MakeupArtistI } from "../interfaces/makeupArtist.interface";
-import EventDesignerI from "../interfaces/eventDesigner.model";
-import Vendor from "../models/vendor.model";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
 import mongoose from "../database";
 import Event from "../models/event.model";
 import BaseService from "./base.service";
-import { EventSI } from "../interfaces/event.interface";
+import { EmployeeI } from "../interfaces/employee.interface";
+import Employee from "../models/employees.model";
+import { MakeupArtistI } from "../interfaces/makeupArtist.interface";
+import Vendor from "../models/vendor.model";
+import Service from "../models/service.model";
+import ServiceI from "../interfaces/service.interface";
 
 export default class MakeupartistServiceC extends BaseService{
 
@@ -33,6 +32,133 @@ export default class MakeupartistServiceC extends BaseService{
             res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
+    }
+
+    addMakeupArtistEmployee = async (req: Request, res: Response) => {
+        try {
+            const d: EmployeeI = req.body
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            if(!_id){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+
+            //@ts-ignore
+            d.services = (d.services as string[]).map( (s: string, i: number) => mongoose.Types.ObjectId(s))
+
+            const emp = await Employee.create(d)
+            const empId = mongoose.Types.ObjectId(emp._id)
+            //@ts-ignore
+            const newSalon = await MakeupArtist.findOneAndUpdate({_id, employees: {$nin: [empId]}}, { $push : {employees  : empId}}, {new: true}).populate("employees").exec()
+            if(newSalon === null){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    deleteMakeupArtistEmployee = async (req: Request, res: Response) => {
+        try {
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            const eid = mongoose.Types.ObjectId(req.params.eid)
+            if(!_id || !eid){
+                const errMsg = `delete Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+
+            
+            const emp = await Employee.findByIdAndDelete(eid)
+            //@ts-ignore
+            const newSalon = await MakeupArtist.findOneAndUpdate({_id, employees: {$in: [eid]}}, { $pull : {employees  : eid}}, {new: true}).populate("employees").exec()
+            if(newSalon === null){
+                const errMsg = `delete Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    addMakeupArtistService = async (req: Request, res: Response) => {
+        try {
+            const d: ServiceI = req.body
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            if(!_id){
+                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                return
+            }
+
+            const service = await Service.create(d)
+            const service_id = mongoose.Types.ObjectId(service._id)
+            //@ts-ignore
+            const newSalon = await MakeupArtist.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
+            if(newSalon === null){
+                const errMsg = `Add Services: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            console.log(newSalon)
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+    
+  deleteMakeupArtistService = async (req: Request, res: Response) => {
+        try {
+            const sid = req.params.sid
+            const _id = req.params.id
+          if(!_id || !sid){
+                logger.error(`Salon Id is missing salon_id:  & mua_id: `)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ` })
+                return
+            }
+            const osid = mongoose.Types.ObjectId(sid)
+
+       
+            // @ts-ignore
+            const newSalon = await MakeupArtist.findOneAndUpdate({_id, services : {$in : [osid]}}, {$pull: {services : osid}}, {new: true})
+            if(newSalon === null){
+                const errMsg = `Delete Service: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+
     }
     
 

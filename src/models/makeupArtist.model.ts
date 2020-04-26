@@ -71,6 +71,12 @@ const MakeupArtistSchema = new mongoose.Schema({
         ref: "vendors",
         required: true
     },
+    employees: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "employees"
+        }]
+    },
     events: {
         type:[{
             type: mongoose.Schema.Types.ObjectId,
