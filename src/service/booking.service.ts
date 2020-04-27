@@ -38,7 +38,7 @@ export default class BookinkService extends BaseService{
             // if(e.designer_id){
             //     e.designer_id = mongoose.Types.ObjectId(e.designer_id.toString())
             // }
-
+ if(!e.designer_id){
             const {services} = e
             if(!services){
                 const errMsg = `Services not defined`
@@ -106,7 +106,7 @@ export default class BookinkService extends BaseService{
             }
 
 
-
+}
             const event = await Booking.create(e)
 
             res.send(event)
