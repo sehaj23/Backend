@@ -116,7 +116,8 @@ describe('Salon service test', () => {
 
         const  service: ServiceI ={
             "name": "Beard Cut",
-            "price": 2400
+            "price": 2400,
+            salon_id: sid
         }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
@@ -125,12 +126,18 @@ describe('Salon service test', () => {
         
         const res3 = await request(app).get(`/api/salon/${sid}/service`)
         expect(res3.status).toEqual(200)
+        expect(res3.body.length).toBeGreaterThan(0)
+        const s: ServiceSI[] = res3.body
+        const gotService = s[0]
+        expect(gotService._id).toBeDefined()
+        expect(gotService.name).toEqual(service.name)
+        expect(gotService.price).toEqual(service.price)
 
         done()
     }, TIME)
     
 })
-afterAll(async (done) => {
-    await db.disconnect()
-    done()
-}, TIME)
+// afterAll(async (done) => {
+//     await db.disconnect()
+//     done()
+// }, TIME)

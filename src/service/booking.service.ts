@@ -7,6 +7,7 @@ import mongoose from "../database"
 import Service from "../models/service.model"
 import { ServiceSI } from "../interfaces/service.interface"
 import Offer from "../models/offer.model"
+import Salon from "../models/salon.model"
 
 
 export default class BookinkService extends BaseService{
@@ -112,6 +113,57 @@ export default class BookinkService extends BaseService{
             logger.error(`Post ${e.message}`)
             res.status(403)
             res.send({ message: `${e.message}` })
+        }
+
+    }
+
+    getSalonEmployees =  async (req: Request, res: Response) => {
+
+        try{
+
+            const salonId = req.params.salonId
+            if(!salonId){
+                const errMsg = `Salon Id not found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            const { dateTime } = req.body
+            if(!dateTime){
+                const errMsg = `dateTime not found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+            }
+
+            const dateTimeD = new Date(dateTime)
+
+            const busyEmployeesIds = []
+
+            // @ts-ignore
+            const bookings = await Booking.findOne( {services:  { service_time: dateTimeD}, salon_id: salonId } )
+            console.log("*********Got bookings ****************")
+            console.log(bookings)
+
+            if(bookings !== null){
+                for(const bs of bookings.services){
+                    busyEmployeesIds.push(bs.employee_id)
+                }
+            }
+
+            const salon = await Salon.findById(salonId).populate("employees").exec()
+            if(!salon){
+                const errMsg = `salon not found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+            }
+
+            
+
+        }catch(e){
+
         }
 
     }
