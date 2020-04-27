@@ -54,7 +54,6 @@ describe('Salon service test', () => {
     
     let vendorId
 
-    
 
     beforeAll(async (done) => {
         const v: VendorI = {
@@ -71,6 +70,7 @@ describe('Salon service test', () => {
     }, TIME)
     
     test('Salon Service Add Check', async done => {
+        expect(vendorId).toBeDefined()
         const dataToSend = getSalon(vendorId)
         const res = await request(app).post("/api/salon").send(dataToSend)
         expect(res.body._id).toBeDefined()
@@ -102,6 +102,32 @@ describe('Salon service test', () => {
         done()
     }, TIME)
 
+    test('Salon Service Get Check', async done => {
+        expect(vendorId).toBeDefined()
+        const dataToSend = getSalon(vendorId)
+        const res = await request(app).post("/api/salon").send(dataToSend)
+        expect(res.body._id).toBeDefined()
+        expect(res.body.start_working_hours).toBeDefined()
+        expect(res.body.speciality).toEqual(dataToSend.speciality)
+        expect(res.body.start_price).toEqual(dataToSend.start_price)
+        expect(res.status).toEqual(200)
+
+        const sid = res.body._id
+
+        const  service: ServiceI ={
+            "name": "Beard Cut",
+            "price": 2400
+        }
+
+        const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
+        expect(res2.status).toEqual(200)
+        expect(res2.body.services.length).toBeGreaterThan(0)
+        
+        const res3 = await request(app).get(`/api/salon/${sid}/service`)
+        expect(res3.status).toEqual(200)
+
+        done()
+    }, TIME)
     
 })
 afterAll(async (done) => {
