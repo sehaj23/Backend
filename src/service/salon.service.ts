@@ -73,7 +73,9 @@ export default class SalonService extends BaseService{
                 res.send({message: errMsg})
                 return
             }
-            const services = await Service.find({salon_id: id})
+            const monogId = mongoose.Types.ObjectId(id)
+            //@ts-ignore
+            const services = await Service.find({salon_id: monogId})
             if(services === null || services.length === 0){
                 const errMsg = `no service found`
                 logger.error(errMsg)
