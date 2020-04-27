@@ -8,6 +8,7 @@ import Service from "../models/service.model"
 import { ServiceSI } from "../interfaces/service.interface"
 import Offer from "../models/offer.model"
 import Salon from "../models/salon.model"
+import EmployeeSI from "../interfaces/employee.interface"
 
 
 export default class BookinkService extends BaseService{
@@ -160,8 +161,15 @@ export default class BookinkService extends BaseService{
                 res.send({message: errMsg})
             }
 
-            
+            for(const bemp of busyEmployeesIds){
+                //@ts-ignore
+                const i = salon.employees.findIndex((e) => e._id === bemp)
+                if(i !== -1){
+                    salon.employees.splice(i, 1)
+                }
+            }
 
+            res.send(salon)
         }catch(e){
 
         }

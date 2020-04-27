@@ -10,5 +10,6 @@ bookingRouter.post("/", verifyToken, vs.post)
 bookingRouter.get("/", verifyToken, vs.get)
 bookingRouter.get("/:id", verifyToken, vs.getId)
 bookingRouter.put("/:id", verifyToken, vs.put)
+bookingRouter.get("/salon-emp/:salonId", vs.getSalonEmployees)
 
 export default bookingRouter
