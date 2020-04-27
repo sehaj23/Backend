@@ -27,18 +27,18 @@ const BookingSchema = new mongoose.Schema({
         type: [{
             service_id: {
                 type: mongoose.Schema.Types.ObjectId,
-                required: true
+                
             },
             employee_id:{
                 type: mongoose.Schema.Types.ObjectId,
             },
             service_name: {
                 type: String,
-                required: true
+                
             },
             service_real_price: {
                 type: Number,
-                required: true
+                
             },
             service_discount: {
                 type: Number,
@@ -48,22 +48,21 @@ const BookingSchema = new mongoose.Schema({
             },
             service_total_price: {
                 type: Number,
-                required: true
+                
             },
             zattire_commission: {
                 type: Number,
-                required: true
+                
             },
             vendor_commission: {
                 type: Number,
-                required: true
+                
             },
             service_time: {
                 type: Date,
-                required: true
+                
             }
-        }],
-        required: true
+        }]
     },
     status: {
         type: String,
