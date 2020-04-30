@@ -25,6 +25,14 @@ const OfferSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    max_usage: {
+        type: Number,
+        default: 10000
+    },
+    disable:{
+        type: Boolean,
+        default: false
+    },
     approved: {
         type: Boolean,
         default: true
