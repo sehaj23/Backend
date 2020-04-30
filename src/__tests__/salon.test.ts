@@ -17,7 +17,7 @@ beforeAll( async (done) => {
     done()
 }, TIME)
 
-const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
+export const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
     const email = faker.internet.email()
     const date = new Date()
     const dataToSend: SalonI = {
@@ -83,7 +83,8 @@ describe('Salon service test', () => {
 
         const  service: ServiceI ={
             "name": "Haircut",
-            "price": 230
+            "price": 230,
+            "duration": '15 Min'
         }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
@@ -117,7 +118,8 @@ describe('Salon service test', () => {
         const  service: ServiceI ={
             "name": "Beard Cut",
             "price": 2400,
-            salon_id: sid
+            salon_id: sid,
+            "duration": '15 Min'
         }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)

@@ -12,6 +12,12 @@ const ServiceSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    duration:{
+        type: String,
+        enum : ["15 Min", "30 Min", '45 Min' , '60 Min'],
+        default: "30 Min",
+        required: true
+    },
     photo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
