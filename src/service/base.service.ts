@@ -34,7 +34,7 @@ export default class BaseService{
         try {
             // let {limit, offset} = req.query;
             // const this.models = await this.model.findAndCountAll({offset, limit})
-            const events = await this.model.find().select("-password").select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
+            const events = await this.model.find().select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate("services", "offers").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
             res.send(events);
         } catch (e) {
             logger.error(`${this.modelName} Get ${e.message}`)
@@ -53,7 +53,14 @@ export default class BaseService{
             res.send(msg)
             return
         }
-        const event = await this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
+        const event = await this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
+            path: 'services',
+            model: 'services',
+            populate: {
+                path: 'offers',
+                model: 'offers',
+            }
+        }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
         if(event === null){
             const msg = `${this.modelName} no data found with this id `
             logger.error(msg)

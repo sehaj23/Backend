@@ -29,6 +29,12 @@ const ServiceSchema = new mongoose.Schema({
     mua_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "makeup_artists"
+    },
+    offers: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+             ref: "offers"
+        }]
     }
 })
 

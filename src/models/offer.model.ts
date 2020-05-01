@@ -3,16 +3,6 @@ import OfferSI from "../interfaces/offer.interface";
 
 
 const OfferSchema = new mongoose.Schema({
-    salon_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "salons",
-        required: true
-    },
-    service_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "services",
-        required: true
-    },
     updated_price:{
         type: Number,
         required: true
