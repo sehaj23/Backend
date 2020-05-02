@@ -4,7 +4,8 @@ import * as morgan from "morgan";
 import * as fs from "fs";
 import * as path from "path";
 import * as dotenv from "dotenv";
-import router from "./routes/index.routes";
+import router from "./routes/AdminRoutes/index.routes";
+import Vendorrouter from "./routes/VendorRoutes/index.routes"
 import * as aws from "aws-sdk";
 import * as multer from "multer";
 import * as multerS3 from "multer-s3";
@@ -68,6 +69,7 @@ app.use(
 app.use(bobyParser.json());
 
 app.use("/api", router);
+app.use("/api/vendor",Vendorrouter)
 app.get(
   "/app/get-vendor",
   async (req: express.Request, res: express.Response) => {

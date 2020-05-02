@@ -84,7 +84,7 @@ describe('Salon service test', () => {
         const  service: ServiceI ={
             "name": "Haircut",
             "price": 230,
-            "duration": '15 Min'
+            "duration": 15
         }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
@@ -119,7 +119,7 @@ describe('Salon service test', () => {
             "name": "Beard Cut",
             "price": 2400,
             salon_id: sid,
-            "duration": '15 Min'
+            "duration": 15
         }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
