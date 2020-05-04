@@ -38,6 +38,7 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
 describe('Designer service test', () => {
     
     let vendorId
+    let DesignerId;
 
     
 
@@ -59,6 +60,7 @@ describe('Designer service test', () => {
         const dataToSend = getDesigner(vendorId)
         const res = await request(app).post("/api/vendor/designer").send(dataToSend)
         expect(res.body._id).toBeDefined()
+        DesignerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
@@ -66,6 +68,24 @@ describe('Designer service test', () => {
         expect(res.status).toEqual(200)
         done()
     }, TIME)
+
+test('Designers settings test', async done => {
+    const designer={
+        designer_name:"hello12345",
+        location:"OZARK"
+    }
+   
+    const res = await request(app).put("/api/vendor/designer/settings/"+DesignerId).send(designer)
+  
+    expect(res.body.designer_name).toEqual(designer.designer_name)
+
+    expect(res.body.location).toEqual(designer.location)
+    expect(res.status).toEqual(200)
+    done()
+
+
+
+})
 })
 
 afterAll(async (done) => {

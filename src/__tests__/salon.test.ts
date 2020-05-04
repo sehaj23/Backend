@@ -137,8 +137,11 @@ describe('Salon service test', () => {
 
         done()
     }, TIME)
+
+    
     
 })
+
 // afterAll(async (done) => {
 //     await db.disconnect()
 //     done()

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import VendorverifyToken from "../../middleware/jwt";
+import VendorverifyToken from "../../middleware/VendorJwt";
 import BookinkService from "../../service/VendorService/booking.service";
 
 const bookingRouter = Router()
@@ -7,7 +7,7 @@ const vs = new BookinkService()
 
 bookingRouter.post("/", VendorverifyToken, vs.post)
 bookingRouter.get("/", VendorverifyToken, vs.get)
-bookingRouter.get("/:id", VendorverifyToken, vs.getId)
+bookingRouter.get("/:id", VendorverifyToken, vs.getBookings)
 bookingRouter.put("/:id", VendorverifyToken, vs.put)
 bookingRouter.get("/salon/:id",VendorverifyToken,vs.getSalonBookings)
 bookingRouter.get("/makeupArtist/:id",VendorverifyToken,vs.getmakeupArtistBookings)

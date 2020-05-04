@@ -1,5 +1,5 @@
 import { Router } from "express";
-import VendorverifyToken from "../../middleware/jwt";
+import VendorverifyToken from "../../middleware/VendorJwt";
 import offerservices from "../../service/VendorService/offer.service";
 const offerRouter = Router()
 const es = new offerservices()

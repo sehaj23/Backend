@@ -36,4 +36,51 @@ export default class SalonService extends BaseService{
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+    SalonSettings= async (req: Request, res: Response) => {
+        try {
+           const Salon_id = req.params.id
+          
+           if(!Salon_id){
+            const errMsg = "Salon id not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+    const updates = Object.keys(req.body)
+    const allowedupates =["name","location","start_working_hours"]
+    const isvalid = updates.every((update)=>allowedupates.includes(update))
+       
+           
+         
+         if(!isvalid){
+            const errMsg = "Error updating Salon"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+        const salon  =await  Salon.findById(Salon_id)
+        updates.forEach((update)=>{
+            
+            salon[update] = req.body[update]
+            
+        })
+        const updatedsalon = await salon.save()
+        //const updatedesigner = await Designer.update({_id:designer_id},{$set:updates},{new:true})
+        res.send(updatedsalon)
+
+        
+            
+        } catch (error) {
+            const errMsg = "Error updating Salon"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+            
+        }
+
+
+    }
 }

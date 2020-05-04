@@ -423,6 +423,46 @@ export default class BookinkService extends BaseService{
 
 
                        }
+                
+                getBookings = async (req: Request, res: Response) => {
+                    const id= req.params.id
+                    const match = {}
+                    
+                    
+                    
+                    if(!id){
+                        const errMsg = "Error fetching Bookings"
+                        logger.error(errMsg)
+                        res.status(400)
+                        res.send({message: errMsg})
+                        return
+                    }
+                    if(req.query.status){
+                        //@ts-ignore
+                        match.status = req.query.status
+                    }
+                    if(req.query.service){
+                        //@ts-ignore
+                        match.services.service_name = req.query.service
+                    }
+                   
+                    //@ts-ignore
+                    console.log(match)
+                    //@ts-ignore
+                    const booking = await Booking.find(({salon_id:id},match))
+                    res.send(booking)
+
+
+
+                    
+                   
+
+                    
+
+
+
+                }
+               
                            
                       
 }

@@ -13,7 +13,7 @@ const TIME = 30000
 beforeAll(async (done) => {
     await db.connectt();
     done();
-},TIME);
+});
 
 const getMUA: (vendorId:string) => MakeupArtistI = (vendorId: string) => {
     const date = new Date();
@@ -37,6 +37,7 @@ const getMUA: (vendorId:string) => MakeupArtistI = (vendorId: string) => {
     return dataToSend
 }
 describe("Makeup Artist service test", () => {
+    let muaid
     let vendorId
     beforeAll(async (done) => {
         const v: VendorI = {
@@ -60,6 +61,7 @@ describe("Makeup Artist service test", () => {
         const res = await request(app).post("/api/vendor/makeupArtist").send(dataToSend);
 
         expect(res.body._id).toBeDefined();
+        muaid = res.body._id
       // check response vendor ID problem
         expect(res.body.name).toEqual(dataToSend.name);
         expect(res.body.start_working_hours).toBeDefined();
@@ -68,8 +70,29 @@ describe("Makeup Artist service test", () => {
         expect(res.body.approved).toBeFalsy();
         expect(res.status).toEqual(200);
         done();
-    },TIME);
+    });
+
+    test('MUA settings test', async done => {
+        const mua={
+            name:"hello12345",
+            location:"OZARK"
+        }
+        console.log(muaid)
+       
+        const res = await request(app).put("/api/vendor/makeupArtist/settings/"+muaid).send(mua)
+       
+        expect(res.body.name).toEqual(mua.name)
+    
+        expect(res.body.location).toEqual(mua.location)
+        expect(res.status).toEqual(200)
+        done()
+    
+    
+    
+    })
+
 });
+
 afterAll(async (done) => {
     await db.disconnect()
     done()

@@ -33,4 +33,51 @@ export default class MakeupartistServiceC extends BaseService{
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+    MakeupArtistSettings = async (req: Request, res: Response) => {
+        try {
+           const makeupArtist_id = req.params.id
+          
+           if(!makeupArtist_id){
+            const errMsg = "MakeupArtist ID not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+    const updates = Object.keys(req.body)
+    const allowedupates =["name","location","start_working_hours"]
+    const isvalid = updates.every((update)=>allowedupates.includes(update))
+       
+           
+         
+         if(!isvalid){
+            const errMsg = "Error updating MakeupArtist"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+        const mua  =await  MakeupArtist.findById(makeupArtist_id)
+        updates.forEach((update)=>{
+            
+            mua[update] = req.body[update]
+            
+        })
+        const updatedmua = await mua.save()
+        //const updatedmua = await MakeupArtist.update({_id:makeupArtist_id},{$set:updates},{new:true})
+        res.send(updatedmua)
+
+        
+            
+        } catch (error) {
+            const errMsg = "Error updating Makeupartist"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+            
+        }
+
+
+    }
 }

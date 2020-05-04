@@ -26,6 +26,54 @@ export default class DesignerService extends BaseService{
             logger.error(`${e.message}`)
             res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+            
         }
+    }
+    DesignerSettings= async (req: Request, res: Response) => {
+        try {
+           const designer_id = req.params.id
+          
+           if(!designer_id){
+            const errMsg = "Designer ID not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+    const updates = Object.keys(req.body)
+    const allowedupates =["designer_name","brand_name","location","start_working_hours"]
+    const isvalid = updates.every((update)=>allowedupates.includes(update))
+       
+           
+         
+         if(!isvalid){
+            const errMsg = "Error updating Designer"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+        }
+        const designer  = await  Designer.findById(designer_id)
+        updates.forEach((update)=>{
+            
+            designer[update] = req.body[update]
+            
+        })
+        const updateddesigner = await designer.save()
+        //const updatedesigner = await Designer.update({_id:designer_id},{$set:updates},{new:true})
+        res.send(updateddesigner)
+
+        
+            
+        } catch (error) {
+            const errMsg = "Error updating Designer"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({message: errMsg})
+            return
+            
+        }
+
+
     }
 }

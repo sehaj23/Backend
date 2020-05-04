@@ -1,5 +1,5 @@
 import { Router } from "express";
-import VendorverifyToken from "../../middleware/jwt";
+import VendorverifyToken from "../../middleware/VendorJwt";
 import UserService from "../../service/VendorService/user.service";
 
 const userRouter = Router()

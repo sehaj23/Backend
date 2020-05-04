@@ -41,6 +41,7 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
 
     describe('Salon service test', () => {
         let vendorId
+        let salonid
         beforeAll(async (done) => {
             const v: VendorI = {
                 name: "Sehajchawla",
@@ -48,24 +49,47 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
                 "contact_number": "+12193860967",
                 "email": "sehajchawla233@gmail.com"
             }
-            const res = await request(app).post("/vendor/login/create").send(v)
+            const res = await request(app).post("api/vendor/login/create").send(v)
             expect(res.body._id).toBeDefined()
             vendorId = res.body._id
     
             done()
-        }, TIME)
+        })
+
         test('add salon ', async done => {
            
         expect(vendorId).toBeDefined()
         const dataToSend = getSalon(vendorId)
         const res = await request(app).post("/api/vendor/salon").send(dataToSend)
         expect(res.body._id).toBeDefined()
+        salonid = res.body._id
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
         expect(res.status).toEqual(200)
         done()
-    }, TIME)
+    })
+
+    
+
+    test('Salon settings test', async done => {
+        const salon={
+            name:"hello12345",
+            location:"OZARK"
+        }
+        console.log(salonid)
+       
+        const res = await request(app).put("/api/vendor/salon/settings/"+salonid).send(salon)
+       
+        expect(res.body.name).toEqual(salon.name)
+    
+        expect(res.body.location).toEqual(salon.location)
+        expect(res.status).toEqual(200)
+        done()
+    
+    
+    
+    })
 
 
 })
