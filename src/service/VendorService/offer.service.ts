@@ -5,6 +5,7 @@ import logger from "../../utils/logger";
 import { Router, Request, Response } from "express";
 import mongoose from "../../database";
 import Offer from "../../models/offer.model";
+import Service from "../../models/service.model"
 const offer = Router()
 
 
@@ -12,6 +13,7 @@ export default class OfferService{
 
     createOffer = async (req: Request, res: Response) => {
             try {
+                const serviceid = req.params.id;
                 const e :OfferI = req.body
 
                 if(!e.start_date || !e.end_date || !e.updated_price){
@@ -20,8 +22,30 @@ export default class OfferService{
                     return
                        
                 }
+                if(!serviceid){
+                    const errMsg = "Service id not found"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+                }
+                const service = await Service.findById(serviceid)
+
+                if(!service){
+                    const errMsg = "Service not found"
+                    logger.error(errMsg)
+                    res.status(400)
+                    res.send({message: errMsg})
+                    return
+                }
+                const uniquecode = (service.name).slice(0,4).toLocaleUpperCase().concat(e.updated_price.toLocaleString())
+                req.body.unique_code = uniquecode
+
+
                 
                 const offer = await Offer.create(req.body)
+                
+                const services = await Service.findByIdAndUpdate(serviceid,{$push:{offers:offer._id}},{new:true})
                 res.send(offer)
                 
             } catch (error) {
@@ -70,15 +94,8 @@ export default class OfferService{
     }
     allOffer = async (req: Request, res: Response) => {
             try {
-                const salon_id = req.params.id
-                if(!salon_id){
-                    const errMsg = "Salon not found"
-                    logger.error(errMsg)
-                    res.status(400)
-                    res.send({message: errMsg})
-
-                }
-                const offer = await Offer.find({salon_id:salon_id}).populate("services").exec()
+               
+                const offer = await Offer.find({})
                 if(!offer){
                     const errMsg = "No Offer dound"
                     logger.error(errMsg)
@@ -89,7 +106,7 @@ export default class OfferService{
                 res.send(offer)
                 
             } catch (error) {
-                const errMsg = "Salon not found"
+                const errMsg = "Offer not found"
                     logger.error(errMsg)
                     res.status(400)
                     res.send({message: errMsg})

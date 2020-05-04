@@ -47,7 +47,8 @@ describe('Bookings service test', () => {
      const s :ServiceSI= {
         name:"sehaj",
         price:200,
-        duration:15
+        duration:15,
+        
         
  }
      const Serviceres  = await Services.create(s)

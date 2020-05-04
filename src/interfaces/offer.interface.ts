@@ -8,6 +8,7 @@ export interface OfferI{
     max_usage?: number
     disable?: boolean
     approved?: boolean
+    unique_code?: string
 }
 
 export default interface OfferSI extends OfferI, mongoose.Document {}

@@ -8,7 +8,8 @@ export default interface ServiceI{
     offers?: OfferI[]
     duration: number
     salon_id? : string
-    mua_id?: string
+    mua_id?: string,
+   
 }
 
 export interface ServiceSI extends ServiceI, mongoose.Document{}

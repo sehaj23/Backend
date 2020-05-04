@@ -3,6 +3,10 @@ import OfferSI from "../interfaces/offer.interface";
 
 
 const OfferSchema = new mongoose.Schema({
+    unique_code:{
+        type:String,
+        required:true
+    },
     updated_price:{
         type: Number,
         required: true

@@ -441,10 +441,7 @@ export default class BookinkService extends BaseService{
                         //@ts-ignore
                         match.status = req.query.status
                     }
-                    if(req.query.service){
-                        //@ts-ignore
-                        match.services.service_name = req.query.service
-                    }
+                  
                    
                     //@ts-ignore
                     console.log(match)
