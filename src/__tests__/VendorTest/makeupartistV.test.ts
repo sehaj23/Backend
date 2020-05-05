@@ -47,7 +47,7 @@ describe("Makeup Artist service test", () => {
             email: "sehajakdsjbdkasnbjd@gmail.com",
         };
 
-        const res = await request(app).post("/api/vendor/login/create").send(v);
+        const res = await request(app).post("/api/v/login/create").send(v);
 
         vendorId = res.body._id;
 
@@ -58,7 +58,7 @@ describe("Makeup Artist service test", () => {
 
         expect(vendorId).toBeDefined()
         const dataToSend = getMUA(vendorId)
-        const res = await request(app).post("/api/vendor/makeupArtist").send(dataToSend);
+        const res = await request(app).post("/api/v/makeupArtist").send(dataToSend);
 
         expect(res.body._id).toBeDefined();
         muaid = res.body._id
@@ -79,7 +79,7 @@ describe("Makeup Artist service test", () => {
         }
         console.log(muaid)
 
-        const res = await request(app).put("/api/vendor/makeupArtist/settings/" + muaid).send(mua)
+        const res = await request(app).put("/api/v/makeupArtist/settings/" + muaid).send(mua)
 
         expect(res.body.name).toEqual(mua.name)
 

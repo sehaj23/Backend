@@ -8,7 +8,7 @@ import employeeRouter from "./employee.router"
 import serviceRouter from "./service.router"
 import OfferRouter from "./offer.router"
 import reviewsRouter from "./reviews.router"
-
+import revenueRouter from "./revenue.router"
 
 
 const Vendorrouter = Router();
@@ -23,6 +23,7 @@ Vendorrouter.use("/employee",employeeRouter)
 Vendorrouter.use("/service",serviceRouter)
 Vendorrouter.use("/offer",OfferRouter)
 Vendorrouter.use("/reviews",reviewsRouter)
+Vendorrouter.use("/revenue",revenueRouter)
 
 
 

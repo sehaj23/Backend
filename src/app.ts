@@ -69,7 +69,7 @@ app.use(
 app.use(bobyParser.json());
 
 app.use("/api", router);
-app.use("/api/vendor",Vendorrouter)
+app.use("/api/v/",Vendorrouter)
 app.get(
   "/app/get-vendor",
   async (req: express.Request, res: express.Response) => {

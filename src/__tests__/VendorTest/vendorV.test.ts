@@ -16,7 +16,7 @@ describe('Vendor service test', () => {
             name: "Sehaj",
             contact_number: "+12193860967"
         }
-        const res2 = await request(app).post("/api/vendor/login/create").send(v)
+        const res2 = await request(app).post("/api/v/login/create").send(v)
         expect(res2.status).toEqual(200)
         // v.email = "Preet@gmail.com"
         // const res = await request(app).post("/api/vendor/login").send(v)

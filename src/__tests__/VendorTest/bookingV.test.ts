@@ -30,7 +30,7 @@ describe('Bookings service test', () => {
             "contact_number": "+12193860967",
             "email": "sehajchawla233@gmail.com"
         }
-        const Vendoreres = await request(app).post("/api/vendor/login/create").send(v)
+        const Vendoreres = await request(app).post("/api/v/login/create").send(v)
 
         vendorId = Vendoreres.body._id
 
@@ -70,7 +70,7 @@ describe('Bookings service test', () => {
             "speciality": ["DM"],
             "vendor_id": vendorId
         }
-        const salonres = await request(app).post("/api/vendor/salon").send(dataToSend)
+        const salonres = await request(app).post("/api/v/salon").send(dataToSend)
         saloinid = salonres.body._id
         console.log("salone id", saloinid)
         console.log("userid", userid)
@@ -106,7 +106,7 @@ describe('Bookings service test', () => {
             "payment_type": "COD"
 
         }
-        const book = await request(app).post("/api/vendor/bookings").send(b)
+        const book = await request(app).post("/api/v/bookings").send(b)
         expect(book.body._id).toBeDefined()
         expect(book.body.price).toEqual(b.price)
         expect(book.body.balance).toEqual(b.balance)

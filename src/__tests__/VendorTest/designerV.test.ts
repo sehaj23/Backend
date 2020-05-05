@@ -49,7 +49,7 @@ describe('Designer service test', () => {
             "contact_number": "123456789",
             "email": "sehakldnaslnkdlnk@gmail.com"
         }
-        const res = await request(app).post("/api/vendor/login/create").send(v)
+        const res = await request(app).post("/api/v/login/create").send(v)
         expect(res.body._id).toBeDefined()
         vendorId = res.body._id
 
@@ -58,7 +58,7 @@ describe('Designer service test', () => {
 
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
-        const res = await request(app).post("/api/vendor/designer").send(dataToSend)
+        const res = await request(app).post("/api/v/designer").send(dataToSend)
         expect(res.body._id).toBeDefined()
         DesignerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
@@ -75,7 +75,7 @@ describe('Designer service test', () => {
             location: "OZARK"
         }
 
-        const res = await request(app).put("/api/vendor/designer/settings/" + DesignerId).send(designer)
+        const res = await request(app).put("/api/v/designer/settings/" + DesignerId).send(designer)
 
         expect(res.body.designer_name).toEqual(designer.designer_name)
 

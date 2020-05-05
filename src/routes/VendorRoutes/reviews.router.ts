@@ -7,7 +7,7 @@ const rs = new ReviewsService()
 
 
 reviewsRouter.post("/",VendorverifyToken,rs.PostReviews)
-reviewsRouter.get("/all",VendorverifyToken,rs.AllReviews)
+reviewsRouter.get("/",VendorverifyToken,rs.AllReviews)
 reviewsRouter.put("/reply/:id",VendorverifyToken,rs.ReplyReviews)
 reviewsRouter.get("/new",VendorverifyToken,rs.NewReviews)
 reviewsRouter.put("/report/:id",VendorverifyToken,rs.ReportReviews)

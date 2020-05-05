@@ -46,7 +46,7 @@ describe('Offer service test', () => {
     test("create offer", async done => {
 
 
-        const res = await request(app).post("/api/vendor/offer/" + serviceid).send(o)
+        const res = await request(app).post("/api/v/offer/" + serviceid).send(o)
 
         expect(res.body._id).toBeDefined()
         offerid = res.body._id
@@ -68,7 +68,7 @@ describe('Offer service test', () => {
             "end_date": "1987-09-28",
             "updated_price": 600
         }
-        const res = await request(app).put("/api/vendor/offer/edit/" + offerid).send(data)
+        const res = await request(app).put("/api/v/offer/edit/" + offerid).send(data)
         //    console.log(res.body)
         //     expect(res.body._id).toBeDefined()
 
@@ -95,7 +95,7 @@ describe('Offer service test', () => {
     test("disable offer", async done => {
 
 
-        const res = await request(app).patch("/api/vendor/offer/disable/" + offerid)
+        const res = await request(app).patch("/api/v/offer/disable/" + offerid)
         expect(res.body._id).toEqual(offerid)
         expect(res.body.disable).toEqual(true)
         expect(res.status).toEqual(200)

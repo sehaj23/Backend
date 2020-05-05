@@ -49,7 +49,7 @@ describe('Salon service test', () => {
             name: "Sehaj",
             contact_number: "+12193860967"
         }
-        const res2 = await request(app).post("/api/vendor/login/create").send(v)
+        const res2 = await request(app).post("/api/v/login/create").send(v)
         expect(res2.status).toEqual(200)
         vendorId = res2.body._id
 
@@ -60,7 +60,7 @@ describe('Salon service test', () => {
 
        
         const dataToSend = getSalon(vendorId)
-        const res = await request(app).post("/api/vendor/salon").send(dataToSend)
+        const res = await request(app).post("/api/v/salon").send(dataToSend)
         expect(res.body._id).toBeDefined()
         salonid = res.body._id
         expect(res.body.start_working_hours).toBeDefined()
@@ -79,7 +79,7 @@ describe('Salon service test', () => {
         }
         console.log(salonid)
 
-        const res = await request(app).put("/api/vendor/salon/settings/" + salonid).send(salon)
+        const res = await request(app).put("/api/v/salon/settings/" + salonid).send(salon)
 
         expect(res.body.name).toEqual(salon.name)
 

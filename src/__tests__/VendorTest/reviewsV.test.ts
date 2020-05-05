@@ -48,7 +48,7 @@ describe('Designer service test', () => {
             "contact_number": "123456789",
             "email": "sehakldnaslnkdlnk@gmail.com"
         }
-        const res = await request(app).post("/api/vendor/login/create").send(v)
+        const res = await request(app).post("/api/v/login/create").send(v)
         expect(res.body._id).toBeDefined()
         vendorId = res.body._id
 
@@ -57,7 +57,7 @@ describe('Designer service test', () => {
 
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
-        const res = await request(app).post("/api/vendor/designer").send(dataToSend)
+        const res = await request(app).post("/api/v/designer").send(dataToSend)
         expect(res.body._id).toBeDefined()
         designerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
@@ -83,7 +83,7 @@ describe('Designer service test', () => {
         designer_id: designerId
     }
     test("Review post", async done => {
-        const res = await request(app).post("/api/vendor/reviews").send(i)
+        const res = await request(app).post("/api/v/reviews").send(i)
         expect(res.body._id).toBeDefined()
         expect(res.status).toBe(200)
         reviewid = res.body._id
@@ -92,20 +92,20 @@ describe('Designer service test', () => {
 
     })
     test("All review", async done => {
-        const res = await request(app).get("/api/vendor/reviews/all")
+        const res = await request(app).get("/api/v/reviews")
         expect(res.status).toBe(200)
         done()
 
     })
     test("Reviews reply", async done => {
-        const res = await request(app).put("/api/vendor/reviews/reply/" + reviewid)
+        const res = await request(app).put("/api/v/reviews/reply/" + reviewid)
         expect(res.status).toBe(200)
         expect(res.body._id).toEqual(reviewid)
         done()
 
     })
     test("Flag Reviews", async done => {
-        const res = await request(app).put("/api/vendor/reviews/report/" + reviewid)
+        const res = await request(app).put("/api/v/reviews/report/" + reviewid)
         expect(res.status).toBe(200)
         expect(res.body.flagged).toBeTruthy()
         done()

@@ -19,7 +19,7 @@ describe('Employee  service test', () => {
     }
 
     test("add employee", async done => {
-        const res = await request(app).post("/api/vendor/employee").send(e)
+        const res = await request(app).post("/api/v/employee").send(e)
         expect(res.body._id).toBeDefined()
         empid = res.body._id
         expect(res.body.phone).toBeDefined()
@@ -36,7 +36,7 @@ describe('Employee  service test', () => {
             services: ["5eaa0788df36ecbc2d2b0ed3"]
 
         }
-        const res = await request(app).put("/api/vendor/employee/edit/" + empid).send(s)
+        const res = await request(app).put("/api/v/employee/edit/" + empid).send(s)
         expect(res.body._id).toBe(empid)
         expect(res.body.name).toEqual(s.name)
         expect(res.body.phone).toEqual(s.phone)
@@ -46,7 +46,7 @@ describe('Employee  service test', () => {
 
     })
     test("delete employee", async done => {
-        const res = await request(app).delete("/api/vendor/employee/delete/" + empid).send(e)
+        const res = await request(app).delete("/api/v/employee/delete/" + empid).send(e)
         expect(res.body._id).toBe(empid)
         expect(res.body.phone).toBeDefined()
         expect(res.status).toEqual(200)
