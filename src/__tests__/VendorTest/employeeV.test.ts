@@ -1,7 +1,7 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import { EmployeeI } from "../interfaces/employee.interface";
-import mongoose, * as db from "../database"
+import { EmployeeI } from "../../interfaces/employee.interface";
+import mongoose, * as db from "../../database"
 const TIME = 30000
 beforeAll(async (done) => {
     await db.connectt()

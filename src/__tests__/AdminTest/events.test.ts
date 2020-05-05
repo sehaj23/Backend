@@ -1,11 +1,11 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import { VendorI } from "../interfaces/vendor.interface";
-import * as db from "../database"
-import { DesignersI } from "../interfaces/designer.interface";
-import EventI from "../interfaces/event.interface";
-import EventDesignerI from "../interfaces/eventDesigner.model";
-import { PhotoI } from "../interfaces/photo.interface";
+import { VendorI } from "../../interfaces/vendor.interface";
+import * as db from "../../database"
+import { DesignersI } from "../../interfaces/designer.interface";
+import EventI from "../../interfaces/event.interface";
+import EventDesignerI from "../../interfaces/eventDesigner.model";
+import { PhotoI } from "../../interfaces/photo.interface";
 
 beforeAll(async (done) => {
     await db.connectt()

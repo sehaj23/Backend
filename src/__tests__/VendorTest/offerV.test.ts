@@ -1,10 +1,10 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import mongoose, * as db from "../database"
+import mongoose, * as db from "../../database"
 import * as faker from "faker"
-import Services from "../models/service.model"
-import ServiceSI from "../interfaces/service.interface"
-import OfferSI from "../interfaces/offer.interface"
+import Services from "../../models/service.model"
+import ServiceSI from "../../interfaces/service.interface"
+import OfferSI from "../../interfaces/offer.interface"
 
 const TIME = 30000
 beforeAll(async (done) => {

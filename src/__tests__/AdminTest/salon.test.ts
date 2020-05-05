@@ -1,15 +1,15 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import { VendorI } from "../interfaces/vendor.interface";
-import mongoose, * as db from "../database"
-import { DesignersI } from "../interfaces/designer.interface";
-import EventI from "../interfaces/event.interface";
-import EventDesignerI from "../interfaces/eventDesigner.model";
-import { PhotoI } from "../interfaces/photo.interface";
+import { VendorI } from "../../interfaces/vendor.interface";
+import mongoose, * as db from "../../database"
+import { DesignersI } from "../../interfaces/designer.interface";
+import EventI from "../../interfaces/event.interface";
+import EventDesignerI from "../../interfaces/eventDesigner.model";
+import { PhotoI } from "../../interfaces/photo.interface";
 import * as faker from "faker"
-import { SalonI } from "../interfaces/salon.interface";
-import ServiceI, { ServiceSI } from "../interfaces/service.interface";
-import { EmployeeI } from "../interfaces/employee.interface";
+import { SalonI } from "../../interfaces/salon.interface";
+import ServiceI, { ServiceSI } from "../../interfaces/service.interface";
+import { EmployeeI } from "../../interfaces/employee.interface";
 
 const TIME = 30000
 beforeAll(async (done) => {

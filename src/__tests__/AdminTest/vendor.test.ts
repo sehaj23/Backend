@@ -1,7 +1,7 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import { VendorI } from "../interfaces/vendor.interface";
-import * as db from "../database"
+import { VendorI } from "../../interfaces/vendor.interface";
+import * as db from "../../database"
 beforeAll(async (done) => {
     await db.connectt()
     done()

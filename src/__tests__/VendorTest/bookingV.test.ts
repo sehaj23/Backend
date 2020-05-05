@@ -1,15 +1,15 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import mongoose, * as db from "../database"
+import mongoose, * as db from "../../database"
 import * as faker from "faker"
-import { BookingI } from "../interfaces/booking.interface"
-import ServiceSI from "../interfaces/service.interface"
-import User from "../models/user.model"
-import Services from "../models/service.model"
-import user from "../interfaces/user.interface"
-import { VendorI } from "../interfaces/vendor.interface";
-import { SalonI } from "../interfaces/salon.interface";
-import Booking from "../models/booking.model";
+import { BookingI } from "../../interfaces/booking.interface"
+import ServiceSI from "../../interfaces/service.interface"
+import User from "../../models/user.model"
+import Services from "../../models/service.model"
+import user from "../../interfaces/user.interface"
+import { VendorI } from "../../interfaces/vendor.interface";
+import { SalonI } from "../../interfaces/salon.interface";
+import Booking from "../../models/booking.model";
 
 
 const TIME = 30000

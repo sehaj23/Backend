@@ -1,15 +1,15 @@
-import app from "../app";
+import app from "../../app";
 import * as request from "supertest"
-import { VendorI } from "../interfaces/vendor.interface";
-import mongoose, * as db from "../database"
-import { DesignersI } from "../interfaces/designer.interface";
-import EventI from "../interfaces/event.interface";
-import EventDesignerI from "../interfaces/eventDesigner.model";
-import { PhotoI } from "../interfaces/photo.interface";
+import { VendorI } from "../../interfaces/vendor.interface";
+import mongoose, * as db from "../../database"
+import { DesignersI } from "../../interfaces/designer.interface";
+import EventI from "../../interfaces/event.interface";
+import EventDesignerI from "../../interfaces/eventDesigner.model";
+import { PhotoI } from "../../interfaces/photo.interface";
 import * as faker from "faker"
-import { SalonI } from "../interfaces/salon.interface";
-import ServiceI, { ServiceSI } from "../interfaces/service.interface";
-import { EmployeeI } from "../interfaces/employee.interface";
+import { SalonI } from "../../interfaces/salon.interface";
+import ServiceI, { ServiceSI } from "../../interfaces/service.interface";
+import { EmployeeI } from "../../interfaces/employee.interface";
 
 const TIME = 30000
 beforeAll(async (done) => {
@@ -44,21 +44,21 @@ describe('Salon service test', () => {
     let salonid
     beforeAll(async (done) => {
         const v: VendorI = {
-            name: "Sehajchawla",
+            email: "sehaj@gmail.com",
             password: "sehaj23",
-            "contact_number": "+12193860967",
-            "email": "sehajchawla233@gmail.com"
+            name: "Sehaj",
+            contact_number: "+12193860967"
         }
-        const res = await request(app).post("api/vendor/login/create").send(v)
-        expect(res.body._id).toBeDefined()
-        vendorId = res.body._id
+        const res2 = await request(app).post("/api/vendor/login/create").send(v)
+        expect(res2.status).toEqual(200)
+        vendorId = res2.body._id
 
         done()
     })
 
     test('add salon ', async done => {
 
-        expect(vendorId).toBeDefined()
+       
         const dataToSend = getSalon(vendorId)
         const res = await request(app).post("/api/vendor/salon").send(dataToSend)
         expect(res.body._id).toBeDefined()
