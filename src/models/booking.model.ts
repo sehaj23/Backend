@@ -92,6 +92,10 @@ const BookingSchema = new mongoose.Schema({
         type: String,
         enum: ['Customer Place' , 'Vendor Place'],
         default: 'Vendor Place'
+    },
+    reviews: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'reviews',
     }
 }, {
     timestamps: true

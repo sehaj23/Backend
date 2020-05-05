@@ -1,4 +1,5 @@
 import mongoose from "../database";
+import ReviewSI from "./review.interface";
 
 
 type Provider = 'MUA' | 'Salon' | 'Designer'
@@ -31,6 +32,7 @@ export interface BookingI{
     balance?: number
     date_time: Date
     location: BookingLoaction
+    reviews?: ReviewSI[]
 }
 
 export interface BookingSI extends BookingI, mongoose.Document{}

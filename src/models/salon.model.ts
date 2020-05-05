@@ -72,7 +72,7 @@ const SalonSchema = new mongoose.Schema({
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "vendor",
+        ref: "vendors",
         required: true
     },
     commision_percentage: {
