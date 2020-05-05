@@ -6,18 +6,18 @@ import { PhotoI } from "../../interfaces/photo.interface";
 import Photo from "../../models/photo.model";
 
 
-export default class BaseService{
+export default class BaseService {
     private model: mongoose.Model<any, any>
     private modelName: string
-    
-    constructor(model: mongoose.Model<any, any>){
+
+    constructor(model: mongoose.Model<any, any>) {
         this.model = model
         this.modelName = model.modelName
     }
 
     post = async (req: Request, res: Response) => {
         try {
-           
+
             const e = req.body
 
             const event = await this.model.create(e)
@@ -43,38 +43,38 @@ export default class BaseService{
         }
     }
 
-    getId =  async (req: Request, res: Response) => {
+    getId = async (req: Request, res: Response) => {
         try {
             const id = req.params.id
-            if(!id){
-            const msg = 'Id not found for vendor.'
-            logger.error(msg)
+            if (!id) {
+                const msg = 'Id not found for vendor.'
+                logger.error(msg)
+                res.status(403)
+                res.send(msg)
+                return
+            }
+            const event = await this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
+            if (event === null) {
+                const msg = `${this.modelName} no data found with this id `
+                logger.error(msg)
+                res.status(403)
+                res.send(msg)
+                return
+            }
+            console.log(event)
+            res.send(event)
+        } catch (e) {
+            logger.error(`${this.modelName} Get ${e.message}`)
             res.status(403)
-            res.send(msg)
-            return
+            res.send(e.message)
         }
-        const event = await this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services").populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
-        if(event === null){
-            const msg = `${this.modelName} no data found with this id `
-            logger.error(msg)
-            res.status(403)
-            res.send(msg)
-            return
-        }
-        console.log(event)
-        res.send(event)
-    } catch (e) {
-        logger.error(`${this.modelName} Get ${e.message}`)
-        res.status(403)
-        res.send(e.message)
     }
-}
 
     put = async (req: Request, res: Response) => {
         try {
             const eventData = req.body
             const _id = req.params.id
-            const newEvent = await this.model.findByIdAndUpdate({_id},  eventData, { new: true }) // to return the updated data do - returning: true
+            const newEvent = await this.model.findByIdAndUpdate({ _id }, eventData, { new: true }) // to return the updated data do - returning: true
 
             res.send(newEvent)
         } catch (e) {
@@ -93,7 +93,7 @@ export default class BaseService{
             const photo = await Photo.create(photoData)
             // adding it to event
             //@ts-ignore
-            const newEvent = await this.model.findByIdAndUpdate({_id},  {$push: { photo_ids: photo._id }}, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            const newEvent = await this.model.findByIdAndUpdate({ _id }, { $push: { photo_ids: photo._id } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {
             logger.error(`${this.modelName} Put Photo ${e.message}`)

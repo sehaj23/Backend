@@ -12,7 +12,7 @@ import ServiceI, { ServiceSI } from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
 
 const TIME = 30000
-beforeAll( async (done) => {
+beforeAll(async (done) => {
     await db.connectt()
     done()
 }, TIME)
@@ -27,7 +27,7 @@ export const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
         "email": email,
         "end_price": 20000,
         "start_price": 10000,
-        "start_working_hours":[date, null, null, null],
+        "start_working_hours": [date, null, null, null],
         "end_working_hours": [date, null, null, null],
         "location": "Chicago",
         "speciality": ["DM"],
@@ -51,7 +51,7 @@ const getEvent: () => EventI = () => {
 }
 
 describe('Salon service test', () => {
-    
+
     let vendorId
 
 
@@ -68,7 +68,7 @@ describe('Salon service test', () => {
 
         done()
     }, TIME)
-    
+
     test('Salon Service Add Check', async done => {
         expect(vendorId).toBeDefined()
         const dataToSend = getSalon(vendorId)
@@ -81,7 +81,7 @@ describe('Salon service test', () => {
 
         const sid = res.body._id
 
-        const  service: ServiceI ={
+        const service: ServiceI = {
             "name": "Haircut",
             "price": 230,
             "duration": 15
@@ -90,7 +90,7 @@ describe('Salon service test', () => {
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
-        const s: ServiceSI =  res2.body.services[0]
+        const s: ServiceSI = res2.body.services[0]
         expect(s.name).toEqual(service.name)
         const e: EmployeeI = {
             "name": "Poppeye",
@@ -115,7 +115,7 @@ describe('Salon service test', () => {
 
         const sid = res.body._id
 
-        const  service: ServiceI ={
+        const service: ServiceI = {
             "name": "Beard Cut",
             "price": 2400,
             salon_id: sid,
@@ -125,7 +125,7 @@ describe('Salon service test', () => {
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
-        
+
         const res3 = await request(app).get(`/api/salon/${sid}/service`)
         expect(res3.status).toEqual(200)
         expect(res3.body.length).toBeGreaterThan(0)
@@ -138,8 +138,8 @@ describe('Salon service test', () => {
         done()
     }, TIME)
 
-    
-    
+
+
 })
 
 // afterAll(async (done) => {

@@ -9,7 +9,7 @@ import { PhotoI } from "../interfaces/photo.interface";
 import * as faker from "faker"
 
 const TIME = 30000
-beforeAll( async (done) => {
+beforeAll(async (done) => {
     await db.connectt()
     done()
 }, TIME)
@@ -25,7 +25,7 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
         "email": email,
         "end_price": 20000,
         "start_price": 10000,
-        "start_working_hours":[date, null, null, null],
+        "start_working_hours": [date, null, null, null],
         "end_working_hours": [date, null, null, null],
         "location": "Chicago",
         "speciality": ["DM"],
@@ -50,10 +50,10 @@ const getEvent: () => EventI = () => {
 }
 
 describe('Designer service test', () => {
-    
+
     let vendorId
 
-    
+
 
     beforeAll(async (done) => {
         const v: VendorI = {
@@ -68,7 +68,7 @@ describe('Designer service test', () => {
 
         done()
     }, TIME)
-    
+
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
         const res = await request(app).post("/api/designer").send(dataToSend)
@@ -105,7 +105,7 @@ describe('Designer service test', () => {
         expect(res2.body.designers).toBeDefined()
         expect(Array.isArray(res2.body.designers)).toBeTruthy()
         expect(res2.body.designers[0]).toEqual(designerId)
-        
+
         done()
     }, TIME)
 
@@ -229,11 +229,11 @@ describe('Designer service test', () => {
     }
 
     test('Designer PUT Photo', async done => {
-         // add designer
-         const dataToSend = getDesigner(vendorId)
-         const resD = await request(app).post("/api/designer").send(dataToSend)
-         expect(resD.body._id).toBeDefined()
-         const designerId = resD.body._id
+        // add designer
+        const dataToSend = getDesigner(vendorId)
+        const resD = await request(app).post("/api/designer").send(dataToSend)
+        expect(resD.body._id).toBeDefined()
+        const designerId = resD.body._id
 
         const res = await request(app).put(`/api/designer/${designerId}/photo`).send(photo)
         // this is same
@@ -246,7 +246,7 @@ describe('Designer service test', () => {
         // checking for new photos
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
@@ -272,15 +272,15 @@ describe('Designer service test', () => {
         expect(res.body._id).toEqual(designerId)
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
         expect(gotPhoto.tags).toEqual(photo.tags)
         done()
     })
-    
-    
+
+
 })
 afterAll(async (done) => {
     await db.disconnect()

@@ -2,13 +2,13 @@ import app from "../app";
 import * as request from "supertest"
 import UserI from "../interfaces/user.interface";
 import * as db from "../database"
-beforeAll( async (done) => {
+beforeAll(async (done) => {
     await db.connectt()
     done()
 })
 
 describe('User service test', () => {
-    
+
     test('User Post', async done => {
         const v: UserI = {
             name: "Preet",
@@ -54,7 +54,7 @@ describe('User service test', () => {
         }
         const res = await request(app).post("/api/user").send(v)
         expect(res.body._id).toBeDefined()
-        
+
         const _id = res.body._id
 
         const res2 = await request(app).get(`/api/user/${_id}`)
@@ -71,7 +71,7 @@ describe('User service test', () => {
         }
         const res = await request(app).post("/api/user").send(v)
         expect(res.body._id).toBeDefined()
-        
+
         const _id = res.body._id
         const v2: UserI = v
         v2.name = "Preet YO"
@@ -81,10 +81,10 @@ describe('User service test', () => {
         expect(res2.body.email).toEqual(v2.email)
         done()
     })
-    
+
 })
 afterAll(async (done) => {
     await db.disconnect()
-    
+
     done()
 })

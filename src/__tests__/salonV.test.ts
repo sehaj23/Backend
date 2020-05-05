@@ -12,14 +12,14 @@ import ServiceI, { ServiceSI } from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
 
 const TIME = 30000
-beforeAll( async (done) => {
+beforeAll(async (done) => {
     await db.connectt()
     done()
 }, TIME)
 
 
 
-   
+
 const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
     const email = faker.internet.email()
     const date = new Date()
@@ -30,7 +30,7 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
         "email": email,
         "end_price": 20000,
         "start_price": 10000,
-        "start_working_hours":[date, null, null, null],
+        "start_working_hours": [date, null, null, null],
         "end_working_hours": [date, null, null, null],
         "location": "Chicago",
         "speciality": ["DM"],
@@ -39,25 +39,25 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
     return dataToSend
 }
 
-    describe('Salon service test', () => {
-        let vendorId
-        let salonid
-        beforeAll(async (done) => {
-            const v: VendorI = {
-                name: "Sehajchawla",
-                password: "sehaj23",
-                "contact_number": "+12193860967",
-                "email": "sehajchawla233@gmail.com"
-            }
-            const res = await request(app).post("api/vendor/login/create").send(v)
-            expect(res.body._id).toBeDefined()
-            vendorId = res.body._id
-    
-            done()
-        })
+describe('Salon service test', () => {
+    let vendorId
+    let salonid
+    beforeAll(async (done) => {
+        const v: VendorI = {
+            name: "Sehajchawla",
+            password: "sehaj23",
+            "contact_number": "+12193860967",
+            "email": "sehajchawla233@gmail.com"
+        }
+        const res = await request(app).post("api/vendor/login/create").send(v)
+        expect(res.body._id).toBeDefined()
+        vendorId = res.body._id
 
-        test('add salon ', async done => {
-           
+        done()
+    })
+
+    test('add salon ', async done => {
+
         expect(vendorId).toBeDefined()
         const dataToSend = getSalon(vendorId)
         const res = await request(app).post("/api/vendor/salon").send(dataToSend)
@@ -70,25 +70,25 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
         done()
     })
 
-    
+
 
     test('Salon settings test', async done => {
-        const salon={
-            name:"hello12345",
-            location:"OZARK"
+        const salon = {
+            name: "hello12345",
+            location: "OZARK"
         }
         console.log(salonid)
-       
-        const res = await request(app).put("/api/vendor/salon/settings/"+salonid).send(salon)
-       
+
+        const res = await request(app).put("/api/vendor/salon/settings/" + salonid).send(salon)
+
         expect(res.body.name).toEqual(salon.name)
-    
+
         expect(res.body.location).toEqual(salon.location)
         expect(res.status).toEqual(200)
         done()
-    
-    
-    
+
+
+
     })
 
 

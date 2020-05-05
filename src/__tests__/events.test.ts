@@ -7,13 +7,13 @@ import EventI from "../interfaces/event.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { PhotoI } from "../interfaces/photo.interface";
 
-beforeAll( async (done) => {
+beforeAll(async (done) => {
     await db.connectt()
     done()
 })
 
 describe('Events service test', () => {
-    
+
     let eventId
     const e: EventI = {
         name: "The great event",
@@ -44,7 +44,7 @@ describe('Events service test', () => {
         done()
     })
 
-    
+
     test('Events Post', async done => {
         const res = await request(app).post("/api/event").send(e)
         expect(res.body._id).toBeDefined()
@@ -89,7 +89,7 @@ describe('Events service test', () => {
         // checking for new photos
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
@@ -105,7 +105,7 @@ describe('Events service test', () => {
         expect(res.body._id).toEqual(eventId)
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
@@ -117,6 +117,6 @@ describe('Events service test', () => {
 })
 afterAll(async (done) => {
     await db.disconnect()
-    
+
     done()
 })

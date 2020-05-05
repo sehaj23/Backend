@@ -1,19 +1,17 @@
 import app from "../app";
 import * as request from "supertest"
-import { VendorI } from "../interfaces/vendor.interface";
 import mongoose, * as db from "../database"
-import { DesignersI } from "../interfaces/designer.interface";
-import EventI from "../interfaces/event.interface";
-import EventDesignerI from "../interfaces/eventDesigner.model";
-import { PhotoI } from "../interfaces/photo.interface";
 import * as faker from "faker"
+import ReviewSI from "../interfaces/review.interface"
+import Reviews from "../models/review.model"
+import {VendorI} from "../interfaces/vendor.interface"
+import {DesignersI} from "../interfaces/designer.interface"
 
 const TIME = 30000
 beforeAll(async (done) => {
     await db.connectt()
     done()
-}, TIME)
-
+})
 const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
     const email = faker.internet.email()
     const date = new Date()
@@ -38,7 +36,8 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
 describe('Designer service test', () => {
 
     let vendorId
-    let DesignerId;
+    let designerId;
+    let reviewid;
 
 
 
@@ -54,42 +53,45 @@ describe('Designer service test', () => {
         vendorId = res.body._id
 
         done()
-    }, TIME)
+    })
 
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
         const res = await request(app).post("/api/vendor/designer").send(dataToSend)
         expect(res.body._id).toBeDefined()
-        DesignerId = res.body._id
+        designerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
         expect(res.status).toEqual(200)
         done()
-    }, TIME)
+    })
 
-    test('Designers settings test', async done => {
-        const designer = {
-            designer_name: "hello12345",
-            location: "OZARK"
-        }
 
-        const res = await request(app).put("/api/vendor/designer/settings/" + DesignerId).send(designer)
 
-        expect(res.body.designer_name).toEqual(designer.designer_name)
 
-        expect(res.body.location).toEqual(designer.location)
-        expect(res.status).toEqual(200)
+    
+   
+
+
+
+//@ts-ignore
+    const i:ReviewSI={
+        message:"good",
+        rating:5,
+        designer_id:designerId
+    }
+    test("Review post",async done=>{
+        const res = await request(app).post("/api/vendor/reviews").send(i)
+        expect(res.body._id).toBeDefined()
+        expect(res.status).toBe(200)
+        reviewid = res.body._id
         done()
 
 
-
     })
-})
 
-afterAll(async (done) => {
-    await db.disconnect()
-    done()
+
 })
 

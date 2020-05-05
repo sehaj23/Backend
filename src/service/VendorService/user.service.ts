@@ -8,8 +8,8 @@ import CONFIG from "../../config";
 import UserI from "../../interfaces/user.interface";
 import * as crypto from "crypto"
 
-export default class UserService extends BaseService{
-    constructor(){
+export default class UserService extends BaseService {
+    constructor() {
         super(User)
     }
 
@@ -37,7 +37,7 @@ export default class UserService extends BaseService{
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
-            const newEvent = await User.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+            const newEvent = await User.findByIdAndUpdate({ _id }, { photo: photo._id }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
@@ -46,7 +46,7 @@ export default class UserService extends BaseService{
         }
     }
 
-    
+
     getPhoto = async (req: Request, res: Response) => {
         try {
             const _id = req.params.id

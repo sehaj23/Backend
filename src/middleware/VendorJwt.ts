@@ -18,7 +18,7 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
       try {
           
         // verifies secret and checks exp
-        const decoded: string | object = await jwt.verify(token,CONFIG.VENDOR_JWT);
+        const decoded: string | object = await jwt.verify(token,CONFIG.JWT_KEY);
         // @ts-ignore
         if (!decoded._id) {
           logger.error("something went wrong, please login again")

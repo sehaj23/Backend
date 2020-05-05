@@ -15,14 +15,14 @@ beforeAll(async (done) => {
     done();
 });
 
-const getMUA: (vendorId:string) => MakeupArtistI = (vendorId: string) => {
+const getMUA: (vendorId: string) => MakeupArtistI = (vendorId: string) => {
     const date = new Date();
     const email = faker.internet.email()
-    
+
     const dataToSend = {
-       
+
         "name": "zolo",
-        "designer_name":"hello1",
+        "designer_name": "hello1",
         "contact_number": "1234567890",
         "description": "desc",
         "email": email,
@@ -46,23 +46,23 @@ describe("Makeup Artist service test", () => {
             contact_number: "123456789",
             email: "sehajakdsjbdkasnbjd@gmail.com",
         };
-        
+
         const res = await request(app).post("/api/vendor/login/create").send(v);
-       
+
         vendorId = res.body._id;
-        
+
         done();
     });
 
     test("Makeup Artist Post", async (done) => {
-       
+
         expect(vendorId).toBeDefined()
         const dataToSend = getMUA(vendorId)
         const res = await request(app).post("/api/vendor/makeupArtist").send(dataToSend);
 
         expect(res.body._id).toBeDefined();
         muaid = res.body._id
-      // check response vendor ID problem
+        // check response vendor ID problem
         expect(res.body.name).toEqual(dataToSend.name);
         expect(res.body.start_working_hours).toBeDefined();
         expect(res.body.speciality).toEqual(dataToSend.speciality);
@@ -73,22 +73,22 @@ describe("Makeup Artist service test", () => {
     });
 
     test('MUA settings test', async done => {
-        const mua={
-            name:"hello12345",
-            location:"OZARK"
+        const mua = {
+            name: "hello12345",
+            location: "OZARK"
         }
         console.log(muaid)
-       
-        const res = await request(app).put("/api/vendor/makeupArtist/settings/"+muaid).send(mua)
-       
+
+        const res = await request(app).put("/api/vendor/makeupArtist/settings/" + muaid).send(mua)
+
         expect(res.body.name).toEqual(mua.name)
-    
+
         expect(res.body.location).toEqual(mua.location)
         expect(res.status).toEqual(200)
         done()
-    
-    
-    
+
+
+
     })
 
 });

@@ -15,7 +15,7 @@ beforeAll(async (done) => {
     done();
 });
 
-const getMUA: (vendorId:string) => MakeupArtistI = (vendorId: string) => {
+const getMUA: (vendorId: string) => MakeupArtistI = (vendorId: string) => {
     const date = new Date();
     const email = faker.internet.email()
     const dataToSend = {
@@ -57,7 +57,7 @@ describe("Makeup Artist service test", () => {
         };
         const res = await request(app).post("/api/vendor").send(v);
         vendorId = res.body._id;
-        
+
         done();
     });
 
@@ -218,7 +218,7 @@ describe("Makeup Artist service test", () => {
         // checking for new photos
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved
@@ -233,7 +233,7 @@ describe("Makeup Artist service test", () => {
         const resM = await request(app).post("/api/makeupArtist").send(dataToSend);
         expect(resM.body._id).toBeDefined();
         const makeupArtistId = resM.body._id;
-        
+
         const res2 = await request(app).put(`/api/makeupArtist/${makeupArtistId}/photo`).send(photo)
         // this is same
         expect(res2.status).toEqual(200)
@@ -243,7 +243,7 @@ describe("Makeup Artist service test", () => {
         expect(res.body._id).toEqual(makeupArtistId)
         expect(Array.isArray(res.body.photo_ids)).toBeTruthy()
         expect(res.body.photo_ids.length).toEqual(1)
-        const gotPhoto : PhotoI= res.body.photo_ids[0]
+        const gotPhoto: PhotoI = res.body.photo_ids[0]
         expect(gotPhoto.description).toEqual(photo.description)
         expect(gotPhoto.name).toEqual(photo.name)
         expect(gotPhoto.approved).toEqual(false)// by default photos should not be approved

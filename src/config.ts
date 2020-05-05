@@ -2,7 +2,7 @@
 enum CONFIG{
     JWT_KEY = "thisisaveryfescuredtokesss",
     RES_ERROR = "Server Error:",
-    VENDOR_JWT = "thisisvendorsecretkey"
+    VENDOR_JWT = "vendorkey"
 }
 
 export default CONFIG
