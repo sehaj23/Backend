@@ -61,4 +61,16 @@ export default class LoginService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+   static get = async (req: Request, res: Response) => {
+
+        try {
+            const id = req.params.id
+            const outlets = await (await Vendor.findById(id).select("makeup_artists").populate("makeup_artists").select("salons").populate("salons").select("designers").populate("designers").exec())
+            res.send(outlets)
+            
+        } catch (error) {
+            
+        }
+
+    }
 }

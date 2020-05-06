@@ -8,6 +8,7 @@ import mongoose from "../../database"
 import Service from "../../models/service.model"
 import { ServiceSI } from "../../interfaces/service.interface"
 import Offer from "../../models/offer.model"
+import * as moment from "moment"
 
 
 
@@ -428,28 +429,20 @@ export default class BookinkService extends BaseService {
     }
 
     getBookings = async (req: Request, res: Response) => {
-        const salon_id = req.params.id
+      
         const match = {}
-        const date = new Date().toLocaleDateString()
-        console.log(date)
+        const date =  moment().format('YYYY,MM,DD')
+     
 
 
 
 
-        if (!salon_id) {
-            const errMsg = "Error fetching Bookings"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-        } else {
-            //@ts-ignore
-            match.salon_id = salon_id
-
-        }
-
+      
+        
+    
         if (req.query.status || req.query.employee || req.query.service) {
 
+                
 
             if (req.query.status) {
                 //@ts-ignore
@@ -466,6 +459,12 @@ export default class BookinkService extends BaseService {
                     match.services = { $elemMatch: { employee_id: req.query.employee } }
                 }
 
+                if(req.query.startdate || req.query.last){
+                    //@ts-ignore
+                    match.date = {date_time: {"$gte": new Date(req.query.start), "$lt": new Date(req.query.last)}}
+                }
+                
+
                 //@ts-ignore
                 const booking = await Booking.find((match))
                 res.send(booking)
@@ -474,8 +473,8 @@ export default class BookinkService extends BaseService {
         } else {
 
             //@ts-ignore
-            match.date_time = date
-            const booking = await Booking.find(({ match }))
+           console.log(date)
+            const booking = await Booking.find({date_time:new Date(date)})
             return res.send(booking)
             // check with date thing from db
         }

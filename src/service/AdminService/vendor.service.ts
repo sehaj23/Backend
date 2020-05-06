@@ -31,6 +31,8 @@ export default class VendorService extends BaseService{
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+  
 
     
 }
+
