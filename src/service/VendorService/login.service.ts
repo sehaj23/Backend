@@ -65,7 +65,7 @@ export default class LoginService extends BaseService {
 
         try {
             const id = req.params.id
-            const outlets = await (await Vendor.findById(id).select("makeup_artists").populate("makeup_artists").select("salons").populate("salons").select("designers").populate("designers").exec())
+            const outlets = await Vendor.findById(id).select("makeup_artists").populate("makeup_artists").select("salons").populate("salons").select("designers").populate("designers").exec()
             res.send(outlets)
             
         } catch (error) {

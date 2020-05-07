@@ -9,6 +9,10 @@ import Service from "../../models/service.model"
 import { ServiceSI } from "../../interfaces/service.interface"
 import Offer from "../../models/offer.model"
 import * as moment from "moment"
+import Employee from "../../models/employees.model"
+import Photo from "../../models/photo.model"
+
+
 
 
 
@@ -396,7 +400,7 @@ export default class BookinkService extends BaseService {
 
         try {
             const bookingId = req.params.id
-            const employeeId = mongoose.Types.ObjectId(req.body.employee_id)
+            const employeeId = req.body.employee_id
             const serviceName = req.body.service_name
             if (!bookingId) {
                 const errMsg = 'Booking  not found'
@@ -414,7 +418,7 @@ export default class BookinkService extends BaseService {
 
             }
 
-            const booking = await Booking.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId })
+            const booking = await Booking.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId },{new:true})
             res.send(booking)
 
         } catch (error) {
@@ -429,57 +433,139 @@ export default class BookinkService extends BaseService {
     }
 
     getBookings = async (req: Request, res: Response) => {
-      
+
         const match = {}
-        const date =  moment().format('YYYY,MM,DD')
-     
+        const date = moment().format('YYYY-MM-DD')
+        const page = parseInt(req.query.page, 10) || 0
+        const limit = parseInt(req.query.limit, 10) || 10
 
 
 
 
-      
-        
-    
-        if (req.query.status || req.query.employee || req.query.service) {
 
-                
-
-            if (req.query.status) {
-                //@ts-ignore
-                match.status = req.query.status
+        try {
 
 
-                if (req.query.service) {
+            if (req.query.status || req.query.employee || req.query.service || req.query.startdate || req.query.lastdate) {
+
+
+
+                if (req.query.status) {
                     //@ts-ignore
-                    match.services = { $elemMatch: { service_name: req.query.service } }
+                    match.status = req.query.status
+                }
+
+                if (req.query.services) {
+                    //@ts-ignore
+                    match.services = { service: { $elemMatch: { service_name: req.query.service } } }
                 }
                 //testing for employee is left
-                if (req.query.employee) {
+                if (req.query.employee_id) {
                     //@ts-ignore
-                    match.services = { $elemMatch: { employee_id: req.query.employee } }
+                    match.services = { service: { $elemMatch: { employee_id: req.query.employee } } }
                 }
 
-                if(req.query.startdate || req.query.last){
+                if (req.query.startdate && req.query.lastdate) {
+
+                    console.log(req.query.startdate)
                     //@ts-ignore
-                    match.date = {date_time: {"$gte": new Date(req.query.start), "$lt": new Date(req.query.last)}}
+                    match.date_time = { "$gte": new Date(req.query.startdate), "$lt": new Date(req.query.lastdate) }
                 }
-                
+
 
                 //@ts-ignore
-                const booking = await Booking.find((match))
+                const booking = await Booking.find((match)).limit(limit).skip(page * limit)
                 res.send(booking)
 
-            }
-        } else {
 
-            //@ts-ignore
-           console.log(date)
-            const booking = await Booking.find({date_time:new Date(date)})
-            return res.send(booking)
-            // check with date thing from db
+            } else {
+
+
+                //@ts-ignore
+
+                const booking = await Booking.find({ date_time: { "$gte": date } }).limit(limit).skip(page * limit)
+                return res.send(booking)
+                // check with date thing from db
+            }
+        } catch (e) {
+            const errMsg = "Error fetching bookings"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+
+    }
+    getbookingbyid = async (req: Request, res: Response) => {
+
+        try {
+
+
+            const id = req.params.id
+            if (!id) {
+                const errMsg = "Error fetching bookings"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+            const booking = await Booking.findById(id).populate({path:"services.service_id",model:Service,populate:{path:"offers",model:Offer}}).populate({path:"services.employee_id",model:Employee,select:"name phone",populate:{path:"photo",model:Photo}})
+            res.send(booking)
+
+
+
+        } catch (error) {
+            const errMsg = "Error fetching bookings"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
         }
 
 
+    }
+    reschedulebooking = async (req: Request, res: Response) => {
+
+        try {
+            const id =req.params.id
+            const date_time = req.body.date_time
+            const date = moment().format('YYYY-MM-DD')
+            console.log(date)
+            if(date_time<date){
+                const errMsg = "Cannot reschedule for past dates!"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+
+            if(!id){
+                const errMsg = "Error Booking not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+                
+            }
+            const booking = await Booking.findByIdAndUpdate(id,{date_time:date_time},{new:true})
+            if(!booking){
+                const errMsg = "unable to update boooking"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+            res.send(booking)
+        } catch (error) {
+            
+            const errMsg = "Error Bookingg not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
     }
 
 }

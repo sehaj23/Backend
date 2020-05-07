@@ -6,9 +6,9 @@ const bookingRouter = Router()
 const vs = new BookinkService()
 
 bookingRouter.post("/", VendorverifyToken, vs.post)
-//bookingRouter.get("/", VendorverifyToken, vs.get)
-bookingRouter.get("/", VendorverifyToken, vs.getBookings)
-bookingRouter.put("/:id", VendorverifyToken, vs.put)
+bookingRouter.get("/:id", VendorverifyToken, vs.getbookingbyid)
+bookingRouter.get("/", VendorverifyToken, vs.getBookings) //filter can be used here
+bookingRouter.put("/assignEmployee/:id", VendorverifyToken, vs.assigneEmployeeBookings)
 bookingRouter.get("/salon/:id",VendorverifyToken,vs.getSalonBookings)
 bookingRouter.get("/makeupArtist/:id",VendorverifyToken,vs.getmakeupArtistBookings)
 bookingRouter.get("/designer/:id",VendorverifyToken,vs.getDesignerBookings)
@@ -16,5 +16,7 @@ bookingRouter.get("/pending/salon/:id",VendorverifyToken,vs.getPendingSalonBooki
 bookingRouter.get("/pending/makeupArtist/:id",VendorverifyToken,vs.getPendingmakeupArtistBookings)
 bookingRouter.get("/pending/designer/:id",VendorverifyToken,vs.getPendingDesignerBookings)
 bookingRouter.patch("/updatestatus/:id",VendorverifyToken,vs.updateStatusBookings)
+bookingRouter.patch("/reschedule/:id",VendorverifyToken,vs.reschedulebooking)
+
 
 export default bookingRouter
