@@ -457,12 +457,12 @@ export default class BookinkService extends BaseService {
 
                 if (req.query.services) {
                     //@ts-ignore
-                    match.services = { service: { $elemMatch: { service_name: req.query.service } } }
+                    match.services = { service: { $in : { service_name: req.query.service } } }
                 }
                 //testing for employee is left
                 if (req.query.employee_id) {
                     //@ts-ignore
-                    match.services = { service: { $elemMatch: { employee_id: req.query.employee } } }
+                    match.services = { service: { $in : { employee_id: req.query.employee } } }
                 }
 
                 if (req.query.startdate && req.query.lastdate) {
