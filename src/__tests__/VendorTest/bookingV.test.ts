@@ -166,7 +166,6 @@ describe('Bookings service test', () => {
             "salon_id": salonid,
             "user_id": userid,
             "services": [{
-
                 "service_name": "haircut",
                 "service_real_price": 500,
                 "service_total_price": 500,
@@ -174,10 +173,6 @@ describe('Bookings service test', () => {
                 "vendor_commission": 100,
                 "service_time": date,
                 "service_id": serviceid,
-
-
-
-
             }],
             "price": 200,
             "balance": 500,
