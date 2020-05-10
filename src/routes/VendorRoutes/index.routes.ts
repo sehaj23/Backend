@@ -9,6 +9,7 @@ import serviceRouter from "./service.router"
 import OfferRouter from "./offer.router"
 import reviewsRouter from "./reviews.router"
 import revenueRouter from "./revenue.router"
+import dashboardRouter from "./dashboard.router";
 
 
 const Vendorrouter = Router();
@@ -24,7 +25,7 @@ Vendorrouter.use("/service",serviceRouter)
 Vendorrouter.use("/offer",OfferRouter)
 Vendorrouter.use("/reviews",reviewsRouter)
 Vendorrouter.use("/revenue",revenueRouter)
-
+Vendorrouter.use("/dashboard", dashboardRouter)
 
 
 export default Vendorrouter

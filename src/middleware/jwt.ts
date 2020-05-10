@@ -4,7 +4,7 @@ import CONFIG from "../config";
 import logger from "../utils/logger";
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) =>  {
-  if(process.env.NODE_ENV === 'test' || true) {
+  if(process.env.NODE_ENV === 'test') {
     next()
     return
   }
