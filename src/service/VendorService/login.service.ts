@@ -54,7 +54,7 @@ export default class LoginService extends BaseService {
                 return
             }
             vendor.password = ""
-            const token = await jwt.sign(vendor.toJSON(), CONFIG.JWT_KEY)
+            const token = await jwt.sign(vendor.toJSON(), CONFIG.JWT_KEY,{expiresIn:"7 days"})
             res.send({ token })
         } catch (e) {
             res.status(403)

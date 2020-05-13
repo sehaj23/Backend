@@ -6,6 +6,7 @@ import * as path from "path";
 import * as dotenv from "dotenv";
 import router from "./routes/AdminRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes"
+import VendorApprouter from "./routes/VendorAppRoutes/index.routes"
 import * as aws from "aws-sdk";
 import * as multer from "multer";
 import * as multerS3 from "multer-s3";
@@ -70,6 +71,7 @@ app.use(bobyParser.json());
 
 app.use("/api", router);
 app.use("/api/v/",Vendorrouter)
+app.use("/api/vendorapp/",VendorApprouter)
 app.get(
   "/app/get-vendor",
   async (req: express.Request, res: express.Response) => {
