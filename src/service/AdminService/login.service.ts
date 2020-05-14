@@ -29,7 +29,7 @@ export default class LoginService {
                 return
             }
             admin.password = ""
-            const token = await jwt.sign(admin.toJSON(), CONFIG.JWT_KEY)
+            const token = await jwt.sign(admin.toJSON(), CONFIG.ADMIN_JWT_KEY)
             res.send({token})
         }catch(e){
             res.status(403)

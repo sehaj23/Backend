@@ -3,6 +3,25 @@ import * as jwt from "jwt-then"
 import CONFIG from "../config";
 import logger from "../utils/logger";
 
+
+export const vendorJWTVerification = async (token: string) => {
+  try {
+        
+    // verifies secret and checks exp
+    const decoded: string | object = await jwt.verify(token,CONFIG.VENDOR_JWT);
+    // @ts-ignore
+    if (!decoded._id) {
+      logger.error("_id not found from decoced token")
+      return null
+    }
+    // @ts-ignore
+    return decoded
+  } catch (err) {
+    logger.error(err.message)
+    return null
+  }
+}
+
 const VendorverifyToken = async (req: Request, res: Response, next: NextFunction) =>  {
     if(process.env.NODE_ENV === 'test') {
       next()
@@ -18,11 +37,10 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
       try {
           
         // verifies secret and checks exp
-        const decoded: string | object = await jwt.verify(token,CONFIG.JWT_KEY);
-        // @ts-ignore
-        if (!decoded._id) {
-          logger.error("something went wrong, please login again")
-          res.status(401).send({ message: "something went wrong, please login again" });
+        const decoded = vendorJWTVerification(token)
+        if(decoded === null){
+          logger.error("Something went wrong")
+          res.status(401).send({ success: false, message: 'Something went wrong' });
           return
         }
         // @ts-ignore

@@ -8,7 +8,8 @@ import Service from "../../models/service.model";
 import { ServiceSI } from "../../interfaces/service.interface";
 import Offer from "../../models/offer.model";
 import Salon from "../../models/salon.model";
-import EmployeeSI from "../../interfaces/employee.interface";
+import  { SocketRoomType, getVendorRoom } from "../socketio";
+import {io} from '../../app';
 
 export default class BookinkService extends BaseService {
   constructor() {
@@ -105,9 +106,17 @@ export default class BookinkService extends BaseService {
           }
         }
       }
-      const event = await Booking.create(e);
-
-      res.send(event);
+      const booking = await Booking.create(e);
+      const vendorId: string = (booking.salon_id || booking.makeup_artist_id || booking.designer_id) as string
+      
+      console.log(io.sockets.adapter.rooms)
+      if(io.sockets.adapter.rooms[`${SocketRoomType.Admin}`]){
+        io.sockets.in(`${SocketRoomType.Admin}`).emit('new-booking', {bookingId: booking._id})
+      }
+      if(io.sockets.adapter.rooms[`${getVendorRoom(vendorId)}`]){
+        io.sockets.in(`${getVendorRoom(vendorId)}`).emit('new-booking', {bookingId: booking._id})
+      }
+      res.send(booking);
     } catch (e) {
       logger.error(`Post ${e.message}`);
       res.status(403);

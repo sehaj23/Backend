@@ -13,10 +13,20 @@ import * as multerS3 from "multer-s3";
 import NewVendor from "./models/newVendor.model";
 import logger from "./utils/logger";
 import * as cors from "cors";
-
+import startSocketIO from "./service/socketio";
 
 const app = express();
 app.use(cors());
+
+export const http = require('http').createServer(app);
+
+export const io: SocketIO.Server = require("socket.io")(http, {
+  path: "/ws"
+});
+
+startSocketIO(io)
+
+
 
 const spacesEndpoint = new aws.Endpoint("nyc3.digitaloceanspaces.com");
 const s3 = new aws.S3({
@@ -134,5 +144,6 @@ app.use(function (req, res, next) {
   res.status(404);
   res.send(err);
 });
+
 
 export default app

@@ -1,7 +1,8 @@
 import Employee from "./models/employees.model";
 
 enum CONFIG{
-    JWT_KEY = "thisisaveryfescuredtokesss",
+    ADMIN_JWT_KEY = "thisisaveryfescuredtokesss",
+    VENDOR_JWT_KEY = "thisisVendorBRO!@34532@!2", 
     RES_ERROR = "Server Error:",
     VENDOR_JWT = "thisisasecretkey",
     EMP_JWT = "thisisemployeesecretkey"
