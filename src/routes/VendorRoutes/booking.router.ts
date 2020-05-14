@@ -7,7 +7,7 @@ const vs = new BookinkService()
 
 bookingRouter.post("/", VendorverifyToken, vs.post)
 bookingRouter.get("/:id", VendorverifyToken, vs.getbookingbyid)
-bookingRouter.get("/", VendorverifyToken, vs.getBookings) //filter can be used here
+bookingRouter.get("/", VendorverifyToken, vs.getbookings) //filter can be used here
 bookingRouter.put("/assignEmployee/:id", VendorverifyToken, vs.assigneEmployeeBookings)
 bookingRouter.get("/salon/:id",VendorverifyToken,vs.getSalonBookings)
 bookingRouter.get("/makeupArtist/:id",VendorverifyToken,vs.getmakeupArtistBookings)

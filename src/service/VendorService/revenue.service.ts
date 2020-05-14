@@ -51,8 +51,10 @@ export default class RevenueService {
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break
                 case "page_number":
-                case "page_length":
-                    break
+                    
+                    
+
+                    break;
                 default:
                     filters[k] = q[k]
             }
@@ -62,6 +64,7 @@ export default class RevenueService {
         //     "$lt": dateFilter["end_date"]
         // }
         console.log(filters);
+        console.log(pageLength)
         
         try{
             const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')

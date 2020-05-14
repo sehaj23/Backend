@@ -16,7 +16,7 @@ import Photo from "../../models/photo.model"
 
 
 
-export default class BookinkService extends BaseService {
+export default class BookingService extends BaseService {
 
     constructor() {
         super(Booking)
@@ -432,70 +432,73 @@ export default class BookinkService extends BaseService {
 
     }
 
-    getBookings = async (req: Request, res: Response) => {
+    getbookings = async (req: Request, res: Response) => {
 
-        const match = {}
-        const date = moment().format('YYYY-MM-DD')
-        const page = parseInt(req.query.page, 10) || 0
-        const limit = parseInt(req.query.limit, 10) || 10
-
-
-
-
-
-        try {
-
-
-            if (req.query.status || req.query.employee || req.query.service || req.query.startdate || req.query.lastdate) {
-
-
-
-                if (req.query.status) {
-                    //@ts-ignore
-                    match.status = req.query.status
-                }
-
-                if (req.query.services) {
-                    //@ts-ignore
-                    match.services = { service: { $in : { service_name: req.query.service } } }
-                }
-                //testing for employee is left
-                if (req.query.employee_id) {
-                    //@ts-ignore
-                    match.services = { service: { $in : { employee_id: req.query.employee } } }
-                }
-
-                if (req.query.startdate && req.query.lastdate) {
-
-                    console.log(req.query.startdate)
-                    //@ts-ignore
-                    match.date_time = { "$gte": new Date(req.query.startdate), "$lt": new Date(req.query.lastdate) }
-                }
-
-
-                //@ts-ignore
-                const booking = await Booking.find((match)).limit(limit).skip(page * limit)
-                res.send(booking)
-
-
-            } else {
-
-
-                //@ts-ignore
-
-                const booking = await Booking.find({ date_time: { "$gte": date } }).limit(limit).skip(page * limit)
-                return res.send(booking)
-                // check with date thing from db
+        const q = req.query
+        console.log(q)
+    
+        const pageNumber: number = parseInt( q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        console.log(pageLength)
+        console.log(skipCount)
+    
+        const keys = Object.keys(q)
+        const filters = {}
+        const dateFilter = {}
+        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+        for (const k of keys) {
+            switch(k){
+                case "service_id":
+                    filters["services.service_id"] = {
+                        "$in": q[k].split(",")
+                    } 
+                    break
+                case "employee_id":
+                    filters["services.employee_id"] = {
+                        "$in": q[k].split(",")
+                    } 
+                    break
+                case "status":
+                    filters["status"]= q[k]
+                case "start_date":
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    break
+                case "end_date":
+                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    break
+                case "page_number":
+                case "page_length":
+                    
+                    break
+                default:
+                    filters[k] = q[k]
             }
-        } catch (e) {
-            const errMsg = "Error fetching bookings"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
+        
+    
         }
-
-    }
+        console.log(filters);
+            try {
+                const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+                const bookingPagesReq = Booking.count(filters)
+                const bookingStatsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+                    
+               
+                const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
+                res.send({bookingDetails, bookingStats, bookingPages})
+                
+            } catch (error) {
+                const errMsg = "Error Bookingg not found"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+                
+            }
+    
+        }
     getbookingbyid = async (req: Request, res: Response) => {
 
         try {
