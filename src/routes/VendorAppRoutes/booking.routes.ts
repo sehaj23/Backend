@@ -1,5 +1,5 @@
 import { Router } from "express";
-import EmployeeverifyToken from "../../middleware/employee.jwt";
+import EmployeeverifyToken from "../../middleware/Employee.jwt"
 import Bookingservice from "../../service/VendorAppService/booking.service";
 const bookingRouter = Router()
 const bs = new Bookingservice()
