@@ -69,7 +69,7 @@ const DesignerSchema = new mongoose.Schema({
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendors",
-  //      required: true
+       required: true
     },
     events: {
         type:[{
