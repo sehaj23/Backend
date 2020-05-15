@@ -55,7 +55,7 @@ export default class LoginService extends BaseService {
             }
             vendor.password = ""
             const token = await jwt.sign(vendor.toJSON(), CONFIG.VENDOR_JWT,{expiresIn:"7 days"})
-            res.send({ token })
+            res.send({ token,vendor })  //made change here for ID
         } catch (e) {
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
