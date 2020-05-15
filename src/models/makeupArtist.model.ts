@@ -22,11 +22,11 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     start_price: {
         type: Number,
-        required: true
+//        required: true
     },
     end_price: {
         type: Number,
-        required: true
+//        required: true
     },
     services: {
         type: [{

@@ -25,11 +25,11 @@ const DesignerSchema = new mongoose.Schema({
     },
     start_price: {
         type: Number,
-        required: true
+      //  required: true
     },
     end_price: {
         type: Number,
-        required: true
+     //   required: true
     },
     outfit_types: {
         type: [{type: String}],
