@@ -6,10 +6,10 @@ const rs = new ReviewsService()
 
 
 
-reviewsRouter.post("/",VendorverifyToken,rs.PostReviews)
-reviewsRouter.get("/",VendorverifyToken,rs.AllReviews)
-reviewsRouter.put("/reply/:id",VendorverifyToken,rs.ReplyReviews)
-reviewsRouter.get("/new",VendorverifyToken,rs.NewReviews)
-reviewsRouter.put("/report/:id",VendorverifyToken,rs.ReportReviews)
+reviewsRouter.post("/",VendorverifyToken,rs.postReviews)
+reviewsRouter.get("/",VendorverifyToken,rs.allReviews)
+reviewsRouter.put("/reply/:id",VendorverifyToken,rs.replyReviews)
+reviewsRouter.get("/new",VendorverifyToken,rs.newReviews)
+reviewsRouter.put("/report/:id",VendorverifyToken,rs.reportReviews)
 
 export default reviewsRouter

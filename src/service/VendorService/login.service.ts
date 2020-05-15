@@ -35,7 +35,7 @@ export default class LoginService extends BaseService {
     }
 
 
-    static Vendorpost = async (req: Request, res: Response) => {
+    static vendorPost = async (req: Request, res: Response) => {
         try {
 
             const { email, password } = req.body

@@ -9,7 +9,7 @@ const review = Router()
 
 export default class ReviewsServices {
 
-    AllReviews = async (req: Request, res: Response) => {
+    allReviews = async (req: Request, res: Response) => {
         try {
             const reviews = await Reviews.find({})
             res.send(reviews)
@@ -32,7 +32,7 @@ export default class ReviewsServices {
 
     }
 
-    PostReviews = async (req: Request, res: Response) => {
+    postReviews = async (req: Request, res: Response) => {
         try {
             const v: ReviewSI = req.body
             if (!v.message || !v.rating) {
@@ -52,7 +52,7 @@ export default class ReviewsServices {
         }
     }
 
-    NewReviews = async (req: Request, res: Response) => {
+    newReviews = async (req: Request, res: Response) => {
 
         try {
             const reviews = await Reviews.find({}, {}, { sort: { 'createdAt': -1 } })
@@ -69,7 +69,7 @@ export default class ReviewsServices {
         }
     }
 
-    ReplyReviews = async (req: Request, res: Response) => {
+    replyReviews = async (req: Request, res: Response) => {
         try {
             const review_id = req.params.id
             const review = await Reviews.findByIdAndUpdate(review_id, { $push: { reply: review_id } }, { new: true })
@@ -85,7 +85,7 @@ export default class ReviewsServices {
 
 
     }
-    ReportReviews = async (req: Request, res: Response) => {
+    reportReviews = async (req: Request, res: Response) => {
         try {
             const review_id = req.params.id
             if (!review_id) {

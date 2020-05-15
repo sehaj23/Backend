@@ -9,7 +9,7 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     description:{
         type: String,
-        required: true
+    //    required: true
     },
     contact_number:{
         type: String,
@@ -36,11 +36,11 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     speciality: {
         type: [{type: String}],
-        required: true
+    //    required: true
     },
     location:{
         type: String,
-        required: true,
+    //    required: true,
     },
     insta_link:{
         type: String,
@@ -50,11 +50,11 @@ const MakeupArtistSchema = new mongoose.Schema({
     },
     start_working_hours: {
         type: [Date],
-        required: true
+    //    required: true
     },
     end_working_hours: {
         type: [Date],
-        required: true
+    //    required: true
     },
     approved: {
         type: Boolean,

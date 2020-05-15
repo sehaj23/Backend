@@ -7,6 +7,7 @@ const ds = new DesignerService()
 
 
 designerRouter.post("/",VendorverifyToken,ds.post)
-designerRouter.put("/settings/:id",VendorverifyToken,ds.DesignerSettings)
+designerRouter.patch("/:id",VendorverifyToken,ds.patchDesigner)
+designerRouter.put("/settings/:id",VendorverifyToken,ds.designerSettings)
 
 export default designerRouter

@@ -8,6 +8,9 @@ import mongoose from "../../database";
 import BaseService from "./base.service";
 import { DesignersI } from "../../interfaces/designer.interface";
 import Vendor from "../../models/vendor.model";
+import { vendorJWTVerification } from "../../middleware/VendorJwt"
+
+
 
 export default class DesignerService extends BaseService {
 
@@ -17,9 +20,26 @@ export default class DesignerService extends BaseService {
 
     post = async (req: Request, res: Response) => {
         try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+             //@ts-ignore
+             req.body.vendor_id = decoded._id
             const d: DesignersI = req.body
+           
             const designer = await Designer.create(d)
-            const _id = designer.vendor_id
+            //@ts-ignore
+            const _id = mongoose.Types.ObjectId(decoded._id) 
+
             await Vendor.findOneAndUpdate({ _id }, { $push: { designers: designer._id } })
             res.send(designer)
         } catch (e) {
@@ -29,7 +49,40 @@ export default class DesignerService extends BaseService {
 
         }
     }
-    DesignerSettings = async (req: Request, res: Response) => {
+    patchDesigner = async (req: Request, res: Response) => {
+        try {
+
+            const id = req.params.id
+            if (!id) {
+                const errMsg = "Designer ID not found"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+
+            const d = req.body
+
+            const designer = await Designer.findByIdAndUpdate(id, d, { new: true })
+            res.send(designer)
+
+
+        } catch (error) {
+            const errMsg = "Designer ID not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+
+        }
+
+
+    }
+
+
+    designerSettings = async (req: Request, res: Response) => {
         try {
             const designer_id = req.params.id
 

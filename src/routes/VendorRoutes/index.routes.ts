@@ -6,7 +6,7 @@ import salonRouter from "./salon.router";
 import bookingRouter from "./booking.router"
 import employeeRouter from "./employee.router"
 import serviceRouter from "./service.router"
-import OfferRouter from "./offer.router"
+import offerRouter from "./offer.router"
 import reviewsRouter from "./reviews.router"
 import revenueRouter from "./revenue.router"
 import dashboardRouter from "./dashboard.router";
@@ -22,7 +22,7 @@ Vendorrouter.use("/bookings",bookingRouter)
 Vendorrouter.use("/salon",salonRouter)
 Vendorrouter.use("/employee",employeeRouter)
 Vendorrouter.use("/service",serviceRouter)
-Vendorrouter.use("/offer",OfferRouter)
+Vendorrouter.use("/offer",offerRouter)
 Vendorrouter.use("/reviews",reviewsRouter)
 Vendorrouter.use("/revenue",revenueRouter)
 Vendorrouter.use("/dashboard", dashboardRouter)
