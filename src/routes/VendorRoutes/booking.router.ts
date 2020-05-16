@@ -9,9 +9,12 @@ bookingRouter.post("/", VendorverifyToken, vs.post)
 bookingRouter.get("/:id", VendorverifyToken, vs.getbookingbyid)
 bookingRouter.get("/", VendorverifyToken, vs.getbookings) //filter can be used here
 bookingRouter.put("/assignEmployee/:id", VendorverifyToken, vs.assigneEmployeeBookings)
-bookingRouter.get("/salon/:id",VendorverifyToken,vs.getSalonBookings)
-bookingRouter.get("/makeupArtist/:id",VendorverifyToken,vs.getmakeupArtistBookings)
-bookingRouter.get("/designer/:id",VendorverifyToken,vs.getDesignerBookings)
+bookingRouter.get("/all/salon/:id",VendorverifyToken,vs.getAllSalonBookings)  //test cases left
+bookingRouter.get("/all/mua/:id",VendorverifyToken,vs.getAllMuaBookings) //test cases left
+bookingRouter.get("/all/designer/:id",VendorverifyToken,vs.getAllDesignerBookings) //test cases left
+bookingRouter.get("/salon/:id",VendorverifyToken,vs.getSalonBookings) // bookings except pending
+bookingRouter.get("/makeupArtist/:id",VendorverifyToken,vs.getmakeupArtistBookings) //booking except pending
+bookingRouter.get("/designer/:id",VendorverifyToken,vs.getDesignerBookings) // booking except pending
 bookingRouter.get("/pending/salon/:id",VendorverifyToken,vs.getPendingSalonBookings)
 bookingRouter.get("/pending/makeupArtist/:id",VendorverifyToken,vs.getPendingmakeupArtistBookings)
 bookingRouter.get("/pending/designer/:id",VendorverifyToken,vs.getPendingDesignerBookings)

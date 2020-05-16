@@ -570,5 +570,101 @@ export default class BookingService extends BaseService {
             return
         }
     }
+    getAllSalonBookings = async (req: Request, res: Response) => {
+        try {
+            const salonId = req.params.id
+            if (!salonId) {
+                const errMsg = 'Salon Id not found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+
+            const bookings = await Booking.find({ salon_id: salonId})
+            if (!bookings) {
+                const errMsg = 'No Bookings Found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+
+            res.send(bookings)
+        } catch (e) {
+            const errMsg = "Error Fetching Bookings"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+
+    }
+    getAllMuaBookings = async (req: Request, res: Response) => {
+        try {
+            const makeupArtistId = req.params.id
+            if (!makeupArtistId) {
+                const errMsg = 'Makeup Artist ID not found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+
+            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId})
+            if (!bookings) {
+                const errMsg = 'No Bookings Found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+            res.status(200).send(bookings)
+        } catch (e) {
+            const errMsg = "Error Fetching Bookings"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+
+
+    }
+    getAllDesignerBookings =  async (req: Request, res: Response) => {
+        try {
+            const designerId = req.params.id
+            if (!designerId) {
+                const errMsg = 'Designer Id not found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+
+            const bookings = await Booking.find({ designer_id: designerId})
+            if (!bookings) {
+                const errMsg = 'No Bookings Found'
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+            res.status(200).send(bookings)
+        } catch (e) {
+            const errMsg = "Error Fetching Bookings"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+
+
+    }
 
 }
