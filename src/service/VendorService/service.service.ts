@@ -6,6 +6,8 @@ import mongoose from "../../database";
 
 import Service from "../../models/service.model";
 import BaseService from "./base.service";
+import Salon from "../../models/salon.model";
+import Mua from "../../models/makeupArtist.model";
 const service = Router()
 
 export default class ServiceServices {
@@ -18,9 +20,27 @@ export default class ServiceServices {
                 res.send({ message: "Send all data" })
                 return
             }
-            const ser = await Service.create(v)
-            res.send(ser)
+            const service = await Service.create(v)
+            const service_id = service._id
 
+
+            if (req.body.salon_id) {
+                const id = mongoose.Types.ObjectId(req.body.salon_id)
+
+
+                await Salon.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+            }
+            if (req.body.mua_id) {
+                const id = mongoose.Types.ObjectId(req.body.mua_id)
+
+
+                await Mua.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+            }
+
+
+            res.send(service)
 
 
         } catch (e) {
@@ -61,10 +81,6 @@ export default class ServiceServices {
 
             }
             res.send(ser)
-
-
-
-
 
         } catch (e) {
             const errMsg = `Unable to Edit Service`

@@ -12,6 +12,12 @@ const ServiceSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    gender:{
+        type:String,
+        required:true,
+        enum:["women","men"]
+
+    },
     duration:{
         type: Number,
         default: 15,
