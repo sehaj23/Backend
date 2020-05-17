@@ -6,21 +6,79 @@ import mongoose from "../../database";
 
 import Service from "../../models/service.model";
 import BaseService from "./base.service";
+import Salon from "../../models/salon.model";
+import Mua from "../../models/makeupArtist.model";
 const service = Router()
 
 export default class ServiceServices {
 
     createService = async (req: Request, res: Response) => {
         try {
-            const v: ServiceSI = req.body
-            if (!v.name || !v.price || !v.duration) {
-                res.status(403)
-                res.send({ message: "Send all data" })
-                return
-            }
-            const ser = await Service.create(v)
-            res.send(ser)
 
+        
+           const services = req.body.services
+          if(req.body.salon_id){
+       
+           const result =   services.map(function(el){
+            var id = Object.assign({},el);
+            id.salon_id = req.body.salon_id
+            return id;
+   
+
+
+          
+           })
+           const service = await Service.create(result)
+           res.send(service)
+        }
+        if(req.body.mua_id){
+       
+            const result =   services.map(function(el){
+             var id = Object.assign({},el);
+             id.mua_id = req.body.mua_id
+             return id;
+    
+ 
+ 
+           
+            })
+            const service = await Service.create(result)
+            res.send(service)
+            
+         }
+
+       
+         
+
+           
+            
+
+
+            //  if (salon_id) {
+                
+
+              
+            //     })
+            //     console.log(result)
+
+            
+                // const service_id = service._id
+                // const id = mongoose.Types.ObjectId(req.body.salon_id)
+
+
+                //  await Salon.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+             
+            //  if (req.body.mua_id) {
+            //      const id = mongoose.Types.ObjectId(req.body.mua_id)
+
+
+            //    await Mua.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+            // }
+
+         
+           
 
 
         } catch (e) {
@@ -61,10 +119,6 @@ export default class ServiceServices {
 
             }
             res.send(ser)
-
-
-
-
 
         } catch (e) {
             const errMsg = `Unable to Edit Service`

@@ -10,7 +10,7 @@ export default interface ServiceI{
     duration: number
     salon_id? : string
     mua_id?: string,
-    reviews?: ReviewI[]
+    reviews?: ReviewI[],
 }
 
 export interface ServiceSI extends ServiceI, mongoose.Document{}
