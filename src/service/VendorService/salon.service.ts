@@ -132,4 +132,93 @@ export default class SalonService extends BaseService {
 
 
     }
+    addSalonService = async (req: Request, res: Response) => {
+        try {
+            const d: ServiceI = req.body
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            if(!_id){
+                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                return
+            }
+
+            const service = await Service.create(d)
+            const service_id = mongoose.Types.ObjectId(service._id)
+            //@ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
+            if(newSalon === null){
+                const errMsg = `Add Services: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            console.log(newSalon)
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+    deleteSalonService = async (req: Request, res: Response) => {
+        try {
+            const sid = req.params.sid
+            const _id = req.params.id
+          if(!_id || !sid){
+                logger.error(`Salon Id is missing salon_id:  & mua_id: `)
+                res.status(403)
+                res.send({ message: `Salon Id is missing salon_id: ` })
+                return
+            }
+            const osid = mongoose.Types.ObjectId(sid)
+
+       
+            // @ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, services : {$in : [osid]}}, {$pull: {services : osid}}, {new: true})
+            if(newSalon === null){
+                const errMsg = `Delete Service: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+
+    }
+    getService = async (req: Request, res: Response) => {
+        try{
+            const id = req.params.id
+            if(!id){
+                const errMsg = `id is missing from the params`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            const monogId = mongoose.Types.ObjectId(id)
+            //@ts-ignore
+            const services = await Service.find({salon_id: monogId})
+            if(services === null){
+                const errMsg = `no service found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({message: errMsg})
+                return
+            }
+            res.send(services)
+        }catch(e){
+            logger.error(`Booking service ${e.message}`)
+            res.status(403)
+            res.send({ message: `${e.message}` })
+        }
+    }
+
+
 }
