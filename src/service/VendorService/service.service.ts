@@ -14,6 +14,18 @@ export default class ServiceServices {
 
     createService = async (req: Request, res: Response) => {
         try {
+            const v: ServiceSI = req.body
+            if (!v.name || !v.price || !v.duration) {
+                res.status(403)
+                res.send({ message: "Send all data" })
+                return
+            }
+            const service = await Service.create(v)
+            const service_id = service._id
+
+
+            if (req.body.salon_id) {
+                const id = mongoose.Types.ObjectId(req.body.salon_id)
 
         
            const services = req.body.services
@@ -79,6 +91,20 @@ export default class ServiceServices {
 
          
            
+
+                await Salon.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+            }
+            if (req.body.mua_id) {
+                const id = mongoose.Types.ObjectId(req.body.mua_id)
+
+
+                await Mua.findByIdAndUpdate({ _id: id }, { $push: { services: service_id } })
+
+            }
+
+
+            res.send(service)
 
 
         } catch (e) {
