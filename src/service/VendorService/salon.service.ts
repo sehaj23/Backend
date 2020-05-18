@@ -40,7 +40,6 @@ export default class SalonService extends BaseService {
             }
             //@ts-ignore
             req.body.vendor_id = decoded._id
-
             const d: SalonI = req.body
             const salon = await Salon.create(d)
             //@ts-ignore

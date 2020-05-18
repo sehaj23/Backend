@@ -5,7 +5,7 @@ import VendorverifyToken from "../../middleware/VendorJwt";
 const loginRouter = Router()
 loginRouter.post("/", LoginService.vendorPost)
 loginRouter.post("/create", LoginService.createVendor)
-loginRouter.get("/vendor/:id",VendorverifyToken,LoginService.get)
+loginRouter.get("/vendor",VendorverifyToken,LoginService.get)
 
 
 

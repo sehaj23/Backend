@@ -7,6 +7,9 @@ import * as jwt from "jwt-then";
 import CONFIG from "../../config";
 import { VendorI } from "../../interfaces/vendor.interface";
 import BaseService from "./base.service";
+import { vendorJWTVerification } from "../../middleware/VendorJwt"
+import { mongo } from "mongoose";
+import mongoose from "../../database";
 const loginRouter = Router()
 
 export default class LoginService extends BaseService {
@@ -64,8 +67,22 @@ export default class LoginService extends BaseService {
    static get = async (req: Request, res: Response) => {
 
         try {
-            const id = req.params.id
-            const outlets = await Vendor.findById(id).select("makeup_artists").populate("makeup_artists").select("salons").populate("salons").select("designers").populate("designers").exec()
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+       
+           //@ts-ignore
+           const _id = mongoose.Types.ObjectId(decoded._id)
+            const outlets = await Vendor.findById(_id).select("makeup_artists").populate("makeup_artists").select("salons").populate("salons").select("designers").populate("designers").exec()
             res.send(outlets)
             
         } catch (error) {

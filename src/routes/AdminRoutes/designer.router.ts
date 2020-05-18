@@ -9,7 +9,7 @@ designerRouter.get("/:id", verifyToken, ds.getId)
 designerRouter.post("/", verifyToken, ds.post)
 designerRouter.put("/:id", verifyToken, ds.put)
 designerRouter.post("/event", verifyToken, ds.addDesignerEvent)
-designerRouter.post("/event/delete", verifyToken, ds.deleteDesignerEvent)
+designerRouter.delete("/event/delete", verifyToken, ds.deleteDesignerEvent)
 designerRouter.put("/:id/photo", verifyToken, ds.putPhoto)
 designerRouter.get("/:id/photo", verifyToken, ds.getPhoto)
 
