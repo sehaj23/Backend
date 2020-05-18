@@ -11,6 +11,7 @@ export default interface ServiceI{
     salon_id? : string
     mua_id?: string,
     reviews?: ReviewI[],
+    gender:string
 }
 
 export interface ServiceSI extends ServiceI, mongoose.Document{}

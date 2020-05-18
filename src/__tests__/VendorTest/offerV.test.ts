@@ -23,6 +23,7 @@ describe('Offer service test', () => {
             name: "sehaj",
             price: 200,
             duration: 15,
+            gender:"men"
 
 
         }

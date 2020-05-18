@@ -101,9 +101,44 @@ describe('Salon service test', () => {
         expect(res.status).toEqual(200)
         done()
 
+    })
+    test('Salon settings test', async done => {
+
+        const service={
+                services:[{
+                    name:"sehaj123",
+                    price:123,
+                    duration:15,
+                    gender:"men"
+                    
+                    
+                },{
+                    
+                    name:"sehaj23",
+                    price:123,
+                    duration:15,
+                    gender:"women"
+                    
+                    
+                }]
+        }
+        const res = await request(app).put(`/api/v/salon/${salonid}/service`).send(service)
+        expect(res.body).toBeDefined()
+        expect(res.status).toBe(200)
+        done()
+    })
+
+    test('Salon settings test', async done => {
+        
+        const res = await request(app).get(`/api/v/salon/${salonid}/service`)
+        expect(res.body).toBeDefined()
+        expect(res.status).toBe(200)
+        done()
 
 
     })
+
+
 
 
 })

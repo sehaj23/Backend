@@ -80,7 +80,8 @@ describe('Bookings service test', () => {
             name: "sehaj",
             price: 200,
             duration: 15,
-            salon_id:saloinid
+            salon_id:saloinid,
+            gender:"men"
 
 
         }

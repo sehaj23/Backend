@@ -132,9 +132,9 @@ export default class SalonService extends BaseService {
 
     }
     addSalonService = async (req: Request, res: Response) => {
-        console.log(req.body)
+        console.log(req.body.services)
         try {
-            const d = req.body.services
+            const d:ServiceI = req.body.services
 
             const _id = mongoose.Types.ObjectId(req.params.id)
             if (!_id) {
@@ -148,7 +148,7 @@ export default class SalonService extends BaseService {
             const service_id = mongoose.Types.ObjectId(service._id)
             //@ts-ignore
             var result = service.map(service_id => ({ _id: mongoose.Types.ObjectId(service_id.id) }));
-            console.log(result)
+           
 
             //@ts-ignore
             const newSalon = await Salon.findOneAndUpdate({ _id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()

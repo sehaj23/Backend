@@ -18,6 +18,11 @@ const ServiceSchema = new mongoose.Schema({
         required: true,
         min: 15
     },
+    gender:{
+        type:String,
+        enum:["men","women"],
+        required:true
+    },
     photo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"

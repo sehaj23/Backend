@@ -2,21 +2,41 @@ import app from "../../app";
 import * as request from "supertest"
 import { EmployeeI } from "../../interfaces/employee.interface";
 import mongoose, * as db from "../../database"
+import Services from "../../models/service.model"
+import ServiceSI from "../../interfaces/service.interface"
 const TIME = 30000
 beforeAll(async (done) => {
     await db.connectt()
     done()
 }, TIME)
 
-describe('Employee  service test', () => {
+describe('Employee  service test',() => {
     let empid;
+    let serviceid
+
+    beforeAll(async (done) => {
+        const s: ServiceSI = {
+            name: "sehaj",
+            price: 200,
+            duration: 15,
+            gender:"men"
+    
+    
+        }
+        const Service = await Services.create(s)
+        serviceid = Service._id
+    
+        done()
+    })
+  
 
     const e: EmployeeI = {
         name: "sehaj",
         phone: "9711841198",
-        services: ["5eaa0788df36ecbc2d2b0ed3"]
+        services: [serviceid]
 
     }
+
 
     test("add employee", async done => {
         const res = await request(app).post("/api/v/employee").send(e)
