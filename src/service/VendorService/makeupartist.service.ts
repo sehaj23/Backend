@@ -129,7 +129,7 @@ export default class MakeupartistServiceC extends BaseService {
     }
     addMakeupArtistService = async (req: Request, res: Response) => {
         try {
-            const d: ServiceI = req.body
+            const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
@@ -140,6 +140,13 @@ export default class MakeupartistServiceC extends BaseService {
 
             const service = await Service.create(d)
             const service_id = mongoose.Types.ObjectId(service._id)
+            console.log(service)
+            
+         
+                
+            
+
+            console.log(service_id)
             //@ts-ignore
             const newSalon = await MakeupArtist.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
             if(newSalon === null){
@@ -149,7 +156,7 @@ export default class MakeupartistServiceC extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            console.log(newSalon)
+         //   console.log(newSalon)
             res.send(newSalon)
         }catch(e){
             logger.error(`${e.message}`)
@@ -199,15 +206,16 @@ export default class MakeupartistServiceC extends BaseService {
             }
             const monogId = mongoose.Types.ObjectId(id)
             //@ts-ignore
-            const services = await Service.find({mua_id: monogId})
-            if(services === null){
+            const mua = await MakeupArtist.find({_id:monogId}).select("services").populate("services").exec()
+          //  const services = await Service.find({mua_id: monogId})
+            if(mua === null){
                 const errMsg = `no service found`
                 logger.error(errMsg)
                 res.status(400)
                 res.send({message: errMsg})
                 return
             }
-            res.send(services)
+            res.send(mua)
         }catch(e){
             logger.error(`Booking service ${e.message}`)
             res.status(403)

@@ -8,13 +8,13 @@ import EventDesignerI from "../../interfaces/eventDesigner.model";
 import { PhotoI } from "../../interfaces/photo.interface";
 import * as faker from "faker"
 
-const TIME = 30000
+const TIME = 40000
 beforeAll(async (done) => {
     await db.connectt()
     done()
 }, TIME)
 
-const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
+const getDesigner:()=> DesignersI=() => {
     const email = faker.internet.email()
     const date = new Date()
     const dataToSend: DesignersI = {
@@ -30,7 +30,8 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
         "location": "Noida",
         "speciality": ["DM"],
         "outfit_types": ["Good outfits"],
-        "vendor_id": vendorId
+        "store_type":"Retail shop",
+        "vendor_id": ""
     }
     return dataToSend
 }
@@ -39,6 +40,7 @@ describe('Designer service test', () => {
 
     let vendorId
     let DesignerId;
+    let token;
 
 
 
@@ -46,19 +48,36 @@ describe('Designer service test', () => {
         const v: VendorI = {
             name: "sehaj",
             password: "sehaj23",
-            "contact_number": "123456789",
-            "email": "sehakldnaslnkdlnk@gmail.com"
+            contact_number: "123456789",
+            email: "sehaj233@gmail.com"
         }
+       
         const res = await request(app).post("/api/v/login/create").send(v)
         expect(res.body._id).toBeDefined()
-        vendorId = res.body._id
+       
+      
+       
 
         done()
     }, TIME)
 
+    beforeAll(async (done) => {
+        const login = {
+            password: "sehaj23",
+            email: "sehaj233@gmail.com"
+
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
+        done()
+    
+    })
+
     test('Designers Post', async done => {
-        const dataToSend = getDesigner(vendorId)
-        const res = await request(app).post("/api/v/designer").send(dataToSend)
+        console.log(token)
+        const dataToSend = getDesigner()      
+        const res = await request(app).post("/api/v/designer").set('authorization',"Bearer "+token).send(dataToSend)
         expect(res.body._id).toBeDefined()
         DesignerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)

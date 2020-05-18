@@ -23,16 +23,29 @@ describe('Bookings service test', () => {
     let serviceid
     let userid
     let saloinid
+    let token
     beforeAll(async (done) => {
         const v: VendorI = {
             name: "Sehajchawla",
             password: "sehaj23",
-            "contact_number": "+12193860967",
-            "email": "sehajchawla233@gmail.com"
+            contact_number: "+12193860967",
+            email: "sehajchawla233@gmail.com"
         }
-        const Vendoreres = await request(app).post("/api/v/login/create").send(v)
-
-        vendorId = Vendoreres.body._id
+        const res = await request(app).post("/api/v/login/create").send(v)
+    
+   
+            const login = {
+                email: "sehajchawla233@gmail.com",
+                password: "sehaj23"
+                
+            }
+            const res2 = await request(app).post("/api/v/login/").send(login)
+            expect(res2.body.token).toBeDefined()
+            token = (res2.body.token)
+            console.log(token)
+            
+        
+       
 
         const us: user = {
             name: "sehaj",
@@ -43,17 +56,6 @@ describe('Bookings service test', () => {
         }
         const Useres = await User.create(us)
         userid = Useres._id
-
-        const s: ServiceSI = {
-            name: "sehaj",
-            price: 200,
-            duration: 15,
-
-
-        }
-        const Serviceres = await Services.create(s)
-        serviceid = Serviceres._id
-
         const email = faker.internet.email()
         const date = new Date()
 
@@ -68,13 +70,26 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "Chicago",
             "speciality": ["DM"],
-            "vendor_id": vendorId
+            "vendor_id": ""
         }
-        const salonres = await request(app).post("/api/v/salon").send(dataToSend)
+        const salonres = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
         saloinid = salonres.body._id
-        console.log("salone id", saloinid)
-        console.log("userid", userid)
-        console.log("service", serviceid)
+
+
+        const s: ServiceSI = {
+            name: "sehaj",
+            price: 200,
+            duration: 15,
+            salon_id:saloinid
+
+
+        }
+        const Service = await Services.create(s)
+        serviceid = Service._id
+
+        console.log(saloinid)
+        console.log(userid)
+        console.log(serviceid)
         done()
     })
 

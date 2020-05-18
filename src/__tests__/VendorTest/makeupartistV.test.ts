@@ -9,13 +9,13 @@ import { MakeupArtistI } from "../../interfaces/makeupArtist.interface";
 import { EventMakeupArtistI } from "../../interfaces/eventMakeupArtist.interface";
 import { PhotoI } from "../../interfaces/photo.interface";
 import * as faker from "faker"
-const TIME = 30000
+const TIME = 40000
 beforeAll(async (done) => {
     await db.connectt();
     done();
 });
 
-const getMUA: (vendorId: string) => MakeupArtistI = (vendorId: string) => {
+const getMUA:()=> MakeupArtistI=() => {
     const date = new Date();
     const email = faker.internet.email()
 
@@ -32,13 +32,14 @@ const getMUA: (vendorId: string) => MakeupArtistI = (vendorId: string) => {
         "end_working_hours": [date, null, null, null],
         "location": "delhi",
         "speciality": ["Design"],
-        "vendor_id": vendorId,
+        "vendor_id": "",
     };
     return dataToSend
 }
 describe("Makeup Artist service test", () => {
     let muaid
     let vendorId
+    let token
     beforeAll(async (done) => {
         const v: VendorI = {
             name: "sehaj",
@@ -54,11 +55,25 @@ describe("Makeup Artist service test", () => {
         done();
     });
 
+    beforeAll(async (done) => {
+        const login = {
+            password: "sehaj23",
+            email: "sehajakdsjbdkasnbjd@gmail.com",
+
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
+        done()
+    
+    })
+
+
     test("Makeup Artist Post", async (done) => {
 
-        expect(vendorId).toBeDefined()
-        const dataToSend = getMUA(vendorId)
-        const res = await request(app).post("/api/v/makeupArtist").send(dataToSend);
+        
+        const dataToSend = getMUA()
+        const res = await request(app).post("/api/v/makeupArtist").set('authorization',"Bearer "+token).send(dataToSend);
 
         expect(res.body._id).toBeDefined();
         muaid = res.body._id
@@ -89,7 +104,7 @@ describe("Makeup Artist service test", () => {
 
 
 
-    })
+    },TIME)
 
 });
 

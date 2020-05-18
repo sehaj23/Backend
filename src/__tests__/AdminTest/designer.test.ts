@@ -30,7 +30,8 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
         "location": "Chicago",
         "speciality": ["DM"],
         "outfit_types": ["Cool otfits"],
-        "vendor_id": vendorId
+        "vendor_id": vendorId,
+        "store_type":"Retail shop"
     }
     return dataToSend
 }

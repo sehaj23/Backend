@@ -20,7 +20,7 @@ beforeAll(async (done) => {
 
 
 
-const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
+const getSalon:()=>SalonI =()=>{
     const email = faker.internet.email()
     const date = new Date()
     const dataToSend: SalonI = {
@@ -34,7 +34,7 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
         "end_working_hours": [date, null, null, null],
         "location": "Chicago",
         "speciality": ["DM"],
-        "vendor_id": vendorId
+        "vendor_id": ""
     }
     return dataToSend
 }
@@ -42,6 +42,7 @@ const getSalon: (vendorId: string) => SalonI = (vendorId: string) => {
 describe('Salon service test', () => {
     let vendorId
     let salonid
+    let token
     beforeAll(async (done) => {
         const v: VendorI = {
             email: "sehaj@gmail.com",
@@ -55,12 +56,25 @@ describe('Salon service test', () => {
 
         done()
     })
+    beforeAll(async (done) => {
+        const login = {
+            password: "sehaj23",
+            email: "sehaj@gmail.com"
+
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
+        done()
+    
+    })
+
 
     test('add salon ', async done => {
 
        
-        const dataToSend = getSalon(vendorId)
-        const res = await request(app).post("/api/v/salon").send(dataToSend)
+        const dataToSend = getSalon()
+        const res = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
         expect(res.body._id).toBeDefined()
         salonid = res.body._id
         expect(res.body.start_working_hours).toBeDefined()
@@ -93,5 +107,4 @@ describe('Salon service test', () => {
 
 
 })
-
 

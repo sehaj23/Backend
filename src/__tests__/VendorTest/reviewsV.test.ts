@@ -28,7 +28,8 @@ const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
         "location": "Noida",
         "speciality": ["DM"],
         "outfit_types": ["Good outfits"],
-        "vendor_id": vendorId
+        "vendor_id": "",
+        "store_type":"Retail shop",
     }
     return dataToSend
 }
@@ -38,6 +39,7 @@ describe('Designer service test', () => {
     let vendorId
     let designerId;
     let reviewid;
+    let token
 
 
 
@@ -46,7 +48,7 @@ describe('Designer service test', () => {
             name: "sehaj",
             password: "sehaj23",
             "contact_number": "123456789",
-            "email": "sehakldnaslnkdlnk@gmail.com"
+            email: "sehakldnaslnkdlnk@gmail.com"
         }
         const res = await request(app).post("/api/v/login/create").send(v)
         expect(res.body._id).toBeDefined()
@@ -54,10 +56,23 @@ describe('Designer service test', () => {
 
         done()
     })
+    beforeAll(async (done) => {
+        const login = {
+            password: "sehaj23",
+            email: "sehakldnaslnkdlnk@gmail.com"
+
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
+        done()
+    
+    })
+
 
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
-        const res = await request(app).post("/api/v/designer").send(dataToSend)
+        const res = await request(app).post("/api/v/designer").set('authorization',"Bearer "+token).send(dataToSend)
         expect(res.body._id).toBeDefined()
         designerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)

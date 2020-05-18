@@ -22,7 +22,8 @@ export interface DesignersI{
     vendor_id: string // the id of the vendor _id
     commision_percentage?: number,
     commision_cap?: number
-    commision_fixed_price?: number
+    commision_fixed_price?: number,
+    store_type:string
 }
 
 export interface DesignersSI extends DesignersI, mongoose.Document{}

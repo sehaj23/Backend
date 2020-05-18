@@ -133,8 +133,10 @@ export default class SalonService extends BaseService {
 
     }
     addSalonService = async (req: Request, res: Response) => {
+        console.log(req.body)
         try {
-            const d: ServiceI = req.body
+            const d = req.body.services
+            
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
@@ -204,7 +206,7 @@ export default class SalonService extends BaseService {
             }
             const monogId = mongoose.Types.ObjectId(id)
             //@ts-ignore
-            const services = await Service.find({salon_id: monogId})
+            const services = await Salon.find({_id: monogId}).select("services").populate("services").exec()
             if(services === null){
                 const errMsg = `no service found`
                 logger.error(errMsg)

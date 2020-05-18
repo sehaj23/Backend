@@ -31,14 +31,27 @@ describe('Bookings service test', () => {
     let muaid
     let designerid
     let empid
+    let token
     beforeAll(async (done) => {
         const v: VendorI = {
             name: "Sehajchawla",
             password: "sehaj23",
             "contact_number": "+12193860967",
-            "email": "sehajchawla233@gmail.com"
+            email: "sehajchawla233@gmail.com"
         }
         const Vendoreres = await request(app).post("/api/v/login/create").send(v)
+
+        const login = {
+            password: "sehaj23",
+            email: "sehajchawla233@gmail.com"
+
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
+        
+    
+    
 
         vendorId = Vendoreres.body._id
 
@@ -78,7 +91,7 @@ describe('Bookings service test', () => {
             "speciality": ["DM"],
             "vendor_id": vendorId
         }
-        const salonres = await request(app).post("/api/v/salon").send(dataToSend)
+        const salonres = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
         salonid = salonres.body._id
         console.log("salone id", salonid)
         console.log("userid", userid)
@@ -86,7 +99,7 @@ describe('Bookings service test', () => {
         done()
     })
 
-    const getMUA: (vendorId: string) => MakeupArtistI = (vendorId: string) => {
+    const getMUA:()=>MakeupArtistI =()=>{
         const date = new Date();
         const email = faker.internet.email()
     
@@ -103,15 +116,14 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "delhi",
             "speciality": ["Design"],
-            "vendor_id": vendorId,
+            "vendor_id": "",
         };
         return dataToSend
     }
     test("Makeup Artist Post", async (done) => {
 
-        expect(vendorId).toBeDefined()
-        const dataToSend = getMUA(vendorId)
-        const res = await request(app).post("/api/v/makeupArtist").send(dataToSend);
+        const dataToSend = getMUA()
+        const res = await request(app).post("/api/v/makeupArtist").set('authorization',"Bearer "+token).send(dataToSend);
 
         expect(res.body._id).toBeDefined();
         muaid = res.body._id
@@ -141,13 +153,14 @@ describe('Bookings service test', () => {
             "location": "Noida",
             "speciality": ["DM"],
             "outfit_types": ["Good outfits"],
-            "vendor_id": vendorId
+            "vendor_id": "",
+            "store_type":"Retail shop"
         }
         return dataToSend
     }
     test('Designers Post', async done => {
         const dataToSend = getDesigner(vendorId)
-        const res = await request(app).post("/api/v/designer").send(dataToSend)
+        const res = await request(app).post("/api/v/designer").set('authorization',"Bearer "+token).send(dataToSend)
         expect(res.body._id).toBeDefined()
         designerid = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)

@@ -167,7 +167,7 @@ describe("Makeup Artist service test", () => {
         expect(res3.status).toEqual(200);
 
         const res2 = await request(app).delete("/api/makeupArtist/event").send(data);
-        expect(res2.status).toEqual(403);
+        expect(res2.status).toEqual(404);
 
 
         done();

@@ -76,7 +76,7 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "Chicago",
             "speciality": ["DM"],
-            "vendor_id": vendorId
+            "vendor_id": ""
         }
         const salonres = await request(app).post("/api/v/salon").send(dataToSend)
         salonid = salonres.body._id
@@ -104,6 +104,8 @@ describe('Bookings service test', () => {
             "location": "delhi",
             "speciality": ["Design"],
             "vendor_id": vendorId,
+            "store_type":"Retail shop"
+            
         };
         return dataToSend
     }
@@ -141,7 +143,8 @@ describe('Bookings service test', () => {
             "location": "Noida",
             "speciality": ["DM"],
             "outfit_types": ["Good outfits"],
-            "vendor_id": vendorId
+            "vendor_id": vendorId,
+            "store_type":"Retail shop"
         }
         return dataToSend
     }

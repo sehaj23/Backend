@@ -10,7 +10,7 @@ export default class RevenueService {
     revenue = async (req: Request, res: Response) => {
 
         const q = req.query
-        console.log(q)
+        
 
         // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
         //     const message = 'None id provided'
@@ -24,8 +24,8 @@ export default class RevenueService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
+        // console.log(pageLength)
+        // console.log(skipCount)
         
         const keys = Object.keys(q)
         const filters = {}
@@ -63,8 +63,8 @@ export default class RevenueService {
         //     "$gte": dateFilter["start_date"],
         //     "$lt": dateFilter["end_date"]
         // }
-        console.log(filters);
-        console.log(pageLength)
+        // console.log(filters);
+        // console.log(pageLength)
         
         try{
             const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')

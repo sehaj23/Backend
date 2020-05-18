@@ -18,6 +18,11 @@ const DesignerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    store_type:{
+        type:String,
+        enum:["Retail shop","Studio/ Boutique","Multi designer store","Couture Brand"],
+        required:true
+    },
     email: {
         type: String,
         required: true,
