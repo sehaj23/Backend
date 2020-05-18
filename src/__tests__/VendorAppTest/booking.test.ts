@@ -41,20 +41,19 @@ describe('Bookings service test', () => {
         }
         const Vendoreres = await request(app).post("/api/v/login/create").send(v)
 
-        vendorId = Vendoreres.body._id
+        const login = {
+            password: "sehaj23",
+            email: "sehajchawla233@gmail.com"
 
-       
-            const login = {
-                password: "sehaj23",
-                email: "sehajchawla233@gmail.com"
-    
-            }
-            const res2 = await request(app).post("/api/v/login/").send(login)
-            expect(res2.body.token).toBeDefined()
-            token = (res2.body.token)
-            done()
+        }
+        const res2 = await request(app).post("/api/v/login/").send(login)
+        expect(res2.body.token).toBeDefined()
+        token = (res2.body.token)
         
-       
+    
+    
+
+        vendorId = Vendoreres.body._id
 
         const us: user = {
             name: "sehaj",
@@ -96,7 +95,7 @@ describe('Bookings service test', () => {
         salonid = salonres.body._id
         console.log("salone id", salonid)
         console.log("userid", userid)
-        console.log("serviceid", serviceid)
+        console.log("service", serviceid)
         done()
     })
 
@@ -118,14 +117,11 @@ describe('Bookings service test', () => {
             "location": "delhi",
             "speciality": ["Design"],
             "vendor_id": "",
-            
-            
         };
         return dataToSend
     }
     test("Makeup Artist Post", async (done) => {
 
-      
         const dataToSend = getMUA()
         const res = await request(app).post("/api/v/makeupArtist").set('authorization',"Bearer "+token).send(dataToSend);
 
@@ -141,7 +137,7 @@ describe('Bookings service test', () => {
         done();
     });
 
-    const getDesigner:()=>DesignersI =()=>{
+    const getDesigner: (vendorId: string) => DesignersI = (vendorId: string) => {
         const email = faker.internet.email()
         const date = new Date()
         const dataToSend: DesignersI = {
@@ -163,7 +159,7 @@ describe('Bookings service test', () => {
         return dataToSend
     }
     test('Designers Post', async done => {
-        const dataToSend = getDesigner()
+        const dataToSend = getDesigner(vendorId)
         const res = await request(app).post("/api/v/designer").set('authorization',"Bearer "+token).send(dataToSend)
         expect(res.body._id).toBeDefined()
         designerid = res.body._id
@@ -181,7 +177,6 @@ describe('Bookings service test', () => {
         const date1 = new Date()
         const b: BookingI = {
             "salon_id": salonid,
-            "status":"Completed",
             "user_id": userid,
             "services": [{
                 "service_name": "haircut",
@@ -196,11 +191,11 @@ describe('Bookings service test', () => {
             "balance": 500,
             "date_time": date,
             "location": "Vendor Place",
-            "payment_type": "COD"
+            "payment_type": "COD",
+            "status":"Completed"
 
         }
         const book = await request(app).post("/api/v/bookings").send(b)
-        console.log(book)
         expect(book.body._id).toBeDefined()
         bookingid = book.body._id
         expect(book.body.price).toEqual(b.price)
@@ -210,7 +205,6 @@ describe('Bookings service test', () => {
 
         done()
     })
-
 
    
 

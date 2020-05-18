@@ -198,7 +198,7 @@ describe('Designer service test', () => {
         const res2 = await request(app).post("/api/designer/event").send(data)
         expect(res2.status).toEqual(200)
 
-        const resDelete = await request(app).delete("/api/designer/event").send(data)
+        const resDelete = await request(app).delete("/api/designer/event/delete").send(data)
         expect(resDelete.status).toEqual(204)
 
         done()
