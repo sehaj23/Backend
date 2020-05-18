@@ -23,7 +23,7 @@ export interface DesignersI{
     commision_percentage?: number,
     commision_cap?: number
     commision_fixed_price?: number,
-    store_type:string
+    store_type?:string
 }
 
 export interface DesignersSI extends DesignersI, mongoose.Document{}
