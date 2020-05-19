@@ -94,7 +94,7 @@ describe('Designer service test', () => {
             location: "OZARK"
         }
 
-        const res = await request(app).put("/api/v/designer/settings/" + DesignerId).send(designer)
+        const res = await request(app).put("/api/v/designer/settings/" + DesignerId).set('authorization',"Bearer "+token).send(designer)
 
         expect(res.body.designer_name).toEqual(designer.designer_name)
 

@@ -93,7 +93,7 @@ describe('Salon service test', () => {
         }
         console.log(salonid)
 
-        const res = await request(app).put("/api/v/salon/settings/" + salonid).send(salon)
+        const res = await request(app).put("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
 
         expect(res.body.name).toEqual(salon.name)
 
@@ -122,7 +122,7 @@ describe('Salon service test', () => {
                     
                 }]
         }
-        const res = await request(app).put(`/api/v/salon/${salonid}/service`).send(service)
+        const res = await request(app).put(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token).send(service)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
@@ -130,7 +130,7 @@ describe('Salon service test', () => {
 
     test('Salon settings test', async done => {
         
-        const res = await request(app).get(`/api/v/salon/${salonid}/service`)
+        const res = await request(app).get(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()

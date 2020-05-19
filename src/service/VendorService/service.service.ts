@@ -167,8 +167,6 @@ export default class ServiceServices {
             }
             res.send(ser)
 
-
-
         } catch (e) {
             const errMsg = `Unable to delete Service`
             logger.error(errMsg)

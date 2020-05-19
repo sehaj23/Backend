@@ -54,6 +54,20 @@ export default class MakeupartistServiceC extends BaseService {
 
         try {
             const id = req.params.id
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
             if (!id) {
                 const errMsg = "MakeupArtist ID not found"
                 logger.error(errMsg)
@@ -65,7 +79,7 @@ export default class MakeupartistServiceC extends BaseService {
 
             const d = req.body
 
-            const makeupartist = await MakeupArtist.findByIdAndUpdate(id, d, { new: true })
+            const makeupartist = await MakeupArtist.findOneAndUpdate({_id:id,vendor_id:vendor_id}, d, { new: true })
             res.send(makeupartist)
 
 
@@ -91,6 +105,20 @@ export default class MakeupartistServiceC extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
             const updates = Object.keys(req.body)
             const allowedupates = ["name", "location", "start_working_hours"]
             const isvalid = updates.every((update) => allowedupates.includes(update))
@@ -137,6 +165,20 @@ export default class MakeupartistServiceC extends BaseService {
                 res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
                 return
             }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
 
             const service = await Service.create(d)
             const service_id = mongoose.Types.ObjectId(service._id)
@@ -148,7 +190,7 @@ export default class MakeupartistServiceC extends BaseService {
 
 
             //@ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({ _id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
+            const newSalon = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
             if (newSalon === null) {
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -175,10 +217,24 @@ export default class MakeupartistServiceC extends BaseService {
                 return
             }
             const osid = mongoose.Types.ObjectId(sid)
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
 
 
             // @ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({ _id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
+            const newSalon = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
             if (newSalon === null) {
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -205,8 +261,22 @@ export default class MakeupartistServiceC extends BaseService {
                 return
             }
             const monogId = mongoose.Types.ObjectId(id)
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
             //@ts-ignore
-            const mua = await MakeupArtist.find({ _id: monogId }).select("services").populate("services").exec()
+            const vendor_id = decoded._id
+            //@ts-ignore
+            const mua = await MakeupArtist.find({ _id: monogId,vendor_id:vendor_id }).select("services").populate("services").exec()
             //  const services = await Service.find({mua_id: monogId})
             if (mua === null) {
                 const errMsg = `no service found`

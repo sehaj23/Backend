@@ -94,7 +94,7 @@ describe("Makeup Artist service test", () => {
         }
         console.log(muaid)
 
-        const res = await request(app).put("/api/v/makeupArtist/settings/" + muaid).send(mua)
+        const res = await request(app).put("/api/v/makeupArtist/settings/" + muaid).set('authorization',"Bearer "+token).send(mua)
 
         expect(res.body.name).toEqual(mua.name)
 
@@ -104,7 +104,7 @@ describe("Makeup Artist service test", () => {
     },TIME)
     
 
-    test('Salon settings test', async done => {
+    test('MUA settings test', async done => {
 
         const service={
                 services:[{
@@ -124,15 +124,15 @@ describe("Makeup Artist service test", () => {
                     
                 }]
         }
-        const res = await request(app).put(`/api/v/makeupArtist/${muaid}/service`).send(service)
+        const res = await request(app).put(`/api/v/makeupArtist/${muaid}/service`).set('authorization',"Bearer "+token).send(service)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
     })
 
-    test('Salon settings test', async done => {
+    test('MUA settings test', async done => {
         
-        const res = await request(app).get(`/api/v/makeupArtist/${muaid}/service`)
+        const res = await request(app).get(`/api/v/makeupArtist/${muaid}/service`).set('authorization',"Bearer "+token)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()

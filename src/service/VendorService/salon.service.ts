@@ -57,6 +57,21 @@ export default class SalonService extends BaseService {
 
         try {
             const id = req.params.id
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
+
             if (!id) {
                 const errMsg = "Salon ID not found"
                 logger.error(errMsg)
@@ -68,7 +83,15 @@ export default class SalonService extends BaseService {
 
             const d = req.body
 
-            const salon = await Salon.findByIdAndUpdate(id, d, { new: true })
+            const salon = await Salon.findOneAndUpdate({ _id: id, vendor_id: vendor_id }, d, { new: true })
+            if (!salon) {
+                const errMsg = "Unable to edit"
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
             res.send(salon)
 
 
@@ -95,6 +118,20 @@ export default class SalonService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
             const updates = Object.keys(req.body)
             const allowedupates = ["name", "location", "start_working_hours"]
             const isvalid = updates.every((update) => allowedupates.includes(update))
@@ -118,8 +155,6 @@ export default class SalonService extends BaseService {
             //const updatedesigner = await Designer.update({_id:designer_id},{$set:updates},{new:true})
             res.send(updatedsalon)
 
-
-
         } catch (error) {
             const errMsg = "Error updating Salon"
             logger.error(errMsg)
@@ -134,7 +169,7 @@ export default class SalonService extends BaseService {
     addSalonService = async (req: Request, res: Response) => {
         console.log(req.body.services)
         try {
-            const d:ServiceI = req.body.services
+            const d: ServiceI = req.body.services
 
             const _id = mongoose.Types.ObjectId(req.params.id)
             if (!_id) {
@@ -143,15 +178,29 @@ export default class SalonService extends BaseService {
                 res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
                 return
             }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
 
             const service = await Service.create(d)
             const service_id = mongoose.Types.ObjectId(service._id)
             //@ts-ignore
             var result = service.map(service_id => ({ _id: mongoose.Types.ObjectId(service_id.id) }));
-           
+
 
             //@ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({ _id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
+            const newSalon = await Salon.findOneAndUpdate({ _id, vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
             if (newSalon === null) {
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -170,7 +219,7 @@ export default class SalonService extends BaseService {
     deleteSalonService = async (req: Request, res: Response) => {
         try {
             const sid = req.params.sid
-            const _id = req.params.id
+            const _id = mongoose.Types.ObjectId(req.params.id)
             if (!_id || !sid) {
                 logger.error(`Salon Id is missing salon_id:  & mua_id: `)
                 res.status(403)
@@ -179,9 +228,24 @@ export default class SalonService extends BaseService {
             }
             const osid = mongoose.Types.ObjectId(sid)
 
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
+
 
             // @ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({ _id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
+            const newSalon = await Salon.findOneAndUpdate({ _id, vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
             if (newSalon === null) {
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -207,9 +271,23 @@ export default class SalonService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
             const monogId = mongoose.Types.ObjectId(id)
             //@ts-ignore
-            const services = await Salon.find({ _id: monogId }).select("services").populate("services").exec()
+            const services = await Salon.find({ _id: monogId, vendor_id: vendor_id }).select("services").populate("services").exec()
             if (services === null) {
                 const errMsg = `no service found`
                 logger.error(errMsg)
@@ -223,6 +301,51 @@ export default class SalonService extends BaseService {
             res.status(403)
             res.send({ message: `${e.message}` })
         }
+    }
+
+    updateService = async (req: Request, res: Response) => {
+
+        try {
+            const id = mongoose.Types.ObjectId(req.params.id)
+            //id is salon id
+            const sid = mongoose.Types.ObjectId(req.params.sid)
+            // const service = req.body
+            if (!id || !sid) {
+                logger.error(`sid and id not found`)
+                res.status(403)
+                res.send({ message: "SID and ID not found" })
+
+
+            }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
+            console.log(vendor_id)
+            console.log(id)
+            console.log(sid)
+            //@ts-ignore
+            const salon = await Salon.find({ services: { $in: { _id: sid } } }).populate("services").exec()
+            // const salon  = await Salon.findOneAndUpdate({_id:id,sid:{$in:service}},{service},{new:true}).select("service").populate("service").exec()
+            res.send(salon)
+
+        } catch (error) {
+            logger.error(`error while updating`)
+            res.status(403)
+            res.send({ message: "unable to update" })
+
+        }
+
     }
 
 

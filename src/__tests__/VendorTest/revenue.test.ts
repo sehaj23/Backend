@@ -133,8 +133,13 @@ describe('Bookings service test', () => {
     })
 
     test("Fetch Revenue",async done=>{
+        console.log(saloinid)
+        const s = {
+            salon_id:saloinid
+        }
 
-        const res = await request(app).get("/api/v/revenue")
+        const res = await request(app).get("/api/v/revenue/?salon_id="+saloinid)
+    
         expect(res.status).toBe(200)
         expect(res.body).toBeDefined()
         done()

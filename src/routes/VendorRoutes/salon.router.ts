@@ -11,6 +11,7 @@ salonRouter.put("/settings/:id",VendorverifyToken,ss.salonSettings)
 salonRouter.put("/:id/service", VendorverifyToken, ss.addSalonService)
 salonRouter.put("/:id/service/delete/:sid", VendorverifyToken, ss.deleteSalonService)
 salonRouter.get("/:id/service", VendorverifyToken, ss.getService)
+salonRouter.get("/:id/service/update/:sid",ss.updateService)
 
 
 

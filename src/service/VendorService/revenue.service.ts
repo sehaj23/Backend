@@ -12,12 +12,12 @@ export default class RevenueService {
         const q = req.query
         
 
-        // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
-        //     const message = 'None id provided'
-        //     res.status(400)
-        //     res.send({message})
-        //     return
-        // }
+        if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
+            const message = 'None id provided'
+            res.status(400)
+            res.send({message})
+            return
+        }
 
         // pagination
         const pageNumber: number = parseInt( q.page_number || 1)
@@ -59,10 +59,10 @@ export default class RevenueService {
                     filters[k] = q[k]
             }
         }
-        // filters["createdAt"] = {
-        //     "$gte": dateFilter["start_date"],
-        //     "$lt": dateFilter["end_date"]
-        // }
+        filters["createdAt"] = {
+            "$gte": dateFilter["start_date"],
+            "$lt": dateFilter["end_date"]
+        }
         // console.log(filters);
         // console.log(pageLength)
         
