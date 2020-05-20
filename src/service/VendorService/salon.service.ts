@@ -349,6 +349,73 @@ export default class SalonService extends BaseService {
         }
 
     }
+    addSalonEmployee = async (req: Request, res: Response) => {
+        try {
+            const d: EmployeeI = req.body
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            if(!_id){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+
+         
+            if(d.services){
+              // @ts-ignore
+            d.services = (d.services as string[]).map( (s: string, i: number) => mongoose.Types.ObjectId(s))
+            }
+            const emp = await Employee.create(d)
+            const empId = mongoose.Types.ObjectId(emp._id)
+            //@ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, employees: {$nin: [empId]}}, { $push : {employees  : empId}}, {new: true}).populate("employees").exec()
+            if(newSalon === null){
+                const errMsg = `Add Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    deleteSalonEmployee = async (req: Request, res: Response) => {
+        try {
+            const _id = mongoose.Types.ObjectId(req.params.id)
+            const eid = mongoose.Types.ObjectId(req.params.eid)
+            if(!_id || !eid){
+                const errMsg = `delete Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+
+            
+            const emp = await Employee.findByIdAndDelete(eid)
+            //@ts-ignore
+            const newSalon = await Salon.findOneAndUpdate({_id, employees: {$in: [eid]}}, { $pull : {employees  : eid}}, {new: true}).populate("employees").exec()
+            if(newSalon === null){
+                const errMsg = `delete Emp: no data with this _id and service was found`
+                logger.error(errMsg)
+                res.status(403)
+                res.send({ message: errMsg })
+                return
+            }
+            res.send(newSalon)
+        }catch(e){
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
 
 
 }
