@@ -486,14 +486,14 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            // filters["date_time"] = {
-            //     "$gte": dateFilter["start_date"],
-            //     "$lt": dateFilter["end_date"]
-            // }
-            filters["createdAt"] = {
+            filters["date_time"] = {
                 "$gte": dateFilter["start_date"],
                 "$lt": dateFilter["end_date"]
             }
+            // filters["createdAt"] = {
+            //     "$gte": dateFilter["start_date"],
+            //     "$lt": dateFilter["end_date"]
+            // }
         
     
         }
