@@ -11,7 +11,7 @@ makeupArtistRouter.put("/settings/:id",VendorverifyToken,ma.makeupArtistSettings
 makeupArtistRouter.put("/:id/service", VendorverifyToken, ma.addMakeupArtistService)
 makeupArtistRouter.put("/:id/service/delete/:sid", VendorverifyToken, ma.deleteMakeupArtistService)
 makeupArtistRouter.get("/:id/service", VendorverifyToken, ma.getService)
-
+makeupArtistRouter.patch("/:id/service/update/:sid",ma.updateService)
 
 
 export default makeupArtistRouter

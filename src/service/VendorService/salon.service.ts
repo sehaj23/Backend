@@ -306,6 +306,8 @@ export default class SalonService extends BaseService {
     updateService = async (req: Request, res: Response) => {
 
         try {
+            const d = req.body
+        
             const id = mongoose.Types.ObjectId(req.params.id)
             //id is salon id
             const sid = mongoose.Types.ObjectId(req.params.sid)
@@ -335,7 +337,7 @@ export default class SalonService extends BaseService {
             console.log(id)
             console.log(sid)
             //@ts-ignore
-            const salon = await Salon.find({ services: { $in: { _id: sid } } }).populate("services").exec()
+            const salon = await Service.findByIdAndUpdate(sid,d,{new:true})
             // const salon  = await Salon.findOneAndUpdate({_id:id,sid:{$in:service}},{service},{new:true}).select("service").populate("service").exec()
             res.send(salon)
 

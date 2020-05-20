@@ -292,4 +292,52 @@ export default class MakeupartistServiceC extends BaseService {
             res.send({ message: `${e.message}` })
         }
     }
+
+    updateService = async (req: Request, res: Response) => {
+
+        try {
+            const d = req.body
+        
+            const id = mongoose.Types.ObjectId(req.params.id)
+            //id is salon id
+            const sid = mongoose.Types.ObjectId(req.params.sid)
+            // const service = req.body
+            if (!id || !sid) {
+                logger.error(`sid and id not found`)
+                res.status(403)
+                res.send({ message: "SID and ID not found" })
+
+
+            }
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const vendor_id = decoded._id
+            console.log(vendor_id)
+            console.log(id)
+            console.log(sid)
+            //@ts-ignore
+            const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
+            // const salon  = await Salon.findOneAndUpdate({_id:id,sid:{$in:service}},{service},{new:true}).select("service").populate("service").exec()
+            res.send(mua)
+
+        } catch (error) {
+            logger.error(`error while updating`)
+            res.status(403)
+            res.send({ message: "unable to update" })
+
+        }
+
+    }
+
 }
