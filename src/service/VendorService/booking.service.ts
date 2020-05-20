@@ -486,10 +486,19 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
+            // filters["date_time"] = {
+            //     "$gte": dateFilter["start_date"],
+            //     "$lt": dateFilter["end_date"]
+            // }
+            filters["createdAt"] = {
+                "$gte": dateFilter["start_date"],
+                "$lt": dateFilter["end_date"]
+            }
         
     
         }
         console.log(filters);
+   
             try {
                 const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
                 const bookingPagesReq = Booking.count(filters)

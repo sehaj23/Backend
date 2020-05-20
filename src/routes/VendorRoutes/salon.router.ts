@@ -7,6 +7,7 @@ const ss = new SalonService()
 
 salonRouter.post("/", VendorverifyToken, ss.post)
 salonRouter.patch("/:id",VendorverifyToken,ss.patchSalon)
+salonRouter.get("/:id",VendorverifyToken,ss.get)
 salonRouter.put("/settings/:id",VendorverifyToken,ss.salonSettings)
 salonRouter.put("/:id/service", VendorverifyToken, ss.addSalonService)
 salonRouter.delete("/:id/service/delete/:sid", VendorverifyToken, ss.deleteSalonService)
