@@ -35,12 +35,15 @@ export default class BookingService extends BaseService {
             }
 
             // if(e.salon_id){
+            //     
             //     e.salon_id = mongoose.Types.ObjectId(e.salon_id.toString())
             // }
             // if(e.makeup_artist_id){
+            //     
             //     e.makeup_artist_id = mongoose.Types.ObjectId(e.makeup_artist_id.toString())
             // }
             // if(e.designer_id){
+            //     
             //     e.designer_id = mongoose.Types.ObjectId(e.designer_id.toString())
             // }
 
@@ -146,7 +149,7 @@ export default class BookingService extends BaseService {
             const busyEmployeesIds = [];
 
             // @ts-ignore
-            const bookings = await Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
+            const bookings = await Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId })
             console.log("*********Got bookings ****************");
             console.log(bookings);
 
@@ -187,7 +190,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } })
+            const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -217,7 +220,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } })
+            const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -247,7 +250,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ designer_id: designerId, status: { $ne: "Requested" } })
+            const bookings = await Booking.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -277,7 +280,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ salon_id: salonId, status: "Requested" })
+            const bookings = await Booking.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -308,7 +311,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").exec()
+            const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -338,7 +341,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ designer_id: designerId, status: "Requested" })
+            const bookings = await Booking.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -380,7 +383,7 @@ export default class BookingService extends BaseService {
                 return
 
             }
-            const bookings = await Booking.findByIdAndUpdate({ _id: bookingid }, { status: status }, { new: true, runValidators: true })
+            const bookings = await Booking.findByIdAndUpdate({ _id: bookingid }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
 
             res.send(bookings)
 
@@ -435,6 +438,13 @@ export default class BookingService extends BaseService {
     getbookings = async (req: Request, res: Response) => {
 
         const q = req.query
+
+        if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
+            const message = 'None id provided'
+            res.status(400)
+            res.send({message})
+            return
+        }
         console.log(q)
     
         const pageNumber: number = parseInt( q.page_number || 1)
@@ -481,7 +491,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
             try {
-                const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+                const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
                 const bookingPagesReq = Booking.count(filters)
                 const bookingStatsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
                     
@@ -551,7 +561,7 @@ export default class BookingService extends BaseService {
             return
                 
             }
-            const booking = await Booking.findByIdAndUpdate(id,{date_time:date_time},{new:true})
+            const booking = await Booking.findByIdAndUpdate(id,{date_time:date_time},{new:true}).populate("user_id").exec()
             if(!booking){
                 const errMsg = "unable to update boooking"
                 logger.error(errMsg)
@@ -581,7 +591,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ salon_id: salonId})
+            const bookings = await Booking.find({ salon_id: salonId}).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -613,7 +623,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId})
+            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId}).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -645,7 +655,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ designer_id: designerId})
+            const bookings = await Booking.find({ designer_id: designerId}).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)

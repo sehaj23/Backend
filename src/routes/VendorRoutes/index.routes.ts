@@ -10,6 +10,7 @@ import offerRouter from "./offer.router"
 import reviewsRouter from "./reviews.router"
 import revenueRouter from "./revenue.router"
 import dashboardRouter from "./dashboard.router";
+import userRouter from "./user.router";
 
 
 const Vendorrouter = Router();
@@ -26,6 +27,7 @@ Vendorrouter.use("/offer",offerRouter)
 Vendorrouter.use("/reviews",reviewsRouter)
 Vendorrouter.use("/revenue",revenueRouter)
 Vendorrouter.use("/dashboard", dashboardRouter)
+Vendorrouter.use("/user",userRouter)
 
 
 export default Vendorrouter
