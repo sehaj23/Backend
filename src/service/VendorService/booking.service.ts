@@ -531,7 +531,7 @@ export default class BookingService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            const booking = await Booking.findById(id).populate({path:"services.service_id",model:Service,populate:{path:"offers",model:Offer}}).populate({path:"services.employee_id",model:Employee,select:"name phone",populate:{path:"photo",model:Photo}})
+            const booking = await Booking.findById(id).populate({path:"services.service_id",model:Service,populate:{path:"offers",model:Offer}}).populate({path:"services.employee_id",model:Employee,select:"name phone",populate:{path:"photo",model:Photo}}).populate("user_id").exec()
             res.send(booking)
 
 
