@@ -553,7 +553,6 @@ export default class BookingService extends BaseService {
             const id =req.params.id
             const date_time = req.body.date_time
             const date = moment().format('YYYY-MM-DD, h:mm:ss a')
-            
 
             console.log(date)
             if(date_time<date){
