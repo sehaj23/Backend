@@ -63,45 +63,7 @@ export default class RevenueService {
         //     "$lt": dateFilter["end_date"]
         // }
         console.log(filters);
-        
-        try{
-            const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
-            const revenuePagesReq = Booking.count(filters)
-            const revenueStatsReq =  Booking.aggregate([
-                {$match: {...filters}},
-                { $project : {
-                    price : 1 ,
-                    services: 1
-                }},
-                { $unwind: "$services" },
-                { 
-                    $group: {
-                        _id: null,
-                        price: {
-                            $sum: "$price",
-                        },
-                        zattire_commission: {
-                            $sum: "$services.zattire_commission"
-                        },
-                        vendor_commission: {
-                            $sum: "$services.vendor_commission"
-                        },
-                        total: {
-                            $sum: {
-                                $add : ["$services.zattire_commission", "$services.vendor_commission"]
-                            }
-                        }
-                    }
-                },
-                    ]).skip(skipCount).limit(pageLength).sort('-createdAt')
-                    const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
-                    res.send({revenueDetails, revenueStats, revenuePages})
-                }catch(e){
-                    console.log(e)
-                    res.status(400)
-                    res.send({message: e.message})
-                }        
-        
+    
         
         try{
             const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
@@ -158,7 +120,7 @@ export default class RevenueService {
 
     }
     revenueByBookingId = async (req: Request, res: Response) => {
-
+        const id = req.params.id
         const q = req.query
        
         
@@ -185,10 +147,6 @@ export default class RevenueService {
         dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
         for (const k of keys) {
             switch(k){
-                case "booking_id":
-                    filters["_id"] = q[k]
-                    break
-                
                 case "service_id":
                     filters["services.service_id"] = {
                         "$in": q[k].split(",")
@@ -212,6 +170,7 @@ export default class RevenueService {
                     filters[k] = q[k]
             }
         }
+        filters["_id"] = id
         filters["createdAt"] = {
             "$gte": dateFilter["start_date"],
             "$lt": dateFilter["end_date"]
