@@ -552,7 +552,9 @@ export default class BookingService extends BaseService {
         try {
             const id =req.params.id
             const date_time = req.body.date_time
-            const date = moment().format('YYYY-MM-DD')
+            const date = moment().format('YYYY-MM-DD, h:mm:ss a')
+            
+
             console.log(date)
             if(date_time<date){
                 const errMsg = "Cannot reschedule for past dates!"
@@ -567,9 +569,9 @@ export default class BookingService extends BaseService {
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })
-            return
-                
+            return    
             }
+            
             const booking = await Booking.findByIdAndUpdate(id,{date_time:date_time},{new:true}).populate("user_id").exec()
             if(!booking){
                 const errMsg = "unable to update boooking"

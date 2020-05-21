@@ -7,6 +7,7 @@ const rr = new RevenueService()
 
 revenueRouter.get("/",rr.revenue) //total revenue of last 28 days (default). Filters can be used on this of startdate and end date
 revenueRouter.get("/total",rr.totalRevenue) //overall total revenue
+revenueRouter.get("/booking",rr.revenueByBookingId)
 
 
 export default revenueRouter

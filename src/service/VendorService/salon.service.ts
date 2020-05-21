@@ -133,7 +133,7 @@ export default class SalonService extends BaseService {
             //@ts-ignore
             const vendor_id = decoded._id
             const updates = Object.keys(req.body)
-            const allowedupates = ["name", "location", "start_working_hours"]
+            const allowedupates = ["name", "location", "start_working_hours","insta_link","fb_link","end_working_hours"]
             const isvalid = updates.every((update) => allowedupates.includes(update))
 
 
