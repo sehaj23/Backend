@@ -58,10 +58,10 @@ export default class RevenueService {
                     filters[k] = q[k]
             }
         }
-        // filters["createdAt"] = {
-        //     "$gte": dateFilter["start_date"],
-        //     "$lt": dateFilter["end_date"]
-        // }
+        filters["createdAt"] = {
+            "$gte": dateFilter["start_date"],
+            "$lt": dateFilter["end_date"]
+        }
         console.log(filters);
     
         
