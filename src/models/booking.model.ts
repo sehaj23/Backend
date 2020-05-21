@@ -66,7 +66,7 @@ const BookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed'],
+        enum: ['Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed'],
         default:'Requested'
     },
     price: {

@@ -20,8 +20,12 @@ export default class EmployeeService {
                 res.send({ message: "Send all data" })
                 return
             }
+        
             const emp = await Employee.create(v)
+
+
             res.send(emp)
+            
 
 
 
