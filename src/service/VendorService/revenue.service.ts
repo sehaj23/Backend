@@ -103,7 +103,48 @@ export default class RevenueService {
                 }        
         
         
-                return;
+        try{
+            const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const revenuePagesReq = Booking.count(filters)
+            const revenueStatsReq =  Booking.aggregate([
+                {$match: {...filters}},
+                { $project : {
+                    price : 1 ,
+                    services: 1
+                }},
+                { $unwind: "$services" },
+                { 
+                    $group: {
+                        _id: null,
+                        price: {
+                            $sum: "$price",
+                        },
+                        zattire_commission: {
+                            $sum: "$services.zattire_commission"
+                        },
+                        vendor_commission: {
+                            $sum: "$services.vendor_commission"
+                        },
+                        total: {
+                            $sum: {
+                                $add : ["$services.zattire_commission", "$services.vendor_commission"]
+                            }
+                        }
+                    }
+                },
+            ]).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
+            const totalPages = revenuePages / pageLength
+            res.send({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
+        }catch(e){
+            console.log(e)
+            res.status(400)
+            res.send({message: e.message})
+        }        
+
+
+        return;
+
         try {
             const pageOptions = {
                 start: req.query.startdate || moment().subtract('28', "days").format('YYYY,MM,DD'),
@@ -286,7 +327,9 @@ export default class RevenueService {
                 },
             ]).skip(skipCount).limit(pageLength).sort('-createdAt')
             const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
-            res.send({revenueDetails, revenueStats, revenuePages})
+            const totalPages = revenuePages / pageLength
+            res.send({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
+
         }catch(e){
             console.log(e)
             res.status(400)
