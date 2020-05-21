@@ -97,7 +97,8 @@ export default class RevenueService {
                 },
             ]).skip(skipCount).limit(pageLength).sort('-createdAt')
             const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
-            res.send({revenueDetails, revenueStats, revenuePages})
+            const totalPages = parseInt(revenuePages / pageLength)
+            res.send({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
         }catch(e){
             console.log(e)
             res.status(400)
