@@ -15,6 +15,7 @@ makeupArtistRouter.get("/:id/service", VendorverifyToken, ma.getService)
 makeupArtistRouter.patch("/:id/service/update/:sid",ma.updateService)
 makeupArtistRouter.put("/:id/employee", VendorverifyToken, ma.addMakeupArtistEmployee)
 makeupArtistRouter.put("/:id/employee/delete/:eid", VendorverifyToken, ma.deleteMakeupArtistEmployee)
+makeupArtistRouter.patch("/:id/employee/update/:eid",VendorverifyToken,ma.editMuaEmployee)
 
 
 export default makeupArtistRouter

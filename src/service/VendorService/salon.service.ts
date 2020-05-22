@@ -351,6 +351,18 @@ export default class SalonService extends BaseService {
     }
     addSalonEmployee = async (req: Request, res: Response) => {
         try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
             const d: EmployeeI = req.body
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
@@ -387,6 +399,18 @@ export default class SalonService extends BaseService {
 
     deleteSalonEmployee = async (req: Request, res: Response) => {
         try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
             const _id = mongoose.Types.ObjectId(req.params.id)
             const eid = mongoose.Types.ObjectId(req.params.eid)
             if(!_id || !eid){
@@ -415,5 +439,43 @@ export default class SalonService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+
+    editSalonEmployee = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            const v = req.body
+            const salon_id = req.params.id
+            const emp_id = req.params.eid
+            
+            const emp = await Employee.findOneAndUpdate({_id:emp_id} , v, { new: true }).populate("services").exec()// to return the updated data do - returning: true
+            if (!emp) {
+
+                const errMsg = `Employee Not Found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+            res.send(emp)
+        } catch (e) {
+            const errMsg = `Error Updating`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+        }
+    }
+
    
 }

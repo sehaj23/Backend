@@ -160,9 +160,9 @@ export default class MakeupartistServiceC extends BaseService {
             const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if (!_id) {
-                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                logger.error(`Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
                 res.status(403)
-                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
                 return
             }
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
@@ -190,8 +190,8 @@ export default class MakeupartistServiceC extends BaseService {
 
 
             //@ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
-            if (newSalon === null) {
+            const newMua = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
+            if (newMua === null) {
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
@@ -199,7 +199,7 @@ export default class MakeupartistServiceC extends BaseService {
                 return
             }
             //   console.log(newSalon)
-            res.send(newSalon)
+            res.send(newMua)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
@@ -211,9 +211,9 @@ export default class MakeupartistServiceC extends BaseService {
             const sid = req.params.sid
             const _id = req.params.id
             if (!_id || !sid) {
-                logger.error(`Salon Id is missing salon_id:  & mua_id: `)
+                logger.error(`mua Id is missing mua_id:  & mua_id: `)
                 res.status(403)
-                res.send({ message: `Salon Id is missing salon_id: ` })
+                res.send({ message: `Mua Id is missing mua_id: ` })
                 return
             }
             const osid = mongoose.Types.ObjectId(sid)
@@ -234,15 +234,15 @@ export default class MakeupartistServiceC extends BaseService {
 
 
             // @ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
-            if (newSalon === null) {
+            const newMua = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
+            if (newMua === null) {
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
                 return
             }
-            res.send(newSalon)
+            res.send(newMua)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
@@ -341,6 +341,18 @@ export default class MakeupartistServiceC extends BaseService {
     }
     addMakeupArtistEmployee = async (req: Request, res: Response) => {
         try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
             const d: EmployeeI = req.body
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
@@ -357,15 +369,15 @@ export default class MakeupartistServiceC extends BaseService {
             const emp = await Employee.create(d)
             const empId = mongoose.Types.ObjectId(emp._id)
             //@ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({_id, employees: {$nin: [empId]}}, { $push : {employees  : empId}}, {new: true}).populate("employees").exec()
-            if(newSalon === null){
+            const newMua = await MakeupArtist.findOneAndUpdate({_id, employees: {$nin: [empId]}}, { $push : {employees  : empId}}, {new: true}).populate("employees").exec()
+            if(newMua === null){
                 const errMsg = `Add Emp: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
                 return
             }
-            res.send(newSalon)
+            res.send(newMua)
         }catch(e){
             logger.error(`${e.message}`)
             res.status(403)
@@ -375,6 +387,18 @@ export default class MakeupartistServiceC extends BaseService {
 
     deleteMakeupArtistEmployee = async (req: Request, res: Response) => {
         try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
             const _id = mongoose.Types.ObjectId(req.params.id)
             const eid = mongoose.Types.ObjectId(req.params.eid)
             if(!_id || !eid){
@@ -388,19 +412,56 @@ export default class MakeupartistServiceC extends BaseService {
             
             const emp = await Employee.findByIdAndDelete(eid)
             //@ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({_id, employees: {$in: [eid]}}, { $pull : {employees  : eid}}, {new: true}).populate("employees").exec()
-            if(newSalon === null){
+            const newMua= await MakeupArtist.findOneAndUpdate({_id, employees: {$in: [eid]}}, { $pull : {employees  : eid}}, {new: true}).populate("employees").exec()
+            if(newMua === null){
                 const errMsg = `delete Emp: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
                 return
             }
-            res.send(newSalon)
+            res.send(newMua)
         }catch(e){
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
+    editMuaEmployee = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await vendorJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            const v = req.body
+            const mua_id = req.params.id
+            const emp_id = req.params.eid
+            
+            const emp = await Employee.findOneAndUpdate({_id:emp_id} , v, { new: true }).populate("services").exec()// to return the updated data do - returning: true
+            if (!emp) {
+
+                const errMsg = `Employee Not Found`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+
+            }
+            res.send(emp)
+        } catch (e) {
+            const errMsg = `Error Updating`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
         }
     }
 
