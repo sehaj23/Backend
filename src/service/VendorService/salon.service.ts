@@ -415,7 +415,5 @@ export default class SalonService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
-
-
-
+   
 }

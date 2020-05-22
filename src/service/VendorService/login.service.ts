@@ -42,6 +42,7 @@ export default class LoginService extends BaseService {
         try {
 
             const { email, password } = req.body
+            console.log(req.body)
             if (!email || !password) {
 
                 res.status(403)

@@ -10,7 +10,7 @@ import Salon from "../../models/salon.model";
 import Mua from "../../models/makeupArtist.model";
 const service = Router()
 
-export default class ServiceServices {
+export default class ServiceServices{
 
     createService = async (req: Request, res: Response) => {
         try {
@@ -117,8 +117,9 @@ export default class ServiceServices {
     }
     getService = async (req: Request, res: Response) => {
         try {
+          const  id = req.params.id
 
-            const service = await Service.find().populate("photos").populate("salons").populate("makeup_artists").exec()
+            const service = await Service.findById(id).populate("photos").exec()
             res.send(service)
 
 
@@ -174,4 +175,24 @@ export default class ServiceServices {
             res.send({ message: errMsg })
         }
     }
+    servicebyId = async (req: Request, res: Response) => {
+        try {
+          const  id = req.params.id
+
+            const service = await Service.findById(id).populate("photos").populate("services").exec()
+            res.send(service)
+
+
+
+        } catch (e) {
+            const errMsg = `Unable to fetch Service`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+        }
+
+    }
+
+
+
 }
