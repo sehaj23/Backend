@@ -16,6 +16,8 @@ salonRouter.patch("/:id/service/update/:sid",ss.updateService)
 salonRouter.put("/:id/employee", VendorverifyToken, ss.addSalonEmployee)
 salonRouter.delete("/:id/employee/delete/:eid", VendorverifyToken, ss.deleteSalonEmployee)
 salonRouter.patch("/:id/employee/update/:eid",VendorverifyToken,ss.editSalonEmployee)
+salonRouter.put("/:id/photo", VendorverifyToken, ss.putPhoto)
+salonRouter.get("/:id/photo", VendorverifyToken, ss.getPhoto)
 
 
 
