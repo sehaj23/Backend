@@ -34,7 +34,7 @@ export default class BaseService{
         try {
             // let {limit, offset} = req.query;
             // const this.models = await this.model.findAndCountAll({offset, limit})
-            const events = await this.model.find().select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
+            const events = await this.model.find().select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
                 path: 'services',
                 model: 'services',
                 populate: {
@@ -60,7 +60,7 @@ export default class BaseService{
             res.send(msg)
             return
         }
-        const event = await this.model.findById(id).select("-password").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
+        const event = await this.model.findById(id).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
             path: 'services',
             model: 'services',
             populate: {
