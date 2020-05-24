@@ -66,6 +66,10 @@ const MakeupArtistSchema = new mongoose.Schema({
             ref: "photos"
         }]
     },
+    profile_pic: { // this is the DP of MUA
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "photos"
+    },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendors",

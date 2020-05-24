@@ -102,6 +102,22 @@ export default class BaseService {
         }
     }
 
+    putProfilePic = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            const _id = req.params.id
+            // saving photos 
+            const photo = await Photo.create(photoData)
+            // adding it to event
+            const newEvent = await this.model.findByIdAndUpdate({_id},  { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
     getPhoto = async (req: Request, res: Response) => {
         try {
             const _id = req.params.id
