@@ -3,7 +3,7 @@ import EmployeeService from "../../service/VendorAppService/employee.service";
 const employeeRouter = Router()
 
 
-employeeRouter.post("/",EmployeeService.Employeepost)
+employeeRouter.post("/",EmployeeService.employeeLogin)
 
 
 

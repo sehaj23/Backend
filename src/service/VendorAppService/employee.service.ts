@@ -7,7 +7,7 @@ import Employee from "../../models/employees.model"
 
 export default class EmployeeService {
 
-    static Employeepost = async (req: Request, res: Response) => {
+    static employeeLogin = async (req: Request, res: Response) => {
         try {
 
             const { phone, otp } = req.body
