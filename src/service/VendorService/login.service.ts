@@ -45,15 +45,15 @@ export default class LoginService extends BaseService {
             console.log(req.body)
             if (!email || !password) {
 
-                res.status(403)
-                res.send({ message: "Send all data" })
+                res.status(400)
+                res.send({ message: "Send email and password" })
                 return
             }
 
             const passwordHash = crypto.createHash("md5").update(password).digest("hex")
             const vendor = await Vendor.findOne({ email, password: passwordHash })
             if (vendor == null) {
-                res.status(403)
+                res.status(400)
                 res.send({ message: "Username password does not match" })
                 return
             }
@@ -61,7 +61,7 @@ export default class LoginService extends BaseService {
             const token = await jwt.sign(vendor.toJSON(), CONFIG.VENDOR_JWT,{expiresIn:"7 days"})
             res.send({ token })  //made change here for ID
         } catch (e) {
-            res.status(403)
+            res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
