@@ -44,11 +44,15 @@ export default class BookingService{
                 break
             case "status":
                 filters["status"]= q[k]
+                break;
+            //case "date":
+                // filters["date_time"] = moment(q[k]).format("YYYY-MM-DD")
+                // break
             case "start_date":
-                dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
+                dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                 break
             case "end_date":
-                dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+                dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                 break
             case "page_number":
             case "page_length":
@@ -57,18 +61,25 @@ export default class BookingService{
             default:
                 filters[k] = q[k]
         }
+
+          filters["date_time"] = {
+                "$gte": dateFilter["start_date"],
+                "$lt": dateFilter["end_date"]
+            }
+           
     
 
     }
     console.log(filters);
         try {
-            const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").exec()
             const bookingPagesReq = Booking.count(filters)
             const bookingStatsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
                 
            
             const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
             res.send({bookingDetails, bookingStats, bookingPages})
+            //console.log({bookingDetails, bookingStats, bookingPages})
             
         } catch (error) {
             const errMsg = "Error Bookingg not found"
