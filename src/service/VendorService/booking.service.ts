@@ -367,6 +367,7 @@ export default class BookingService extends BaseService {
         try {
             const bookingid = req.params.id
             const status = req.body.status
+            console.log(bookingid);
 
             if (!bookingid) {
                 const errMsg = 'Booking Id not found'
