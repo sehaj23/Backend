@@ -9,7 +9,7 @@ vendorRouter.post("/",vs.vendorLogin);
 vendorRouter.post("/absent",VendorverifyToken,vs.employeeAbsent)
 vendorRouter.post("/absent/update",VendorverifyToken,vs.employeeAbsent)
 vendorRouter.get("/",VendorverifyToken ,vs.get)
-vendorRouter.put("/:id", VendorverifyToken, vs.put)
-vendorRouter.put("/:id/profile-pic", VendorverifyToken, vs.putProfilePic)
+vendorRouter.put("/", VendorverifyToken, vs.update)
+vendorRouter.put("/profile-pic", VendorverifyToken, vs.putProfilePic)
 
 export default vendorRouter

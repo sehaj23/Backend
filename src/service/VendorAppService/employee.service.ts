@@ -9,8 +9,10 @@ import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
 import { EmployeeAbsenteeismI } from "../../interfaces/employeeAbsenteeism.interface"
 import logger from "../../utils/logger"
 import mongoose from "../../database"
-import { employeeJWTVerification } from "../../middleware/Employee.jwt"
+import EmployeeverifyToken, { employeeJWTVerification } from "../../middleware/Employee.jwt"
 import BaseService from "./base.service";
+import { PhotoI } from "../../interfaces/photo.interface";
+import Photo from "../../models/photo.model";
 
 
 export default class EmployeeService extends BaseService {
@@ -124,6 +126,101 @@ export default class EmployeeService extends BaseService {
         }
 
     }
+    get = async (req: Request, res: Response) => {
+
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await employeeJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+
+            //@ts-ignore
+            const _id = mongoose.Types.ObjectId(decoded._id)
+            const outlets = await Employee.findById(_id).populate("services").exec()
+            
+            
+            
+            res.send(outlets)
+
+        } catch (error) {
+            logger.error(`${error.message}`)
+            res.status(403)
+            res.send("Error  ")
+
+        }
+
+      
+
+    }
+    update = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await employeeJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+
+            const d = req.body
+
+            //@ts-ignore
+            const _id = mongoose.Types.ObjectId(decoded._id)
+            const vendor = await Employee.findByIdAndUpdate(_id,d,{new:true})
+            res.send(vendor)
+
+           
+        } catch (e) {
+            logger.error(`${e.message}`)
+            res.status(403)
+            res.send("Error updating")
+
+            
+        }
+    }
+    putProfilePic = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await employeeJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const _id = decoded._id
+            const photoData: PhotoI = req.body
+            
+            // saving photos 
+            const photo = await Photo.create(photoData)
+            // adding it to event
+            const newEvent = await Employee.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo").exec() // to return the updated data do - returning: true
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
+
 
 
 
