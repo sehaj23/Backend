@@ -13,9 +13,12 @@ import mongoose from "../../database";
 const loginRouter = Router()
 
 export default class LoginService extends BaseService {
+    constructor(){
+        super(Vendor)
+    }
 
 
-    static createVendor = async (req: Request, res: Response) => {
+     createVendor = async (req: Request, res: Response) => {
         try {
 
             const v: VendorI = req.body
@@ -38,7 +41,7 @@ export default class LoginService extends BaseService {
     }
 
 
-    static vendorPost = async (req: Request, res: Response) => {
+     vendorPost = async (req: Request, res: Response) => {
         try {
 
             const { email, password } = req.body
@@ -65,7 +68,7 @@ export default class LoginService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
-   static get = async (req: Request, res: Response) => {
+   get = async (req: Request, res: Response) => {
 
         try {
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
