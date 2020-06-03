@@ -13,6 +13,8 @@ import EmployeeverifyToken, { employeeJWTVerification } from "../../middleware/E
 import BaseService from "./base.service";
 import { PhotoI } from "../../interfaces/photo.interface";
 import Photo from "../../models/photo.model";
+import moment = require("moment");
+import Salon from "../../models/salon.model";
 
 
 export default class EmployeeService extends BaseService {
@@ -221,10 +223,66 @@ export default class EmployeeService extends BaseService {
         }
     }
 
+    employeeSlots = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            if (!token) {
+                logger.error("No token provided.")
+                res.status(401).send({ success: false, message: 'No token provided.' });
+                return
+            }
+            const decoded = await employeeJWTVerification(token)
+            if (decoded === null) {
+                logger.error("Something went wrong")
+                res.status(401).send({ success: false, message: 'Something went wrong' });
+                return
+            }
+            //@ts-ignore
+            const empId = decoded._id
 
+            // getting the date from the frontend for which he needs the slots for
+            let slotsDate = req.body.slots_date
+            if(slotsDate){
+                const msg = "Something went wrong"
+                logger.error(msg)
+                res.status(400).send({ success: false, message: msg });
+                return
+            }
+            slotsDate = new Date(slotsDate)
 
-
-
-
+            const salonReq = Salon.findOne({employees: [empId]})
+            const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({employee_id: empId, absenteeism_date: slotsDate})
+            const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
+            const starting_hours = salon.start_working_hours
+            var slots = starting_hours.map(function (val) {
+                const storeDate = moment(val).format('hh:mm a')
+                const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
+                if(employeeAbsentSlots.length === 0){
+                    return {
+                        store_date: storeDate,
+                        absent: false
+                    }
+                }
+                for(let slot of employeeAbsentSlots){
+                    slot = moment(slot).format('hh:mm a')
+                    if(slot === storeDate){
+                        return {
+                            store_date: storeDate,
+                            absent: true
+                        }
+                    }
+                }
+                return {
+                    store_date: storeDate,
+                    absent: false
+                }
+            })
+            res.send(slots)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+        }
+    }
 
 }

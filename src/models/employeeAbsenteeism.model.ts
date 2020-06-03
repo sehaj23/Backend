@@ -24,6 +24,6 @@ const EmployeeAbsenteeismSchema = new mongoose.Schema({
 })
 
 
-const EmployeeAbsenteeism = mongoose.model<EmployeeAbsenteeismSI>("employeesAbsenteeism", EmployeeAbsenteeismSchema)
+const EmployeeAbsenteeism = mongoose.model<EmployeeAbsenteeismSI>("employeesAbsenteeisms", EmployeeAbsenteeismSchema)
 
 export default EmployeeAbsenteeism
