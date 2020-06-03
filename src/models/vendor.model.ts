@@ -30,7 +30,7 @@ const VendorSchema = new mongoose.Schema({
             ref: "designers"
         }]
     },
-    photo: {
+    profile_pic: { // this is the DP of vendor
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
     },
