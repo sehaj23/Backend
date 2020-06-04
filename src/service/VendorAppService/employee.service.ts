@@ -55,17 +55,9 @@ export default class EmployeeService extends BaseService {
 
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
+
             const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+
 
             const d: EmployeeAbsenteeismI = req.body
 
@@ -97,17 +89,9 @@ export default class EmployeeService extends BaseService {
 
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
+
             const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+
 
             const d: EmployeeAbsenteeismI = req.body
 
@@ -132,24 +116,16 @@ export default class EmployeeService extends BaseService {
 
         try {
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
+
             const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+
 
             //@ts-ignore
             const _id = mongoose.Types.ObjectId(decoded._id)
             const outlets = await Employee.findById(_id).populate("services").exec()
-            
-            
-            
+
+
+
             res.send(outlets)
 
         } catch (error) {
@@ -159,38 +135,29 @@ export default class EmployeeService extends BaseService {
 
         }
 
-      
+
 
     }
     update = async (req: Request, res: Response) => {
         try {
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
             const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+
 
             const d = req.body
 
             //@ts-ignore
             const _id = mongoose.Types.ObjectId(decoded._id)
-            const vendor = await Employee.findByIdAndUpdate(_id,d,{new:true})
+            const vendor = await Employee.findByIdAndUpdate(_id, d, { new: true })
             res.send(vendor)
 
-           
+
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
             res.send("Error updating")
 
-            
+
         }
     }
     putProfilePic = async (req: Request, res: Response) => {
@@ -210,11 +177,11 @@ export default class EmployeeService extends BaseService {
             //@ts-ignore
             const _id = decoded._id
             const photoData: PhotoI = req.body
-            
+
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
-            const newEvent = await Employee.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("photo").exec() // to return the updated data do - returning: true
+            const newEvent = await Employee.findByIdAndUpdate({ _id }, { photo: photo._id }, { new: true }).populate("photo").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
@@ -242,7 +209,7 @@ export default class EmployeeService extends BaseService {
 
             // getting the date from the frontend for which he needs the slots for
             let slotsDate = req.body.slots_date
-            if(slotsDate){
+            if (slotsDate) {
                 const msg = "Something went wrong"
                 logger.error(msg)
                 res.status(400).send({ success: false, message: msg });
@@ -250,22 +217,22 @@ export default class EmployeeService extends BaseService {
             }
             slotsDate = new Date(slotsDate)
 
-            const salonReq = Salon.findOne({employees: [empId]})
-            const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({employee_id: empId, absenteeism_date: slotsDate})
+            const salonReq = Salon.findOne({ employees: [empId] })
+            const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({ employee_id: empId, absenteeism_date: slotsDate })
             const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
             const starting_hours = salon.start_working_hours
             var slots = starting_hours.map(function (val) {
                 const storeDate = moment(val).format('hh:mm a')
                 const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
-                if(employeeAbsentSlots.length === 0){
+                if (employeeAbsentSlots.length === 0) {
                     return {
                         store_date: storeDate,
                         absent: false
                     }
                 }
-                for(let slot of employeeAbsentSlots){
+                for (let slot of employeeAbsentSlots) {
                     slot = moment(slot).format('hh:mm a')
-                    if(slot === storeDate){
+                    if (slot === storeDate) {
                         return {
                             store_date: storeDate,
                             absent: true

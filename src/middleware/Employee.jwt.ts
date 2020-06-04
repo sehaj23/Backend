@@ -55,5 +55,4 @@ const EmployeeverifyToken = async (req: Request, res: Response, next: NextFuncti
         res.status(401).send({ auth: false, message: err });
       }
     };
-  
 export default EmployeeverifyToken;

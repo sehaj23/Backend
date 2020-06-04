@@ -155,7 +155,7 @@ export default class VendorService extends BaseService {
 
             //@ts-ignore
             const _id = mongoose.Types.ObjectId(decoded._id)
-            const outlets = await Vendor.findById(_id).populate("makeup_artists").populate("salons").populate("designers").exec()
+            const outlets = await Vendor.findById(_id).populate("makeup_artists").populate("salons").populate("designers").populate("photos").exec()
             outlets.password = ""
             
             
