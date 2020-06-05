@@ -275,7 +275,7 @@ export default class VendorService extends BaseService {
             const empId = mongoose.Types.ObjectId(req.params.id)
 
             // getting the date from the frontend for which he needs the slots for
-            let timeSlots = req.params.slots_date
+            let timeSlots = req.query.slots_date
             if (timeSlots) {
                 const msg = "Something went wrong"
                 logger.error(msg)
