@@ -205,7 +205,7 @@ export default class BookingService extends BaseService {
 
         try {
             const id = mongoose.Types.ObjectId(req.params.id) // salon id
-            const date = moment() || moment(req.params.date)
+            const date = moment() || moment(req.query.date)
             const salon = await Salon.findById(id)
             
             const starting_hours = salon.start_working_hours

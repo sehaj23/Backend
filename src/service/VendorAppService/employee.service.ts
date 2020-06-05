@@ -243,4 +243,44 @@ export default class EmployeeService extends BaseService {
         }
     }
 
+    slots = async (req: Request, res: Response) => {
+
+        try {
+            const id = mongoose.Types.ObjectId(req.params.id) // salon id
+            const date = moment() || moment(req.query.date)
+            const salon = await Salon.findById(id)
+            
+            const starting_hours = salon.start_working_hours
+            var start_time = starting_hours.map(function (val) {
+                return moment(val).format('YYYY-MM-DD hh:mm a');;
+            })
+            console.log(start_time)
+            const end_hours = salon.end_working_hours
+            var end_time = end_hours.map(function (val) {
+                return moment(val).format('YYYY-MM-DD hh:mm a');;
+            })
+            const slots = []
+            var time1 = start_time[date.day()]
+            console.log(date)
+            var time2 = end_time[date.day()]
+            for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
+                slots.push(m.format('hh:mm a'));
+            }
+            res.send(slots)
+            console.log(slots);
+        } catch (error) {
+            const errMsg = "Error in slots"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+        
+
+    }
+
+
+
+
 }
