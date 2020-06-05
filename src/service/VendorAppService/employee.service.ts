@@ -122,8 +122,7 @@ export default class EmployeeService extends BaseService {
 
             //@ts-ignore
             const _id = mongoose.Types.ObjectId(decoded._id)
-            const outlets = await Employee.findById(_id).populate("services").exec()
-
+            const outlets = await Employee.findById(_id).populate("services").populate("photo").exec()
 
 
             res.send(outlets)
@@ -193,17 +192,9 @@ export default class EmployeeService extends BaseService {
     employeeSlots = async (req: Request, res: Response) => {
         try {
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
+           
             const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+           
             //@ts-ignore
             const empId = decoded._id
 

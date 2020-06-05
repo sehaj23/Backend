@@ -10,11 +10,14 @@ const bs = new Bookingservice()
 bookingRouter.get("/",VendorverifyToken,bs.getbookings)
 bookingRouter.get("/reschedule/:id",VendorverifyToken,bs.rescheduleSlots)
 bookingRouter.patch("/reschedule/:id",VendorverifyToken,bs.rescheduleBooking)
-bookingRouter.patch("/updatetatus/:id",VendorverifyToken,bs.updateStatusBookings)
+bookingRouter.patch("/updatestatus/:id",VendorverifyToken,bs.updateStatusBookings)
+
 
 //employee
-bookingRouter.get("/employee",EmployeeverifyToken,bs.getEmployeebookings)
-bookingRouter.patch("/employee/updatetatus/:id",EmployeeverifyToken,bs.updateStatusBookings)
+bookingRouter.get("/employee",EmployeeverifyToken,bs.getEmployeebookings) //salon id required
+bookingRouter.patch("/employee/updatestatus/:id",EmployeeverifyToken,bs.updateStatusBookings) //booking id required
+bookingRouter.get("/employee/reschedule/:id",EmployeeverifyToken,bs.rescheduleSlots)
+bookingRouter.patch("/employee/reschedule/:id",EmployeeverifyToken,bs.rescheduleBooking)
 //bookingRouter.get("/employee/booking",EmployeeverifyToken,bs.getEmployeebookings)
 
 

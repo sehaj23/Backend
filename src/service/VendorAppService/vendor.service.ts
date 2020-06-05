@@ -157,8 +157,8 @@ export default class VendorService extends BaseService {
             const _id = mongoose.Types.ObjectId(decoded._id)
             const outlets = await Vendor.findById(_id).populate("makeup_artists").populate("salons").populate("designers").populate("profile_pic").exec()
             outlets.password = ""
-            
-            
+
+
             res.send(outlets)
 
         } catch (error) {
@@ -168,7 +168,7 @@ export default class VendorService extends BaseService {
 
         }
 
-      
+
 
     }
     update = async (req: Request, res: Response) => {
@@ -190,16 +190,16 @@ export default class VendorService extends BaseService {
 
             //@ts-ignore
             const _id = mongoose.Types.ObjectId(decoded._id)
-            const vendor = await Vendor.findByIdAndUpdate(_id,d,{new:true})
+            const vendor = await Vendor.findByIdAndUpdate(_id, d, { new: true })
             res.send(vendor)
 
-           
+
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
             res.send("Error updating")
 
-            
+
         }
     }
     putProfilePic = async (req: Request, res: Response) => {
@@ -219,17 +219,49 @@ export default class VendorService extends BaseService {
             //@ts-ignore
             const _id = decoded._id
             const photoData: PhotoI = req.body
-            
+
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
-            const newEvent = await Vendor.findByIdAndUpdate({_id},  { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+            const newEvent = await Vendor.findByIdAndUpdate({ _id }, { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
             res.send(newEvent)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
+    }
+    updatePass = async (req: Request, res: Response) => {
+
+        try {
+
+
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+            const password = req.body.password
+            const newpassword = req.body.newpassword
+            const passwordHash = crypto.createHash("md5").update(password).digest("hex")
+            const decoded = await vendorJWTVerification(token)
+
+            //@ts-ignore
+            const _id = mongoose.Types.ObjectId(decoded._id)
+
+            const vendor = await Vendor.findOne({ _id, password: passwordHash })
+            const newpasswordHash = crypto.createHash("md5").update(newpassword).digest("hex")
+
+            if (vendor) {
+                //@ts-ignore
+                const updatepass = await Vendor.findByIdAndUpdate({ _id }, { password: newpasswordHash }, { new: true })
+                return res.send(updatepass)
+            } else {
+                res.status(403).send("Error Updating password")
+            }
+        } catch (error) {
+            logger.error(`error ${error.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${error.message}` })
+        }
+
+
     }
 
 

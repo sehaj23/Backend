@@ -10,6 +10,7 @@ vendorRouter.post("/absent",VendorverifyToken,vs.employeeAbsent)
 vendorRouter.post("/absent/update",VendorverifyToken,vs.employeeAbsent)
 vendorRouter.get("/",VendorverifyToken ,vs.get)
 vendorRouter.put("/", VendorverifyToken, vs.update)
+vendorRouter.patch("/update/",VendorverifyToken,vs.updatePass)
 
 vendorRouter.put("/profile-pic", VendorverifyToken, vs.putProfilePic)
 

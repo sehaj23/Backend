@@ -38,8 +38,8 @@ export default class BookingService extends BaseService {
 
 
 
-        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
-        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+        // dateFilter["start_date"] = moment().subtract(1, "year").format("YYYY-MM-DD")
+        // dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
         for (const k of keys) {
             switch (k) {
                 case "service_id":
@@ -63,9 +63,14 @@ export default class BookingService extends BaseService {
                     break;
                 case "start_date":
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                   
                     break
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    filters["date_time"] = {
+                        "$gte": dateFilter["start_date"],
+                        "$lt": dateFilter["end_date"]
+                    }
                     break
                 case "page_number":
                 case "page_length":
@@ -75,10 +80,7 @@ export default class BookingService extends BaseService {
                     filters[k] = q[k]
             }
 
-            filters["date_time"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
+            
 
 
 
@@ -134,7 +136,6 @@ export default class BookingService extends BaseService {
         dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
         dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
 
-
         for (const k of keys) {
             switch (k) {
                 case "service_id":
@@ -142,7 +143,6 @@ export default class BookingService extends BaseService {
                         "$in": q[k].split(",")
                     }
                     break
-
                 case "status":
                     filters["status"] = q[k]
                     break;
@@ -204,13 +204,15 @@ export default class BookingService extends BaseService {
     rescheduleSlots = async (req: Request, res: Response) => {
 
         try {
-            const id = mongoose.Types.ObjectId(req.params.id)
-            const date = moment()
+            const id = mongoose.Types.ObjectId(req.params.id) // salon id
+            const date = moment() || moment(req.params.date)
             const salon = await Salon.findById(id)
+            
             const starting_hours = salon.start_working_hours
             var start_time = starting_hours.map(function (val) {
                 return moment(val).format('YYYY-MM-DD hh:mm a');;
             })
+            console.log(start_time)
             const end_hours = salon.end_working_hours
             var end_time = end_hours.map(function (val) {
                 return moment(val).format('YYYY-MM-DD hh:mm a');;
@@ -223,6 +225,7 @@ export default class BookingService extends BaseService {
                 slots.push(m.format('hh:mm a'));
             }
             res.send(slots)
+            console.log(slots);
         } catch (error) {
             const errMsg = "Error in slots"
             logger.error(errMsg)
@@ -231,6 +234,7 @@ export default class BookingService extends BaseService {
             return
 
         }
+        
 
     }
 
@@ -244,7 +248,7 @@ export default class BookingService extends BaseService {
             const d = req.body.date_time
             console.log(d)
             console.log(req.body)
-            const booking = await Booking.findByIdAndUpdate(id, { date_time: d }, { new: true })
+            const booking = await Booking.findByIdAndUpdate(id, { date_time: d,status:"Requested" }, { new: true })
             res.send(booking)
 
         } catch (error) {
