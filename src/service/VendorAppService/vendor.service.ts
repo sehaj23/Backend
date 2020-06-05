@@ -272,19 +272,20 @@ export default class VendorService extends BaseService {
             const decoded = await vendorJWTVerification(token)
            
             //@ts-ignore
-            const empId = decoded._id
+            const empId = mongoose.Types.ObjectId(req.params.id)
 
             // getting the date from the frontend for which he needs the slots for
-            let slotsDate = req.body.slots_date
-            if (slotsDate) {
+            let timeSlots = req.params.slots_date
+            if (timeSlots) {
                 const msg = "Something went wrong"
                 logger.error(msg)
                 res.status(400).send({ success: false, message: msg });
                 return
             }
-            slotsDate = new Date(slotsDate)
-
+          let  slotsDate = new Date(timeSlots)
+            //@ts-ignore
             const salonReq = Salon.findOne({ employees: [empId] })
+            //@ts-ignore
             const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({ employee_id: empId, absenteeism_date: slotsDate })
             const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
             const starting_hours = salon.start_working_hours
