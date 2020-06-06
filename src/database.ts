@@ -9,10 +9,12 @@ let db = process.env.DB_NAME ?? "zattire"
 if(process.env.NODE_ENV === "test")
   db += "_test"
 console.log(`Connecting to database: ${db}`)
-const uri: string = process.env.DB_URI ?? `mongodb://127.0.0.1:27017/${db}`;
 
-const user: string = process.env.DB_USER ?? "postgres";
-const password: string = process.env.DB_PASS ?? "postgres";
+const user: string = process.env.DB_USER ?? "zattire_dev";
+const password: string = process.env.DB_PASS ?? "zattire_dev_password";
+
+
+const uri: string = process.env.DB_URI ?? `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`;
 
 export const connectt = () => {
   return new Promise(function (fulfill, reject){

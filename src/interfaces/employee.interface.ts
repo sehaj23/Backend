@@ -6,6 +6,7 @@ export interface EmployeeI{
     phone: string
     services: ServiceI[] | mongoose.Schema.Types.ObjectId[] | string[] // - from frontend just send services ids
     photo?: string
+    fcm_token?: string
 }
 
 export default interface EmployeeSI extends EmployeeI, mongoose.Document{}

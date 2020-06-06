@@ -45,6 +45,9 @@ const VendorSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "salons"
         }]
+    },
+    fcm_token: {
+        type: String
     }
 }, {
     timestamps: true

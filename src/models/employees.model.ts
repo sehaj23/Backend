@@ -13,6 +13,9 @@ const EmployeeSchema = new mongoose.Schema({
     photo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
+    },
+    fcm_token: {
+        type: String
     }
 }, {
     timestamps: true

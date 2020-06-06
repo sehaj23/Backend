@@ -10,6 +10,7 @@ import Offer from "../../models/offer.model";
 import Salon from "../../models/salon.model";
 import  { SocketRoomType, getVendorRoom } from "../socketio";
 import {io} from '../../app';
+import sendNotificationToDevice from "../../utils/send-notification";
 
 export default class BookinkService extends BaseService {
   constructor() {
@@ -116,6 +117,10 @@ export default class BookinkService extends BaseService {
       if(io.sockets.adapter.rooms[`${getVendorRoom(vendorId)}`]){
         io.sockets.in(`${getVendorRoom(vendorId)}`).emit('new-booking', {bookingId: booking._id})
       }
+
+      // TODO: Send notification here
+      // sendNotificationToDevice()
+
       res.send(booking);
     } catch (e) {
       logger.error(`Post ${e.message}`);
