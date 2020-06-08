@@ -243,44 +243,42 @@ export default class EmployeeService extends BaseService {
         }
     }
 
-    slots = async (req: Request, res: Response) => {
-
+    // to add employee in empabs model
+    employeeSelectSlot = async (req: Request, res: Response) => {
         try {
-            const id = mongoose.Types.ObjectId(req.params.id) // salon id
-            const date = moment() || moment(req.query.date)
-            const salon = await Salon.findById(id)
-            
-            const starting_hours = salon.start_working_hours
-            var start_time = starting_hours.map(function (val) {
-                return moment(val).format('YYYY-MM-DD hh:mm a');;
-            })
-            console.log(start_time)
-            const end_hours = salon.end_working_hours
-            var end_time = end_hours.map(function (val) {
-                return moment(val).format('YYYY-MM-DD hh:mm a');;
-            })
-            const slots = []
-            var time1 = start_time[date.day()]
-            console.log(date)
-            var time2 = end_time[date.day()]
-            for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
-                slots.push(m.format('hh:mm a'));
+            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+           
+            const decoded = await employeeJWTVerification(token)
+           
+           
+
+            // getting the date from the frontend for which he needs the slots for
+            const data = req.body
+
+            //@ts-ignore
+            data.employee_id = decoded._id // req.empId
+            let slotsDate = data.slots_date
+            if (slotsDate) {
+                const msg = "Something went wrong"
+                logger.error(msg)
+                res.status(400).send({ success: false, message: msg });
+                return
             }
-            res.send(slots)
-            console.log(slots);
-        } catch (error) {
-            const errMsg = "Error in slots"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
+            slotsDate = new Date(slotsDate)
 
+            const absentismTimes= data.absenteeism_times
+            if(Array.isArray(absentismTimes) === false){
+                const msg = "absentismTimes only array allowed"
+                logger.error(msg)
+                res.status(400).send({ success: false, message: msg });
+                return
+            }
+            const empAbsent = EmployeeAbsenteeism.create(data)
+            res.send(empAbsent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403)
+            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
-        
-
     }
-
-
-
-
 }
