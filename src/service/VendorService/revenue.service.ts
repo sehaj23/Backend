@@ -4,7 +4,7 @@ import { BookingI } from "../../interfaces/booking.interface"
 import logger from "../../utils/logger"
 import mongoose from "../../database"
 import * as moment from "moment"
-import { filter } from "bluebird"
+
 
 
 export default class RevenueService {

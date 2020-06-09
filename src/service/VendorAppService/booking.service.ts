@@ -265,6 +265,8 @@ export default class BookingService extends BaseService {
     updateStatusBookings = async (req: Request, res: Response) => {
 
         try {
+            
+          
             const bookingid = req.params.id
             const status = req.body.status
             console.log(bookingid);
@@ -299,6 +301,15 @@ export default class BookingService extends BaseService {
 
 
     }
+    bookingStatus = async (req: Request, res: Response) => {
+      const status =  ['Requested', 'Confirmed', 'Vendor Cancelled', 'Reschedule','Reschedule and Cancelled']
+      res.send(status)
+
+
+
+
+    }
+
 
 
 

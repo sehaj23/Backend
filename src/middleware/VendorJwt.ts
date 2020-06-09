@@ -44,7 +44,7 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
           return
         }
         // @ts-ignore
-        req.userId = decoded._id;
+        req.vendorId = decoded._id;
         next();
       } catch (err) {
         res.status(401).send({ auth: false, message: err });

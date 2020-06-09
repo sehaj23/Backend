@@ -11,6 +11,7 @@ bookingRouter.get("/",VendorverifyToken,bs.getbookings)
 bookingRouter.get("/reschedule/:id",VendorverifyToken,bs.rescheduleSlots)
 bookingRouter.patch("/reschedule/:id",VendorverifyToken,bs.rescheduleBooking)
 bookingRouter.patch("/updatestatus/:id",VendorverifyToken,bs.updateStatusBookings)
+bookingRouter.get("/status",VendorverifyToken,bs.bookingStatus)
 
 
 //employee
