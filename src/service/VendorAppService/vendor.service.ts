@@ -34,7 +34,7 @@ export default class VendorService extends BaseService {
             console.log(req.body)
             if (!email || !password) {
 
-                res.status(403)
+                res.status(400)
                 res.send({ message: "Send all data" })
                 return
             }
@@ -42,7 +42,7 @@ export default class VendorService extends BaseService {
             const passwordHash = crypto.createHash("md5").update(password).digest("hex")
             const vendor = await Vendor.findOne({ email, password: passwordHash })
             if (vendor == null) {
-                res.status(403)
+                res.status(400)
                 res.send({ message: "Username password does not match" })
                 return
             }
@@ -50,7 +50,7 @@ export default class VendorService extends BaseService {
             const token = await jwt.sign(vendor.toJSON(), CONFIG.VENDOR_JWT, { expiresIn: "7 days" })
             res.send({ token })  //made change here for ID
         } catch (e) {
-            res.status(403)
+            res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
@@ -94,7 +94,7 @@ export default class VendorService extends BaseService {
 
         } catch (error) {
             logger.error(`${error.message}`)
-            res.status(403)
+            res.status(400)
             res.send("Error creating ")
         }
 
@@ -134,7 +134,7 @@ export default class VendorService extends BaseService {
 
         } catch (error) {
             logger.error(`${error.message}`)
-            res.status(403)
+            res.status(400)
             res.send("Error creating ")
         }
 
@@ -165,7 +165,7 @@ export default class VendorService extends BaseService {
 
         } catch (error) {
             logger.error(`${error.message}`)
-            res.status(403)
+            res.status(400)
             res.send("Error  ")
 
         }
@@ -198,7 +198,7 @@ export default class VendorService extends BaseService {
 
         } catch (e) {
             logger.error(`${e.message}`)
-            res.status(403)
+            res.status(400)
             res.send("Error updating")
 
 
@@ -229,7 +229,7 @@ export default class VendorService extends BaseService {
             res.send(newEvent)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
-            res.status(403)
+            res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
@@ -255,11 +255,11 @@ export default class VendorService extends BaseService {
                 const updatepass = await Vendor.findByIdAndUpdate({ _id }, { password: newpasswordHash }, { new: true })
                 return res.send(updatepass)
             } else {
-                res.status(403).send("Error Updating password")
+                res.status(400).send("Error Updating password")
             }
         } catch (error) {
             logger.error(`error ${error.message}`)
-            res.status(403)
+            res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${error.message}` })
         }
 
@@ -316,7 +316,7 @@ export default class VendorService extends BaseService {
             res.send(slots)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
-            res.status(403)
+            res.status(400)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
