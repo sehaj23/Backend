@@ -182,14 +182,14 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
         try {
-            const bookingDetailsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").exec()
+            const bookingDetailsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
             const bookingPagesReq = Booking.count(filters)
             const bookingStatsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
             const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
             res.send({ bookingDetails, bookingStats, bookingPages })
-            console.log({ bookingPages })
+            console.log({ bookingPages ,bookingStats,bookingDetails})
 
         } catch (error) {
             const errMsg = "Error Bookingg not found"
