@@ -281,4 +281,23 @@ export default class EmployeeService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+    employeebyId = async (req: Request, res: Response) => {
+        try {
+          const  id = req.params.id
+
+            const service = await Employee.findById(id).populate("photos").exec()
+            res.send(service)
+
+
+
+        } catch (e) {
+            const errMsg = `Unable to fetch Service`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+        }
+
+    }
+
+
 }

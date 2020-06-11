@@ -14,6 +14,7 @@ import BaseService from "./base.service";
 import { PhotoI } from "../../interfaces/photo.interface";
 import Photo from "../../models/photo.model";
 import Salon from "../../models/salon.model";
+import Employee from "../../models/employees.model"
 import moment = require("moment");
 
 
@@ -356,6 +357,24 @@ export default class VendorService extends BaseService {
         
 
     }
+    employeebyId = async (req: Request, res: Response) => {
+        try {
+          const  id = req.params.id
+
+            const service = await Employee.findById(id).populate("services").populate("photos").exec()
+            res.send(service)
+
+
+
+        } catch (e) {
+            const errMsg = `Unable to fetch Service`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+        }
+
+    }
+
 
 
 

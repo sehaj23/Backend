@@ -133,8 +133,8 @@ export default class BookingService extends BaseService {
 
 
 
-        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
-        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+        // dateFilter["start_date"] = moment().format("YYYY-MM-DD")
+        // dateFilter["end_date"] = moment().format("YYYY-MM-DD")
 
         for (const k of keys) {
             switch (k) {
@@ -155,7 +155,11 @@ export default class BookingService extends BaseService {
                     break
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
-                    break
+                    filters["date_time"] = {
+                        "$gte": dateFilter["start_date"],
+                        "$lt": dateFilter["end_date"]
+                    }                   
+                     break
                 case "page_number":
                 case "page_length":
 
@@ -164,10 +168,10 @@ export default class BookingService extends BaseService {
                     filters[k] = q[k]
             }
 
-            filters["date_time"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
+            // filters["date_time"] = {
+            //     "$gte": dateFilter["start_date"],
+            //     "$lt": dateFilter["end_date"]
+            // }
 
 
 
