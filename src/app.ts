@@ -48,6 +48,7 @@ const upload = multer({
   }),
 }).array("upload", 1);
 
+// TODO : Change to AWS
 app.post("/upload", function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
@@ -77,7 +78,7 @@ app.use(
   )
 );
 
-app.use(bobyParser.json());
+app.use(express.json());
 
 app.use("/api", router);
 app.use("/api/v/",Vendorrouter)
