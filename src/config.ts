@@ -3,8 +3,10 @@ import Employee from "./models/employees.model";
 enum CONFIG{
     ADMIN_JWT_KEY = "thisisaveryfescuredtokesss",
     VENDOR_JWT_KEY = "thisisVendorBRO!@34532@!2", 
+    USER_JWT_KEY = "expelliarmus",
     RES_ERROR = "Server Error:",
     VENDOR_JWT = "thisisasecretkey",
+    USER_JWT = 'expectopatronum',
     EMP_JWT = "thisisemployeesecretkey"
 }
 
