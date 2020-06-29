@@ -2,7 +2,7 @@ import {http} from "./app";
 import * as db from "./database";
 import firebase from "./utils/firebase";
 
-const PORT = 8082;
+const PORT = process.env.PORT || 8082;
 
 db.connectt().then(() => {
     const server = http.listen(PORT, async () => {
