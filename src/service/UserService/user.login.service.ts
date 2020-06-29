@@ -1,10 +1,6 @@
-import verifyToken from "../../middleware/jwt";
-import * as crypto from "crypto"
-import validator from "validator"
-import logger from "../../utils/logger";
+import encryptData from '../../utils/password-hash'
 import User from "../../models/user.model";
 import {
-    Router,
     Request,
     Response
 } from "express";
@@ -12,10 +8,6 @@ import * as jwt from "jwt-then";
 import CONFIG from "../../config";
 import UserI from "../../interfaces/user.interface";
 import BaseService from "./base.service";
-import {
-    mongo
-} from "mongoose";
-import mongoose from "../../database";
 
 
 export default class LoginService extends BaseService {
@@ -27,16 +19,7 @@ export default class LoginService extends BaseService {
     createUser = async (req: Request, res: Response) => {
         try {
             const v: UserI = req.body
-            const validName = validator.isAlpha(v.name)
-            const validEmail = validator.isEmail(v.email)
-            const validPassword = validator.isLength(v.password, { min: 6 })
-
-            if (!validEmail || !validPassword || !validName) return res.status(400).send({
-                message: "Invalid data."
-            })
-
-            const passwordHash = crypto.createHash("md5").update(v.password).digest("hex")
-            v.password = passwordHash
+            v.password = encryptData(v.password)
             const user = await User.create(v)
             delete user.password
             res.status(201).send({
@@ -47,7 +30,6 @@ export default class LoginService extends BaseService {
                 message: `${CONFIG.RES_ERROR} ${e.message}`
             })
         }
-
     }
 
     // Login
@@ -58,17 +40,9 @@ export default class LoginService extends BaseService {
                 password
             } = req.body
 
-            const validEmail = validator.isEmail(email)
-            const validPassword = validator.isLength(password, { min: 6 })
-
-            if (!validEmail || !validPassword) return res.status(400).send({
-                message: "Invalid data"
-            })
-
-            const passwordHash = crypto.createHash("md5").update(password).digest("hex")
             const user = await User.findOne({
                 email,
-                password: passwordHash
+                password: encryptData(password)
             })
             if (user == null) return res.status(400).send({
                 message: "Username & password do not match"
@@ -78,6 +52,7 @@ export default class LoginService extends BaseService {
             const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
                 expiresIn: "30 days"
             })
+            
             res.status(200).send({
                 token
             })

@@ -54,7 +54,7 @@ export default class BaseService {
         try {
             const id = req.params.id
             if (!id) {
-                const msg = 'Id not found for vendor.'
+                const msg = 'Id not found for user.'
                 logger.error(msg)
                 res.status(403)
                 res.send(msg)

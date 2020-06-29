@@ -2,13 +2,16 @@ import {
     Router
 } from "express";
 import LoginService from "../../service/UserService/user.login.service";
-import UserverifyToken from "../../middleware/User.jwt";
+import * as vd from '../../validators/user-validators/login-validator'
+import {checkSchema, check, oneOf, validationResult } from 'express-validator'
+import mySchemaValidator from "../../middleware/my-schema-validator";
 const ls = new LoginService()
 
 const loginRouter = Router()
-loginRouter.post("/", ls.verifyUser)
-loginRouter.post("/create", ls.createUser)
-loginRouter.get("/user", UserverifyToken, ls.get)
-loginRouter.put("/:id/profile-pic", UserverifyToken, ls.putProfilePic)
+
+// @ts-ignore
+loginRouter.post("/", [vd.loginChecks, mySchemaValidator], ls.verifyUser)
+// @ts-ignore
+loginRouter.post('/create', [vd.signupChecks, mySchemaValidator], ls.createUser)
 
 export default loginRouter

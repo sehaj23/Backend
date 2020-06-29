@@ -3,7 +3,7 @@ import mongoose from "../database";
 export default interface UserI {
     name: string
     email: string
-    password: string
+    password ? : string
     signin_from ? : string
     photo ? : string
     age ? : string
