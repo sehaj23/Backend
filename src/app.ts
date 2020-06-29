@@ -135,7 +135,7 @@ app.put(
 
 
 app.get("/", (req, res) =>{
-  res.send("hello")
+  res.send("hello from the backend")
 })
 
 // this is for 404
