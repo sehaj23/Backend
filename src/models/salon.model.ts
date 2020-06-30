@@ -87,6 +87,12 @@ const SalonSchema = new mongoose.Schema({
     },
     commision_fixed_price:{
         type: Number
+    },
+    latitude:{
+        type:Number,
+    },
+    longitude:{
+        type:Number,
     }
 }, {
     timestamps: true
