@@ -141,7 +141,7 @@ export default class SalonInfoService extends BaseService {
                 //@ts-ignore
                 centerPoint.lng = req.query.longitude
             const km = req.query.km || 2;
-            const salon = await Salon.find({})
+            const salon = await Salon.find({}).lean()
             for (var a = 0; a < salon.length; a++) {
                 if (salon[a].longitude != null && salon[a].latitude != null) {
                     //@ts-ignore
@@ -150,11 +150,20 @@ export default class SalonInfoService extends BaseService {
                     checkPoint.lat = salon[a].latitude
                     var n = await arePointsNear(checkPoint, centerPoint, km)
                     if (n.bool) {
+                        const s = salon[a]
+                        // @ts-ignore
+                        s.difference = n.difference
+                        salon[a] = s
                         //@ts-ignore
-                        salonLocation.push(salon[a], salon[a].difference = n.difference)
+                        salonLocation.push(salon[a])
                     }
                 }
             }
+            salonLocation.sort((a, b) => {
+                if (a.difference < b.difference) return -1
+                else if (a.difference > b.difference) return 1
+                return 0
+            })
             res.send(salonLocation)
         } catch (error) {
             res.status(500).send({
