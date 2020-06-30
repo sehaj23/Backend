@@ -92,6 +92,8 @@ const SalonSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// Text indexes for text search
+SalonSchema.index({ name: 'text', location: 'text' });
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 
