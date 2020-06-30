@@ -43,6 +43,9 @@ const ServiceSchema = new mongoose.Schema({
     }
 })
 
+// Text index for search
+ServiceSchema.index({ name: 'text' });
+
 const Service = mongoose.model<ServiceSI>("services", ServiceSchema)
 
 export default Service
