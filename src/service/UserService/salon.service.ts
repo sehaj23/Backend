@@ -1,50 +1,35 @@
-<<<<<<< HEAD
 import Salon from "../../models/salon.model";
-import {
-    Request,
-    Response
-} from "express";
+import Service from "../../models/service.model";
+import { Request, Response } from "express";
 import CONFIG from "../../config";
 import BaseService from "./base.service";
-import mongoose from "../../database";
-import arePointsNear from "../../utils/location"
-
-export default class SalonInfoService  {
-    // constructor() {
-    //     super(Salon)
-    // }
-=======
-import Salon from "../../models/salon.model"
-import Service from "../../models/service.model"
-import { Request, Response } from "express"
-import CONFIG from "../../config"
-import BaseService from "./base.service"
+import arePointsNear from "../../utils/location";
 
 export default class SalonInfoService extends BaseService {
   constructor() {
-    super(Salon)
+    super(Salon);
   }
 
   // Salon Info
   getSalonInfo = async (req: Request, res: Response) => {
     try {
-      const salonId = req.params.id
+      const salonId = req.params.id;
       if (!salonId)
         return res.status(400).send({
           message: "Id not provided",
-        })
-      const salon = await Salon.findById(salonId)
+        });
+      const salon = await Salon.findById(salonId);
       if (!salon)
         return res.status(404).send({
           message: "Salon not found",
-        })
-      res.status(200).send(salon)
+        });
+      res.status(200).send(salon);
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
-      })
+      });
     }
-  }
+  };
 
   //   isEmpty = (obj) => {
   //     for (var key in obj) {
@@ -56,22 +41,21 @@ export default class SalonInfoService extends BaseService {
   // Search by salon/location/service
   getSalon = async (req: Request, res: Response) => {
     try {
-      const phrase = req.query.phrase
-      let result1, result2
+      const phrase = req.query.phrase;
+      let result1, result2;
 
       if (!phrase)
-        return res.status(400).send({ message: "Provide search phrase" })
->>>>>>> 14dfc4df8cd03ea141cf132a15bc1ec291f36bd5
+        return res.status(400).send({ message: "Provide search phrase" });
 
       result1 = await Salon.find(
         { $text: { $search: phrase } },
         { score: { $meta: "textScore" } }
-      ).sort({ score: { $meta: "textScore" } })
+      ).sort({ score: { $meta: "textScore" } });
 
       result2 = await Service.find(
         { $text: { $search: phrase } },
         { score: { $meta: "textScore" } }
-      ).sort({ score: { $meta: "textScore" } })
+      ).sort({ score: { $meta: "textScore" } });
 
       // TODO Discuss and change Salon-Service schema
       //   for (let [key, value] of Object.entries(result2)) {
@@ -79,14 +63,14 @@ export default class SalonInfoService extends BaseService {
       //     value.salon = salon
       //   }
 
-      const data = { ...result1, ...result2 }
-      res.status(200).send(data)
+      const data = { ...result1, ...result2 };
+      res.status(200).send(data);
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
-      })
+      });
     }
-  }
+  };
 
   //Search by service
   //   getService = async (req: Request, res: Response) => {
@@ -99,51 +83,36 @@ export default class SalonInfoService extends BaseService {
   //         { score: { $meta: "textScore" } }
   //       ).sort({ score: { $meta: "textScore" } })
 
-<<<<<<< HEAD
-    //get Salons nearby
-    getSalonNearby = async (req: Request, res: Response) => {
-        try {
-           var  centerPoint = { }
-           var checkPoint = {}
-           var salonLocation = new Array();
-           //@ts-ignore
-           centerPoint.lat  = req.query.latitude,
-           //@ts-ignore
-           centerPoint.lng = req.query.longitude  
-            const km = req.query.km || 2;
-            const salon = await Salon.find({})
-           
-            for (var a=0;a<salon.length;a++){
-                if(salon[a].longitude != null && salon[a].latitude != null){
-                    //@ts-ignore
-                     checkPoint.lng = salon[a].longitude
-                      //@ts-ignore
-                     checkPoint.lat = salon[a].latitude
-                   var n = await  arePointsNear(checkPoint,centerPoint,km)
-                   if(n){
-                   salonLocation.push(salon[a])
-                   }
-                } 
-            }
-            res.send(salonLocation);
+  //get Salons nearby
+  getSalonNearby = async (req: Request, res: Response) => {
+    try {
+      var centerPoint = {};
+      var checkPoint = {};
+      var salonLocation = new Array();
+      //@ts-ignore
+      (centerPoint.lat = req.query.latitude),
+        //@ts-ignore
+        (centerPoint.lng = req.query.longitude);
+      const km = req.query.km || 2;
+      const salon = await Salon.find({});
 
-
-        } catch (error) {          
-            res.status(500).send({
-                message: `${CONFIG.RES_ERROR} ${error.message}`
-            
-        })
+      for (var a = 0; a < salon.length; a++) {
+        if (salon[a].longitude != null && salon[a].latitude != null) {
+          //@ts-ignore
+          checkPoint.lng = salon[a].longitude;
+          //@ts-ignore
+          checkPoint.lat = salon[a].latitude;
+          var n = await arePointsNear(checkPoint, centerPoint, km);
+          if (n) {
+            salonLocation.push(salon[a]);
+          }
         }
+      }
+      res.send(salonLocation);
+    } catch (error) {
+      res.status(500).send({
+        message: `${CONFIG.RES_ERROR} ${error.message}`,
+      });
     }
-
+  };
 }
-=======
-  //       res.status(200).send(result)
-  //     } catch (e) {
-  //       res.status(500).send({
-  //         message: `${CONFIG.RES_ERROR} ${e.message}`,
-  //       })
-  //     }
-  //   }
-}
->>>>>>> 14dfc4df8cd03ea141cf132a15bc1ec291f36bd5
