@@ -4,7 +4,19 @@ const arePointsNear=(checkPoint, centerPoint, km)=> {
     var kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
     var dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
     var dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
-    return Math.sqrt(dx * dx + dy * dy) <= km;
+    return {
+     bool:   Math.sqrt(dx * dx + dy * dy) <= km,
+      difference:  Math.sqrt(dx * dx + dy * dy)};
 }
+function compare( a, b ) {
+    if ( a.difference > b.difference ){
+      return b;
+    }
+    if ( a.difference < b.difference ){
+      return a;
+    }
+    return a;
+  }
+  
 
-export default arePointsNear
+export { arePointsNear,compare}
