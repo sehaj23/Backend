@@ -31,6 +31,20 @@ export default class SalonInfoService extends BaseService {
     }
   }
 
+  // Salon names
+  getSalonNames = async (req: Request, res: Response) => {
+    try {
+      console.log(typeof(Salon))
+      
+      res.status(200).send()
+    } catch (e) {
+      res.status(500).send({
+        message: `${CONFIG.RES_ERROR} ${e.message}`,
+      })
+    }
+  }
+
+
   // Search by salon/location/service
   getSalon = async (req: Request, res: Response) => {
     try {
