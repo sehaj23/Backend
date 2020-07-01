@@ -103,9 +103,7 @@ export default class SalonInfoService extends BaseService {
       var centerPoint = {}
       var checkPoint = {}
       var salonLocation = new Array()
-      var sortedSalonLocation = new Array()
-      var temp
-      var mapped
+     
       //@ts-ignore
       ;(centerPoint.lat = req.query.latitude),
         //@ts-ignore
