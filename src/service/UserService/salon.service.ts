@@ -31,13 +31,13 @@ export default class SalonInfoService extends BaseService {
     }
   }
 
-  // Salon names
+  // Salon data
   getSalonNames = async (req: Request, res: Response) => {
     try {
       const salons = await Salon.find({})
-      const names = new Array()
-      for (let [key, value] of Object.entries(salons)) names.push(value.name)
-      res.status(200).send(names)
+      const data = new Array()
+      for (let [key, value] of Object.entries(salons)) data.push(value.name)
+      res.status(200).send(data)
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
@@ -45,23 +45,18 @@ export default class SalonInfoService extends BaseService {
     }
   }
 
-  // Service names
-  getServiceNames = async (req: Request, res: Response) => {
+  // Sort salon : rating-wise
+  getSalonsRw = async (req: Request, res: Response) => {
     try {
-      const services = await Service.find({})
-      const names = new Array()
-      const salonName = req.query.salon
-      if (!salonName) {
-        for (let [key, value] of Object.entries(services))
-          names.push(value.name)
-      } else {
-        const salonInfo = await Salon.findOne({ name: salonName })
-          .populate('services')
-          .exec()
-        for (let [key, value] of Object.entries(salonInfo.services))
-          names.push(value.name)
-      }
-      res.status(200).send(names)
+      const salons = await Salon.find({})
+      const data = new Array()
+      const rating = req.query.rating
+      if (rating !== 'asc' && rating !== 'dsc') return res.status(400).send()
+      const val1 = rating === 'asc' ? -1 : 1
+      const val2 = val1 * -1
+      for (let [key, value] of Object.entries(salons)) data.push(value)
+      data.sort((a, b) => (a.rating < b.rating ? val1 : val2))
+      res.status(200).send(data)
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,

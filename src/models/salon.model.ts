@@ -42,6 +42,12 @@ const SalonSchema = new mongoose.Schema({
     speciality: {
         type: [{type: String}]
     },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
     location:{
         type: String,
    //     required: true,
