@@ -34,7 +34,7 @@ export default class SalonInfoService extends BaseService {
   // Salon names
   getSalonNames = async (req: Request, res: Response) => {
     try {
-      console.log(typeof(Salon))
+      res.send("hello")
       
       res.status(200).send()
     } catch (e) {
