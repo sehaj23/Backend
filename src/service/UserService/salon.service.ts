@@ -84,11 +84,11 @@ export default class SalonInfoService extends BaseService {
       //git TODO: store location of User
       var centerPoint = {}
       var checkPoint = {}
-      var salonLocation = new Array()
+      var salonLocation = new Array();
       //@ts-ignore
-      ;(centerPoint.lat = req.query.latitude),
+      centerPoint.lat = req.query.latitude
         //@ts-ignore
-        (centerPoint.lng = req.query.longitude)
+        centerPoint.lng = req.query.longitude
       const km = req.query.km || 2
       const salon = await Salon.find({})
       for (var a = 0; a < salon.length; a++) {
@@ -116,12 +116,12 @@ export default class SalonInfoService extends BaseService {
       //git TODO: store location of User
       var centerPoint = {}
       var checkPoint = {}
-      var salonLocation = new Array()
+      var salonLocation = new Array();
      
       //@ts-ignore
-      ;(centerPoint.lat = req.query.latitude),
+      centerPoint.lat = req.query.latitude,
         //@ts-ignore
-        (centerPoint.lng = req.query.longitude)
+        centerPoint.lng = req.query.longitude
       const km = req.query.km || 2
       const salon = await Salon.find({}).lean()
       for (var a = 0; a < salon.length; a++) {
