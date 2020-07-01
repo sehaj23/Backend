@@ -34,9 +34,10 @@ export default class SalonInfoService extends BaseService {
   // Salon names
   getSalonNames = async (req: Request, res: Response) => {
     try {
-      res.send("hello")
-      
-      res.status(200).send()
+      const salons = await Salon.find({})
+      const names = new Array()
+      for (let [key, value] of Object.entries(salons)) names.push(value.name)
+      res.status(200).send(names)
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
@@ -44,9 +45,32 @@ export default class SalonInfoService extends BaseService {
     }
   }
 
+  // Service names
+  getServiceNames = async (req: Request, res: Response) => {
+    try {
+      const services = await Service.find({})
+      const names = new Array()
+      const salonName = req.query.salon
+      if (!salonName) {
+        for (let [key, value] of Object.entries(services))
+          names.push(value.name)
+      } else {
+        const salonInfo = await Salon.findOne({ name: salonName })
+          .populate('services')
+          .exec()
+        for (let [key, value] of Object.entries(salonInfo.services))
+          names.push(value.name)
+      }
+      res.status(200).send(names)
+    } catch (e) {
+      res.status(500).send({
+        message: `${CONFIG.RES_ERROR} ${e.message}`,
+      })
+    }
+  }
 
   // Search by salon/location/service
-  getSalon = async (req: Request, res: Response) => {
+  getSearchResult = async (req: Request, res: Response) => {
     try {
       const phrase = req.query.phrase
       let result1, result2
@@ -117,7 +141,7 @@ export default class SalonInfoService extends BaseService {
       var centerPoint = {}
       var checkPoint = {}
       var salonLocation = new Array()
-     
+
       //@ts-ignore
       ;(centerPoint.lat = req.query.latitude),
         //@ts-ignore

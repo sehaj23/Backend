@@ -4,6 +4,6 @@ const ss = new SalonInfoService()
 
 const searchRouter = Router()
 
-searchRouter.get("/", ss.getSalon)
+searchRouter.get("/", ss.getSearchResult)
 
 export default searchRouter
