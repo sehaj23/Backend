@@ -13,5 +13,6 @@ salonInfoRouter.get("/services", ss.getServiceNames);
 salonInfoRouter.get("/location",ss.getSalonNearby)
 //sort by distance
 salonInfoRouter.get("/distance",ss.getSalonDistance)
-
+// search by service
+salonInfoRouter.get("/salon/services", ss.getSalonService);
 export default salonInfoRouter;
