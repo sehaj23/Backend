@@ -158,41 +158,9 @@ export default class SalonInfoService extends BaseService {
     getSalonService = async (req: Request, res: Response) => {
         try {
             const phrase = req.query.phrase
-            let result1, result2
-
+            let result1
             if (!phrase)
                 return res.status(400).send({ message: 'Provide search phrase' })
-
-
-            //     result1 = await Salon.aggregate([{
-            //     //      "$match": {
-            //     //     "$text": {"$search": phrase }
-            //     // }},    
-
-            //         $lookup:
-            //      {
-            //         from: "services",
-            //         localField: "services",
-            //         foreignField: "_id",
-
-            //           as: "service_info",
-            //     }},
-
-            //     // {
-            //     //     "$sort": {
-            //     //         "score": { "$meta": "textScore" }
-            //     //     }
-
-
-            //     // }
-
-            //  ])
-            //     //    result1 = await Salon.find({}).populate({
-            //     //     path: 'services',
-            //     //     match: {
-            //                     $text: {$search: phrase }
-            //                  }
-            //  }).exec()
 
             result1 = await Salon.aggregate([
 
@@ -216,16 +184,7 @@ export default class SalonInfoService extends BaseService {
                             $regex: `.*${phrase}.*`
                         } 
                     }
-                }
-                // {
-                //     $match:{
-
-                
-                //     $text: {
-                //         $search: phrase
-                //     }
-                // }
-                // }
+                }   
             ])
 
             res.status(200).send(result1)
