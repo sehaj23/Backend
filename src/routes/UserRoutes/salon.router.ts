@@ -9,6 +9,7 @@ salonInfoRouter.get("/info/:id", ss.getSalonInfo);
 salonInfoRouter.get("/names", ss.getSalonNames);
 // get names of  services
 salonInfoRouter.get("/services", ss.getSalonService);
+//salonInfoRouter.get("/services", ss.getServiceNames);
 //get nearby salon range 2km
 salonInfoRouter.get("/location",ss.getSalonNearby)
 //sort by distance
