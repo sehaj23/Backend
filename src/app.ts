@@ -14,6 +14,8 @@ import NewVendor from "./models/newVendor.model";
 import logger from "./utils/logger";
 import * as cors from "cors";
 import startSocketIO from "./service/socketio";
+import Admin from './models/admin.model'
+import { AdminRedis } from "./redis/index.redis";
 
 const app = express();
 app.use(cors());
@@ -83,55 +85,54 @@ app.use(express.json());
 app.use("/api", router);
 app.use("/api/v/",Vendorrouter)
 app.use("/api/vendorapp/",VendorApprouter)
-app.get(
-  "/app/get-vendor",
-  async (req: express.Request, res: express.Response) => {
-    try {
-      const nv = await NewVendor.find();
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-    }
+
+// this is only for redis
+app.get("/r/s", async (req: express.Request, res: express.Response) => {
+  try{
+    const s = await Admin.find()
+    res.send(s)
+  }catch(e){
+    logger.error(e)
+    res.status(400).send(e)
   }
-);
+})
 
-
-app.post(
-  "/create-vendor",
-  async (req: express.Request, res: express.Response) => {
-    const { name } = req.body;
-    console.log(req.body);
-    const data = {
-      name,
-    };
-    try {
-      const nv = await NewVendor.create(data);
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
+const adminId = "5efa3d3af9212b04a31b5d33"
+app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
+  try{  
+    const id = req.params.id || adminId
+    const ar: string =  await AdminRedis.get(id)
+    console.log(ar)
+    if(ar !== null){
+      return res.send(JSON.parse(ar))
     }
+    
+    const s = await Admin.findById(id)
+    AdminRedis.set(id, s)
+    res.send(s)
+  }catch(e){
+    logger.error(e)
+    res.status(400).send(e)
   }
-);
+})
 
-app.put(
-  "/update-vendor/:id",
-  async (req: express.Request, res: express.Response) => {
-    const _id = req.params.id;
+/**
+ * Note:
+ * In update(put / patch) we will remove the data from the redis
+ */
 
-    try {
-      const nv = await NewVendor.update({ _id }, req.body);
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-    }
+app.put("/r/s/:id", async (req: express.Request, res: express.Response) => {
+  try{  
+    const id = req.params.id || adminId
+    // Removing
+    AdminRedis.remove(id)
+    const s = await Admin.findById(id)
+    res.send(s)
+  }catch(e){
+    logger.error(e)
+    res.status(400).send(e)
   }
-);
+})
 
 
 app.get("/", (req, res) =>{
