@@ -91,8 +91,6 @@ export default class SalonInfoService extends BaseService {
         .populate('salon_id')
         .exec()
 
-      // TODO Discuss and change Service schema (required:true)
-
       const data = { ...result1, ...result2 }
       res.status(200).send(data)
     } catch (e) {
