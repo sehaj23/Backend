@@ -110,9 +110,9 @@ export default class SalonInfoService extends BaseService {
       var checkPoint = {}
       var salonLocation = new Array()
       //@ts-ignore
-      ;(centerPoint.lat = req.query.latitude),
-        //@ts-ignore
-        (centerPoint.lng = req.query.longitude)
+      centerPoint.lat = req.query.latitude
+      //@ts-ignore
+      centerPoint.lng = req.query.longitude
       const km = req.query.km || 2
       const salon = await Salon.find({})
       for (var a = 0; a < salon.length; a++) {
@@ -143,9 +143,9 @@ export default class SalonInfoService extends BaseService {
       var salonLocation = new Array()
 
       //@ts-ignore
-      ;(centerPoint.lat = req.query.latitude),
-        //@ts-ignore
-        (centerPoint.lng = req.query.longitude)
+      centerPoint.lat = req.query.latitude
+      //@ts-ignore
+      centerPoint.lng = req.query.longitude
       const km = req.query.km || 2
       const salon = await Salon.find({}).lean()
       for (var a = 0; a < salon.length; a++) {

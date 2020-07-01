@@ -51,10 +51,8 @@ export const connectt = () => {
 }
 
 export const disconnect = ()  => {
-  console.log("caught you!")
   console.log(process.env.NODE_ENV)
     if(process.env.NODE_ENV.toString() == "test"){
-      console.log("In test env")
       return mongoose.connection.db.dropDatabase().then(() => {
         return mongoose.disconnect()
       

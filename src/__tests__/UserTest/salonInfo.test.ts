@@ -25,6 +25,8 @@ const getSalon: (vendorId) => SalonI = (vendorId) => {
     end_working_hours: [date, null, null, null],
     location: "Chicago",
     speciality: ["DM"],
+    latitude:27,
+    longitude:35,
     vendor_id: vendorId,
   };
   return dataToSend;
@@ -45,7 +47,7 @@ describe("User Salon Info test", () => {
 
     res = await request(app).post("/api/v/login/create").send(v);
     expect(res.status).toEqual(200);
-    console.log("CREATE VENDOR", res.body);
+  
     vendorId = res.body._id;
 
     const login = {
@@ -54,7 +56,7 @@ describe("User Salon Info test", () => {
     };
     res = await request(app).post("/api/v/login/").send(login);
     expect(res.body.token).toBeDefined();
-    console.log("LOGIN VENDOR", res.body);
+   
     token = res.body.token;
 
     const dataToSend = getSalon(vendorId);
@@ -62,33 +64,66 @@ describe("User Salon Info test", () => {
       .post("/api/v/salon")
       .set("authorization", "Bearer " + token)
       .send(dataToSend);
-    console.log("PASS TOKEN", res.body);
+    
 
     expect(res.body._id).toBeDefined();
     salonid = res.body._id;
-    console.log("SALON ID : ", salonid);
+   
     expect(res.status).toEqual(200);
 
     done();
   }, TIME);
 
-  test(
-    "User Salon Info - Successful ",
-    async (done) => {
-      console.log(salonid);
-      res = await request(app).get(`/api/u/salon/${salonid}`);
-      console.log("SALON INFO", res.body);
-      expect(res.status).toEqual(200);
-      console.log("3")
-      done();
-    },
-    TIME
-  );
+ 
+
+test(
+  "User Salon Info - Successful ",
+  async (done) => {
+  
+    res = await request(app).get(`/api/u/salon/location/?$`);
+    
+    expect(res.status).toEqual(200);
+    console.log("3")
+    done();
+  },
+  TIME
+);
+test(
+  "Salon location near me - Successfull ",
+  async (done) => {
+    const dataToSend = getSalon(vendorId);
+    res = await request(app).get(`/api/u/salon/location/?longitude=${dataToSend.longitude}&latitude=${dataToSend.latitude}`);
+    expect(res.body).toBeDefined()
+    expect(res.status).toEqual(200);
+
+    done();
+  },
+  TIME
+);
+
+test(
+  "Salon distance near me (SORTED)",
+  async (done) => {
+    const dataToSend = getSalon(vendorId);
+    res = await request(app).get(`/api/u/salon/location/?longitude=${dataToSend.longitude}&latitude=${dataToSend.latitude}&km=100`);
+    expect(res.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({_id:salonid})   
+      ])
+    );
+    expect(res.status).toEqual(200);
+    done();
+  },
+  TIME
+);
+
+
 });
 
+
+
+
 afterAll(async (done) => {
-  console.log("1")
   await db.disconnect();
-console.log("2")
   done();
 });
