@@ -97,6 +97,7 @@ app.get("/r/s", async (req: express.Request, res: express.Response) => {
   }
 })
 
+
 const adminId = "5efa3d3af9212b04a31b5d33"
 app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
   try{  
