@@ -170,4 +170,40 @@ export default class SalonInfoService extends BaseService {
       })
     }
   }
+  // search services of salonn
+  getSalonService = async (req: Request, res: Response) => {
+    try {
+        const phrase = req.query.phrase
+        let result1
+        if (!phrase)
+            return res.status(400).send({ message: 'Provide search phrase' })
+        result1 = await Salon.aggregate([
+            {
+                $lookup:
+                {
+                    from: "services",
+                    localField: "services",
+                    foreignField: "_id",
+                    as: "service_info",
+                }
+            },
+            {
+                $unwind: "$service_info"
+            },
+            {
+                $match:
+                {
+                    "service_info.name":{
+                        $regex: `.*${phrase}.*`
+                    } 
+                }
+            }   
+        ])
+        res.status(200).send(result1)
+    } catch (e) {
+        res.status(500).send({
+            message: `${CONFIG.RES_ERROR} ${e.message}`,
+        })
+    }
+}
 }
