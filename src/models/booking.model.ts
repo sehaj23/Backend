@@ -1,7 +1,5 @@
-import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType, Default, HasMany } from "sequelize-typescript";
 import mongoose from "../database";
 import { BookingSI } from "../interfaces/booking.interface";
-import { INTEGER } from "sequelize/types";
 
 
 

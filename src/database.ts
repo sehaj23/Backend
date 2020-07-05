@@ -16,8 +16,8 @@ if(process.env.NODE_ENV) {
 
 console.log(`Connecting to database: ${db}`)
 
-const user: string = process.env.DB_USER ?? "zattire_dev";
-const password: string = process.env.DB_PASS ?? "zattire_dev_password";
+const user: string = process.env.DB_USER || "zattire_dev";
+const password: string = process.env.DB_PASS || "zattire_dev_password";
 
 
 let uri: string 
