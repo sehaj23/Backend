@@ -1,7 +1,7 @@
 import {
     Router
 } from "express";
-import LoginService from "../../service/UserService/user.login.service";
+import LoginService from "../../service/UserService/login.service";
 import * as vd from '../../validators/user-validators/login-validator'
 import {checkSchema, check, oneOf, validationResult } from '../../../node_modules/express-validator'
 import mySchemaValidator from "../../middleware/my-schema-validator";

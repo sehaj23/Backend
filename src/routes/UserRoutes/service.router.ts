@@ -7,6 +7,6 @@ const serviceRouter = Router()
 // get names of  services
 serviceRouter.get('/services', ss.getServiceNames)
 // sort price-wise
-serviceRouter.get('/sort', ss.getServiceRw)
+serviceRouter.get('/sort', ss.getServicePw)
 
 export default serviceRouter

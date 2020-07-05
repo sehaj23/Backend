@@ -3,7 +3,7 @@ import {
     Response
 } from "express";
 import {check, validationResult} from 'express-validator'
-import LoginService from "../../service/UserService/user.login.service";
+import LoginService from "../../service/UserService/login.service";
 import User from '../../models/user.model'
 
 const ls = new LoginService()
