@@ -10,13 +10,15 @@ export default class BaseRedis {
         this.modelName = modelName
     }
 
-    set(key: string, data: any){
-        return redisClient.set(`${this.modelName}_${key}`, JSON.stringify(data))
+    set(key: string, data: any, options: Object = {}){
+        const finalKey = `${this.modelName}_${key}_${this.extrackKeys(options)}`
+        return redisClient.set(finalKey, JSON.stringify(data))
     }
 
-    get(key: string): Promise<string>{
+    get(key: string, options: Object = {}): Promise<string>{
+        const finalKey = `${this.modelName}_${key}_${this.extrackKeys(options)}`
         return new Promise((resolve, reject) => {
-            return redisClient.get(`${this.modelName}_${key}`, (err, data) => {
+            return redisClient.get(finalKey, (err, data) => {
                 if(err){
                     reject(err)
                 }
@@ -29,13 +31,20 @@ export default class BaseRedis {
         })
     }
 
-    remove(key: string){
-        return redisClient.del(`${this.modelName}_${key}`)
+    remove(key: string, options: Object = {}){
+        const finalKey = `${this.modelName}_${key}_${this.extrackKeys(options)}`
+        return redisClient.del(finalKey)
     }
 
     removeAll(){
         return redisClient.del(`${this.modelName}_*`)
     }
 
+    private extrackKeys(options: Object){
+        const keyStr = Object.keys(options).map((k) => {
+            return `${k}_${options[k]}`
+        })
+        return keyStr.join("_")
+    }
     
 }
