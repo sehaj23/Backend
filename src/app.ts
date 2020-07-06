@@ -6,6 +6,7 @@ import * as path from "path";
 import * as dotenv from "dotenv";
 import router from "./routes/AdminRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes"
+import Userrouter from "./routes/UserRoutes/index.routes"
 import VendorApprouter from "./routes/VendorAppRoutes/index.routes"
 import * as aws from "aws-sdk";
 import * as multer from "multer";
@@ -82,6 +83,7 @@ app.use(express.json());
 
 app.use("/api", router);
 app.use("/api/v/",Vendorrouter)
+app.use("/api/u", Userrouter)
 app.use("/api/vendorapp/",VendorApprouter)
 app.get(
   "/app/get-vendor",

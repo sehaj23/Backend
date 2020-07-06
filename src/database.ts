@@ -2,12 +2,18 @@ import * as dotenv from "dotenv";
 import * as mongoose from "mongoose";
 import { Mockgoose } from "mockgoose"
 import Env from "./env";
+import User from "./models/user.model";
+import UserI from "./interfaces/user.interface";
 
 dotenv.config();
 
 let db = process.env.DB_NAME ?? "zattire"
-if(process.env.NODE_ENV === "test")
+
+if(process.env.NODE_ENV) {
+  if(process.env.NODE_ENV.toString() == "test")
   db += "_test"
+}
+
 console.log(`Connecting to database: ${db}`)
 
 const user: string = process.env.DB_USER ?? "zattire_dev";
@@ -45,13 +51,30 @@ export const connectt = () => {
 }
 
 export const disconnect = ()  => {
-  if(process.env.NODE_ENV === "test"){
-    return mongoose.connection.db.dropDatabase().then(() => {
-      return mongoose.disconnect()
-    })
-  }else{
+  console.log(process.env.NODE_ENV)
+    if(process.env.NODE_ENV.toString() == "test"){
+      return mongoose.connection.db.dropDatabase().then(() => {
+        return mongoose.disconnect()
+      
+      })
+    }
+  else{
     return mongoose.disconnect()
   }
 }
+
+// export const disconnect = ()  => {
+//   if(process.env.NODE_ENV) {
+//     if(process.env.NODE_ENV.toString() == "test"){
+//         return mongoose.connection.db.dropDatabase().then(() => {
+//         return mongoose.disconnect()
+//       })
+//     }
+//   }
+//   else{
+//     return mongoose.disconnect()
+//   }
+// }
+
 
 export default mongoose;
