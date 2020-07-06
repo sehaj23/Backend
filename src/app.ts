@@ -15,6 +15,7 @@ import NewVendor from "./models/newVendor.model";
 import logger from "./utils/logger";
 import * as cors from "cors";
 import startSocketIO from "./service/socketio";
+import { AdminRedis } from "./redis/index.redis";
 
 const app = express();
 app.use(cors());
@@ -100,35 +101,18 @@ app.get(
 );
 
 
-<<<<<<< HEAD
-app.post(
-  "/create-vendor",
-  async (req: express.Request, res: express.Response) => {
-    const { name } = req.body;
-    console.log(req.body);
-    const data = {
-      name,
-    };
-    try {
-      const nv = await NewVendor.create(data);
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-=======
 const adminId = "5efa3d3af9212b04a31b5d33"
-app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
-  try{  
-    const id = req.params.id || adminId
-    const ar: string =  await AdminRedis.get(id, "dnasn")
-    console.log(ar)
-    if(ar !== null){
-      return res.send(JSON.parse(ar))
->>>>>>> af81260ad5fdda7cb772324e8060ee47d6ce6d93
-    }
-  }
-);
+// app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
+//   try{  
+//     const id = req.params.id || adminId
+//     const ar: string =  await AdminRedis.get(id, "dnasn")
+//     console.log(ar)
+//     if(ar !== null){
+//       return res.send(JSON.parse(ar))
+//     }
+//   }
+
+// );
 
 app.put(
   "/update-vendor/:id",
