@@ -45,8 +45,8 @@ export default class SalonInfoService extends BaseService {
     try {
       const salons = await Salon.find({})
       const data = new Array()
-      for (let [key, value] of Object.entries(salons)) data.push(value.name)
-      res.status(200).send(data)
+   //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
+      res.status(200).send(salons)
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,

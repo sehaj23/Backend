@@ -83,7 +83,7 @@ app.use(
 app.use(express.json());
 
 app.use("/api", router);
-app.use("/api/v/",Vendorrouter)
+app.use("/api/v",Vendorrouter)
 app.use("/api/u", Userrouter)
 app.use("/api/vendorapp/",VendorApprouter)
 app.get(
