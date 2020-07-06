@@ -104,7 +104,7 @@ const adminId = "5efa3d3af9212b04a31b5d33"
 app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
   try{  
     const id = req.params.id || adminId
-    const ar: string =  await AdminRedis.get(id)
+    const ar: string =  await AdminRedis.get(id, "dnasn")
     console.log(ar)
     if(ar !== null){
       return res.send(JSON.parse(ar))
