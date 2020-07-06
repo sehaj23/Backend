@@ -1,4 +1,3 @@
-import { Table, Model, AutoIncrement, PrimaryKey, Column, AllowNull, NotEmpty, DataType } from "sequelize-typescript";
 import mongoose from "../database";
 import AdminI, { AdminSI } from "../interfaces/admin.interface";
 
