@@ -170,7 +170,7 @@ export default class SalonInfoService extends BaseService {
       })
     }
   }
-  // search services of salonn
+  // search services of salon
   getSalonService = async (req: Request, res: Response) => {
     try {
         const phrase = req.query.phrase
