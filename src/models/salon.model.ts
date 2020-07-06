@@ -42,6 +42,12 @@ const SalonSchema = new mongoose.Schema({
     speciality: {
         type: [{type: String}]
     },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
     location:{
         type: String,
    //     required: true,
@@ -87,11 +93,19 @@ const SalonSchema = new mongoose.Schema({
     },
     commision_fixed_price:{
         type: Number
+    },
+    latitude:{
+        type:Number,
+    },
+    longitude:{
+        type:Number,
     }
 }, {
     timestamps: true
 })
 
+// Text indexes for text search
+SalonSchema.index({ name: 'text', location: 'text' });
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 

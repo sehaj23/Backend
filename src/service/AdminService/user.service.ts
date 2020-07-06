@@ -20,9 +20,9 @@ export default class UserService extends BaseService{
             const passwordHash = crypto.createHash("md5").update(v.password!).digest("hex")
             v.password = passwordHash
 
-            const vendor = await User.create(v)
+            const user = await User.create(v)
 
-            res.send(vendor)
+            res.send(user)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)

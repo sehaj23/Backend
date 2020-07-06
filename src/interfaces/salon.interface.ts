@@ -23,7 +23,9 @@ export interface SalonI{
     vendor_id: string
     commision_percentage?: number,
     commision_cap?: number
-    commision_fixed_price?: number
+    commision_fixed_price?: number,
+    longitude?:number,
+    latitude?:number
 }
 
 export default interface SalonSI extends SalonI, mongoose.Document{}

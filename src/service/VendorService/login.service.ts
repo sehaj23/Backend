@@ -22,8 +22,8 @@ export default class LoginService extends BaseService {
         try {
 
             const v: VendorI = req.body
-            if (!v.email || !v.password) {
-                res.status(403)
+            if (!v.email || !v.password || !v.name) {
+                res.status(400)
                 res.send({ message: "Send all data" })
                 return
             }
