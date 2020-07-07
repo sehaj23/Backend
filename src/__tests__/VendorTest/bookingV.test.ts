@@ -73,8 +73,8 @@ describe('Bookings service test', () => {
 
 
         }
-        const Serviceres = await Services.create(s)
-        serviceid = Serviceres._id
+        const Service_res = await Services.create(s)
+        serviceid = Service_res._id
 
         const email = faker.internet.email()
         const date = new Date()
@@ -216,7 +216,7 @@ describe('Bookings service test', () => {
     })
 
     test("get all bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings")
+        const book = await request(app).get(`/api/v/bookings/?salon_id=${salonid}`)
         console.log(book.body)
         expect(book.status).toEqual(200)
         done()
@@ -298,10 +298,10 @@ describe('Bookings service test', () => {
     }
 
     test("add employee", async done => {
-        const res = await request(app).post("/api/v/employee").send(e)
+        const res = await request(app).put(`/api/v/salon/${salonid}/employee`).set('authorization',"Bearer "+token).send(e)
         expect(res.body._id).toBeDefined()
         empid = res.body._id
-        expect(res.body.phone).toBeDefined()
+    
         expect(res.status).toEqual(200)
         done()
 
@@ -313,7 +313,7 @@ describe('Bookings service test', () => {
             employee_id:empid,
             service_name:"haircut"
         }
-        const res = await request(app).put("/api/v/bookings/assignEmployee/"+bookingid).send(data)
+        const res = await request(app).put("/api/v/bookings/assignEmployee/"+bookingid).set('authorization',"Bearer "+token).send(data)
        // expect(res.body.employee_id).toEqual(data.employee_id) use of {new:true}
         expect(res.status).toEqual(200)
         done()
