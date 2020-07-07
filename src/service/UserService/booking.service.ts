@@ -8,14 +8,15 @@ import BaseService from './base.service'
 import {BookingI} from '../../interfaces/booking.interface'
 import {EmployeeI} from '../../interfaces/employee.interface'
 import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
-const toDate = require('normalize-date');
-
+import { INTEGER } from 'sequelize/types'
+import * as moment from 'moment'
 
 export default class bookingService extends BaseService {
   constructor() {
     super(Booking)
   }
 
+  // Create Employee TEMP
   createEmployee = async (req: Request, res: Response) => {
     try {
         const v: EmployeeI = req.body
@@ -26,8 +27,6 @@ export default class bookingService extends BaseService {
         res.status(500).send({ message: "Unable to create Employee" })
     }
 }
-
-// TODO: Clarify about the date format
 
   // Create a booking
   postBooking = async (req: Request, res: Response) => {
@@ -46,14 +45,33 @@ export default class bookingService extends BaseService {
   // Available employees
   getAvailableEmp = async (req: Request, res: Response) => {
     try {
-        const dateTime: Date = req.query.dateTime
-        if(!dateTime) return res.status(400).send({message: 'Provide Date and Time'})
-        const booking = await Booking.find()
+        const date = req.body.date
+        const time = req.body.time
+        const salon_id = req.body.salon_id
+        const services = req.body.services
 
-        const obj = toDate(dateTime)
-        console.log(obj)
+        if(!date || !time || !salon_id || !services)
+          return res.status(400).send({message: 'Provide Date, Time, Salon ID and Services'})
 
-      res.status(200).send(obj)
+        const bookings = await Booking.find({salon_id})
+        const rDT = moment(date+' '+time).add(5.5, 'hours')
+
+        bookings.forEach(x => {
+          console.log(x.date_time)
+          x.services.forEach(y => {
+            console.log(y.service_name)
+          });
+
+        })
+
+        // services.forEach(x => {
+        //   console.log(x.service_id)
+        // });
+
+        // const one = await Booking.findById("5eff28836bb95b05c0fcc4a9")
+        // const dbDT = moment(one.date_time)
+
+      res.status(200).send()
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
