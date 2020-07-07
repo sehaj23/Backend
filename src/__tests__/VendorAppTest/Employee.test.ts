@@ -5,6 +5,9 @@ import mongoose, * as db from "../../database"
 import * as faker from "faker"
 import { VendorI } from "../../interfaces/vendor.interface";
 import { SalonI } from "../../interfaces/salon.interface";
+import { date } from "faker";
+import { EmployeeAbsenteeismI } from "../../interfaces/employeeAbsenteeism.interface";
+import { PhotoI } from "../../interfaces/photo.interface";
 const TIME = 30000
 beforeAll(async (done) => {
     await db.connectt()
@@ -105,15 +108,83 @@ const getSalon:()=>SalonI =()=>{
 
     test("Login employee", async done => {
         const res = await request(app).post("/api/vendorapp/employee").send(s)
-        
         expect(res.body.token).toBeDefined()
+        token = res.body.token
         expect(res.status).toEqual(200)
         done()
 
+    })
 
+    test("Employee absent", async done => {
+        const date = new Date()
+        const s:EmployeeAbsenteeismI= {
+           absenteeism_date:date,
+           absenteeism_times:["10:00-1:00"]
+        
+        }
+        const res = await request(app).post("/api/vendorapp/employee/absent").set('authorization',"Bearer "+token).send(s)
+        expect(res.body).toBeDefined()
+        expect(res.status).toEqual(200)
+        done()
+
+    })
+    test("Employee absent update", async done => {
+        const date = new Date()
+        const s:EmployeeAbsenteeismI= {
+           absenteeism_date:date,
+           absenteeism_times:["10:00-3:00"]
+        
+        }
+        const res = await request(app).post("/api/vendorapp/employee/absent/update").set('authorization',"Bearer "+token).send(s)
+        expect(res.body).toBeDefined()
+        expect(res.status).toEqual(200)
+        done()
+
+    })
+    test("Employee info ", async done => {
+       
+    
+        const res = await request(app).get("/api/vendorapp/employee").set('authorization',"Bearer "+token)
+        expect(res.body).toBeDefined()
+        expect(res.status).toEqual(200)
+        done()
+
+    })
+    test("Employee update info ", async done => {
+        
+        const s = {
+            name:"Employee23"
+        }
+        const res = await request(app).put("/api/vendorapp/employee").set('authorization',"Bearer "+token).send(s)
+        expect(res.body).toBeDefined()
+        expect(res.body.name).toEqual(s.name)
+        expect(res.status).toEqual(200)
+        done()
 
     })
 
+    test("Employee put profile pic ", async done => {
+        
+        const d : PhotoI={
+            name:"employee photo",
+            url: "https://www.unily.com/media/30012/employee-experience-reduce-turnover.jpg?width=1500&height=840&mode=crop",
+            tags: ["photo"],
+            description:"Employee updated photo"
+        }
+        const res = await request(app).put(`/api/vendorapp/employee/profile-pic`).set('authorization',"Bearer "+token).send(d)
+        expect(res.body).toBeDefined()
+        expect(res.body.photo.name).toEqual(d.name)
+        expect(res.body.photo.url).toEqual(d.url)
+        expect(res.body.photo.description).toEqual(d.description)
+        expect(res.status).toEqual(200)
+        done()
+    })
 
+
+
+})
+afterAll(async (done) => {
+    await db.disconnect()
+    done()
 })
 

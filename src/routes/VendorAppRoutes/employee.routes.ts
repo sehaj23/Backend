@@ -10,7 +10,7 @@ employeeRouter.post("/absent/update",EmployeeverifyToken,es.employeeAbsentUpdate
 employeeRouter.get("/",EmployeeverifyToken ,es.get)
 employeeRouter.put("/", EmployeeverifyToken, es.update)
 employeeRouter.put("/profile-pic", EmployeeverifyToken, es.putProfilePic)
-employeeRouter.get("/:id",EmployeeverifyToken,es.employeebyId)
+//employeeRouter.get("/:id",EmployeeverifyToken,es.employeebyId)
 employeeRouter.get("/employee-slots", EmployeeverifyToken, es.employeeSlots)
 
 export default employeeRouter

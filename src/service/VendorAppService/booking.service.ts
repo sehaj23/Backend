@@ -112,7 +112,7 @@ export default class BookingService extends BaseService {
 
         const q = req.query
         console.log(q)
-
+      
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -126,13 +126,9 @@ export default class BookingService extends BaseService {
         const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
         //console.log(token)
         const decoded = await employeeJWTVerification(token)
-
-
-
-
-
-
-
+       
+    
+        
         // dateFilter["start_date"] = moment().format("YYYY-MM-DD")
         // dateFilter["end_date"] = moment().format("YYYY-MM-DD")
 
@@ -174,15 +170,11 @@ export default class BookingService extends BaseService {
             // }
 
 
-
-
-
-
         }
         filters["services.employee_id"] = {
 
             //@ts-ignore  
-            "$in": decoded._id
+            "$in": req.empId
         }
         console.log(filters);
         try {
@@ -242,15 +234,15 @@ export default class BookingService extends BaseService {
 
     }
 
-
-
     rescheduleBooking = async (req: Request, res: Response) => {
 
         try {
             const id = req.params.id
 
-            const d = req.body.date_time
-            console.log(d)
+            const d = moment(req.body.date_time)
+            if(d<moment()){
+                return  res.status(400).send({message:"Past date!.Please send date again!"}) 
+            }
             console.log(req.body)
             const booking = await Booking.findByIdAndUpdate(id, { date_time: d,status:"Requested" }, { new: true })
             res.send(booking)
@@ -262,8 +254,6 @@ export default class BookingService extends BaseService {
             res.send({ message: errMsg })
             return
         }
-
-
 
     }
     updateStatusBookings = async (req: Request, res: Response) => {
@@ -307,9 +297,7 @@ export default class BookingService extends BaseService {
     }
     bookingStatus = async (req: Request, res: Response) => {
       const status =  ['Requested', 'Confirmed', 'Vendor Cancelled', 'Reschedule','Reschedule and Cancelled']
-      res.send(status)
-
-
+      res.status(200).send(status)
 
 
     }

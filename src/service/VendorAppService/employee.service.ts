@@ -53,25 +53,14 @@ export default class EmployeeService extends BaseService {
 
         try {
 
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-
-            const decoded = await employeeJWTVerification(token)
-
-
             const d: EmployeeAbsenteeismI = req.body
-
             console.log(d)
             //@ts-ignore
 
-            d.employee_id = mongoose.Types.ObjectId(decoded._id)
+            d.employee_id = mongoose.Types.ObjectId(req.empId)
             //@ts-ignore
             const absent = await EmployeeAbsenteeism.create(d)
             res.send(absent)
-
-
-
-
 
         } catch (error) {
             logger.error(`${error.message}`)
@@ -84,49 +73,31 @@ export default class EmployeeService extends BaseService {
 
 
     employeeAbsentUpdate = async (req: Request, res: Response) => {
-
         try {
-
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-
-            const decoded = await employeeJWTVerification(token)
-
-
             const d: EmployeeAbsenteeismI = req.body
-
-            console.log(d)
+            if(Array.isArray(d.absenteeism_times) === false){
+                const msg = "absentismTimes only array allowed"
+                logger.error(msg)
+                res.status(400).send({ success: false, message: msg });
+                return
+            }
+        
             //@ts-ignore
-
-            d.employee_id = decoded._id
-            //@ts-ignore
-            const check = await EmployeeAbsenteeism.findOneAndUpdate({ employee_id: decoded._id, absenteeism_date: d.absenteeism_date }, d, { new: true })
+            const check = await EmployeeAbsenteeism.findOneAndUpdate({ employee_id: req.empId, absenteeism_date: d.absenteeism_date }, d, { new: true })
             res.send(check);
-
-
-
         } catch (error) {
             logger.error(`${error.message}`)
             res.status(403)
             res.send("Error creating ")
         }
-
     }
     get = async (req: Request, res: Response) => {
 
         try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-            const decoded = await employeeJWTVerification(token)
-
-
             //@ts-ignore
-            const _id = mongoose.Types.ObjectId(decoded._id)
-            const outlets = await Employee.findById(_id).populate("services").populate("photo").exec()
-
-
-            res.send(outlets)
-
+            const _id = mongoose.Types.ObjectId(req.empId)
+            const emp = await Employee.findById(_id).populate("services").populate("photo").exec()
+            res.send(emp)
         } catch (error) {
             logger.error(`${error.message}`)
             res.status(403)
@@ -139,17 +110,11 @@ export default class EmployeeService extends BaseService {
     }
     update = async (req: Request, res: Response) => {
         try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            const decoded = await employeeJWTVerification(token)
-
-
             const d = req.body
-
             //@ts-ignore
-            const _id = mongoose.Types.ObjectId(decoded._id)
+            const _id = mongoose.Types.ObjectId(req.empId)
             const vendor = await Employee.findByIdAndUpdate(_id, d, { new: true })
-            res.send(vendor)
-
+            res.status(200).send(vendor)
 
         } catch (e) {
             logger.error(`${e.message}`)
@@ -161,22 +126,10 @@ export default class EmployeeService extends BaseService {
     }
     putProfilePic = async (req: Request, res: Response) => {
         try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await employeeJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+           
             //@ts-ignore
-            const _id = decoded._id
+            const _id = req.empId
             const photoData: PhotoI = req.body
-
             // saving photos 
             const photo = await Photo.create(photoData)
             // adding it to event
@@ -190,13 +143,10 @@ export default class EmployeeService extends BaseService {
     }
 
     employeeSlots = async (req: Request, res: Response) => {
-        try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-           
-            const decoded = await employeeJWTVerification(token)
+        try {  
            
             //@ts-ignore
-            const empId = decoded._id
+            const empId = req.empId
 
             // getting the date from the frontend for which he needs the slots for
             let slotsDate = req.body.slots_date
@@ -246,17 +196,13 @@ export default class EmployeeService extends BaseService {
     // to add employee in empabs model
     employeeSelectSlot = async (req: Request, res: Response) => {
         try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-           
-            const decoded = await employeeJWTVerification(token)
-           
            
 
             // getting the date from the frontend for which he needs the slots for
             const data = req.body
 
             //@ts-ignore
-            data.employee_id = decoded._id // req.empId
+            data.employee_id = req.empId // req.empId
             let slotsDate = data.slots_date
             if (slotsDate) {
                 const msg = "Something went wrong"
@@ -265,7 +211,6 @@ export default class EmployeeService extends BaseService {
                 return
             }
             slotsDate = new Date(slotsDate)
-
             const absentismTimes= data.absenteeism_times
             if(Array.isArray(absentismTimes) === false){
                 const msg = "absentismTimes only array allowed"
@@ -281,23 +226,17 @@ export default class EmployeeService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
-    employeebyId = async (req: Request, res: Response) => {
-        try {
-          const  id = req.params.id
+    // employeebyId = async (req: Request, res: Response) => {
+    //     try {
+    //       const  id = req.params.id
+    //         const emp= await Employee.findById(id).populate("photos").exec()
+    //         res.send(emp)
 
-            const service = await Employee.findById(id).populate("photos").exec()
-            res.send(service)
-
-
-
-        } catch (e) {
-            const errMsg = `Unable to fetch Service`
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-        }
-
-    }
-
-
+    //     } catch (e) {
+    //         const errMsg = `Unable to fetch `
+    //         logger.error(errMsg)
+    //         res.status(400)
+    //         res.send({ message: errMsg })
+    //     }
+    // }
 }

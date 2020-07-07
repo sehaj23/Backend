@@ -29,8 +29,36 @@ const SalonSchema = new mongoose.Schema({
     },
     services: {
         type: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "services"
+            name: {
+                type: String,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true,
+                min: 0
+            },
+            duration:{
+                type: Number,
+                default: 15,
+                required: true,
+                min: 15
+            },
+            gender:{
+                type:String,
+                enum:["men","women"],
+                required:true
+            },
+            photo: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "photos"
+            },
+            offers: {
+                type: [{
+                    type: mongoose.Schema.Types.ObjectId,
+                     ref: "offers"
+                }]
+            }
         }]
     },
     employees: {
