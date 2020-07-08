@@ -31,6 +31,10 @@ const UserSchema = new mongoose.Schema({
     color_complextion: {
         type: String,
     },
+    blocked: {
+        type: Boolean,
+        default: false
+    },
     approved: {
         type: Boolean,
         default: false

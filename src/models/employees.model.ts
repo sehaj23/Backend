@@ -16,6 +16,11 @@ const EmployeeSchema = new mongoose.Schema({
     },
     fcm_token: {
         type: String
+    },
+    location: {
+        type: String,
+        enum: ['Customer Place' , 'Vendor Place', 'Both'],
+        default: 'Both'
     }
 }, {
     timestamps: true
