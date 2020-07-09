@@ -10,7 +10,4 @@ bookingRouter.get("/ae", bs.getAvailableEmp)
 // create a booking
 bookingRouter.post("/create", bs.postBooking)
 
-// add employee TEMP
-bookingRouter.post("/emp", bs.createEmployee)
-
 export default bookingRouter

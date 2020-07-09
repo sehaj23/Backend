@@ -16,18 +16,6 @@ export default class bookingService extends BaseService {
     super(Booking)
   }
 
-  // Create Employee TEMP
-  createEmployee = async (req: Request, res: Response) => {
-    try {
-      const v: EmployeeI = req.body
-      if (!v.name || !v.phone)
-        res.status(400).send({ message: 'Incomplete data' })
-      const emp = await Employee.create(v)
-      res.status(201).send(emp)
-    } catch (e) {
-      res.status(500).send({ message: 'Unable to create Employee' })
-    }
-  }
 
   // Create a booking
   postBooking = async (req: Request, res: Response) => {
