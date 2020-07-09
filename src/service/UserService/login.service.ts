@@ -5,7 +5,7 @@ import * as jwt from 'jwt-then'
 import CONFIG from '../../config'
 import UserI from '../../interfaces/user.interface'
 import BaseService from './base.service'
-import {UserRedis} from '../../redis/index.redis'
+import { UserRedis } from '../../redis/index.redis'
 
 export default class LoginService extends BaseService {
   constructor() {
@@ -38,18 +38,37 @@ export default class LoginService extends BaseService {
         email,
         password: encryptData(password),
       })
-      if (user == null)
-        return res.status(400).send({
+
+      if (user == null) {
+        let count: number = 1
+        const failedCount: string = await UserRedis.get(email)
+        if (failedCount !== null) {
+          count = parseInt(failedCount) + 1
+          if (count === 6) {
+            const usr = await User.findOne({ email })
+            usr.blocked = true
+            usr.save()
+          }
+        }
+        UserRedis.set(email, count)
+        return res.status(401).send({
           message: 'Username & password do not match',
         })
+      }
 
-      delete user.password
-      const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
-        expiresIn: '30 days',
-      })
+      if (!user.blocked) {
+        UserRedis.remove(email)
+        delete user.password
+        const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
+          expiresIn: '30 days',
+        })
+        return res.status(200).send({
+          token,
+        })
+      }
 
-      res.status(200).send({
-        token,
+      res.status(403).send({
+        message: 'Account blocked due to numerous failed login attempts',
       })
     } catch (e) {
       res.status(500).send({

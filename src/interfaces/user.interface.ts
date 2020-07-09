@@ -9,6 +9,7 @@ export default interface UserI {
     age ? : string
     gender ? : string
     color_complextion ? : string
+    blocked ? : boolean
     approved ? : boolean
 }
 

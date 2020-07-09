@@ -20,7 +20,8 @@ const EmployeeSchema = new mongoose.Schema({
     location: {
         type: String,
         enum: ['Customer Place' , 'Vendor Place', 'Both'],
-        default: 'Both'
+        default: 'Both',
+        required: true
     }
 }, {
     timestamps: true
