@@ -10,7 +10,7 @@ import { EmployeeI } from "../../interfaces/employee.interface";
 import Employee from "../../models/employees.model";
 import { MakeupArtistI } from "../../interfaces/makeupArtist.interface";
 import Vendor from "../../models/vendor.model";
-import Service from "../../models/service.model";
+
 import ServiceI from "../../interfaces/service.interface";
 
 export default class MakeupartistServiceC extends BaseService{
@@ -101,7 +101,7 @@ export default class MakeupartistServiceC extends BaseService{
 
     addMakeupArtistService = async (req: Request, res: Response) => {
         try {
-            const d: ServiceI = req.body
+            const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
@@ -110,19 +110,25 @@ export default class MakeupartistServiceC extends BaseService{
                 return
             }
 
-            const service = await Service.create(d)
-            const service_id = mongoose.Types.ObjectId(service._id)
-            //@ts-ignore
-            const newSalon = await MakeupArtist.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
-            if(newSalon === null){
+          //  const service = await MakeupArtist.findByIdAndUpdate({id:_id},{$push:{services:d}},{new:true});
+        //     await MakeupArtist.findOne({_id}).then(_MakeupArtist=>{
+        //        const newService = {
+        //         services:d,
+        //        };
+        //        _MakeupArtist.services.unshift(newService);
+        //        _MakeupArtist.save().then(profile => res.json(_MakeupArtist));
+        //    })
+            
+            const mua = await MakeupArtist.findOneAndUpdate({_id}, { $push : {services  : {$each:d,$postion:0}}}, {new: true})
+            if(mua === null){
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
                 return
             }
-            console.log(newSalon)
-            res.send(newSalon)
+            console.log(mua)
+            res.send(mua)
         }catch(e){
             logger.error(`${e.message}`)
             res.status(403)

@@ -37,7 +37,7 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
       try {
           
         // verifies secret and checks exp
-        const decoded = vendorJWTVerification(token)
+        const decoded = await vendorJWTVerification(token)
         if(decoded === null){
           logger.error("Something went wrong")
           res.status(401).send({ success: false, message: 'Something went wrong' });
@@ -45,6 +45,8 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
         }
         // @ts-ignore
         req.vendorId = decoded._id;
+          // @ts-ignore
+       
         next();
       } catch (err) {
         res.status(401).send({ auth: false, message: err });
