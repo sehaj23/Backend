@@ -9,4 +9,7 @@ const deviceInfoRouter = Router()
 
 deviceInfoRouter.post("/", dis.addDeviceInfo)
 
+// TEMP: to be removed
+deviceInfoRouter.get("/redisclr", dis.clearRedis)
+
 export default deviceInfoRouter
