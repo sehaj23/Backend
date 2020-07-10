@@ -26,20 +26,8 @@ export default class SalonService extends BaseService {
 
     post = async (req: Request, res: Response) => {
         try {
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
             //@ts-ignore
-            req.body.vendor_id = decoded._id
+            req.body.vendor_id = req.vendorId
             const d: SalonI = req.body
             const salon = await Salon.create(d)
             //@ts-ignore
@@ -70,7 +58,7 @@ export default class SalonService extends BaseService {
                 return
             }
             //@ts-ignore
-            const vendor_id = decoded._id
+            const vendor_id = req.vendorId
 
             if (!id) {
                 const errMsg = "Salon ID not found"
@@ -80,9 +68,7 @@ export default class SalonService extends BaseService {
                 return
 
             }
-
             const d = req.body
-
             const salon = await Salon.findOneAndUpdate({ _id: id, vendor_id: vendor_id }, d, { new: true })
             if (!salon) {
                 const errMsg = "Unable to edit"
@@ -90,10 +76,8 @@ export default class SalonService extends BaseService {
                 res.status(400)
                 res.send({ message: errMsg })
                 return
-
             }
             res.send(salon)
-
 
         } catch (error) {
             const errMsg = "Salon  not found"
@@ -103,8 +87,6 @@ export default class SalonService extends BaseService {
             return
 
         }
-
-
     }
 
     salonSettings = async (req: Request, res: Response) => {
@@ -118,16 +100,11 @@ export default class SalonService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            
             //@ts-ignore
             const vendor_id = req.vendorId
                         const updates = Object.keys(req.body)
             const allowedupates = ["name", "location", "start_working_hours","insta_link","fb_link","end_working_hours"]
             const isvalid = updates.every((update) => allowedupates.includes(update))
-
-
-
             if (!isvalid) {
                 const errMsg = "Error updating Salon"
                 logger.error(errMsg)
@@ -153,8 +130,6 @@ export default class SalonService extends BaseService {
             return
 
         }
-
-
     }
     addSalonService = async (req: Request, res: Response) => {
         console.log(req.body.services)
@@ -191,47 +166,31 @@ export default class SalonService extends BaseService {
     deleteSalonService = async (req: Request, res: Response) => {
         try {
             const sid = req.params.sid
-            const _id = mongoose.Types.ObjectId(req.params.id)
+            const _id = req.params.id
             if (!_id || !sid) {
-                logger.error(`Salon Id is missing salon_id:  & mua_id: `)
+                logger.error(`salon Id is missing salon_id:  & mua_id: `)
                 res.status(403)
-                res.send({ message: `Salon Id is missing salon_id: ` })
+                res.send({ message: `salon Id is missing mua_id:` })
                 return
             }
-            const osid = mongoose.Types.ObjectId(sid)
-
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+            const osid = mongoose.Types.ObjectId(sid)   
             //@ts-ignore
-            const vendor_id = decoded._id
-
-
+            const vendor_id =req.vendorId
             // @ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({ _id, vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
-            if (newSalon === null) {
+            const salon = await Salon.findOneAndUpdate({_id: _id,vendor_id:vendor_id}, { $pull: {services: { _id: osid }} }, { new: true })
+            if (salon === null) {
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
                 res.status(403)
                 res.send({ message: errMsg })
                 return
             }
-            res.send(newSalon)
+            res.send(salon)
         } catch (e) {
             logger.error(`${e.message}`)
             res.status(403)
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
-
     }
     getService = async (req: Request, res: Response) => {
         try {
@@ -243,80 +202,70 @@ export default class SalonService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+            const salonId = mongoose.Types.ObjectId(id)
+           
             //@ts-ignore
-            const vendor_id = decoded._id
-            const monogId = mongoose.Types.ObjectId(id)
+            const vendor_id = req.vendorId
+            console.log("vendor id"+vendor_id)     
             //@ts-ignore
-            const services = await Salon.find({ _id: monogId, vendor_id: vendor_id }).select("services").populate("services").exec()
-            if (services === null) {
+            const salon = await Salon.find({ _id: salonId}).select("services")
+            //  const services = await Service.find({mua_id: monogId})
+            if (salon === null) {
                 const errMsg = `no service found`
                 logger.error(errMsg)
                 res.status(400)
                 res.send({ message: errMsg })
                 return
             }
-            res.send(services)
+            res.send(salon)
         } catch (e) {
-            logger.error(`Booking service ${e.message}`)
+            logger.error(`service ${e.message}`)
             res.status(403)
             res.send({ message: `${e.message}` })
         }
     }
-
     updateService = async (req: Request, res: Response) => {
 
         try {
-            const d = req.body
+            const d= req.body
         
             const id = mongoose.Types.ObjectId(req.params.id)
             //id is salon id
-            const sid = mongoose.Types.ObjectId(req.params.sid)
+            const sid = req.params.sid
             // const service = req.body
             if (!id || !sid) {
                 logger.error(`sid and id not found`)
                 res.status(403)
                 res.send({ message: "SID and ID not found" })
-
-
-            }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
             }
             //@ts-ignore
-            const vendor_id = decoded._id
+            const vendor_id = req.vendorId
             console.log(vendor_id)
             console.log(id)
             console.log(sid)
+            const key = Object.keys(d)
+            
             //@ts-ignore
-            const salon = await Service.findByIdAndUpdate(sid,d,{new:true})
-            // const salon  = await Salon.findOneAndUpdate({_id:id,sid:{$in:service}},{service},{new:true}).select("service").populate("service").exec()
+           // const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
+           const updates = Object.keys(req.body)
+            const allowedupates = ["name", "price:", "duration","gender","photo",]
+            const isvalid = updates.every((update) => allowedupates.includes(update))
+
+            if (!isvalid) {
+                const errMsg = "Error updating "
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+            d._id =sid
+            const salon  = await Salon.update({_id:id,"services._id": sid },{ "services.$":d },{new:true})       //AndUpdate({"services._id":sid},{$set:{"services.$":d}},{new:true})
             res.send(salon)
 
         } catch (error) {
             logger.error(`error while updating`)
             res.status(403)
-            res.send({ message: "unable to update" })
+            res.send({ message: "unable to update"+error })
 
         }
 
@@ -392,7 +341,6 @@ export default class SalonService extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-
             
             const emp = await Employee.findByIdAndDelete(eid)
             //@ts-ignore
