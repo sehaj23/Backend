@@ -1,5 +1,4 @@
 import Salon from '../../models/salon.model'
-import Service from '../../models/service.model'
 import Booking from '../../models/booking.model'
 import Employee from '../../models/employees.model'
 import { Request, Response } from 'express'
@@ -8,7 +7,7 @@ import BaseService from './base.service'
 import { BookingI } from '../../interfaces/booking.interface'
 import { EmployeeI } from '../../interfaces/employee.interface'
 import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
-import { INTEGER } from 'sequelize/types'
+// import { INTEGER } from 'sequelize/types'
 import * as moment from 'moment'
 
 export default class bookingService extends BaseService {

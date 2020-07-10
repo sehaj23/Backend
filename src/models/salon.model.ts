@@ -133,7 +133,9 @@ const SalonSchema = new mongoose.Schema({
 })
 
 // Text indexes for text search
-SalonSchema.index({ name: 'text', location: 'text' });
+SalonSchema.index({ name: 'text', location: 'text', services: 'text' });
+
+// TODO: figure out the way to index fields of docs embedded within arrays.
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 

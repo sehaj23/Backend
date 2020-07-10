@@ -13,7 +13,5 @@ salonInfoRouter.get('/location', ss.getSalonNearby)
 salonInfoRouter.get('/distance', ss.getSalonDistance)
 //sort rating-wise
 salonInfoRouter.get('/sort', ss.getSalonsRw)
-// get salon service search
-salonInfoRouter.get("/salon/service",ss.getSalonService)
 
 export default salonInfoRouter
