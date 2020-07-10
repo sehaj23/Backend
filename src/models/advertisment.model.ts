@@ -20,14 +20,10 @@ const AdvertismentSchema = new mongoose.Schema({
     description:{
         required:true,
         type:String
-    },
-    price:{
+    }, 
+   usp:{
         required:true,
-        type:Number
-    },
-    offer_price:{
-        required:true,
-        type:Number
+        type:String
     },
     services: {
         type: mongoose.Schema.Types.ObjectId,
@@ -41,8 +37,4 @@ const AdvertismentSchema = new mongoose.Schema({
         type: Date,
         required:true
     }
-    
-    
-
-
 })

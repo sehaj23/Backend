@@ -103,8 +103,6 @@ export default class RevenueService {
             res.status(400)
             res.send({message: e.message})
         }        
-
-
         return;     
 
     }
