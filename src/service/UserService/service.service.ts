@@ -3,6 +3,7 @@ import Service from '../../models/service.model'
 import { Request, Response } from 'express'
 import CONFIG from '../../config'
 import BaseService from './base.service'
+import { ServiceRedis } from '../../redis/index.redis'
 
 export default class serviceService extends BaseService {
   constructor() {
@@ -12,10 +13,17 @@ export default class serviceService extends BaseService {
   // Service names
   getServiceNames = async (req: Request, res: Response) => {
     try {
-      const services = await Service.find({})
       const data = new Array()
       const salonName = req.query.salon
+      let services
+      const sr = await ServiceRedis.get('Services')
+      if (sr !== null) services = JSON.parse(sr)
+      else {
+        services = await Service.find()
+        ServiceRedis.set('Services', services)
+      }
       if (!salonName) {
+        //@ts-ignore
         for (let [key, value] of Object.entries(services)) data.push(value.name)
       } else {
         const salonInfo = await Salon.findOne({ name: salonName })
@@ -33,12 +41,13 @@ export default class serviceService extends BaseService {
   }
 
   // Sort services : price-wise
-  getServiceRw = async (req: Request, res: Response) => {
+  getServicePw = async (req: Request, res: Response) => {
     try {
+      const price = req.query.price
+      if (price !== 'asc' && price !== 'dsc')
+        return res.status(400).send({ message: 'Send valid sorting order' })
       const services = await Service.find({}).populate('salon_id').exec()
       const data = new Array()
-      const price = req.query.price
-      if (price !== 'asc' && price !== 'dsc') return res.status(400).send()
       const val1 = price === 'asc' ? -1 : 1
       const val2 = val1 * -1
       for (let [key, value] of Object.entries(services)) data.push(value)
