@@ -10,7 +10,7 @@ import Vendor from "../../models/vendor.model";
 import Salon from "../../models/salon.model";
 import { SalonI } from "../../interfaces/salon.interface";
 import ServiceI from "../../interfaces/service.interface";
-import Service from "../../models/service.model";
+
 import { EmployeeI } from "../../interfaces/employee.interface";
 import Employee from "../../models/employees.model";
 import Offer from "../../models/offer.model";
@@ -119,20 +119,10 @@ export default class SalonService extends BaseService {
                 return
             }
             const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+            
             //@ts-ignore
-            const vendor_id = decoded._id
-            const updates = Object.keys(req.body)
+            const vendor_id = req.vendorId
+                        const updates = Object.keys(req.body)
             const allowedupates = ["name", "location", "start_working_hours","insta_link","fb_link","end_working_hours"]
             const isvalid = updates.every((update) => allowedupates.includes(update))
 
@@ -178,29 +168,11 @@ export default class SalonService extends BaseService {
                 res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
                 return
             }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
-            //@ts-ignore
-            const vendor_id = decoded._id
-
-            const service = await Service.create(d)
-            const service_id = mongoose.Types.ObjectId(service._id)
-            //@ts-ignore
-            var result = service.map(service_id => ({ _id: mongoose.Types.ObjectId(service_id.id) }));
-
 
             //@ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({ _id, vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
+            const vendor_id = req.vendorId
+
+            const newSalon = await Salon.findOneAndUpdate({_id,vendor_id}, { $push : {services  : {$each:d,$postion:0}}}, {new: true})
             if (newSalon === null) {
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)

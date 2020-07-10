@@ -10,7 +10,7 @@ import { EmployeeI } from "../../interfaces/employee.interface";
 import Employee from "../../models/employees.model";
 import { MakeupArtistI } from "../../interfaces/makeupArtist.interface";
 import Vendor from "../../models/vendor.model";
-import Service from "../../models/service.model";
+
 import ServiceI from "../../interfaces/service.interface";
 import { vendorJWTVerification } from "../../middleware/VendorJwt"
 
@@ -157,6 +157,7 @@ export default class MakeupartistServiceC extends BaseService {
     }
     addMakeupArtistService = async (req: Request, res: Response) => {
         try {
+          
             const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if (!_id) {
@@ -164,33 +165,10 @@ export default class MakeupartistServiceC extends BaseService {
                 res.status(403)
                 res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
                 return
-            }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+            }    
             //@ts-ignore
-            const vendor_id = decoded._id
-
-            const service = await Service.create(d)
-            const service_id = mongoose.Types.ObjectId(service._id)
-            console.log(service)
-            //@ts-ignore
-            var result = service.map(service_id => ({ _id: mongoose.Types.ObjectId(service_id.id) }));
-            console.log(result)
-
-
-
-            //@ts-ignore
-            const newMua = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $nin: [service_id] } }, { $push: { services: { $each: result } } }, { new: true }).populate("services").exec()
+            const vendor_id = req.vendorId
+            const newMua = await MakeupArtist.findOneAndUpdate({_id:_id,vendor_id:vendor_id}, { $push : {services  : {$each:d,$postion:0}}}, {new: true})
             if (newMua === null) {
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -217,24 +195,14 @@ export default class MakeupartistServiceC extends BaseService {
                 return
             }
             const osid = mongoose.Types.ObjectId(sid)
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+           
+           
             //@ts-ignore
-            const vendor_id = decoded._id
+            const vendor_id =req.vendorId
 
 
             // @ts-ignore
-            const newMua = await MakeupArtist.findOneAndUpdate({ _id,vendor_id, services: { $in: [osid] } }, { $pull: { services: osid } }, { new: true })
+            const newMua = await MakeupArtist.findOneAndUpdate({_id: _id,vendor_id:vendor_id}, { $pull: {services: { _id: osid }} }, { new: true })
             if (newMua === null) {
                 const errMsg = `Delete Service: no data with this _id and service was found`
                 logger.error(errMsg)
@@ -260,23 +228,14 @@ export default class MakeupartistServiceC extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            const monogId = mongoose.Types.ObjectId(id)
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+            const muaId = mongoose.Types.ObjectId(id)
+           
             //@ts-ignore
-            const vendor_id = decoded._id
+            const vendor_id = req.vendorId
+            console.log("vendor id"+vendor_id)
+            
             //@ts-ignore
-            const mua = await MakeupArtist.find({ _id: monogId,vendor_id:vendor_id }).select("services").populate("services").exec()
+            const mua = await MakeupArtist.find({ _id: muaId}).select("services")
             //  const services = await Service.find({mua_id: monogId})
             if (mua === null) {
                 const errMsg = `no service found`
@@ -296,11 +255,11 @@ export default class MakeupartistServiceC extends BaseService {
     updateService = async (req: Request, res: Response) => {
 
         try {
-            const d = req.body
+            const d= req.body
         
             const id = mongoose.Types.ObjectId(req.params.id)
             //id is salon id
-            const sid = mongoose.Types.ObjectId(req.params.sid)
+            const sid = req.params.sid
             // const service = req.body
             if (!id || !sid) {
                 logger.error(`sid and id not found`)
@@ -309,32 +268,36 @@ export default class MakeupartistServiceC extends BaseService {
 
 
             }
-            const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-            if (!token) {
-                logger.error("No token provided.")
-                res.status(401).send({ success: false, message: 'No token provided.' });
-                return
-            }
-            const decoded = await vendorJWTVerification(token)
-            if (decoded === null) {
-                logger.error("Something went wrong")
-                res.status(401).send({ success: false, message: 'Something went wrong' });
-                return
-            }
+           
             //@ts-ignore
-            const vendor_id = decoded._id
+            const vendor_id = req.vendorId
             console.log(vendor_id)
             console.log(id)
             console.log(sid)
+            const key = Object.keys(d)
+            
             //@ts-ignore
-            const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
-            // const salon  = await Salon.findOneAndUpdate({_id:id,sid:{$in:service}},{service},{new:true}).select("service").populate("service").exec()
+           // const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
+           const updates = Object.keys(req.body)
+            const allowedupates = ["name", "price:", "duration","gender","photo",]
+            const isvalid = updates.every((update) => allowedupates.includes(update))
+
+
+
+            if (!isvalid) {
+                const errMsg = "Error updating "
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+            const mua  = await MakeupArtist.findOneAndUpdate({_id:id,services:{$elemMatch:{_id:sid}}},{"services.$":d},{new:true})       //AndUpdate({"services._id":sid},{$set:{"services.$":d}},{new:true})
             res.send(mua)
 
         } catch (error) {
             logger.error(`error while updating`)
             res.status(403)
-            res.send({ message: "unable to update" })
+            res.send({ message: "unable to update"+error })
 
         }
 

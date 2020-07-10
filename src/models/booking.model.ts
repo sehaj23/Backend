@@ -83,6 +83,11 @@ const BookingSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
+    date_time: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
     location: {
         type: String,
         enum: ['Customer Place' , 'Vendor Place'],

@@ -8,7 +8,7 @@ import BaseService from './base.service'
 import { BookingI } from '../../interfaces/booking.interface'
 import { EmployeeI } from '../../interfaces/employee.interface'
 import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
-import { INTEGER } from 'sequelize/types'
+//import { INTEGER } from 'sequelize/types'
 import * as moment from 'moment'
 
 export default class bookingService extends BaseService {
