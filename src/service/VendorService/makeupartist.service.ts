@@ -283,7 +283,6 @@ export default class MakeupartistServiceC extends BaseService {
             const isvalid = updates.every((update) => allowedupates.includes(update))
 
 
-
             if (!isvalid) {
                 const errMsg = "Error updating "
                 logger.error(errMsg)
@@ -291,7 +290,8 @@ export default class MakeupartistServiceC extends BaseService {
                 res.send({ message: errMsg })
                 return
             }
-            const mua  = await MakeupArtist.findOneAndUpdate({_id:id,services:{$elemMatch:{_id:sid}}},{"services.$":d},{new:true})       //AndUpdate({"services._id":sid},{$set:{"services.$":d}},{new:true})
+            d._id =sid
+            const mua  = await MakeupArtist.update({_id:id,"services._id": sid },{ "services.$":d },{new:true})       //AndUpdate({"services._id":sid},{$set:{"services.$":d}},{new:true})
             res.send(mua)
 
         } catch (error) {
