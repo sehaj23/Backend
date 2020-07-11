@@ -132,8 +132,7 @@ const SalonSchema = new mongoose.Schema({
     timestamps: true
 })
 
-// TODO: figure out the way to index fields of docs embedded within arrays.
-SalonSchema.index({ name: 'text', location: 'text', services: 'text' }); //services[name]: 'text'
+SalonSchema.index({ name: 'text', location: 'text', 'services.name': 'text' });
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 
