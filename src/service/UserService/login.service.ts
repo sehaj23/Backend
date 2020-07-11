@@ -68,7 +68,7 @@ export default class LoginService extends BaseService {
       }
 
       res.status(403).send({
-        message: 'Account blocked due to numerous failed login attempts',
+        message: 'Account blocked due to numerous failed login attempts. Reset password to login.',
       })
     } catch (e) {
       res.status(500).send({

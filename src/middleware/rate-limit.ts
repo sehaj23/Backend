@@ -10,7 +10,7 @@ export const signupLimiter = new RateLimit({
   max: 5,
   message: {
     message:
-      'Too many accounts created from this IP, please try again in 3 hours',
+      'Too many accounts created, please try again in 3 hours',
   },
   delayMs: 0,
 })
@@ -23,7 +23,7 @@ export const loginLimiter = new RateLimit({
   max: 8,
   message: {
     message:
-      'Too many login attempts from this IP, please try again in 3 hours',
+      'Too many login attempts, please try again in 3 hours',
   },
   delayMs: 0,
 })
