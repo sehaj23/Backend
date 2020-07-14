@@ -41,7 +41,7 @@ export default class LoginService extends BaseService {
 
       if (user == null) {
         let count: number = 1
-        const failedCount: string = await UserRedis.get(email)
+        const failedCount: string = await UserRedis.get('Login', { email })
         if (failedCount !== null) {
           count = parseInt(failedCount) + 1
           if (count === 6) {
@@ -50,14 +50,14 @@ export default class LoginService extends BaseService {
             usr.save()
           }
         }
-        UserRedis.set(email, count)
+        UserRedis.set('Login', count, { email })
         return res.status(401).send({
           message: 'Username & password do not match',
         })
       }
 
       if (!user.blocked) {
-        UserRedis.remove(email)
+        UserRedis.remove('Login', { email })
         delete user.password
         const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
           expiresIn: '30 days',
@@ -68,7 +68,8 @@ export default class LoginService extends BaseService {
       }
 
       res.status(403).send({
-        message: 'Account blocked due to numerous failed login attempts. Reset password to login.',
+        message:
+          'Account blocked due to numerous failed login attempts. Reset password to login.',
       })
     } catch (e) {
       res.status(500).send({
