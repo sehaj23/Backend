@@ -14,12 +14,15 @@ export default class SalonInfoService extends BaseService {
   getSalonInfo = async (req: Request, res: Response) => {
     try {
       const salonId = req.params.id
-      if (!salonId) return res.status(400).send({ message: 'Id not provided' })
-      const sr: string = await SalonRedis.get(salonId)
-      if (sr !== null) return res.send(JSON.parse(sr))
+
+      // if (!salonId) return res.status(400).send({ message: 'Id not provided' })
+      // const sr: string = await SalonRedis.get(salonId)
+      // if (sr !== null) return res.send(JSON.parse(sr))
+      // const salon = await Salon.findById(salonId)
+      // if (!salon) return res.status(404).send({ message: 'Salon not found' })
+      // SalonRedis.set(salonId, salon)
+
       const salon = await Salon.findById(salonId)
-      if (!salon) return res.status(404).send({ message: 'Salon not found' })
-      SalonRedis.set(salonId, salon)
       res.status(200).send(salon)
       SalonRedis.set(salonId, salon)
     } catch (e) {

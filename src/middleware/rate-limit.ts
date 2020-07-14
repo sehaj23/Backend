@@ -7,7 +7,7 @@ export const signupLimiter = new RateLimit({
     client: redisClient,
   }),
   windowMs: 3 * 60 * 60 * 1000, // 3 hours window
-  max: 5,
+  max: 50,
   message: {
     message:
       'Too many accounts created, please try again in 3 hours',
@@ -20,7 +20,7 @@ export const loginLimiter = new RateLimit({
     client: redisClient,
   }),
   windowMs: 3 * 60 * 60 * 1000, // 3 hours window
-  max: 8,
+  max: 80,
   message: {
     message:
       'Too many login attempts, please try again in 3 hours',

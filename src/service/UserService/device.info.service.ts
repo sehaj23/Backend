@@ -1,4 +1,4 @@
-import UserMobileInfo from '../../models/userMobileInfo.model'
+import DeviceInfo from '../../models/deviceInfo.model'
 import User from '../../models/user.model'
 import { Router, Request, Response } from 'express'
 import CONFIG from '../../config'
@@ -14,27 +14,14 @@ import redisClient from '../../redis/redis'
 
 export default class DeviceInfoService extends BaseService {
   constructor() {
-    super(UserMobileInfo)
+    super(DeviceInfo)
   }
 
   // Store Device Info
   addDeviceInfo = async (req: Request, res: Response) => {
     try {
       const dInfo = req.body
-      if (!dInfo.user_id)
-        return res.status(400).send({
-          message: 'Provide User ID',
-        })
-
-      const user = await User.findOne({
-        _id: dInfo.user_id,
-      })
-      if (!user)
-        return res.status(400).send({
-          message: 'User not Found',
-        })
-
-      await UserMobileInfo.create(dInfo)
+      await DeviceInfo.create(dInfo)
       res.status(201).send({
         user_id: dInfo.user_id,
       })

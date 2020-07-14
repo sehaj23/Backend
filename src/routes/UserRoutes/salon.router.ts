@@ -1,10 +1,17 @@
 import { Router } from 'express'
 import SalonInfoService from '../../service/UserService/salon.service'
 const ss = new SalonInfoService()
+import { salonInfoChecks } from '../../validators/salon-validator'
+import mySchemaValidator from '../../middleware/my-schema-validator'
 
 const salonInfoRouter = Router()
 // get salon info by id
-salonInfoRouter.get('/info/:id', ss.getSalonInfo)
+//@ts-ignore
+salonInfoRouter.get(
+  '/info/:id',
+  [salonInfoChecks, mySchemaValidator],
+  ss.getSalonInfo
+)
 // get names of  all salons
 salonInfoRouter.get('/names', ss.getSalonNames)
 //get nearby salon range 2km

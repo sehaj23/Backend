@@ -1,15 +1,19 @@
-import {
-    Router
-} from "express";
-import DeviceInfoService from "../../service/UserService/device.info.service";
-import UserverifyToken from "../../middleware/User.jwt";
-const dis = new DeviceInfoService()
+import { Router } from 'express'
+import DeviceInfoService from '../../service/UserService/device.info.service'
+import { deviceInfoChecks } from '../../validators/deviceInfo-validator'
+import mySchemaValidator from '../../middleware/my-schema-validator'
 
 const deviceInfoRouter = Router()
+const dis = new DeviceInfoService()
 
-deviceInfoRouter.post("/", dis.addDeviceInfo)
+// @ts-ignore
+deviceInfoRouter.post(
+  '/',
+  [deviceInfoChecks, mySchemaValidator],
+  dis.addDeviceInfo
+)
 
 // TEMP: to be removed
-deviceInfoRouter.get("/redisclr", dis.clearRedis)
+deviceInfoRouter.get('/redisclr', dis.clearRedis)
 
 export default deviceInfoRouter
