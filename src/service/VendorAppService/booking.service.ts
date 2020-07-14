@@ -181,7 +181,7 @@ export default class BookingService extends BaseService {
         filters["services.employee_id"] = {
 
             //@ts-ignore  
-            "$in": decoded._id
+            "$in": req.empId 
         }
         console.log(filters);
         try {
@@ -242,29 +242,6 @@ export default class BookingService extends BaseService {
     }
 
 
-
-    rescheduleBooking = async (req: Request, res: Response) => {
-
-        try {
-            const id = req.params.id
-
-            const d = req.body.date_time
-            console.log(d)
-            console.log(req.body)
-            const booking = await Booking.findByIdAndUpdate(id, { date_time: d,status:"Requested" }, { new: true })
-            res.send(booking)
-
-        } catch (error) {
-            const errMsg = "Error in rescheduling"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-        }
-
-
-
-    }
     updateStatusBookings = async (req: Request, res: Response) => {
 
         try {
@@ -303,12 +280,7 @@ export default class BookingService extends BaseService {
         }
 
     }
-    bookingStatus = async (req: Request, res: Response) => {
-      const status =  ['Requested', 'Confirmed', 'Vendor Cancelled', 'Reschedule','Reschedule and Cancelled']
-      res.send(status)
-
-
-    }
+   
 
 
 
