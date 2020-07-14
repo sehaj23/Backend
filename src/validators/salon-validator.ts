@@ -5,10 +5,8 @@ export const salonInfoChecks = [
   check('id', 'Invalid Salon Id')
     .isMongoId()
     .custom(async (salonId) => {
-      if (salonId) {
-        return await Salon.findById(salonId).then((salon) => {
-          if (!salon) return Promise.reject('Salon not found')
-        })
-      }
+      return await Salon.findById(salonId).then((salon) => {
+        if (!salon) return Promise.reject('Salon not found')
+      })
     })
 ]
