@@ -302,13 +302,10 @@ export default class BookingService extends BaseService {
             return
         }
 
-
     }
     bookingStatus = async (req: Request, res: Response) => {
       const status =  ['Requested', 'Confirmed', 'Vendor Cancelled', 'Reschedule','Reschedule and Cancelled']
       res.send(status)
-
-
 
 
     }

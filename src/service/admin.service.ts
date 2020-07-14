@@ -1,7 +1,7 @@
-import Admin from "../../models/admin.model";
+import Admin from "../models/admin.model";
 import * as crypto from "crypto"
-import AdminI, { AdminRoleT } from "../../interfaces/admin.interface";
-import BaseService from "../base.service";
+import AdminI, { AdminRoleT } from "../interfaces/admin.interface";
+import BaseService from "../service/base.service";
 
 
 export default class AdminService extends BaseService{
@@ -16,6 +16,7 @@ export default class AdminService extends BaseService{
 
     login = async (username: string, password: string) => {
         // this.model is coming from the base service class
-        return this.model.find({username, password})
+        console.log(this.modelName)
+        return this.model.findOne({username, password})
     }
 }

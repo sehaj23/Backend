@@ -8,7 +8,7 @@ enum CONFIG{
     VENDOR_JWT = "thisisasecretkey",
     USER_JWT = 'expectopatronum$499.99^78',
     EMP_JWT = "thisisemployeesecretkey",
-    SALT = 'avadakedavra#6582@0216'
+    SALT = 'abrakadabra#6582@0216'
 }
 
 export default CONFIG

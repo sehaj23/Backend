@@ -1,15 +1,19 @@
 import { Router } from "express";
 import verifyToken from "../../middleware/jwt";
-import VendorService from "../../service/AdminService/vendor.service";
-import BookinkService from "../../service/AdminService/booking.service";
+
+import BookinkService from "../../service/booking.service";
+import Booking from "../../models/booking.model"
+import BookingController from "../../controller/booking.controller";
 
 const bookingRouter = Router()
-const vs = new BookinkService()
+const bookingService = new BookinkService(Booking)
+const bookingController = new BookingController(bookingService)
 
-bookingRouter.post("/", verifyToken, vs.post)
-bookingRouter.get("/", verifyToken, vs.get)
-bookingRouter.get("/:id", verifyToken, vs.getId)
-bookingRouter.put("/:id", verifyToken, vs.put)
-bookingRouter.post("/salon-emp/:salonId", vs.getSalonEmployees)
+bookingRouter.post("/", verifyToken, bookingController.post)
+bookingRouter.get("/", verifyToken, bookingController.get)
+bookingRouter.get("/:id", verifyToken, bookingController.getId)
+bookingRouter.put("/:id", verifyToken, bookingController.put)
+bookingRouter.post("/salon-emp/:salonId", bookingController.getSalonEmployees)
+
 
 export default bookingRouter

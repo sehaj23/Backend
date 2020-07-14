@@ -5,7 +5,7 @@ import Photo from "../models/photo.model";
 
 export default class BaseService {
     model: mongoose.Model<any, any>
-    private modelName: string
+    modelName: string
 
     constructor(model: mongoose.Model<any, any>) {
         this.model = model

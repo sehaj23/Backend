@@ -5,6 +5,7 @@ import Admin from "../../models/admin.model";
 import {Router, Request, Response} from "express";
 import * as jwt from "jwt-then";
 import CONFIG from "../../config";
+import encryptData from "../../utils/password-hash";
 
 const loginRouter = Router()
 
@@ -21,7 +22,7 @@ export default class LoginService {
                 res.send({message: "Send all data"})
                 return
             }
-            const passwordHash = crypto.createHash("md5").update(password).digest("hex")
+            const passwordHash = encryptData(password)
             const admin = await Admin.findOne({username, password: passwordHash})
             if(admin == null){
                 res.status(403)

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import verifyToken from "../../middleware/jwt";
-import AdminService from "../../service/AdminService/admin.service";
-import AdminController from "../../controller/admin-controller/admin.controller";
+import AdminService from "../../service/admin.service";
+import AdminController from "../../controller/admin.controller";
 import Admin from "../../models/admin.model";
 
 const adminRouter = Router()

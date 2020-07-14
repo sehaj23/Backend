@@ -1,196 +1,172 @@
-import BaseService from "./base.service"
-import Booking from "../../models/booking.model"
-import Salon from "../../models/salon.model"
-import { Request, Response } from "express"
-import { BookingI } from "../../interfaces/booking.interface"
-import logger from "../../utils/logger"
-import mongoose from "../../database"
+import BaseService from "./base.service";
+import Booking from "../models/booking.model";
+import { Request, Response } from "express";
+import { BookingI } from "../interfaces/booking.interface";
+import logger from "../utils/logger";
+import mongoose from "../database";
 
-import { ServiceSI } from "../../interfaces/service.interface"
-import Offer from "../../models/offer.model"
-import * as moment from "moment"
-import Employee from "../../models/employees.model"
-import Photo from "../../models/photo.model"
-import { DateTime } from "aws-sdk/clients/devicefarm"
-
-
-
-
+import { ServiceSI } from "../interfaces/service.interface";
+import Offer from "../models/offer.model";
+import Salon from "../models/salon.model";
+import { SocketRoomType, getVendorRoom } from "./socketio";
+import { io } from '../app';
+import sendNotificationToDevice from "../utils/send-notification";
+import moment = require("moment");
+import { String } from "aws-sdk/clients/acm";
+import { DateTime } from "aws-sdk/clients/devicefarm";
 
 export default class BookingService extends BaseService {
 
-    constructor() {
-        super(Booking)
-    }
 
     // post = async (req: Request, res: Response) => {
-    //     try {
-    //         const e: BookingI = req.body
+    //   try {
+    //     const e: BookingI = req.body;
 
-    //         if (!e.salon_id && !e.makeup_artist_id && !e.designer_id) {
-    //             const errMsg = `Atleast one provider is is reqired out of 3`
-    //             logger.error(errMsg)
-    //             res.status(400)
-    //             res.send({ message: errMsg })
-    //             return
-    //         }
-
-    //         // if(e.salon_id){
-    //         //     
-    //         //     e.salon_id = mongoose.Types.ObjectId(e.salon_id.toString())
-    //         // }
-    //         // if(e.makeup_artist_id){
-    //         //     
-    //         //     e.makeup_artist_id = mongoose.Types.ObjectId(e.makeup_artist_id.toString())
-    //         // }
-    //         // if(e.designer_id){
-    //         //     
-    //         //     e.designer_id = mongoose.Types.ObjectId(e.designer_id.toString())
-    //         // }
-
-    //         if (!e.designer_id) {
-    //             const { services } = e;
-    //             if (!services) {
-    //                 const errMsg = `Services not defined`;
-    //                 logger.error(errMsg);
-    //                 res.status(400);
-    //                 res.send({ message: errMsg });
-    //                 return;
-    //             }
-
-    //             if (services.length === 0) {
-    //                 const errMsg = `Atleast one services is required. Length is 0`;
-    //                 logger.error(errMsg);
-    //                 res.status(400);
-    //                 res.send({ message: errMsg });
-    //                 return;
-    //             }
-
-    //             const serviceIds = [];
-    //             for (let s of services) {
-    //                 if (s.service_id) {
-    //                     if (!s.service_time) {
-    //                         const errMsg = `Service time not found for id: ${s.service_id}`;
-    //                         logger.error(errMsg);
-    //                         res.status(400);
-    //                         res.send({ message: errMsg });
-    //                         return;
-    //                     }
-    //                     serviceIds.push(mongoose.Types.ObjectId(s.service_id));
-    //                 } else {
-    //                     const errMsg = `Service Id not found: 22`;
-    //                     logger.error(errMsg);
-    //                     res.status(400);
-    //                     res.send({ message: errMsg });
-    //                     return;
-    //                 }
-    //             }
-
-    //             if (serviceIds.length === 0) {
-    //                 const errMsg = `Service Ids not found`;
-    //                 logger.error(errMsg);
-    //                 res.status(400);
-    //                 res.send({ message: errMsg });
-    //                 return;
-    //             }
-
-    //             const serviceInfoReq = Service.find({ _id: { $in: serviceIds } })
-    //             const offerInfoReq = Offer.find({ service_id: { $in: serviceIds } })
-    //             const [serviceInfo, offerInfo] = await Promise.all([serviceInfoReq, offerInfoReq])
-
-    //             if (serviceInfo.length === 0) {
-    //                 const errMsg = `serviceInfo not found`
-    //                 logger.error(errMsg)
-    //                 res.status(400)
-    //                 res.send({ message: errMsg })
-    //                 return
-    //             }
-
-    //             for (let offer of offerInfo) {
-    //                 for (let service of serviceInfo) {
-    //                     if (offer._id === service._id) {
-    //                         // TODO: 
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-
-
-    //         const event = await Booking.create(e)
-
-    //         res.send(event)
-    //     } catch (e) {
-    //         logger.error(`Post ${e.message}`)
-    //         res.status(403)
-    //         res.send({ message: `${e.message}` })
+    //     if (!e.salon_id && !e.makeup_artist_id && !e.designer_id) {
+    //       const errMsg = `Atleast one provider is is reqired out of 3`;
+    //       logger.error(errMsg);
+    //       res.status(400);
+    //       res.send({ message: errMsg });
+    //       return;
     //     }
 
-    // }
-    getSalonEmployees = async (salonId:String,dateTime:DateTime) => {
-        
-         
-            const dateTimeD = new Date(dateTime);
+    //     // if(e.salon_id){
+    //     //     e.salon_id = mongoose.Types.ObjectId(e.salon_id.toString())
+    //     // }
+    //     // if(e.makeup_artist_id){
+    //     //     e.makeup_artist_id = mongoose.Types.ObjectId(e.makeup_artist_id.toString())
+    //     // }
+    //     // if(e.designer_id){
+    //     //     e.designer_id = mongoose.Types.ObjectId(e.designer_id.toString())
+    //     // }
+    //     if (!e.designer_id) {
+    //       const { services } = e;
+    //       if (!services) {
+    //         const errMsg = `Services not defined`;
+    //         logger.error(errMsg);
+    //         res.status(400);
+    //         res.send({ message: errMsg });
+    //         return;
+    //       }
 
-            const busyEmployeesIds = [];
+    //       if (services.length === 0) {
+    //         const errMsg = `Atleast one services is required. Length is 0`;
+    //         logger.error(errMsg);
+    //         res.status(400);
+    //         res.send({ message: errMsg });
+    //         return;
+    //       }
 
-            // @ts-ignore
-            const bookings = await Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId })
-            console.log("*********Got bookings ****************");
-            console.log(bookings);
+    //       const serviceIds = [];
+    //       for (let s of services) {
+    //         if (s.service_id) {
+    //           if (!s.service_time) {
+    //             const errMsg = `Service time not found for id: ${s.service_id}`;
+    //             logger.error(errMsg);
+    //             res.status(400);
+    //             res.send({ message: errMsg });
+    //             return;
+    //           }
+    //           serviceIds.push(mongoose.Types.ObjectId(s.service_id));
+    //         } else {
+    //           const errMsg = `Service Id not found: 22`;
+    //           logger.error(errMsg);
+    //           res.status(400);
+    //           res.send({ message: errMsg });
+    //           return;
+    //         }
+    //       }
 
-            if (bookings !== null) {
-                for (const bs of bookings.services) {
-                    busyEmployeesIds.push(bs.employee_id);
-                }
+    //       if (serviceIds.length === 0) {
+    //         const errMsg = `Service Ids not found`;
+    //         logger.error(errMsg);
+    //         res.status(400);
+    //         res.send({ message: errMsg });
+    //         return;
+    //       }
+
+    //       const serviceInfoReq = Service.find({ _id: { $in: serviceIds } });
+    //       const offerInfoReq = Offer.find({ service_id: { $in: serviceIds } });
+    //       const [serviceInfo, offerInfo] = await Promise.all([
+    //         serviceInfoReq,
+    //         offerInfoReq,
+    //       ]);
+
+    //       if (serviceInfo.length === 0) {
+    //         const errMsg = `serviceInfo not found`;
+    //         logger.error(errMsg);
+    //         res.status(400);
+    //         res.send({ message: errMsg });
+    //         return;
+    //       }
+
+    //       for (let offer of offerInfo) {
+    //         for (let service of serviceInfo) {
+    //           if (offer._id === service._id) {
+    //             // TODO:
+    //           }
+    //         }
+    //       }
+    //     }
+    //     const booking = await Booking.create(e);
+    //     const vendorId: string = (booking.salon_id || booking.makeup_artist_id || booking.designer_id) as string
+
+    //     console.log(io.sockets.adapter.rooms)
+    //     if(io.sockets.adapter.rooms[`${SocketRoomType.Admin}`]){
+    //       io.sockets.in(`${SocketRoomType.Admin}`).emit('new-booking', {bookingId: booking._id})
+    //     }
+    //     if(io.sockets.adapter.rooms[`${getVendorRoom(vendorId)}`]){
+    //       io.sockets.in(`${getVendorRoom(vendorId)}`).emit('new-booking', {bookingId: booking._id})
+    //     }
+
+    //     // TODO: Send notification here
+    //     // sendNotificationToDevice()
+
+    //     res.send(booking);
+    //   } catch (e) {
+    //     logger.error(`Post ${e.message}`);
+    //     res.status(403);
+    //     res.send({ message: `${e.message}` });
+    //   }
+    // };
+
+    getSalonEmployees = async (salonId: String, dateTime: DateTime) => {
+
+        const dateTimeD = new Date(dateTime);
+
+        const busyEmployeesIds = [];
+
+        // @ts-ignore
+        const bookings = await Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
+        console.log("*********Got bookings ****************");
+        console.log(bookings);
+        if (bookings !== null) {
+            for (const bs of bookings.services) {
+                busyEmployeesIds.push(bs.employee_id);
             }
+        }
 
-            const salon = await Salon.findById(salonId).populate("employees").exec();
-            
+        const salon = await Salon.findById(salonId).populate("employees").exec();
 
-            for (const bemp of busyEmployeesIds) {
-                //@ts-ignore
-                const i = salon.employees.findIndex((e) => e._id === bemp);
-                if (i !== -1) {
-                    salon.employees.splice(i, 1);
-                }
+
+        for (const bemp of busyEmployeesIds) {
+            //@ts-ignore
+            const i = salon.employees.findIndex((e) => e._id === bemp);
+            if (i !== -1) {
+                salon.employees.splice(i, 1);
             }
-            return salon
+        }
 
-           
-       
+        return salon
+
     };
 
-    getSalonBookings = async (req: Request, res: Response) => {
-        try {
-            const salonId = req.params.id
-            if (!salonId) {
-                const errMsg = 'Salon Id not found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
+    getSalonBookings = async (salonId: String) => {
+        const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
+        return bookings
 
-            const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
-            if (!bookings) {
-                const errMsg = 'No Bookings Found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-
-            }
-            res.status(200).send(bookings)
-        } catch (e) {
-            const errMsg = "Error Fetching Bookings"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-
-        }
     }
+
     getmakeupArtistBookings = async (req: Request, res: Response) => {
         try {
             const makeupArtistId = req.params.id
@@ -404,7 +380,7 @@ export default class BookingService extends BaseService {
 
             }
 
-            const booking = await Booking.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId },{new:true})
+            const booking = await Booking.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId }, { new: true })
             res.send(booking)
 
         } catch (error) {
@@ -422,40 +398,40 @@ export default class BookingService extends BaseService {
 
         const q = req.query
 
-        if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
+        if (!q.makeup_artist_id && !q.designer_id && !q.salon_id) {
             const message = 'None id provided'
             res.status(400)
-            res.send({message})
+            res.send({ message })
             return
         }
         console.log(q)
-    
-        const pageNumber: number = parseInt( q.page_number || 1)
+
+        const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
         console.log(skipCount)
-    
+
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
         dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
         dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
         for (const k of keys) {
-            switch(k){
+            switch (k) {
                 case "service_id":
                     filters["services.service_id"] = {
                         "$in": q[k].split(",")
-                    } 
+                    }
                     break
                 case "employee_id":
                     filters["services.employee_id"] = {
                         "$in": q[k].split(",")
-                    } 
+                    }
                     break
                 case "status":
-                    filters["status"]= q[k]
+                    filters["status"] = q[k]
                 case "start_date":
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break
@@ -464,7 +440,7 @@ export default class BookingService extends BaseService {
                     break
                 case "page_number":
                 case "page_length":
-                    
+
                     break
                 default:
                     filters[k] = q[k]
@@ -477,30 +453,30 @@ export default class BookingService extends BaseService {
             //     "$gte": dateFilter["start_date"],
             //     "$lt": dateFilter["end_date"]
             // }
-        
-    
+
+
         }
         console.log(filters);
-   
-            try {
-                const bookingDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
-                const bookingPagesReq = Booking.count(filters)
-                const bookingStatsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
-                    
-               
-                const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
-                res.send({bookingDetails, bookingStats, bookingPages})
-                
-            } catch (error) {
-                const errMsg = "Error Bookingg not found"
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-                
-            }
-    
+
+        try {
+            const bookingDetailsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
+            const bookingPagesReq = Booking.count(filters)
+            const bookingStatsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+
+
+            const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
+            res.send({ bookingDetails, bookingStats, bookingPages })
+
+        } catch (error) {
+            const errMsg = "Error Bookingg not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
         }
+
+    }
     // getbookingbyid = async (req: Request, res: Response) => {
 
     //     try {
@@ -533,12 +509,12 @@ export default class BookingService extends BaseService {
     reschedulebooking = async (req: Request, res: Response) => {
 
         try {
-            const id =req.params.id
+            const id = req.params.id
             const date_time = req.body.date_time
             const date = moment().format('YYYY-MM-DD, h:mm:ss a')
 
             console.log(date)
-            if(date_time<date){
+            if (date_time < date) {
                 const errMsg = "Cannot reschedule for past dates!"
                 logger.error(errMsg)
                 res.status(400)
@@ -546,16 +522,16 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            if(!id){
+            if (!id) {
                 const errMsg = "Error Booking not found"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return    
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
             }
-            
-            const booking = await Booking.findByIdAndUpdate(id,{date_time:date_time},{new:true}).populate("user_id").exec()
-            if(!booking){
+
+            const booking = await Booking.findByIdAndUpdate(id, { date_time: date_time }, { new: true }).populate("user_id").exec()
+            if (!booking) {
                 const errMsg = "unable to update boooking"
                 logger.error(errMsg)
                 res.status(400)
@@ -565,7 +541,7 @@ export default class BookingService extends BaseService {
             }
             res.send(booking)
         } catch (error) {
-            
+
             const errMsg = "Error Bookingg not found"
             logger.error(errMsg)
             res.status(400)
@@ -584,7 +560,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ salon_id: salonId}).populate("user_id").exec()
+            const bookings = await Booking.find({ salon_id: salonId }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -616,7 +592,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId}).populate("user_id").exec()
+            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -637,7 +613,7 @@ export default class BookingService extends BaseService {
 
 
     }
-    getAllDesignerBookings =  async (req: Request, res: Response) => {
+    getAllDesignerBookings = async (req: Request, res: Response) => {
         try {
             const designerId = req.params.id
             if (!designerId) {
@@ -648,7 +624,7 @@ export default class BookingService extends BaseService {
                 return
             }
 
-            const bookings = await Booking.find({ designer_id: designerId}).populate("user_id").exec()
+            const bookings = await Booking.find({ designer_id: designerId }).populate("user_id").exec()
             if (!bookings) {
                 const errMsg = 'No Bookings Found'
                 logger.error(errMsg)
@@ -666,6 +642,12 @@ export default class BookingService extends BaseService {
             return
 
         }
+
+
+    }
+    bookingStatus = async (req: Request, res: Response) => {
+        const status = ['Requested', 'Confirmed', 'Vendor Cancelled', 'Reschedule', 'Reschedule and Cancelled']
+        res.send(status)
 
 
     }
