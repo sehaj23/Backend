@@ -20,7 +20,7 @@ export interface SalonI{
     end_working_hours?: Date[]
     photo_ids?: number[]
     approved?: boolean
-    vendor_id: string
+    vendor_id?: string
     commision_percentage?: number,
     commision_cap?: number
     commision_fixed_price?: number,

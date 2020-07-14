@@ -130,7 +130,7 @@ export default class BookingService extends BaseService {
     //   }
     // };
 
-    getSalonEmployees = async (salonId: String, dateTime: DateTime) => {
+    getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
         const dateTimeD = new Date(dateTime);
         const busyEmployeesIds = [];
         // @ts-ignore
@@ -153,29 +153,27 @@ export default class BookingService extends BaseService {
         return salon
     };
 
-    getSalonBookings = async (salonId: String) => {
+    getSalonBookings = async (salonId: string) => {
         const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
         return bookings
     }
 
-    getmakeupArtistBookings = async (makeupArtistId:String) => {
+    getmakeupArtistBookings = async (makeupArtistId:string) => {
         const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } }).populate("user_id").exec()
         return bookings            
        
     }
-    getDesignerBookings = async (designerId:String) => {
+    getDesignerBookings = async (designerId:string) => {
             const bookings = await Booking.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
             return bookings
     
     }
-    getPendingSalonBookings = async (salonId:String) => {
+    getPendingSalonBookings = async (salonId:string) => {
             const bookings = await Booking.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
             return bookings
        
     }
-    getPendingmakeupArtistBookings = async (makeupArtistId:String) => {
- 
-          
+    getPendingmakeupArtistBookings = async (makeupArtistId:string) => {
 
             const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
             return bookings
@@ -183,7 +181,7 @@ export default class BookingService extends BaseService {
       
         
     }
-    getPendingDesignerBookings = async (designerId:String) => {
+    getPendingDesignerBookings = async (designerId:string) => {
       
            
 
@@ -193,7 +191,7 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId:String,status:String) => {
+    updateStatusBookings = async (bookingId:string,status:string) => {
 
             const bookings = await Booking.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
             return bookings            
@@ -273,24 +271,24 @@ export default class BookingService extends BaseService {
 
     }
 
-    reschedulebooking = async (id:String,date_time:String) => {
+    reschedulebooking = async (id:string,date_time:string) => {
             const booking = await Booking.findByIdAndUpdate(id, { date_time: date_time,status:"Rescheduled" }, { new: true }).populate("user_id").exec()
             return booking
            
         
     }
-    getAllSalonBookings = async (salonId:String) => {
+    getAllSalonBookings = async (salonId:string) => {
         
         
             const bookings = await Booking.find({ salon_id: salonId }).populate("user_id").exec()
             return bookings
 
     }
-    getAllMuaBookings = async (makeupArtistId:String) => {
+    getAllMuaBookings = async (makeupArtistId:string) => {
             const bookings = await Booking.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
             return bookings
     }
-    getAllDesignerBookings = async (designerId:String) => {
+    getAllDesignerBookings = async (designerId:string) => {
            
             const bookings = await Booking.find({ designer_id: designerId }).populate("user_id").exec()
             return bookings
@@ -319,7 +317,7 @@ export default class BookingService extends BaseService {
           
 
     }
-    getEmployeebookings = async (q,empId:String) => {
+    getEmployeebookings = async (q,empId:string) => {
 
       
         console.log(q)
