@@ -9,39 +9,39 @@ import mongoose from "../database";
 import { EmployeeI } from "../interfaces/employee.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
 
-export default class MakeupArtistController extends BaseController{
+export default class MakeupArtistController extends BaseController {
 
     service: MakeupArtistService
-    constructor(service: MakeupArtistService){
+    constructor(service: MakeupArtistService) {
         super(service)
         this.service = service
     }
 
-    postMua = controllerErrorHandler( async (req: Request, res: Response) => {
-         
-         const ma: MakeupArtistI = req.body
-         
-         //@ts-ignore
-         ma.vendor_id = req.vendorId
+    postMua = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        const ma: MakeupArtistI = req.body
+
+        //@ts-ignore
+        ma.vendor_id = req.vendorId
         const makeupArtist = await this.service.postMua(ma)
-        if (makeupArtist===null) {
+        if (makeupArtist === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
         }
-         res.send(makeupArtist)
+        res.send(makeupArtist)
 
     })
 
-    patchMakeupArtist =controllerErrorHandler( async (req: Request, res: Response) => {
-      
-         //TODO: validator    
+    patchMakeupArtist = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        //TODO: validator    
         //@ts-ignore
         const vendor_id = req.vendorId
         const d = req.body
         const id = req.params.id
-     
+
         if (!id) {
             const errMsg = "MakeupArtist ID not found"
             logger.error(errMsg)
@@ -50,80 +50,80 @@ export default class MakeupArtistController extends BaseController{
             return
 
         }
-        const makeupArtist = await this.service.patchMakeupArtist(id,vendor_id,d)
-        if (makeupArtist===null) {
+        const makeupArtist = await this.service.patchMakeupArtist(id, vendor_id, d)
+        if (makeupArtist === null) {
             const errMsg = `mua not found`;
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
         }
-         res.send(makeupArtist)
+        res.send(makeupArtist)
 
 
     })
-    makeupArtistSettings = controllerErrorHandler( async (req: Request, res: Response) => {
-             //TODO:validator
-            //TODO: Test this function
-            
-                  //@ts-ignore
-            const vendor_id = req.vendorId
-            const updates = Object.keys(req.body)
-            const allowedupates = ["name", "location", "start_working_hours"]
-            const isvalid = updates.every((update) => allowedupates.includes(update))
-            const makeupArtist_id = req.params.id
-                
-            if (!makeupArtist_id) {
-                const errMsg = "MakeupArtist ID not found"
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-           
-            if (!isvalid) {
-                const errMsg = "Error updating MakeupArtist"
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-            const updatedMua = await this.service.makeupArtistSettings(makeupArtist_id,updates,vendor_id)
-            if (updatedMua===null) {
-                const errMsg = `mua not found`;
-                logger.error(errMsg);
-                res.status(400);
-                res.send({ message: errMsg });
-            }
-             res.send(updatedMua)
-    })
-
-    addMakeupArtistService =controllerErrorHandler (async (req: Request, res: Response) => {
+    makeupArtistSettings = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
-        
-        const d: ServiceI = req.body.services
-           const id = req.params.id
-              //@ts-ignore
-              const vendor_id = req.vendorId
-            if (!id) {
-                logger.error(`Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
-                res.status(403)
-                res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
-                return
-            }  
-            const muaService =  await this.service.addMakeupArtistService(id,vendor_id,d)  
-            if (muaService===null) {
-                const errMsg = `mua not found`;
-                logger.error(errMsg);
-                res.status(400);
-                res.send({ message: errMsg });
-            }
-             res.send(muaService)
-         
-        
+        //TODO: Test this function
+
+        //@ts-ignore
+        const vendor_id = req.vendorId
+        const updates = Object.keys(req.body)
+        const allowedupates = ["name", "location", "start_working_hours"]
+        const isvalid = updates.every((update) => allowedupates.includes(update))
+        const makeupArtist_id = req.params.id
+
+        if (!makeupArtist_id) {
+            const errMsg = "MakeupArtist ID not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+
+        if (!isvalid) {
+            const errMsg = "Error updating MakeupArtist"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        const updatedMua = await this.service.makeupArtistSettings(makeupArtist_id, updates, vendor_id)
+        if (updatedMua === null) {
+            const errMsg = `mua not found`;
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+        }
+        res.send(updatedMua)
     })
-    deleteMakeupArtistService =controllerErrorHandler( async (req: Request, res: Response) => {
-       //TODO:validator
-       
+
+    addMakeupArtistService = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:validator
+
+        const d: ServiceI = req.body.services
+        const id = req.params.id
+        //@ts-ignore
+        const vendor_id = req.vendorId
+        if (!id) {
+            logger.error(`Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+            res.status(403)
+            res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+            return
+        }
+        const muaService = await this.service.addMakeupArtistService(id, vendor_id, d)
+        if (muaService === null) {
+            const errMsg = `mua not found`;
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+        }
+        res.send(muaService)
+
+
+    })
+    deleteMakeupArtistService = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:validator
+
         const sid = req.params.sid
         const _id = req.params.id
         if (!_id || !sid) {
@@ -133,8 +133,8 @@ export default class MakeupArtistController extends BaseController{
             return
         }
         //@ts-ignore
-        const vendor_id =req.vendorId
-        const deleteMuaService = await this.service.deleteMakeupArtistService(_id,sid,vendor_id)
+        const vendor_id = req.vendorId
+        const deleteMuaService = await this.service.deleteMakeupArtistService(_id, sid, vendor_id)
 
         if (deleteMuaService === null) {
             const errMsg = `Delete Service: no data with this _id and service was found`
@@ -146,43 +146,43 @@ export default class MakeupArtistController extends BaseController{
         res.send(deleteMuaService)
 
     })
-    getService =controllerErrorHandler( async (req: Request, res: Response) => {
+    getService = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
-            if (!id) {
-                const errMsg = `id is missing from the params`
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-            //@ts-ignore
-            const vendor_id = req.vendorId
+        if (!id) {
+            const errMsg = `id is missing from the params`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        //@ts-ignore
+        const vendor_id = req.vendorId
 
-            const muaService = await this.service.getService(id,vendor_id)
-            if (muaService === null) {
-                const errMsg = `no service found`
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-            res.send(muaService)
-           
+        const muaService = await this.service.getService(id, vendor_id)
+        if (muaService === null) {
+            const errMsg = `no service found`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        res.send(muaService)
+
 
     })
-    addMakeupArtistEmployee =controllerErrorHandler( async (req: Request, res: Response) => {
+    addMakeupArtistEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const d: EmployeeI = req.body
         const _id = req.params.id
-        if(!_id){
+        if (!_id) {
             const errMsg = `Add Emp: no data with this _id and service was found`
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })
             return
         }
-        const muaEmployee = await this.service.addMakeupArtistEmployee(d,_id)
-        if(muaEmployee === null){
+        const muaEmployee = await this.service.addMakeupArtistEmployee(d, _id)
+        if (muaEmployee === null) {
             const errMsg = `Add Emp: no data with this _id and service was found`
             logger.error(errMsg)
             res.status(403)
@@ -192,20 +192,20 @@ export default class MakeupArtistController extends BaseController{
         res.send(muaEmployee)
     })
 
-    deleteMakeupArtistEmployee =controllerErrorHandler( async (req: Request, res: Response) => {
+    deleteMakeupArtistEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:Validator
         const id = req.params.id
         const eid = req.params.eid
-        
-        if(!id || !eid){
+
+        if (!id || !eid) {
             const errMsg = `delete Emp: no data with this _id and service was found`
             logger.error(errMsg)
             res.status(403)
             res.send({ message: errMsg })
             return
         }
-        const deleteMuaEmployee = await this.service.deleteMakeupArtistEmployee(id,eid)
-        if(deleteMuaEmployee === null){
+        const deleteMuaEmployee = await this.service.deleteMakeupArtistEmployee(id, eid)
+        if (deleteMuaEmployee === null) {
             const errMsg = `delete Emp: no data with this _id and service was found`
             logger.error(errMsg)
             res.status(403)
@@ -214,12 +214,12 @@ export default class MakeupArtistController extends BaseController{
         }
         res.send(deleteMuaEmployee)
     })
-    editMuaEmployee = controllerErrorHandler (async (req: Request, res: Response) => {
+    editMuaEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
         const v = req.body
         const mua_id = req.params.id
         const emp_id = req.params.eid
-        const emp = await this.service.editMuaEmployee(emp_id,v)
-        if (emp==null) {
+        const emp = await this.service.editMuaEmployee(emp_id, v)
+        if (emp == null) {
             const errMsg = `Error updating employee`
             logger.error(errMsg)
             res.status(400)
@@ -230,10 +230,10 @@ export default class MakeupArtistController extends BaseController{
 
     })
 
-    updateService =controllerErrorHandler( async (req: Request, res: Response) => {
+    updateService = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
-        const d= req.body
-        
+        const d = req.body
+
         const id = req.params.id
         //id is salon id
         const sid = req.params.sid
@@ -244,33 +244,33 @@ export default class MakeupArtistController extends BaseController{
             res.send({ message: "SID and ID not found" })
         }
 
-       // const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
-       const updates = Object.keys(req.body)
-       const allowedupates = ["name", "price:", "duration","gender","photo",]
-       const isvalid = updates.every((update) => allowedupates.includes(update))
-       if (!isvalid) {
-           const errMsg = "Error updating "
-           logger.error(errMsg)
-           res.status(400)
-           res.send({ message: errMsg })
-           return
-       }
+        // const mua = await Service.findByIdAndUpdate(sid,d,{new:true})
+        const updates = Object.keys(req.body)
+        const allowedupates = ["name", "price:", "duration", "gender", "photo",]
+        const isvalid = updates.every((update) => allowedupates.includes(update))
+        if (!isvalid) {
+            const errMsg = "Error updating "
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
 
-       const mua = await this.service.updateService(id,updates,sid,d)
-       res.send(mua)
+        const mua = await this.service.updateService(id, updates, sid, d)
+        res.send(mua)
 
     })
-    addMakeupArtistEvent =controllerErrorHandler( async (req: Request, res: Response) => {
-            //TODO:Validator
-        const data : EventMakeupArtistI = req.body
-        if(!data.event_id || !data.makeup_artist_id){
+    addMakeupArtistEvent = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:Validator
+        const data: EventMakeupArtistI = req.body
+        if (!data.event_id || !data.makeup_artist_id) {
             logger.error(`not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}`)
             res.status(400)
-            res.send({ message: `not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}`})
+            res.send({ message: `not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}` })
             return
         }
         const addmuaEvent = await this.service.addMakeupArtistEvent(data)
-        if(addmuaEvent === null ){
+        if (addmuaEvent === null) {
             logger.error(`Not able to update event`)
             res.status(400)
             res.send({ message: `Not able to update event` })
@@ -279,17 +279,17 @@ export default class MakeupArtistController extends BaseController{
         res.send(addmuaEvent)
 
     })
-    deleteMakeupArtistEvent =controllerErrorHandler( async (req: Request, res: Response) => {
-      //TODO:Validator
-        const data : EventMakeupArtistI = req.body
-        if(!data.event_id || !data.makeup_artist_id){
+    deleteMakeupArtistEvent = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:Validator
+        const data: EventMakeupArtistI = req.body
+        if (!data.event_id || !data.makeup_artist_id) {
             logger.error(`Not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}`)
             res.status(400)
-            res.send({ message: `not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}`})
+            res.send({ message: `not comeplete data Refer EventMakeupArtistI Interface. event_id: ${data.event_id} & makeup_artist_id: ${data.makeup_artist_id}` })
             return
         }
         const delmuaEvent = await this.service.deleteMakeupArtistEvent(data)
-        if(delmuaEvent==null){
+        if (delmuaEvent == null) {
             logger.error(`IDs do not match`)
             res.status(400)
             res.send({ message: `IDs do not match` })
@@ -298,4 +298,4 @@ export default class MakeupArtistController extends BaseController{
         res.status(200)
         res.send(true)
     })
-    }
+}

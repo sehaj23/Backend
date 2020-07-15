@@ -8,16 +8,16 @@ import moment = require("moment");
 import mongoose from "../database";
 
 
-export default class BookingController extends BaseController{
+export default class BookingController extends BaseController {
 
     service: BookingService
-    constructor(service: BookingService){
+    constructor(service: BookingService) {
         super(service)
         this.service = service
     }
-    
+
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {
-          
+
         if (!req.params.salonId) {
             const errMsg = `Salon Id not found`;
             logger.error(errMsg);
@@ -33,14 +33,14 @@ export default class BookingController extends BaseController{
             return
         }
         const salon = await this.service.getSalonEmployees(req.body.username, req.body.dateTime)
-        if (salon===null) {
+        if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
         }
         res.send(salon);
-    
+
     })
 
     getSalonBookings = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -52,7 +52,7 @@ export default class BookingController extends BaseController{
             return
         }
         const booking = await this.service.getSalonBookings(req.params.id)
-        if (booking===null) {
+        if (booking === null) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
@@ -61,9 +61,9 @@ export default class BookingController extends BaseController{
 
         }
         res.status(200).send(booking)
- 
 
-    
+
+
     })
     getmakeupArtistBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const makeupArtistId = req.params.id
@@ -75,7 +75,7 @@ export default class BookingController extends BaseController{
             return
         }
         const bookings = await this.service.getmakeupArtistBookings(makeupArtistId)
-        if (bookings==null) {
+        if (bookings == null) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
@@ -86,7 +86,7 @@ export default class BookingController extends BaseController{
 
 
     })
-    getDesignerBookings=controllerErrorHandler( async (req: Request, res: Response) => {
+    getDesignerBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const designerId = req.params.id
         if (!designerId) {
             const errMsg = 'Designer Id not found'
@@ -97,7 +97,7 @@ export default class BookingController extends BaseController{
         }
         const bookings = await this.service.getDesignerBookings(designerId)
 
-        if (bookings===null) {
+        if (bookings === null) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
@@ -118,7 +118,7 @@ export default class BookingController extends BaseController{
             return
         }
         const bookings = await this.service.getPendingSalonBookings(salonId)
-        if (bookings==null) {
+        if (bookings == null) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
@@ -127,7 +127,7 @@ export default class BookingController extends BaseController{
         }
         res.send(bookings)
     })
-    getPendingmakeupArtistBookings = controllerErrorHandler(async (req: Request, res: Response) =>{
+    getPendingmakeupArtistBookings = controllerErrorHandler(async (req: Request, res: Response) => {
 
         const makeupArtistId = req.params.id
         if (!makeupArtistId) {
@@ -149,7 +149,7 @@ export default class BookingController extends BaseController{
         res.status(200).send(bookings)
     })
 
-    getPendingDesignerBookings = controllerErrorHandler( async (req: Request, res: Response) => {
+    getPendingDesignerBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const designerId = req.params.id
         if (!designerId) {
             const errMsg = 'Designer Id not found'
@@ -168,12 +168,12 @@ export default class BookingController extends BaseController{
 
         }
         res.status(200).send(bookings)
-    
+
     })
     updateStatusBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingid = req.params.id
         const status = req.body.status
-        
+
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
             logger.error(errMsg)
@@ -189,7 +189,7 @@ export default class BookingController extends BaseController{
             return
 
         }
-        const booking = this.service.updateStatusBookings(bookingid,status)
+        const booking = this.service.updateStatusBookings(bookingid, status)
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
@@ -201,37 +201,37 @@ export default class BookingController extends BaseController{
         res.send(booking)
 
     })
-    assigneEmployeeBookings =controllerErrorHandler( async (req: Request, res: Response) => {
+    assigneEmployeeBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
-            const employeeId = req.body.employee_id
-            const serviceName = req.body.service_name
-            if (!bookingId) {
-                const errMsg = 'Booking  not found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-            if (!employeeId || !serviceName) {
-                const errMsg = 'Employee Id or Service Name not found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
+        const employeeId = req.body.employee_id
+        const serviceName = req.body.service_name
+        if (!bookingId) {
+            const errMsg = 'Booking  not found'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        if (!employeeId || !serviceName) {
+            const errMsg = 'Employee Id or Service Name not found'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
 
-            }
-            const booking = await this.service.assigneEmployeeBookings(bookingId,serviceName,employeeId)
-            if (!booking) {
-                const errMsg = 'No Bookings Found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
-            }
-            res.send(booking)
-            
+        }
+        const booking = await this.service.assigneEmployeeBookings(bookingId, serviceName, employeeId)
+        if (!booking) {
+            const errMsg = 'No Bookings Found'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        res.send(booking)
+
     })
-    getbookings = controllerErrorHandler( async (req: Request, res: Response) => {
+    getbookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
 
         if (!q.makeup_artist_id && !q.designer_id && !q.salon_id) {
@@ -241,18 +241,18 @@ export default class BookingController extends BaseController{
             return
         }
         const bookings = await this.service.getbookings(q)
-        if(!bookings){
+        if (!bookings) {
             const errMsg = 'No Bookings Found'
-                logger.error(errMsg)
-                res.status(400)
-                res.send({ message: errMsg })
-                return
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
 
         }
         res.send(bookings)
 
     })
-    reschedulebooking =controllerErrorHandler( async (req: Request, res: Response) => {
+    reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const date_time = req.body.date_time
 
@@ -273,8 +273,8 @@ export default class BookingController extends BaseController{
             res.send({ message: errMsg })
             return
         }
-        const booking = await this.service.reschedulebooking(id,date_time)
-        if (booking===null) {
+        const booking = await this.service.reschedulebooking(id, date_time)
+        if (booking === null) {
             const errMsg = "unable to update boooking"
             logger.error(errMsg)
             res.status(400)
@@ -285,7 +285,7 @@ export default class BookingController extends BaseController{
         res.status(200).send(booking)
 
     })
-    getAllMuaBookings = controllerErrorHandler( async (req: Request, res: Response) => {
+    getAllMuaBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const makeupArtistId = req.params.id
         if (!makeupArtistId) {
             const errMsg = 'Makeup Artist ID not found'
@@ -295,7 +295,7 @@ export default class BookingController extends BaseController{
             return
         }
         const booking = this.service.getAllMuaBookings(makeupArtistId)
-        if (booking==null) {
+        if (booking == null) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
@@ -325,10 +325,10 @@ export default class BookingController extends BaseController{
         }
 
         res.send(bookings)
-  
+
 
     })
-    getAllDesignerBookings =controllerErrorHandler( async (req: Request, res: Response) => {
+    getAllDesignerBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const designerId = req.params.id
         if (!designerId) {
             const errMsg = 'Designer Id not found'
@@ -339,46 +339,46 @@ export default class BookingController extends BaseController{
         }
         const bookings = this.service.getAllDesignerBookings(designerId)
 
-      
+
         res.status(200).send(bookings)
 
     })
     bookingStatus = async (req: Request, res: Response) => {
-        const status =  ['Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled"]
+        const status = ['Start', 'Done', 'Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed', "Rescheduled Canceled", "Rescheduled"]
         res.send(status)
-   }
-   rescheduleSlots = controllerErrorHandler( async (req: Request, res: Response) => {
-    const id = mongoose.Types.ObjectId(req.params.id) // salon id
-    const date = moment() || moment(req.query.date)
-
-    const slots = await this.service.rescheduleSlots(id,date)
-
-    res.send(slots)
-    if (!slots) {
-        const errMsg = 'No slots Found'
-        logger.error(errMsg)
-        res.status(400)
-        res.send({ message: errMsg })
-        return
-
     }
+    rescheduleSlots = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = mongoose.Types.ObjectId(req.params.id) // salon id
+        const date = moment() || moment(req.query.date)
 
-   })
-   getEmployeebookings = controllerErrorHandler( async (req: Request, res: Response) => {
-    const q = req.query
-    //@ts-ignore
-    const empId = req.empId
-    const bookings = await this.service.getEmployeebookings(q,empId)
+        const slots = await this.service.rescheduleSlots(id, date)
 
-    if(bookings==null){
-        const errMsg = 'No Bookings Found!'
+        res.send(slots)
+        if (!slots) {
+            const errMsg = 'No slots Found'
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })
             return
 
-    }
-    res.send(bookings)
-   })
+        }
+
+    })
+    getEmployeebookings = controllerErrorHandler(async (req: Request, res: Response) => {
+        const q = req.query
+        //@ts-ignore
+        const empId = req.empId
+        const bookings = await this.service.getEmployeebookings(q, empId)
+
+        if (bookings == null) {
+            const errMsg = 'No Bookings Found!'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+        res.send(bookings)
+    })
 
 }
