@@ -52,4 +52,12 @@ export default class BaseService {
         return await this.model.findById(_id).select("photo_ids").populate("photo_ids").exec()
     }
 
+    putProfilePic = async (photoData:PhotoI,_id:string) => {
+        // saving photos 
+        const photo = await Photo.create(photoData)
+        // adding it to event
+        const newEvent = await this.model.findByIdAndUpdate({_id},  { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+        return newEvent 
+}    
+
 }

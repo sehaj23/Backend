@@ -4,9 +4,10 @@ import verifyToken from "../../middleware/jwt";
 import BookinkService from "../../service/booking.service";
 import Booking from "../../models/booking.model"
 import BookingController from "../../controller/booking.controller";
+import Salon from "../../models/salon.model";
 
 const bookingRouter = Router()
-const bookingService = new BookinkService(Booking)
+const bookingService = new BookinkService(Booking,Salon)
 const bookingController = new BookingController(bookingService)
 
 bookingRouter.post("/", verifyToken, bookingController.post)

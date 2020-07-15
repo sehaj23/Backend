@@ -3,7 +3,6 @@ import BookingService from "../service/booking.service";
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import encryptData from "../utils/password-hash";
-import Booking from "../models/booking.model";
 import logger from "../utils/logger";
 import moment = require("moment");
 import mongoose from "../database";

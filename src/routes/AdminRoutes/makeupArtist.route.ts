@@ -1,20 +1,27 @@
 import { Router } from "express";
 import verifyToken from "../../middleware/jwt";
-import MakeupartistServiceC from "../../service/AdminService/makeupartist.service"
+import MakeupartistServiceC from "../../service/makeupartist.service"
+import MakeupArtist from "../../models/makeupArtist.model";
+import Employee from "../../models/employees.model";
+import Vendor from "../../models/vendor.model";
+import Event from "../../models/event.model";
+import MakeupArtistController from "../../controller/makeupArtist.controller";
 
 const makeupArtistRouter = Router()
-const ma = new MakeupartistServiceC()
-makeupArtistRouter.get("/", verifyToken, ma.get)
-makeupArtistRouter.get("/:id", verifyToken, ma.getId)
-makeupArtistRouter.post("/", verifyToken, ma.post)
-makeupArtistRouter.put("/:id", verifyToken, ma.put)
-makeupArtistRouter.post("/event", verifyToken, ma.addMakeupArtistEvent)
-makeupArtistRouter.post("/event/delete", verifyToken, ma.deleteMakeupArtistEvent)
-makeupArtistRouter.put("/:id/service", verifyToken, ma.addMakeupArtistService)
-makeupArtistRouter.put("/:id/service/delete/:sid", verifyToken, ma.deleteMakeupArtistService)
-makeupArtistRouter.put("/:id/employee", verifyToken, ma.addMakeupArtistEmployee)
-makeupArtistRouter.put("/:id/employee/delete/:eid", verifyToken, ma.deleteMakeupArtistEmployee)
-makeupArtistRouter.put("/:id/photo", verifyToken, ma.putPhoto)
-makeupArtistRouter.get("/:id/photo", verifyToken, ma.getPhoto)
+const makeupartistService = new MakeupartistServiceC(MakeupArtist,Employee,Vendor,Event)
+const makeupartistController = new MakeupArtistController(makeupartistService)
+
+makeupArtistRouter.get("/", verifyToken, makeupartistController.get)
+makeupArtistRouter.get("/:id", verifyToken, makeupartistController.getId)
+makeupArtistRouter.post("/", verifyToken, makeupartistController.postMua)
+makeupArtistRouter.put("/:id", verifyToken, makeupartistController.put)
+makeupArtistRouter.post("/event", verifyToken, makeupartistController.addMakeupArtistEvent)
+makeupArtistRouter.post("/event/delete", verifyToken, makeupartistController.deleteMakeupArtistEvent)
+makeupArtistRouter.put("/:id/service", verifyToken, makeupartistController.addMakeupArtistService)
+makeupArtistRouter.put("/:id/service/delete/:sid", verifyToken, makeupartistController.deleteMakeupArtistService)
+makeupArtistRouter.put("/:id/employee", verifyToken, makeupartistController.addMakeupArtistEmployee)
+makeupArtistRouter.put("/:id/employee/delete/:eid", verifyToken, makeupartistController.deleteMakeupArtistEmployee)
+makeupArtistRouter.put("/:id/photo", verifyToken, makeupartistController.putPhoto)
+makeupArtistRouter.get("/:id/photo", verifyToken, makeupartistController.getPhoto)
 
 export default makeupArtistRouter

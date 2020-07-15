@@ -3,10 +3,13 @@ import verifyToken from "../../middleware/jwt";
 import SalonService from "../../service/salon.service";
 import Salon from "../../models/salon.model";
 import SalonController from "../../controller/salon.controller";
+import Employee from "../../models/employees.model";
+import Vendor from "../../models/vendor.model";
+import Event from "../../models/event.model"
 
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon)
+const salonService = new SalonService(Salon,Employee,Vendor,Event)
 const salonController = new SalonController(salonService)
 salonRouter.get("/", verifyToken, salonController.get)
 salonRouter.get("/:id", verifyToken, salonController.getId)

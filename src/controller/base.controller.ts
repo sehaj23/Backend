@@ -1,6 +1,7 @@
 import BaseService from "../service/base.service";
 import { Request, Response } from "express";
 import logger from "../utils/logger";
+import { PhotoI } from "../interfaces/photo.interface";
 export default class BaseController {
 
     service: BaseService
@@ -77,6 +78,19 @@ export default class BaseController {
             res.send(resource)
         } catch (e) {
             res.status(403).send({ message: e.message })
+        }
+    }
+    putProfilePic = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            const _id = req.params.id
+            // saving photos 
+            const newEvent = this.service.putProfilePic(photoData,_id)
+           
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403).send(`${e.message}` )
         }
     }
 

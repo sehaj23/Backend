@@ -4,10 +4,11 @@ import BookinkService from "../../service/booking.service";
 import BookingController from "../../controller/booking.controller";
 import Booking from "../../models/booking.model";
 import EmployeeverifyToken from "../../middleware/Employee.jwt";
+import Salon from "../../models/salon.model";
 
 
 const bookingRouter = Router()
-const bookingService = new BookinkService(Booking)
+const bookingService = new BookinkService(Booking,Salon)
 const bookingController = new BookingController(bookingService)
 
 

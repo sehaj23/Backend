@@ -1,5 +1,4 @@
 import BaseService from "./base.service";
-import Booking from "../models/booking.model";
 import { Request, Response } from "express";
 import { BookingI } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
@@ -7,7 +6,6 @@ import mongoose from "../database";
 
 import { ServiceSI } from "../interfaces/service.interface";
 import Offer from "../models/offer.model";
-import Salon from "../models/salon.model";
 import { SocketRoomType, getVendorRoom } from "./socketio";
 import { io } from '../app';
 import sendNotificationToDevice from "../utils/send-notification";
@@ -16,6 +14,14 @@ import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
 
 export default class BookingService extends BaseService {
+salonModel:mongoose.Model<any,any>
+
+
+    constructor(bookingmodel: mongoose.Model<any, any>,salonModel: mongoose.Model<any, any>){
+        super(bookingmodel);
+        this.salonModel = salonModel
+       
+    }
 
 
     // post = async (req: Request, res: Response) => {
@@ -142,7 +148,7 @@ export default class BookingService extends BaseService {
                 busyEmployeesIds.push(bs.employee_id);
             }
         }
-        const salon = await Salon.findById(salonId).populate("employees").exec();
+        const salon = await this.salonModel.findById(salonId).populate("employees").exec();
         for (const bemp of busyEmployeesIds) {
             //@ts-ignore
             const i = salon.employees.findIndex((e) => e._id === bemp);
@@ -154,28 +160,28 @@ export default class BookingService extends BaseService {
     };
 
     getSalonBookings = async (salonId: string) => {
-        const bookings = await Booking.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
+        const bookings = await this.model.find({ salon_id: salonId, status: { $ne: "Requested" } }).populate("user_id").exec()
         return bookings
     }
 
     getmakeupArtistBookings = async (makeupArtistId:string) => {
-        const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } }).populate("user_id").exec()
+        const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } }).populate("user_id").exec()
         return bookings            
        
     }
     getDesignerBookings = async (designerId:string) => {
-            const bookings = await Booking.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
+            const bookings = await this.model.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
             return bookings
     
     }
     getPendingSalonBookings = async (salonId:string) => {
-            const bookings = await Booking.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
+            const bookings = await this.model.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
             return bookings
        
     }
     getPendingmakeupArtistBookings = async (makeupArtistId:string) => {
 
-            const bookings = await Booking.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
+            const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
             return bookings
            
       
@@ -185,7 +191,7 @@ export default class BookingService extends BaseService {
       
            
 
-            const bookings = await Booking.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
+            const bookings = await this.model.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
             return bookings
        
     }
@@ -193,12 +199,12 @@ export default class BookingService extends BaseService {
 
     updateStatusBookings = async (bookingId:string,status:string) => {
 
-            const bookings = await Booking.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
+            const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
             return bookings            
     }
 
     assigneEmployeeBookings = async (bookingId:String,serviceName:String,employeeId:String) => {
-            const booking = await Booking.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId }, { new: true })
+            const booking = await this.model.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId }, { new: true })
             return booking
 
     }
@@ -259,9 +265,9 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-            const bookingDetailsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
-            const bookingPagesReq = Booking.count(filters)
-            const bookingStatsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
+            const bookingPagesReq = this.model.count(filters)
+            const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
             const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
@@ -272,30 +278,28 @@ export default class BookingService extends BaseService {
     }
 
     reschedulebooking = async (id:string,date_time:string) => {
-            const booking = await Booking.findByIdAndUpdate(id, { date_time: date_time,status:"Rescheduled" }, { new: true }).populate("user_id").exec()
+            const booking = await this.model.findByIdAndUpdate(id, { date_time: date_time,status:"Rescheduled" }, { new: true }).populate("user_id").exec()
             return booking
            
         
     }
     getAllSalonBookings = async (salonId:string) => {
-        
-        
-            const bookings = await Booking.find({ salon_id: salonId }).populate("user_id").exec()
+            const bookings = await this.model.find({ salon_id: salonId }).populate("user_id").exec()
             return bookings
 
     }
     getAllMuaBookings = async (makeupArtistId:string) => {
-            const bookings = await Booking.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
+            const bookings = await this.model.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
             return bookings
     }
     getAllDesignerBookings = async (designerId:string) => {
            
-            const bookings = await Booking.find({ designer_id: designerId }).populate("user_id").exec()
+            const bookings = await this.model.find({ designer_id: designerId }).populate("user_id").exec()
             return bookings
 
     }
     rescheduleSlots = async (id,date) => {  
-            const salon = await Salon.findById(id)
+            const salon = await this.salonModel.findById(id)
             
             const starting_hours = salon.start_working_hours
             var start_time = starting_hours.map(function (val) {
@@ -382,9 +386,9 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
         
-            const bookingDetailsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
-            const bookingPagesReq = Booking.count(filters)
-            const bookingStatsReq = Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
+            const bookingPagesReq = this.model.count(filters)
+            const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
             const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
