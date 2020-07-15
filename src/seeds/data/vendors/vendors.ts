@@ -12,6 +12,7 @@ for (i = 0; i < numberOfDocuments; i += 1) {
     email: faker.internet.email(),
     password: encryptData('abc@123'),
     contact_number: faker.phone.phoneNumber(),
+    blocked: false
   }
   vendors.push(vendor)
 }

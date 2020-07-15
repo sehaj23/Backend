@@ -9,11 +9,13 @@ import CONFIG from '../config'
 
 export default class LoginController extends BaseController {
   jwtKey: string
+  jwtValidity: string
   service: LoginService
-  constructor(service: LoginService, jwtKey: string) {
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
+    this.jwtValidity = jwtValidity
   }
 
   login = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -21,6 +23,7 @@ export default class LoginController extends BaseController {
       const email = req.body.email
       const password = encryptData(req.body.password)
       const user = await this.service.login(email, password)
+      console.log('USER',user)
 
       if (user == null) {
         let count: number = 1
@@ -29,8 +32,8 @@ export default class LoginController extends BaseController {
           count = parseInt(failedCount) + 1
           if (count === 6) {
             const usr = await this.service.getByEmail(email)
-            usr.blocked = true
-            usr.save()
+              usr.blocked = true
+              usr.save()            
           }
         }
         UserRedis.set('Login', count, { email })
@@ -43,7 +46,7 @@ export default class LoginController extends BaseController {
         UserRedis.remove('Login', { email })
         user.password = ''
         const token = await jwt.sign(user.toJSON(), this.jwtKey, {
-          expiresIn: '30 days',
+          expiresIn: this.jwtValidity,
         })
         return res.status(200).send({
           token,

@@ -7,6 +7,7 @@ export interface VendorI{
     password?: string
     contact_number: string
     premium?: boolean
+    blocked ? : boolean
     fcm_token?: string
 }
 export interface VendorSI extends VendorI, mongoose.Document{}

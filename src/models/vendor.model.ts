@@ -46,6 +46,10 @@ const VendorSchema = new mongoose.Schema({
             ref: "salons"
         }]
     },
+    blocked: {
+        type: Boolean,
+        default: false
+    },
     fcm_token: {
         type: String
     }
@@ -53,6 +57,6 @@ const VendorSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Vendor = mongoose.model<VendorSI>("vendor", VendorSchema)
+const Vendor = mongoose.model<VendorSI>("vendors", VendorSchema)
 
 export default Vendor

@@ -9,7 +9,7 @@ import CONFIG from '../../config'
 
 const loginRouter = Router()
 const loginService = new LoginService(User)
-const loginController = new LoginController(loginService, CONFIG.USER_JWT)
+const loginController = new LoginController(loginService, CONFIG.USER_JWT, '30 days')
 
 // @ts-ignore
 loginRouter.post(
