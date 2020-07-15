@@ -23,7 +23,7 @@ export default class serviceService extends BaseService {
       }
       if (!salonName)
         for (let [key, value] of Object.entries(salons))
-          //@ts-ignore
+        //@ts-ignore
           value.services.forEach((x) => data.push(x.name))
       else {
         const salonInfo = await Salon.findOne({ name: salonName })
@@ -53,8 +53,8 @@ export default class serviceService extends BaseService {
       }
       const val1 = price === 'asc' ? -1 : 1
       const val2 = -val1
-      for (let [key, value] of Object.entries(salons)) 
-        //@ts-ignore
+      for (let [key, value] of Object.entries(salons))
+      //@ts-ignore
         value.services.forEach((x) => data.push(x))
       data.sort((a, b) => (a.price < b.price ? val1 : val2))
       res.status(200).send(data)

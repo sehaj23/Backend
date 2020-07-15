@@ -1,8 +1,8 @@
 import BaseController from './base.controller'
-import AdminService from '../service/admin.service'
 import { Request, Response } from 'express'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import DeviceInfoService from '../service/device-info.service'
+import CONFIG from '../config'
 
 export default class DeviceInfoController extends BaseController {
   constructor(service: DeviceInfoService) {
@@ -12,10 +12,16 @@ export default class DeviceInfoController extends BaseController {
 
   saveDeviceInfo = controllerErrorHandler(
     async (req: Request, res: Response) => {
-      const dInfo = await this.service.post(req.body)
-      if (!dInfo)
-        return res.status(500).send({ msg: `Couldn't save Device info` })
-      res.status(201).send(dInfo)
+      try {
+        const dInfo = await this.service.post(req.body)
+        if (!dInfo)
+          return res.status(500).send({ msg: `Couldn't save Device info` })
+        res.status(201).send(dInfo)
+      } catch (e) {
+        res.status(500).send({
+          message: `${CONFIG.RES_ERROR} ${e.message}`,
+        })
+      }
     }
   )
 }
