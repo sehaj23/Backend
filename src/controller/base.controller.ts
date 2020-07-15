@@ -12,7 +12,7 @@ export default class BaseController {
     post =  async (req: Request, res: Response) => {
         try {
             const resource = await this.service.post(req.body)
-            res.send(resource)
+            res.status(201).send(resource)
         } catch (e) {
             res.status(400)
             res.send({ message: `${e.message}` })

@@ -1,25 +1,30 @@
 import { Router } from 'express'
-import LoginService from '../../service/UserService/login.service'
+import LoginService from '../../service/login.service'
 import { loginChecks, signupChecks } from '../../validators/login-validator'
 import mySchemaValidator from '../../middleware/my-schema-validator'
 import { signupLimiter, loginLimiter } from '../../middleware/rate-limit'
-const ls = new LoginService()
+import User from '../../models/user.model'
+import LoginController from '../../controller/login.controller'
+import CONFIG from '../../config'
 
 const loginRouter = Router()
+const loginService = new LoginService(User)
+const loginController = new LoginController(loginService, CONFIG.USER_JWT)
 
 // @ts-ignore
 loginRouter.post(
   '/',
   loginLimiter,
   [loginChecks, mySchemaValidator],
-  ls.verifyUser
+  loginController.login
 )
-// @ts-ignore
+
+//@ts-ignore
 loginRouter.post(
   '/create',
   signupLimiter,
   [signupChecks, mySchemaValidator],
-  ls.createUser
+  loginController.post
 )
 
 export default loginRouter
