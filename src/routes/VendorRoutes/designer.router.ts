@@ -1,14 +1,19 @@
 import { Router } from "express";
 import VendorverifyToken from "../../middleware/VendorJwt";
-import DesignerService from "../../service/VendorService/designer.service";
+import DesignerService from "../../service/designer.service";
+import Designer from "../../models/designers.model";
+import Vendor from "../../models/vendor.model"
+import Event from "../../models/event.model"
+import DesignerController from "../../controller/designer.controller";
 const designerRouter = Router()
-const ds = new DesignerService()
+const designerService = new DesignerService(Designer,Vendor,Event)
+const designerController = new DesignerController(designerService)
 
 
 
-designerRouter.post("/",VendorverifyToken,ds.post)
-designerRouter.patch("/:id",VendorverifyToken,ds.patchDesigner)
-designerRouter.get("/:id",VendorverifyToken,ds.getId)
-designerRouter.put("/settings/:id",VendorverifyToken,ds.designerSettings)
+designerRouter.post("/",VendorverifyToken,designerController.post)
+designerRouter.patch("/:id",VendorverifyToken,designerController.patchDesigner)
+designerRouter.get("/:id",VendorverifyToken,designerController.getId)
+designerRouter.put("/settings/:id",VendorverifyToken,designerController.designerSettings)
 
 export default designerRouter
