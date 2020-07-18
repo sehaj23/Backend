@@ -6,10 +6,11 @@ import SalonController from "../../controller/salon.controller";
 import Employee from "../../models/employees.model";
 import Vendor from "../../models/vendor.model";
 import Event from "../../models/event.model"
+import Offer from "../../models/offer.model";
 
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer)
 const salonController = new SalonController(salonService)
 salonRouter.get("/", verifyToken, salonController.get)
 salonRouter.get("/:id", verifyToken, salonController.getId)
@@ -24,6 +25,7 @@ salonRouter.put("/:id/photo", verifyToken, salonController.putPhoto)
 salonRouter.get("/:id/photo", verifyToken, salonController.getPhoto)
 salonRouter.get("/:id/offer", verifyToken, salonController.getOffer)
 salonRouter.get("/:id/service", verifyToken, salonController.getService)
+salonRouter.post("/:id/offer/:sid",verifyToken,salonController.createOffer)
 
 // designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
 

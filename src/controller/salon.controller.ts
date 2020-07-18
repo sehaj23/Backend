@@ -8,6 +8,7 @@ import ServiceI from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
 import { PhotoI } from "../interfaces/photo.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+import { OfferI } from "../interfaces/offer.interface";
 
 
 export default class SalonController extends BaseController {
@@ -36,8 +37,12 @@ export default class SalonController extends BaseController {
     patchSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         const d = req.body
         const id = req.params.id
+
         //@ts-ignore
         const vendor_id = req.vendorId
+        console.log(vendor_id)
+        console.log(id)
+
 
         const salon = await this.service.patchSalon(id, vendor_id, d)
         if (salon === null) {
@@ -279,6 +284,27 @@ export default class SalonController extends BaseController {
         }
 
         res.send(designerEvent)
+    })
+
+    createOffer =controllerErrorHandler( async (req: Request, res: Response) => {
+        //TODO:validator
+        const id = req.params.id
+        const serviceId = req.params.sid || req.body.service_id
+        if(!serviceId){
+            const errMsg = `Service Id is missing`
+            res.status(400)
+            res.send({errMsg})
+            return
+        }
+        const e: OfferI = req.body
+        const salon = await this.service.createOffer(id,serviceId,e)
+        if(salon==null){
+            logger.error(`Not able to create offer`)
+            res.status(400)
+            res.send({ message: `Unable to create offer` })
+            return
+        }
+
     })
 
 

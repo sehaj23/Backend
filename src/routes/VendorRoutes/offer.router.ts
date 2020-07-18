@@ -1,13 +1,18 @@
 import { Router } from "express";
 import VendorverifyToken from "../../middleware/VendorJwt";
-import offerservices from "../../service/VendorService/offer.service";
+import OfferService from "../../service/offer.service"
+import Offer from "../../models/offer.model";
+import OfferController from "../../controller/offer.controller";
 const offerRouter = Router()
-const es = new offerservices()
 
-//offerRouter.post("/:id",VendorverifyToken,es.createOffer)
-offerRouter.put("/edit/:id",VendorverifyToken,es.updateOffer)
-offerRouter.get("/",VendorverifyToken,es.allOffer)
-offerRouter.patch("/disable/:id",VendorverifyToken,es.disableOffer)
+const offerService = new OfferService(Offer)
+const offerController = new OfferController(offerService)
+
+
+//offerRouter.post("/:id/service/:sid",VendorverifyToken,es.post)
+offerRouter.put("/edit/:id",VendorverifyToken,offerController.updateOffer)
+offerRouter.get("/",VendorverifyToken,offerController.allOffer)
+offerRouter.patch("/disable/:id",VendorverifyToken,offerController.disableOffer)
 
 
 

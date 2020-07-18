@@ -6,10 +6,11 @@ import Employee from "../../models/employees.model";
 import Vendor from "../../models/vendor.model";
 import Event from "../../models/event.model";
 import MakeupArtistController from "../../controller/makeupArtist.controller";
+import Offer from "../../models/offer.model";
 
 const makeupArtistRouter = Router()
 
-const makeupartistService = new MakeupartistServiceC(MakeupArtist,Employee,Vendor,Event)
+const makeupartistService = new MakeupartistServiceC(MakeupArtist,Employee,Vendor,Event,Offer)
 const makeupartistController = new MakeupArtistController(makeupartistService)
 
 
@@ -26,6 +27,7 @@ makeupArtistRouter.delete("/:id/employee/delete/:eid", VendorverifyToken, makeup
 makeupArtistRouter.patch("/:id/employee/update/:eid",VendorverifyToken,makeupartistController.editMuaEmployee)
 makeupArtistRouter.put("/:id/photo", VendorverifyToken, makeupartistController.putPhoto)
 makeupArtistRouter.get("/:id/photo", VendorverifyToken, makeupartistController.getPhoto)
+makeupArtistRouter.post("/:id/offer/:sid",VendorverifyToken,makeupartistController.createOffer)
 
 
 export default makeupArtistRouter

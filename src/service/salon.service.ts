@@ -14,6 +14,7 @@ import { vendorJWTVerification } from "../middleware/VendorJwt"
 import { PhotoI } from "../interfaces/photo.interface";
 import Photo from "../models/photo.model";
 import { Model } from "mongoose";
+import { OfferI } from "../interfaces/offer.interface";
 
 
 
@@ -21,17 +22,19 @@ export default class SalonService extends BaseService {
     employeeModel: mongoose.Model<any, any>
     vendorModel: mongoose.Model<any, any>
     eventModel:mongoose.Model<any,any>
+    offerModel:mongoose.Model<any,any>
 
     // constructor(model: mongoose.Model<any, any>) {
     //     this.model = model
     //     this.modelName = model.modelName
     // }
 
-    constructor( salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>,vendorModel: mongoose.Model<any, any>,eventModel:mongoose.Model<any,any>){
+    constructor( salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>,vendorModel: mongoose.Model<any, any>,eventModel:mongoose.Model<any,any>, offerModel:mongoose.Model<any,any>){
         super(salonmodel);
         this.employeeModel = employeeModel
         this.vendorModel = vendorModel
         this.eventModel=eventModel
+        this.offerModel=offerModel
     }
 
 
@@ -128,7 +131,7 @@ export default class SalonService extends BaseService {
 
   
     getOffer = async (id:string) => {
-            const offers = await Offer.find({salon_id: id})
+            const offers = await this.offerModel.find({salon_id: id})
            return offers
     }
 
@@ -143,6 +146,19 @@ export default class SalonService extends BaseService {
   
        
     }
+    createOffer = async (salon_id:string,serviceId:string,e:any) => {
+       
+            const service = await this.model.findOne({ _id: salon_id, "services._id": serviceId })
+            const uniquecode = (service.name).slice(0, 4).toLocaleUpperCase().concat(e.updated_price.toLocaleString())
+             e.unique_code= uniquecode
+            const offer = await this.offerModel.create(e)
+            const offerId = offer._id
+            const salon = await this.model.findOneAndUpdate({ _id: salon_id, "services._id": serviceId },{$push: { "services.$.offers": offerId }}, { new: true })  
+        
+            return salon
+       
+    }
+
 
    
 }

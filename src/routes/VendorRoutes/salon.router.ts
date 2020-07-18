@@ -6,10 +6,11 @@ import SalonController from "../../controller/salon.controller";
 import Employee from "../../models/employees.model";
 import Vendor from "../../models/vendor.model";
 import Event from "../../models/event.model"
+import Offer from "../../models/offer.model";
 
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer)
 const salonController = new SalonController(salonService)
 //const ss = new SalonService()
 
@@ -27,7 +28,7 @@ salonRouter.patch("/:id/employee/update/:eid",VendorverifyToken,salonController.
 salonRouter.put("/:id/photo", VendorverifyToken, salonController.putPhoto)
 salonRouter.get("/:id/photo", VendorverifyToken, salonController.getPhoto)
 salonRouter.put("/:id/profile-pic", VendorverifyToken, salonController.putProfilePic)
-
+salonRouter.post("/:id/offer/:sid",VendorverifyToken,salonController.createOffer)
 
 
 

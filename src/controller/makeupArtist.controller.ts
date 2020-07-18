@@ -8,6 +8,7 @@ import ServiceI from "../interfaces/service.interface";
 import mongoose from "../database";
 import { EmployeeI } from "../interfaces/employee.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
+import { OfferI } from "../interfaces/offer.interface";
 
 export default class MakeupArtistController extends BaseController {
 
@@ -298,4 +299,26 @@ export default class MakeupArtistController extends BaseController {
         res.status(200)
         res.send(true)
     })
+
+    createOffer =controllerErrorHandler( async (req: Request, res: Response) => {
+        //TODO:validator
+        const id = req.params.id
+        const serviceId = req.params.sid || req.body.service_id
+        if(!serviceId){
+            const errMsg = `Service Id is missing`
+            res.status(400)
+            res.send({errMsg})
+            return
+        }
+        const e: OfferI = req.body
+        const mua= await this.service.createOffer(id,serviceId,e)
+        if(mua==null){
+            logger.error(`Not able to create offer`)
+            res.status(400)
+            res.send({ message: `Unable to create offer` })
+            return
+        }
+
+    })
+
 }
