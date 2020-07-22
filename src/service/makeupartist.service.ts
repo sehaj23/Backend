@@ -20,12 +20,12 @@ export default class MakeupartistService extends BaseService {
     offerModel: mongoose.Model<any, any>
 
 
-    constructor(muamodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>,offerModel: mongoose.Model<any, any>) {
+    constructor(muamodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>) {
         super(muamodel);
         this.employeeModel = employeeModel
         this.vendorModel = vendorModel
         this.eventModel = eventModel
-        this.offerModel=offerModel
+        this.offerModel = offerModel
 
     }
 
@@ -148,18 +148,18 @@ export default class MakeupartistService extends BaseService {
 
     }
 
-    createOffer = async (muaid:string,serviceId:string,e:any) => {
-       
+    createOffer = async (muaid: string, serviceId: string, e: any) => {
+
         const service = await this.model.findOne({ _id: muaid, "services._id": serviceId })
         const uniquecode = (service.name).slice(0, 4).toLocaleUpperCase().concat(e.updated_price.toLocaleString())
-         e.unique_code= uniquecode
+        e.unique_code = uniquecode
         const offer = await this.offerModel.create(e)
         const offerId = offer._id
-        const salon = await this.model.findOneAndUpdate({ _id: muaid, "services._id": serviceId },{$push: { "services.$.offers": offerId }}, { new: true })  
-    
+        const salon = await this.model.findOneAndUpdate({ _id: muaid, "services._id": serviceId }, { $push: { "services.$.offers": offerId } }, { new: true })
+
         return salon
-   
-}
+
+    }
 
 
 }

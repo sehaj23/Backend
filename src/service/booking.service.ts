@@ -14,13 +14,13 @@ import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
 
 export default class BookingService extends BaseService {
-salonModel:mongoose.Model<any,any>
+    salonModel: mongoose.Model<any, any>
 
 
-    constructor(bookingmodel: mongoose.Model<any, any>,salonModel: mongoose.Model<any, any>){
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
         super(bookingmodel);
         this.salonModel = salonModel
-       
+
     }
 
 
@@ -136,6 +136,11 @@ salonModel:mongoose.Model<any,any>
     //   }
     // };
 
+    /**
+     * 
+     * @description This is the service to get the employees fof the salon on given date 
+     */
+
     getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
         const dateTimeD = new Date(dateTime);
         const busyEmployeesIds = [];
@@ -164,48 +169,48 @@ salonModel:mongoose.Model<any,any>
         return bookings
     }
 
-    getmakeupArtistBookings = async (makeupArtistId:string) => {
+    getmakeupArtistBookings = async (makeupArtistId: string) => {
         const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: { $ne: "Requested" } }).populate("user_id").exec()
-        return bookings            
-       
-    }
-    getDesignerBookings = async (designerId:string) => {
-            const bookings = await this.model.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
-            return bookings
-    
-    }
-    getPendingSalonBookings = async (salonId:string) => {
-            const bookings = await this.model.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
-            return bookings
-       
-    }
-    getPendingmakeupArtistBookings = async (makeupArtistId:string) => {
+        return bookings
 
-            const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
-            return bookings
-           
-      
-        
     }
-    getPendingDesignerBookings = async (designerId:string) => {
-      
-           
+    getDesignerBookings = async (designerId: string) => {
+        const bookings = await this.model.find({ designer_id: designerId, status: { $ne: "Requested" } }).populate("user_id").exec()
+        return bookings
 
-            const bookings = await this.model.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
-            return bookings
-       
     }
+    getPendingSalonBookings = async (salonId: string) => {
+        const bookings = await this.model.find({ salon_id: salonId, status: "Requested" }).populate("user_id").exec()
+        return bookings
+
+    }
+    getPendingmakeupArtistBookings = async (makeupArtistId: string) => {
+
+        const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
+        return bookings
 
 
-    updateStatusBookings = async (bookingId:string,status:string) => {
 
-            const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
-            return bookings            
+    }
+    getPendingDesignerBookings = async (designerId: string) => {
+
+
+
+        const bookings = await this.model.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
+        return bookings
+
     }
 
-    assigneEmployeeBookings = async (bookingId:String,serviceName:String,employeeId:String) => {
-            const booking = await this.model.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId }, { new: true })
-            return booking
+
+    updateStatusBookings = async (bookingId: string, status: string) => {
+
+        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
+        return bookings
+    }
+
+    assigneEmployeeBookings = async (bookingId: String, serviceName: String, employeeId: String) => {
+        const booking = await this.model.update({ _id: bookingId, service: { service_name: serviceName } }, { employee_id: employeeId }, { new: true })
+        return booking
 
     }
 
@@ -265,65 +270,65 @@ salonModel:mongoose.Model<any,any>
         }
         console.log(filters);
 
-            const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
-            const bookingPagesReq = this.model.count(filters)
-            const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
+        const bookingPagesReq = this.model.count(filters)
+        const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
-            const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
-            return ({bookingDetails,bookingStats,bookingPages})
+        const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
+        return ({ bookingDetails, bookingStats, bookingPages })
 
-       
 
-    }
-
-    reschedulebooking = async (id:string,date_time:string) => {
-            const booking = await this.model.findByIdAndUpdate(id, { date_time: date_time,status:"Rescheduled" }, { new: true }).populate("user_id").exec()
-            return booking
-           
-        
-    }
-    getAllSalonBookings = async (salonId:string) => {
-            const bookings = await this.model.find({ salon_id: salonId }).populate("user_id").exec()
-            return bookings
 
     }
-    getAllMuaBookings = async (makeupArtistId:string) => {
-            const bookings = await this.model.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
-            return bookings
-    }
-    getAllDesignerBookings = async (designerId:string) => {
-           
-            const bookings = await this.model.find({ designer_id: designerId }).populate("user_id").exec()
-            return bookings
+
+    reschedulebooking = async (id: string, date_time: string) => {
+        const booking = await this.model.findByIdAndUpdate(id, { date_time: date_time, status: "Rescheduled" }, { new: true }).populate("user_id").exec()
+        return booking
+
 
     }
-    rescheduleSlots = async (id,date) => {  
-            const salon = await this.salonModel.findById(id)
-            
-            const starting_hours = salon.start_working_hours
-            var start_time = starting_hours.map(function (val) {
-                return moment(val).format('YYYY-MM-DD hh:mm a');;
-            })
-            console.log(start_time)
-            const end_hours = salon.end_working_hours
-            var end_time = end_hours.map(function (val) {
-                return moment(val).format('YYYY-MM-DD hh:mm a');;
-            })
-            const slots = []
-            var time1 = start_time[date.day()]
-            console.log(date)
-            var time2 = end_time[date.day()]
-            for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
-                slots.push(m.format('hh:mm a'));
-            }
-            return slots
-          
+    getAllSalonBookings = async (salonId: string) => {
+        const bookings = await this.model.find({ salon_id: salonId }).populate("user_id").exec()
+        return bookings
 
     }
-    getEmployeebookings = async (q,empId:string) => {
+    getAllMuaBookings = async (makeupArtistId: string) => {
+        const bookings = await this.model.find({ makeup_artist_id: makeupArtistId }).populate("user_id").exec()
+        return bookings
+    }
+    getAllDesignerBookings = async (designerId: string) => {
 
-      
+        const bookings = await this.model.find({ designer_id: designerId }).populate("user_id").exec()
+        return bookings
+
+    }
+    rescheduleSlots = async (id, date) => {
+        const salon = await this.salonModel.findById(id)
+
+        const starting_hours = salon.start_working_hours
+        var start_time = starting_hours.map(function (val) {
+            return moment(val).format('YYYY-MM-DD hh:mm a');;
+        })
+        console.log(start_time)
+        const end_hours = salon.end_working_hours
+        var end_time = end_hours.map(function (val) {
+            return moment(val).format('YYYY-MM-DD hh:mm a');;
+        })
+        const slots = []
+        var time1 = start_time[date.day()]
+        console.log(date)
+        var time2 = end_time[date.day()]
+        for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
+            slots.push(m.format('hh:mm a'));
+        }
+        return slots
+
+
+    }
+    getEmployeebookings = async (q, empId: string) => {
+
+
         console.log(q)
 
         const pageNumber: number = parseInt(q.page_number || 1)
@@ -363,8 +368,8 @@ salonModel:mongoose.Model<any,any>
                     filters["date_time"] = {
                         "$gte": dateFilter["start_date"],
                         "$lt": dateFilter["end_date"]
-                    }                   
-                     break
+                    }
+                    break
                 case "page_number":
                 case "page_length":
 
@@ -385,19 +390,19 @@ salonModel:mongoose.Model<any,any>
             "$in": empId
         }
         console.log(filters);
-        
-            const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
-            const bookingPagesReq = this.model.count(filters)
-            const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
+        const bookingPagesReq = this.model.count(filters)
+        const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
-            const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
-           return({ bookingDetails, bookingStats, bookingPages })
-           
+        const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
+        return ({ bookingDetails, bookingStats, bookingPages })
 
-   
+
+
 
     }
-    
+
 
 }
