@@ -9,6 +9,7 @@ import { EmployeeI } from "../interfaces/employee.interface";
 import { PhotoI } from "../interfaces/photo.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { OfferI } from "../interfaces/offer.interface";
+import { SalonRedis } from "../redis/index.redis";
 
 
 export default class SalonController extends BaseController {
@@ -286,19 +287,19 @@ export default class SalonController extends BaseController {
         res.send(designerEvent)
     })
 
-    createOffer =controllerErrorHandler( async (req: Request, res: Response) => {
+    createOffer = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const id = req.params.id
         const serviceId = req.params.sid || req.body.service_id
-        if(!serviceId){
+        if (!serviceId) {
             const errMsg = `Service Id is missing`
             res.status(400)
-            res.send({errMsg})
+            res.send({ errMsg })
             return
         }
         const e: OfferI = req.body
-        const salon = await this.service.createOffer(id,serviceId,e)
-        if(salon==null){
+        const salon = await this.service.createOffer(id, serviceId, e)
+        if (salon == null) {
             logger.error(`Not able to create offer`)
             res.status(400)
             res.send({ message: `Unable to create offer` })
@@ -307,5 +308,83 @@ export default class SalonController extends BaseController {
 
     })
 
+    getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:validator
+        const salonId = req.params.id;
+        const sr: string = await SalonRedis.get(salonId)
+        if (sr !== null) return res.send(JSON.parse(sr))
+        const salon = await this.service.getSalonInfo(salonId)
+        SalonRedis.set(salonId, salon)
+        res.status(200).send(salon)
+    })
+
+    getSalonNames = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:validator
+        const data = new Array()
+        let salons
+        const sr = await SalonRedis.get('Salons')
+        if (sr !== null) { salons = JSON.parse(sr) }
+        else {
+            salons = await this.service.getSalonNames(data)
+            SalonRedis.set('Salons', salons)
+        }
+
+        res.send(salons)
+
+    })
+    getSalonsRw = controllerErrorHandler(async (req: Request, res: Response) => {
+        const rating = req.query.rating
+        if (rating !== 'asc' && rating !== 'dsc')
+            return res.status(400).send({ message: 'Send valid sorting order' })
+        const data = new Array()
+        let salons
+        const sr = await SalonRedis.get('Salons')
+        if (sr !== null) salons = JSON.parse(sr)
+        else {
+            salons = await this.service.getSalonsRw(rating, data)
+            SalonRedis.set('Salons', salons)
+        }
+        res.status(200).send(salons)
+
+    })
+
+    getSearchResult = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:Validato
+        const phrase = req.query.phrase
+        if (!phrase)
+            return res.status(400).send({ message: 'Provide search phrase' })
+        const salon = await this.service.getSearchResult(phrase)
+        res.send(salon)
+    })
+    getSalonNearby = controllerErrorHandler(async (req: Request, res: Response) => {
+        var centerPoint = {}
+        //TODO: store location of User
+        //@ts-ignore
+        centerPoint.lat = req.query.latitude
+        //@ts-ignore
+        centerPoint.lng = req.query.longitude
+        const km = req.query.km || 2
+        let salon
+        const sr = await SalonRedis.get('Salons')
+        if (sr !== null) salon = JSON.parse(sr)
+        else {
+            salon = await this.service.getSalonNearby(centerPoint, km)
+            SalonRedis.set('Salons', salon)
+        }
+        res.send(salon)
+    })
+
+    getSalonDistance = controllerErrorHandler(async (req: Request, res: Response) => {
+        var centerPoint = {}
+        //TODO: store location of User
+        //@ts-ignore
+        centerPoint.lat = req.query.latitude
+        //@ts-ignore
+        centerPoint.lng = req.query.longitude
+        const km = req.query.km || 2
+        const salonLocation = await this.service.getSalonDistance(centerPoint, km)
+        res.send(salonLocation)
+
+    })
 
 }
