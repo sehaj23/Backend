@@ -10,6 +10,7 @@ import { PhotoI } from "../interfaces/photo.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { OfferI } from "../interfaces/offer.interface";
 import { SalonRedis } from "../redis/index.redis";
+import { keys } from "../seeds/data/admin/admins";
 
 
 export default class SalonController extends BaseController {
@@ -55,12 +56,22 @@ export default class SalonController extends BaseController {
         res.send(salon)
     })
     salonSettings = controllerErrorHandler(async (req: Request, res: Response) => {
+        
         const salon_id = req.params.id
         //@ts-ignore
         const vendor_id = req.vendorId
         const updates = Object.keys(req.body)
-
-        const salon = await this.service.salonSettings(salon_id, updates, vendor_id)
+        const d = req.body
+        const allowedupates = ["name", "location", "start_working_hours", "insta_link", "fb_link", "end_working_hours"]
+        const isvalid = updates.every((update) => allowedupates.includes(update))
+        console.log(isvalid)
+        if (!isvalid) {
+                const errMsg = `Sorry ${updates} cannot be updated!`
+                logger.error(errMsg)
+                res.send({message:errMsg})
+                return
+        }
+        const salon = await this.service.patchSalon(salon_id,vendor_id,d)
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
@@ -149,7 +160,6 @@ export default class SalonController extends BaseController {
             res.status(403)
             res.send({ message: "SID and ID not found" })
         }
-        const key = Object.keys(d)
         const updates = Object.keys(req.body)
         const allowedupates = ["name", "price:", "duration", "gender", "photo",]
         const isvalid = updates.every((update) => allowedupates.includes(update))
@@ -169,7 +179,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(salon)
+        res.send({message:"Service updated!"})
     })
     addSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
         const d: EmployeeI = req.body
@@ -199,6 +209,7 @@ export default class SalonController extends BaseController {
         const eid = req.params.eid
         //@ts-ignore
         const vendor_id = req.vendorId
+    
         //:TODO:validator
         if (!_id || !eid) {
             const errMsg = `delete Emp: no data with this _id and service was found`

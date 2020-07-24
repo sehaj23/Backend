@@ -50,54 +50,29 @@ export default class SalonService extends BaseService {
         patchSalon = async (id: string, vendor_id: string, d) => {
                 const salon = await this.model.findOneAndUpdate({ _id: id, vendor_id: vendor_id }, d, { new: true })
                 return salon
-
         }
 
-        salonSettings = async (salon_id: string, updates: Array<string>, vendor_id: string) => {
-                //TODO: Validate these in Validator.
-                //TODO: Test this function
+        addSalonService = async (_id: string, vendor_id: string, d) => {
 
-                const allowedupates = ["name", "location", "start_working_hours", "insta_link", "fb_link", "end_working_hours"]
-                const isvalid = updates.every((update) => allowedupates.includes(update))
-                if (!isvalid) {
-                        const errMsg = "Error updating Salon"
-                        logger.error(errMsg)
-                        return
-                }
-                const salon = await this.model.findOne({ _id: salon_id, vendor_id: vendor_id })
-                updates.forEach((update) => {
-                        salon[update] = updates[update]
-                })
-                const updatedSalon = await salon.save()
-                return updatedSalon
-
-
-        }
-        addSalonService = async (salon_id: string, vendor_id: string, d) => {
-
-                const _id = mongoose.Types.ObjectId(salon_id)
                 const newSalon = await this.model.findOneAndUpdate({ _id, vendor_id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
                 return newSalon
 
         }
         deleteSalonService = async (_id: string, sid: string, vendor_id) => {
-                const osid = mongoose.Types.ObjectId(sid)
-                const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendor_id }, { $pull: { services: { _id: osid } } }, { new: true })
+               
+                const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendor_id }, { $pull: { services: { _id: sid } } }, { new: true })
                 return salon
 
         }
         getService = async (id: string) => {
-
-                const salonId = mongoose.Types.ObjectId(id)
-                const salon = await this.model.find({ _id: salonId }).select("services")
-
-
-
+                
+                const salon = await this.model.find({ _id: id }).select("services")
+                return salon
         }
         updateService = async (salonId: string, d, sid: string) => {
-                const id = mongoose.Types.ObjectId(salonId)
+                
                 d._id = sid
-                const salon = await this.model.update({ _id: id, "services._id": sid }, { "services.$": d }, { new: true })
+                const salon = await this.model.update({ _id: salonId, "services._id": sid }, { "services.$": d }, { new: true })
                 return salon
 
         }
@@ -115,10 +90,14 @@ export default class SalonService extends BaseService {
         }
 
         deleteSalonEmployee = async (_id: string, eid: string, vendorId: string) => {
-
+                
                 const emp = await this.employeeModel.findByIdAndDelete(eid)
+               // console.log(emp)
                 //@ts-ignore
-                const newSalon = await Salon.findOneAndUpdate({ _id, vendor_id: vendorId, employees: { $in: [eid] } }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec()
+                const newSalon = await Salon.findOneAndUpdate({ _id:_id, vendor_id: vendorId }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec()
+              //  const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { services: { _id: sid } } }, { new: true })
+               
+                return emp
 
 
         }
@@ -160,10 +139,8 @@ export default class SalonService extends BaseService {
 
         }
         getSalonInfo = async (salonId: string) => {
-
                 const salon = await this.model.findById(salonId)
                 return salon
-
 
         }
 
@@ -205,9 +182,6 @@ export default class SalonService extends BaseService {
 
         //get Salons nearby
         getSalonNearby = async (centerPoint: any, km: string) => {
-
-
-
                 var checkPoint = {}
                 var salonLocation = new Array()
 

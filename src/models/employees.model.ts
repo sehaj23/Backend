@@ -7,7 +7,7 @@ const EmployeeSchema = new mongoose.Schema({
     services: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "services"
+            
         }]
     },
     photo: {

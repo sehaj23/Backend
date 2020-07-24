@@ -43,7 +43,7 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
           res.status(401).send({ success: false, message: 'Something went wrong' });
           return
         }
-        console.log(decoded)
+      
         // @ts-ignore
         req.vendorId = decoded._id;
           // @ts-ignore
