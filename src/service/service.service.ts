@@ -8,4 +8,6 @@ export default class ServiceService extends BaseService {
   getByName = async (name: string) => {
     return this.model.findOne({ name })
   }
+
+  
 }
