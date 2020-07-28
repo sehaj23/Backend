@@ -24,10 +24,10 @@ export default class DesignerService extends BaseService {
                 this.eventModel = eventModel
 
         }
-        postDesigner = async (d: DesignersI, vendor_id) => {
-                d.vendor_id = vendor_id
+        postDesigner = async (d: DesignersI) => {
+             
                 const designer = await this.model.create(d)
-                await this.vendorModel.findOneAndUpdate({ _id: vendor_id }, { $push: { designers: designer._id } })
+                await this.vendorModel.findOneAndUpdate({ _id: d.vendor_id }, { $push: { designers: designer._id } })
                 return designer
 
         }
@@ -43,7 +43,7 @@ export default class DesignerService extends BaseService {
 
                 const newDesignerReq = this.model.findOneAndUpdate({ _id: designerId, events: { $nin: [eventid] } }, { $push: { events: eventid } }, { new: true })
                 const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
-                return { designerEvent, newDesigner }
+                return { designerEvent}
 
         }
 
@@ -64,23 +64,11 @@ export default class DesignerService extends BaseService {
 
         }
 
-        designerSettings = async (designer_id: string, updates: Array<String>, vendor_id: String) => {
-
-
-                const designer = await this.model.findOne({ _id: designer_id, vendor_id: vendor_id })
-                updates.forEach((update) => {
-
-                        designer[update] = updates[update]
-
-                })
-                const updateddesigner = await designer.save()
+        designerSettings = async (designer_id: string, update: Array<String>, vendor_id: String) => {
+                const designer = await this.model.findOneAndUpdate({ _id: designer_id, vendor_id: vendor_id },update,{new:true})
+                
                 //const updatedesigner = await Designer.update({_id:designer_id},{$set:updates},{new:true})
-                return updateddesigner
-
-
-
-
-
+                return designer
 
         }
 

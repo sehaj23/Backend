@@ -21,9 +21,10 @@ export default class MakeupArtistController extends BaseController {
     postMua = controllerErrorHandler(async (req: Request, res: Response) => {
 
         const ma: MakeupArtistI = req.body
-
+        if(ma.vendor_id===null){
         //@ts-ignore
         ma.vendor_id = req.vendorId
+        }
         const makeupArtist = await this.service.postMua(ma)
         if (makeupArtist === null) {
             const errMsg = `salon not found`;
@@ -71,6 +72,7 @@ export default class MakeupArtistController extends BaseController {
         const updates = Object.keys(req.body)
         const allowedupates = ["name", "location", "start_working_hours"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
+        const update = req.body
         const makeupArtist_id = req.params.id
 
         if (!makeupArtist_id) {
@@ -88,7 +90,7 @@ export default class MakeupArtistController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const updatedMua = await this.service.makeupArtistSettings(makeupArtist_id, updates, vendor_id)
+        const updatedMua = await this.service.makeupArtistSettings(makeupArtist_id, update, vendor_id)
         if (updatedMua === null) {
             const errMsg = `mua not found`;
             logger.error(errMsg);

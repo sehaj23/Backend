@@ -1,7 +1,7 @@
 import { Router } from "express";
-// import LoginService from "../../service/VendorService/login.service";
+
 import VendorverifyToken from "../../middleware/VendorJwt";
-import VendorService from "../../service/AdminService/vendor.service";
+import VendorService from "../../service/vendor.service";
 import CONFIG from '../../config'
 import Vendor from '../../models/vendor.model'
 import LoginController from '../../controller/login.controller'

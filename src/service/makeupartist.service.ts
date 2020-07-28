@@ -50,18 +50,14 @@ export default class MakeupartistService extends BaseService {
         return makeupartist
 
     }
-    makeupArtistSettings = async (makeupArtist_id: string, updates: Array<string>, vendor_id: string) => {
+    makeupArtistSettings = async (makeupArtist_id: string, update: Array<string>, vendor_id: string) => {
 
 
-        const mua = await this.model.findOne({ _id: makeupArtist_id, vendor_id: vendor_id })
-        updates.forEach((update) => {
-
-            mua[update] = updates[update]
-
-        })
-        const updatedmua = await mua.save()
+        const mua = await this.model.findOneAndUpdate({ _id: makeupArtist_id, vendor_id: vendor_id },update,{new:true})
+        
+      
         //const updatedmua = await MakeupArtist.update({_id:makeupArtist_id},{$set:updates},{new:true})
-        return updatedmua
+        return mua
 
 
     }

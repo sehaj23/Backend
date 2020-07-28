@@ -55,7 +55,7 @@ describe('Salon service test', () => {
         vendorId = res2.body._id
 
         done()
-    })
+    },TIME)
     beforeAll(async (done) => {
         const login = {
             password: "sehaj23",
@@ -67,7 +67,7 @@ describe('Salon service test', () => {
         token = (res2.body.token)
         done()
     
-    })
+    },TIME)
 
 
     test('add salon ', async done => {
@@ -80,9 +80,9 @@ describe('Salon service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
-    })
+    },TIME)
 
 
 
@@ -93,7 +93,7 @@ describe('Salon service test', () => {
         }
         console.log(salonid)
 
-        const res = await request(app).put("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
+        const res = await request(app).patch("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
 
         expect(res.body.name).toEqual(salon.name)
 
@@ -101,7 +101,7 @@ describe('Salon service test', () => {
         expect(res.status).toEqual(200)
         done()
 
-    })
+    },TIME)
     test('Salon settings test', async done => {
 
         const service={
@@ -126,7 +126,7 @@ describe('Salon service test', () => {
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
-    })
+    },TIME)
 
     test('Salon settings test', async done => {
         
@@ -136,8 +136,12 @@ describe('Salon service test', () => {
         done()
 
 
-    })
+    },TIME)
 
+    afterAll(async (done) => {
+        await db.disconnect();
+        done();
+      },TIME);
 
 
 

@@ -14,27 +14,7 @@ beforeAll(async (done) => {
     done()
 }, TIME)
 
-const getDesigner:()=> DesignersI=() => {
-    const email = faker.internet.email()
-    const date = new Date()
-    const dataToSend: DesignersI = {
-        "brand_name": "hello",
-        "contact_number": "1234567890",
-        "description": "desc",
-        "designer_name": "sehaj",
-        "email": email,
-        "end_price": 230000,
-        "start_price": 100001,
-        "start_working_hours": [date, null, null, null],
-        "end_working_hours": [date, null, null, null],
-        "location": "Noida",
-        "speciality": ["DM"],
-        "outfit_types": ["Good outfits"],
-        "store_type":"Retail shop",
-        "vendor_id": ""
-    }
-    return dataToSend
-}
+
 
 describe('Designer service test', () => {
 
@@ -54,6 +34,7 @@ describe('Designer service test', () => {
        
         const res = await request(app).post("/api/v/login/create").send(v)
         expect(res.body._id).toBeDefined()
+        vendorId=res.body._id
        
       
        
@@ -73,18 +54,40 @@ describe('Designer service test', () => {
         done()
     
     })
+    const getDesigner:()=> DesignersI=() => {
+        const email = faker.internet.email()
+        const date = new Date()
+        const dataToSend: DesignersI = {
+            "brand_name": "hello",
+            "contact_number": "1234567890",
+            "description": "desc",
+            "designer_name": "sehaj",
+            "email": email,
+            "end_price": 230000,
+            "start_price": 100001,
+            "start_working_hours": [date, null, null, null],
+            "end_working_hours": [date, null, null, null],
+            "location": "Noida",
+            "speciality": ["DM"],
+            "outfit_types": ["Good outfits"],
+            "store_type":"Retail shop",
+            "vendor_id": vendorId
+        }
+        return dataToSend
+    }
 
     test('Designers Post', async done => {
-        console.log(token)
+       
         const dataToSend = getDesigner()      
         const res = await request(app).post("/api/v/designer").set('authorization',"Bearer "+token).send(dataToSend)
+   
         expect(res.body._id).toBeDefined()
         DesignerId = res.body._id
         expect(res.body.brand_name).toEqual(dataToSend.brand_name)
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
     }, TIME)
 
@@ -93,11 +96,8 @@ describe('Designer service test', () => {
             designer_name: "hello12345",
             location: "OZARK"
         }
-
         const res = await request(app).put("/api/v/designer/settings/" + DesignerId).set('authorization',"Bearer "+token).send(designer)
-
         expect(res.body.designer_name).toEqual(designer.designer_name)
-
         expect(res.body.location).toEqual(designer.location)
         expect(res.status).toEqual(200)
         done()

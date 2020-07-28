@@ -8,7 +8,7 @@ const offerRouter = Router()
 const offerService = new OfferService(Offer)
 const offerController = new OfferController(offerService)
 
-
+offerRouter.post("/", VendorverifyToken, offerController.post)
 //offerRouter.post("/:id/service/:sid",VendorverifyToken,es.post)
 offerRouter.put("/edit/:id",VendorverifyToken,offerController.updateOffer)
 offerRouter.get("/",VendorverifyToken,offerController.allOffer)

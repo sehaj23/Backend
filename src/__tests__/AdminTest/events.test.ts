@@ -39,7 +39,7 @@ describe('Events service test', () => {
         expect(res.body.start_date_time).toBeDefined()
         expect(res.body.description).toEqual(e.description)
         expect(res.body.approved).toEqual(true)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         eventId = res.body._id
         done()
     })
@@ -52,7 +52,7 @@ describe('Events service test', () => {
         expect(res.body.start_date_time).toBeDefined()
         expect(res.body.description).toEqual(e.description)
         expect(res.body.approved).toEqual(true)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         eventId = res.body._id
         done()
     })
@@ -79,6 +79,7 @@ describe('Events service test', () => {
     test('Event Put Photo', async done => {
         const res = await request(app).put(`/api/event/${eventId}/photo`).send(photo)
         // this is same
+        console.log(res.body)
         expect(res.status).toEqual(200)
         expect(res.body._id).toBeDefined()
         expect(res.body.name).toEqual(e.name)

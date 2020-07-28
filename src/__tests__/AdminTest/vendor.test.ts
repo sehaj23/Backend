@@ -21,8 +21,7 @@ describe('Vendor service test', () => {
         expect(res.body.name).toEqual(v.name)
         expect(res.body.contact_number).toEqual(v.contact_number)
         expect(res.body.email).toEqual(v.email)
-        expect(res.body.password).not.toEqual(v.password)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
     })
 
@@ -31,7 +30,7 @@ describe('Vendor service test', () => {
             name: "Preet",
         }
         const res = await request(app).post("/api/vendor").send(v)
-        expect(res.status).toEqual(403)
+        expect(res.status).toEqual(400)
         done()
     })
 

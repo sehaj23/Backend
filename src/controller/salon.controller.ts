@@ -25,6 +25,11 @@ export default class SalonController extends BaseController {
         const d: SalonI = req.body
         //@ts-ignore
         d.vendor_id = req.vendorId
+        
+        console.log("***********")
+        //@ts-ignore
+        console.log(req.vendorId)
+
         //@ts-ignore
         const salon = await this.service.postSalon(req.vendorId, d)
         if (salon === null) {
@@ -33,7 +38,7 @@ export default class SalonController extends BaseController {
             res.status(400);
             res.send({ message: errMsg });
         }
-        res.send(salon)
+        res.status(201).send(salon)
 
     })
     patchSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -281,7 +286,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(offers)
+        res.status(200).send(offers)
     })
 
     addSalonEvent = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -295,7 +300,7 @@ export default class SalonController extends BaseController {
             return
         }
 
-        res.send(designerEvent)
+        res.status(201).send(designerEvent)
     })
 
     createOffer = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -316,6 +321,7 @@ export default class SalonController extends BaseController {
             res.send({ message: `Unable to create offer` })
             return
         }
+        res.status(201).send(salon)
 
     })
 
@@ -340,7 +346,7 @@ export default class SalonController extends BaseController {
             SalonRedis.set('Salons', salons)
         }
 
-        res.send(salons)
+        res.status(200).send(salons)
 
     })
     getSalonsRw = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -365,7 +371,7 @@ export default class SalonController extends BaseController {
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
         const salon = await this.service.getSearchResult(phrase)
-        res.send(salon)
+        res.status(200).send(salon)
     })
     getSalonNearby = controllerErrorHandler(async (req: Request, res: Response) => {
         var centerPoint = {}
@@ -382,7 +388,7 @@ export default class SalonController extends BaseController {
             salon = await this.service.getSalonNearby(centerPoint, km)
             SalonRedis.set('Salons', salon)
         }
-        res.send(salon)
+        res.status(200).send(salon)
     })
 
     getSalonDistance = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -394,7 +400,7 @@ export default class SalonController extends BaseController {
         centerPoint.lng = req.query.longitude
         const km = req.query.km || 2
         const salonLocation = await this.service.getSalonDistance(centerPoint, km)
-        res.send(salonLocation)
+        res.status(200).send(salonLocation)
 
     })
 

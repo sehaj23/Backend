@@ -5,7 +5,6 @@ import * as faker from "faker"
 import { BookingI } from "../../interfaces/booking.interface"
 import ServiceSI from "../../interfaces/service.interface"
 import User from "../../models/user.model"
-import Services from "../../models/service.model"
 import user from "../../interfaces/user.interface"
 import { MakeupArtistI } from "../../interfaces/makeupArtist.interface";
 import { VendorI } from "../../interfaces/vendor.interface";
@@ -65,16 +64,9 @@ describe('Bookings service test', () => {
         const Useres = await User.create(us)
         userid = Useres._id
 
-        const s: ServiceSI = {
-            name: "sehaj",
-            price: 200,
-            duration: 15,
-            gender:"men"
-
-
-        }
-        const Serviceres = await Services.create(s)
-        serviceid = Serviceres._id
+       
+        
+       
 
         const email = faker.internet.email()
         const date = new Date()
@@ -90,10 +82,19 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "Chicago",
             "speciality": ["DM"],
-            "vendor_id": ""
+            "vendor_id": "",
+            "services":[
+                {
+                    name: "sehaj",
+                    price: 200,
+                    duration: 15,
+                    gender:"men"
+                }
+            ]
         }
         const salonres = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
         salonid = salonres.body._id
+        serviceid = salonres.body.services[0]._id
         console.log("salone id", salonid)
         console.log("userid", userid)
         console.log("service", serviceid)

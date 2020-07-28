@@ -5,7 +5,7 @@ import * as faker from "faker"
 import { BookingI } from "../../interfaces/booking.interface"
 import ServiceSI from "../../interfaces/service.interface"
 import User from "../../models/user.model"
-import Services from "../../models/service.model"
+
 import user from "../../interfaces/user.interface"
 import { MakeupArtistI } from "../../interfaces/makeupArtist.interface";
 import { VendorI } from "../../interfaces/vendor.interface";
@@ -24,7 +24,7 @@ beforeAll(async (done) => {
 
 describe('Bookings service test', () => {
     let vendorId
-    let serviceid
+    let serviceId
     let userid
     let salonid
     let bookingid
@@ -49,6 +49,7 @@ describe('Bookings service test', () => {
         const res2 = await request(app).post("/api/v/login/").send(login)
         expect(res2.body.token).toBeDefined()
         token = (res2.body.token)
+        console.log(token)
         
     
     
@@ -65,16 +66,7 @@ describe('Bookings service test', () => {
         const Useres = await User.create(us)
         userid = Useres._id
 
-        const s: ServiceSI = {
-            name: "sehaj",
-            price: 200,
-            duration: 15,
-            gender:"men"
-
-
-        }
-        const Serviceres = await Services.create(s)
-        serviceid = Serviceres._id
+     
 
         const email = faker.internet.email()
         const date = new Date()
@@ -90,13 +82,20 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "Chicago",
             "speciality": ["DM"],
-            "vendor_id": ""
+            "vendor_id": vendorId,
+            "services":[{
+                name: "sehaj",
+                price: 200,
+                duration: 15,
+                gender:"men"
+            }]
         }
         const salonres = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
         salonid = salonres.body._id
+        serviceId = salonres.body.services[0]._id
         console.log("salone id", salonid)
         console.log("userid", userid)
-        console.log("service", serviceid)
+        console.log("service", serviceId)
         done()
     })
 
@@ -118,6 +117,7 @@ describe('Bookings service test', () => {
             "location": "delhi",
             "speciality": ["Design"],
             "vendor_id": "",
+
         };
         return dataToSend
     }
@@ -154,7 +154,7 @@ describe('Bookings service test', () => {
             "location": "Noida",
             "speciality": ["DM"],
             "outfit_types": ["Good outfits"],
-            "vendor_id": "",
+            "vendor_id": vendorId,
             "store_type":"Retail shop"
         }
         return dataToSend
@@ -168,7 +168,7 @@ describe('Bookings service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
     }, TIME)
 
@@ -186,7 +186,7 @@ describe('Bookings service test', () => {
                 "zattire_commission": 400,
                 "vendor_commission": 100,
                 "service_time": date,
-                "service_id": serviceid,
+                "service_id": serviceId,
             }],
             "price": 200,
             "balance": 500,
@@ -195,12 +195,12 @@ describe('Bookings service test', () => {
             "payment_type": "COD"
 
         }
-        const book = await request(app).post("/api/v/bookings").send(b)
+        const book = await request(app).post("/api/v/bookings").set('authorization',"Bearer "+token).send(b)
         expect(book.body._id).toBeDefined()
         bookingid = book.body._id
         expect(book.body.price).toEqual(b.price)
         expect(book.body.balance).toEqual(b.balance)
-        expect(book.status).toEqual(200)
+        expect(book.status).toEqual(201)
         console.log(book.body)
 
         done()
@@ -208,7 +208,7 @@ describe('Bookings service test', () => {
 
 
     test("get booking by ID",async done=>{
-        const book = await request(app).get("/api/v/bookings/"+bookingid)
+        const book = await request(app).get("/api/v/bookings/"+bookingid).set('authorization',"Bearer "+token)
         expect(book.body._id).toEqual(bookingid)
         expect(book.status).toEqual(200)
         done()
@@ -216,14 +216,14 @@ describe('Bookings service test', () => {
     })
 
     test("get all bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings")
+        const book = await request(app).get("/api/v/bookings/").set('authorization',"Bearer "+token)
         console.log(book.body)
         expect(book.status).toEqual(200)
         done()
     })
 
     test("get salon bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/salon/"+salonid)
+        const book = await request(app).get("/api/v/bookings/salon/"+salonid).set('authorization',"Bearer "+token)
         console.log(book.body)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
@@ -231,14 +231,14 @@ describe('Bookings service test', () => {
 
     })
     test("get makeupArtist bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/makeupArtist/"+muaid)
+        const book = await request(app).get("/api/v/bookings/makeupArtist/"+muaid).set('authorization',"Bearer "+token)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
         done()
 
     })
     test("get designer bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/designer/"+designerid)
+        const book = await request(app).get("/api/v/bookings/designer/"+designerid).set('authorization',"Bearer "+token)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
         done()
@@ -246,21 +246,21 @@ describe('Bookings service test', () => {
     })
 
     test("get pending designer bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/pending/designer/"+designerid)
+        const book = await request(app).get("/api/v/bookings/pending/designer/"+designerid).set('authorization',"Bearer "+token)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
         done()
 
     })
     test("get pending mua bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/pending/makeupArtist/"+muaid)
+        const book = await request(app).get("/api/v/bookings/pending/makeupArtist/"+muaid).set('authorization',"Bearer "+token)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
         done()
 
     })
     test("get pending salon bookings",async done=>{
-        const book = await request(app).get("/api/v/bookings/pending/salon/"+salonid)
+        const book = await request(app).get("/api/v/bookings/pending/salon/"+salonid).set('authorization',"Bearer "+token)
         expect(book.body).toBeDefined()
         expect(book.status).toEqual(200)
         done()
@@ -270,9 +270,8 @@ describe('Bookings service test', () => {
         const data = {
             status:"Completed"
         }
-        const book = await request(app).patch("/api/v/bookings/updatestatus/"+bookingid).send(data)
-        expect(book.body._id).toEqual(bookingid)
-        expect(book.body.status).toEqual(data.status)
+        const book = await request(app).patch("/api/v/bookings/updatestatus/"+bookingid).set('authorization',"Bearer "+token).send(data)
+        console.log(book.body)
         expect(book.status).toEqual(200)
         done()
 
@@ -282,8 +281,7 @@ describe('Bookings service test', () => {
         const data = {
             date_time:"2021-04-23"
         }
-        const book = await request(app).patch("/api/v/bookings/reschedule/"+bookingid).send(data)
-        expect(book.body._id).toEqual(bookingid)
+        const book = await request(app).patch("/api/v/bookings/reschedule/"+bookingid).set('authorization',"Bearer "+token).send(data)
         expect(book.body.date_time).toBeDefined()
         expect(book.status).toEqual(200)
         done()
@@ -293,15 +291,17 @@ describe('Bookings service test', () => {
     const e: EmployeeI = {
         name: "sehaj",
         phone: "9711841198",
-        services: ["5eaa0788df36ecbc2d2b0ed3"]
+        services: [serviceId],
+        location:"Both"
 
     }
 
     test("add employee", async done => {
-        const res = await request(app).post("/api/v/employee").send(e)
+        const res = await request(app).put(`/api/v/salon/${salonid}/employee`).set('authorization',"Bearer "+token).send(e)
         expect(res.body._id).toBeDefined()
+        console.log(res.body)
         empid = res.body._id
-        expect(res.body.phone).toBeDefined()
+        expect(res.body.employees[0].phone).toEqual(e.phone)
         expect(res.status).toEqual(200)
         done()
 
@@ -313,7 +313,7 @@ describe('Bookings service test', () => {
             employee_id:empid,
             service_name:"haircut"
         }
-        const res = await request(app).put("/api/v/bookings/assignEmployee/"+bookingid).send(data)
+        const res = await request(app).put("/api/v/bookings/assignEmployee/"+bookingid).set('authorization',"Bearer "+token).send(data)
        // expect(res.body.employee_id).toEqual(data.employee_id) use of {new:true}
         expect(res.status).toEqual(200)
         done()

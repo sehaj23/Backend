@@ -19,8 +19,21 @@ describe('User service test', () => {
         expect(res.body._id).toBeDefined()
         expect(res.body.name).toEqual(v.name)
         expect(res.body.email).toEqual(v.email)
-        expect(res.body.password).not.toEqual(v.password)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
+        done()
+    })
+    test('User Post', async done => {
+        const v: UserI = {
+            name: "Preet singh",
+            password: "Preet1234",
+            "email": "preetsc@gmail.com"
+        }
+        const res = await request(app).post("/api/user").send(v)
+        expect(res.body._id).toBeDefined()
+        expect(res.body.name).toEqual(v.name)
+        expect(res.body.email).toEqual(v.email)
+       
+        expect(res.status).toEqual(201)
         done()
     })
 
@@ -29,7 +42,7 @@ describe('User service test', () => {
             name: "Preet",
         }
         const res = await request(app).post("/api/user").send(v)
-        expect(res.status).toEqual(403)
+        expect(res.status).toEqual(400)
         done()
     })
 
@@ -38,9 +51,10 @@ describe('User service test', () => {
         const v: UserI = {
             name: "Preet",
             password: "Preet123",
-            "email": "preet@ss.com"
+            email: "preet@ss.com"
         }
         const res = await request(app).get("/api/user")
+        console.log(res.body)
         expect(Array.isArray(res.body)).toBe(true)
         expect(res.status).toEqual(200)
         done()
@@ -50,13 +64,11 @@ describe('User service test', () => {
         const v: UserI = {
             name: "Preet",
             password: "Preet123",
-            "email": "preetsc276@gmail.com"
+            email: "preetsc276@gmail.com"
         }
         const res = await request(app).post("/api/user").send(v)
         expect(res.body._id).toBeDefined()
-
         const _id = res.body._id
-
         const res2 = await request(app).get(`/api/user/${_id}`)
         expect(res2.body.name).toEqual(v.name)
         expect(res2.body.email).toEqual(v.email)
@@ -67,7 +79,7 @@ describe('User service test', () => {
         const v: UserI = {
             name: "Preet Ji",
             password: "Preet123",
-            "email": "preetsc272@gmail.com"
+            email: "preetsc272@gmail.com"
         }
         const res = await request(app).post("/api/user").send(v)
         expect(res.body._id).toBeDefined()

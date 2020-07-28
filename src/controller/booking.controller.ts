@@ -233,13 +233,13 @@ export default class BookingController extends BaseController {
     })
     getbookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
-
-        if (!q.makeup_artist_id && !q.designer_id && !q.salon_id) {
-            const message = 'None id provided'
-            res.status(400)
-            res.send({ message })
-            return
-        }
+        //TODO:Validator
+        // if (!q.makeup_artist_id && !q.designer_id && !q.salon_id) {
+        //     const message = 'None id provided'
+        //     res.status(400)
+        //     res.send({ message })
+        //     return
+        // }
         const bookings = await this.service.getbookings(q)
         if (!bookings) {
             const errMsg = 'No Bookings Found'

@@ -64,7 +64,8 @@ export default class BaseController {
         try {
             const id = req.params.id
             const data = req.body
-            const resource = this.service.putPhoto(id, data)
+            console.log(data)
+            const resource = await this.service.putPhoto(id, data)
             res.send(resource)
         } catch (e) {
             res.status(403).send({ message: e.message })
@@ -74,7 +75,7 @@ export default class BaseController {
     getPhoto = async (req: Request, res: Response) => {
         try {
             const id = req.params.id
-            const resource = this.service.getPhoto(id)
+            const resource = await this.service.getPhoto(id)
             res.send(resource)
         } catch (e) {
             res.status(403).send({ message: e.message })
@@ -85,7 +86,7 @@ export default class BaseController {
             const photoData: PhotoI = req.body
             const _id = req.params.id
             // saving photos 
-            const newEvent = this.service.putProfilePic(photoData,_id)
+            const newEvent = await this.service.putProfilePic(photoData,_id)
            
             res.send(newEvent)
         } catch (e) {

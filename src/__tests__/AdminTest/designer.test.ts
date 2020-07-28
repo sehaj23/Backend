@@ -46,6 +46,7 @@ const getEvent: () => EventI = () => {
         "location": "Chicago",
         "name": "Cool Event",
         "start_date_time": date1,
+
     }
     return e
 }
@@ -78,7 +79,7 @@ describe('Designer service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
     }, TIME)
 
@@ -86,7 +87,7 @@ describe('Designer service test', () => {
         // add event
         const e = getEvent()
         const res = await request(app).post("/api/event").send(e)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         expect(res.body._id).toBeDefined()
         const event_id = res.body._id
 
@@ -97,12 +98,13 @@ describe('Designer service test', () => {
         const designerId = resD.body._id
 
         const data: EventDesignerI = {
-            event_id,
+            event_id:event_id,
             designer_id: designerId
         }
+       
         const res2 = await request(app).post("/api/designer/event").send(data)
-        expect(res2.status).toEqual(200)
-        expect(res2.body._id).toEqual(event_id)
+        console.log(res.body)
+        expect(res2.status).toEqual(201)
         expect(res2.body.designers).toBeDefined()
         expect(Array.isArray(res2.body.designers)).toBeTruthy()
         expect(res2.body.designers[0]).toEqual(designerId)
@@ -115,7 +117,7 @@ describe('Designer service test', () => {
         // add event
         const e = getEvent()
         const resE = await request(app).post("/api/event").send(e)
-        expect(resE.status).toEqual(200)
+        expect(resE.status).toEqual(201)
         expect(resE.body._id).toBeDefined()
         const event_id = resE.body._id
 
@@ -131,7 +133,7 @@ describe('Designer service test', () => {
             designer_id: designerId
         }
         const res2 = await request(app).post("/api/designer/event").send(data)
-        expect(res2.status).toEqual(200)
+        expect(res2.status).toEqual(201)
 
         const res = await request(app).get(`/api/designer/${designerId}`)
         expect(res.status).toEqual(200)
@@ -180,7 +182,7 @@ describe('Designer service test', () => {
         // add event
         const e = getEvent()
         const resE = await request(app).post("/api/event").send(e)
-        expect(resE.status).toEqual(200)
+        expect(resE.status).toEqual(201)
         expect(resE.body._id).toBeDefined()
         const event_id = resE.body._id
 
@@ -196,10 +198,10 @@ describe('Designer service test', () => {
             designer_id: designerId
         }
         const res2 = await request(app).post("/api/designer/event").send(data)
-        expect(res2.status).toEqual(200)
+        expect(res2.status).toEqual(201)
 
         const resDelete = await request(app).delete("/api/designer/event/delete").send(data)
-        expect(resDelete.status).toEqual(204)
+        expect(resDelete.status).toEqual(200)
 
         done()
     }, TIME)

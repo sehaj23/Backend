@@ -19,11 +19,17 @@ export default class DesignerController extends BaseController {
     }
 
     postDesigner =controllerErrorHandler( async (req: Request, res: Response) => {
-        const d: DesignersI = req.body
-        //@ts-ignore
-        const vendor_id = req.vendorId
-        const designer =await this.service.postDesigner(d,vendor_id)
-        res.send(designer)
+        const d = req.body
+      
+     
+        if(d.vendor_id === ""){
+               //@ts-ignore
+        d.vendor_id = req.vendorId
+        }
+       
+       
+        const designer =await this.service.postDesigner(d)
+        res.status(201).send(designer)
     })
 
     addDesignerEvent =controllerErrorHandler( async (req: Request, res: Response) => {
@@ -35,7 +41,7 @@ export default class DesignerController extends BaseController {
             res.send({ message: `Not able to update event: event_id  ${d.event_id}` })
             return
         }
-        res.send(designerEvent)
+        res.status(201).send(designerEvent)
 
     })
 
@@ -49,7 +55,7 @@ export default class DesignerController extends BaseController {
             res.send({ message: `Not able to update event: event_id  ${d.event_id}` })
             return
         }
-        res.send(designerEvent)
+        res.status(200).send(designerEvent)
 
     })
     patchDesigner =controllerErrorHandler( async (req: Request, res: Response) => {
@@ -72,7 +78,7 @@ export default class DesignerController extends BaseController {
             res.send({ message: `Not able to update designer` })
             return
         }
-        res.send(designer)
+        res.status(200).send(designer)
     })
 
     designerSettings =controllerErrorHandler( async (req: Request, res: Response) => {
@@ -88,6 +94,7 @@ export default class DesignerController extends BaseController {
             return
         }
         const updates = Object.keys(req.body)
+        const update = req.body
         const allowedupates = ["designer_name", "brand_name", "location", "start_working_hours"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
         
@@ -101,7 +108,7 @@ export default class DesignerController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const designer = await this.service.designerSettings(designer_id,updates,vendor_id)
+        const designer = await this.service.designerSettings(designer_id,update,vendor_id)
         if(designer==null){
             logger.error(`Not able to update designer`)
             res.status(400)
@@ -109,7 +116,7 @@ export default class DesignerController extends BaseController {
             return
         }
 
-        res.send(designer)
+        res.status(200).send(designer)
 
 
 

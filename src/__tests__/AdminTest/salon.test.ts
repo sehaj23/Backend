@@ -96,7 +96,8 @@ describe('Salon service test', () => {
         const e: EmployeeI = {
             "name": "Poppeye",
             "phone": "12345678",
-            "services": [s._id]
+            "services": [s._id],
+            "location":"Both"
         }
         const res3 = await request(app).put(`/api/salon/${sid}/employee`).send(e)
         expect(res3.status).toEqual(200)

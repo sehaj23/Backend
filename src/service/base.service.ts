@@ -17,14 +17,14 @@ export default class BaseService {
     }
 
     get = async () => {
-        return await this.model.find().select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate({
-            path: 'services',
-            model: 'services',
-            populate: {
-                path: 'offers',
-                model: 'offers',
-            }
-        }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
+        return await this.model.find().select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")//.populate({
+            // path: 'services',
+            // model: 'services',
+            // populate: {
+            //     path: 'offers',
+            //     model: 'offers',
+            // }
+        // }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
     }
 
     getId = async (id: string) => {

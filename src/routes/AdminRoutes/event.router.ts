@@ -11,7 +11,7 @@ eventRouter.get("/", verifyToken, eventContrller.get)
 eventRouter.get("/:id", verifyToken, eventContrller.getId)
 eventRouter.post("/", verifyToken, eventContrller.post)
 eventRouter.put("/:id", verifyToken, eventContrller.put)
-// eventRouter.put("/:id/photo", verifyToken, es.putPhoto)
+eventRouter.put("/:id/photo", verifyToken, eventContrller.putPhoto)
 eventRouter.get("/:id/photo", verifyToken, eventContrller.getPhoto)
 
 

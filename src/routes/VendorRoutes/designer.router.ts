@@ -11,7 +11,7 @@ const designerController = new DesignerController(designerService)
 
 
 
-designerRouter.post("/",VendorverifyToken,designerController.post)
+designerRouter.post("/",VendorverifyToken,designerController.postDesigner)
 designerRouter.patch("/:id",VendorverifyToken,designerController.patchDesigner)
 designerRouter.get("/:id",VendorverifyToken,designerController.getId)
 designerRouter.put("/settings/:id",VendorverifyToken,designerController.designerSettings)

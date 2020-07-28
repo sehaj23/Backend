@@ -5,7 +5,6 @@ import * as faker from "faker"
 import { BookingI } from "../../interfaces/booking.interface"
 import ServiceSI from "../../interfaces/service.interface"
 import User from "../../models/user.model"
-import Services from "../../models/service.model"
 import user from "../../interfaces/user.interface"
 import { VendorI } from "../../interfaces/vendor.interface";
 import { SalonI } from "../../interfaces/salon.interface";
@@ -70,23 +69,22 @@ describe('Bookings service test', () => {
             "end_working_hours": [date, null, null, null],
             "location": "Chicago",
             "speciality": ["DM"],
-            "vendor_id": ""
+            "vendor_id": "",
+            "services":[
+                {
+                    name: "sehaj",
+                    price: 200,
+                    duration: 15,
+        
+                    gender:"men"
+                }
+            ]
         }
-        const salonres = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
-        saloinid = salonres.body._id
+        const salonRes = await request(app).post("/api/v/salon").set('authorization',"Bearer "+token).send(dataToSend)
+        saloinid = salonRes.body._id
 
 
-        const s: ServiceSI = {
-            name: "sehaj",
-            price: 200,
-            duration: 15,
-            salon_id:saloinid,
-            gender:"men"
-
-
-        }
-        const Service = await Services.create(s)
-        serviceid = Service._id
+        serviceid = salonRes.body.services[0]._id
 
         console.log(saloinid)
         console.log(userid)
@@ -111,9 +109,6 @@ describe('Bookings service test', () => {
                 "service_time": date,
                 "service_id": serviceid,
 
-
-
-
             }],
             "price": 200,
             "balance": 500,
@@ -122,13 +117,14 @@ describe('Bookings service test', () => {
             "payment_type": "COD"
 
         }
-        const book = await request(app).post("/api/v/bookings").send(b)
+        const book = await request(app).post("/api/v/bookings").set('authorization',"Bearer "+token).send(b)
+        console.log(book.body)
+
         expect(book.body._id).toBeDefined()
         expect(book.body.price).toEqual(b.price)
         expect(book.body.balance).toEqual(b.balance)
-        expect(book.status).toEqual(200)
-        console.log(book.body)
-
+        expect(book.status).toEqual(201)
+       
         done()
     })
 

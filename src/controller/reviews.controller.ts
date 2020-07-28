@@ -39,6 +39,7 @@ export default class ReviewsController extends BaseController{
 
         }
         const review = await this.service.postReviews(v)
+        res.status(201).send(review)
     })
 
     newReviews = async (req: Request, res: Response) => {

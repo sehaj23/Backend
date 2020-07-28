@@ -135,7 +135,7 @@ export default class SalonService extends BaseService {
                 const offerId = offer._id
                 const salon = await this.model.findOneAndUpdate({ _id: salon_id, "services._id": serviceId }, { $push: { "services.$.offers": offerId } }, { new: true })
 
-                return salon
+                return offer
 
         }
         getSalonInfo = async (salonId: string) => {

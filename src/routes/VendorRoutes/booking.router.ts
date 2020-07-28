@@ -10,7 +10,7 @@ const bookingRouter = Router()
 const bookingService = new BookinkService(Booking,Salon)
 const bookingController = new BookingController(bookingService)
 
-// bookingRouter.post("/", VendorverifyToken, vs.post)
+bookingRouter.post("/", VendorverifyToken, bookingController.post)
 bookingRouter.get("/:id", VendorverifyToken, bookingController.getId)
 bookingRouter.get("/", VendorverifyToken, bookingController.getbookings) //filter can be used here
 bookingRouter.put("/assignEmployee/:id", VendorverifyToken, bookingController.assigneEmployeeBookings)
