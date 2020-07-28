@@ -7,15 +7,15 @@ import ReviewsController from "../../controller/reviews.controller";
 const reviewsRouter = Router()
 
 const reviewsService = new ReviewsService(Reviews)
-const revenueController = new ReviewsController(reviewsService)
+const reviewsController = new ReviewsController(reviewsService)
 
 
 
 
-reviewsRouter.post("/",VendorverifyToken,revenueController.postReviews)
-reviewsRouter.get("/",VendorverifyToken,revenueController.allReviews)
-reviewsRouter.put("/reply/:id",VendorverifyToken,revenueController.replyReviews)
-reviewsRouter.get("/new",VendorverifyToken,revenueController.newReviews)
-reviewsRouter.put("/report/:id",VendorverifyToken,revenueController.reportReviews)
+reviewsRouter.post("/",VendorverifyToken,reviewsController.postReviews)
+reviewsRouter.get("/",VendorverifyToken,reviewsController.allReviews)
+reviewsRouter.put("/reply/:id",VendorverifyToken,reviewsController.replyReviews)
+reviewsRouter.get("/new",VendorverifyToken,reviewsController.newReviews)
+reviewsRouter.put("/report/:id",VendorverifyToken,reviewsController.reportReviews)
 
 export default reviewsRouter

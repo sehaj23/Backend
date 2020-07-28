@@ -8,7 +8,6 @@ const adminRouter = Router()
 const adminService = new AdminService(Admin)
 const adminController = new AdminController(adminService)
 adminRouter.get("/", verifyToken, adminController.get)
-adminRouter.post("/", adminController.post)
 adminRouter.put("/", verifyToken, adminController.put)
 
 /**
