@@ -6,59 +6,70 @@ const SalonSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description:{
+    description: {
         type: String,
- //       required: true
+        //       required: true
     },
-    contact_number:{
+    contact_number: {
         type: String,
         required: true
     },
     email: {
         type: String,
         required: true,
-        unique:true
+        unique: true
     },
     start_price: {
         type: Number,
-  //      required: true
+        //      required: true
     },
     end_price: {
         type: Number,
-  //      required: true
+        //      required: true
     },
     services: {
         type: [{
+            category: {
+                type: String,
+                required: true
+            },
             name: {
                 type: String,
                 required: true
             },
-            price: {
-                type: Number,
-                required: true,
-                min: 0
-            },
-            duration:{
-                type: Number,
-                default: 15,
-                required: true,
-                min: 15
-            },
-            gender:{
-                type:String,
-                enum:["men","women"],
-                required:true
-            },
-            photo: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "photos"
-            },
-            offers: {
-                type: [{
+            options: [{
+                option_name: {
+                    type: String,
+                    default: 'DIRECT',
+                    required: true
+                },
+                price: {
+                    type: Number,
+                    required: true,
+                    min: 0
+                },
+                duration: {
+                    type: Number,
+                    default: 15,
+                    required: true,
+                    min: 15
+                },
+                gender: {
+                    type: String,
+                    enum: ["men", "women"],
+                    required: true
+                },
+                photo: {
                     type: mongoose.Schema.Types.ObjectId,
-                     ref: "offers"
-                }]
-            }
+                    ref: "photos"
+                },
+                offers: {
+                    type: [{
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "offers"
+                    }]
+                }
+            }]
         }]
     },
     employees: {
@@ -68,7 +79,7 @@ const SalonSchema = new mongoose.Schema({
         }]
     },
     speciality: {
-        type: [{type: String}]
+        type: [{ type: String }]
     },
     rating: {
         type: Number,
@@ -76,23 +87,23 @@ const SalonSchema = new mongoose.Schema({
         min: 0,
         max: 5
     },
-    location:{
+    location: {
         type: String,
-   //     required: true,
+        //     required: true,
     },
-    insta_link:{
+    insta_link: {
         type: String
     },
-    fb_link:{
+    fb_link: {
         type: String
     },
     start_working_hours: {
         type: [Date],
-   //     required: true
+        //     required: true
     },
     end_working_hours: {
         type: [Date],
-   //     required: true
+        //     required: true
     },
     approved: {
         type: Boolean,
@@ -116,17 +127,17 @@ const SalonSchema = new mongoose.Schema({
     commision_percentage: {
         type: Number
     },
-    commision_cap:{
+    commision_cap: {
         type: Number
     },
-    commision_fixed_price:{
+    commision_fixed_price: {
         type: Number
     },
-    latitude:{
-        type:Number,
+    latitude: {
+        type: Number,
     },
-    longitude:{
-        type:Number,
+    longitude: {
+        type: Number,
     }
 }, {
     timestamps: true
