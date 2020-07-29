@@ -131,8 +131,8 @@ export default class SalonController extends BaseController {
     })
     getService = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
-        //@ts-ignore
-        const vendor_id = req.vendorId
+        console.log("calling get service api")
+        
         //TODO: validator
         if (!id) {
             const errMsg = `id is missing from the params`

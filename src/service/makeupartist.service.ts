@@ -61,8 +61,8 @@ export default class MakeupartistService extends BaseService {
 
 
     }
-    addMakeupArtistService = async (_id: string, vendor_id, d) => {
-        const muaService = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendor_id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
+    addMakeupArtistService = async (_id: string, d) => {
+        const muaService = await this.model.findOneAndUpdate({ _id: _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
         return muaService
     }
 
@@ -77,7 +77,7 @@ export default class MakeupartistService extends BaseService {
 
         const muaId = mongoose.Types.ObjectId(id)
         //@ts-ignore
-        const muaService = await this.model.find({ _id: muaId, vendor_id: vendor_id }).select("services")
+        const muaService = await this.model.find({ _id: muaId, vendor_id: vendor_id })
         return muaService
 
 

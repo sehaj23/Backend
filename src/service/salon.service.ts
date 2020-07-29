@@ -54,7 +54,7 @@ export default class SalonService extends BaseService {
 
         addSalonService = async (_id: string, d:any) => {
 
-                const newSalon = await this.model.findOneAndUpdate({ _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
+                const newSalon = await this.model.findOneAndUpdate({ _id },{ $push: { services: { $each: d, $postion: 0 } } }, { new: true })
                 return newSalon
 
         }
@@ -66,7 +66,7 @@ export default class SalonService extends BaseService {
         }
         getService = async (id: string) => {
                 
-                const salon = await this.model.find({ _id: id }).select("services")
+                const salon = await this.model.findById({ _id: id })
                 return salon
         }
         updateService = async (salonId: string, d, sid: string) => {

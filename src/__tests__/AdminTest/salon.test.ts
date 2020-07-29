@@ -81,19 +81,29 @@ describe('Salon service test', () => {
 
         const sid = res.body._id
 
-        const service=[ {
-            "name": "Haircut",
-            "price": 230,
-            "duration": 15,
-            "gender":"women"
-        }]
-
+        const service={
+            services:[{
+                name:"sehaj123",
+                price:123,
+                duration:15,
+                gender:"men"
+                
+                
+            },{
+                
+                name:"sehaj23",
+                price:123,
+                duration:15,
+                gender:"women"
+                    
+            }]
+    }
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
         console.log(res2.body)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
         const s: ServiceSI = res2.body.services[0]
-        expect(s.name).toEqual(service[0].name)
+        expect(s.name).toEqual(service.services[0].name)
         const e: EmployeeI = {
             "name": "Poppeye",
             "phone": "12345678",
@@ -118,26 +128,29 @@ describe('Salon service test', () => {
 
         const sid = res.body._id
 
-        const service: ServiceI = {
+        const service= {
+            services:[{
             "name": "Beard Cut",
             "price": 2400,
-            salon_id: sid,
             "duration": 15,
             "gender":"men"
-        }
+        }]
+    }
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
+        console.log(res2.body)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
 
         const res3 = await request(app).get(`/api/salon/${sid}/service`)
         expect(res3.status).toEqual(200)
-        expect(res3.body.length).toBeGreaterThan(0)
-        const s: ServiceSI[] = res3.body
+        expect(res3.body.services.length).toBeGreaterThan(0)
+        const s: ServiceSI[] = res3.body.services
+        console.log("********",s)
         const gotService = s[0]
         expect(gotService._id).toBeDefined()
-        expect(gotService.name).toEqual(service.name)
-        expect(gotService.price).toEqual(service.price)
+        expect(gotService.name).toEqual(service.services[0].name)
+        expect(gotService.price).toEqual(service.services[0].price)
 
         done()
     }, TIME)

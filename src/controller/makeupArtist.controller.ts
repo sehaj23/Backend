@@ -116,7 +116,7 @@ export default class MakeupArtistController extends BaseController {
             res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
             return
         }
-        const muaService = await this.service.addMakeupArtistService(id, vendor_id, d)
+        const muaService = await this.service.addMakeupArtistService(id, d)
         if (muaService === null) {
             const errMsg = `mua not found`;
             logger.error(errMsg);
