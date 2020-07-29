@@ -21,8 +21,7 @@ export default class DesignerController extends BaseController {
     postDesigner =controllerErrorHandler( async (req: Request, res: Response) => {
         const d = req.body
       
-     
-        if(d.vendor_id === ""){
+        if(d.vendor_id.length==0){
                //@ts-ignore
         d.vendor_id = req.vendorId
         }

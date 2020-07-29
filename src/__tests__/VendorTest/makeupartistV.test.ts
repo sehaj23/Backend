@@ -19,10 +19,9 @@ const getMUA:()=> MakeupArtistI=() => {
     const date = new Date();
     const email = faker.internet.email()
 
-    const dataToSend = {
+    const dataToSend:MakeupArtistI = {
 
         "name": "zolo",
-        "designer_name": "hello1",
         "contact_number": "1234567890",
         "description": "desc",
         "email": email,
@@ -33,6 +32,14 @@ const getMUA:()=> MakeupArtistI=() => {
         "location": "delhi",
         "speciality": ["Design"],
         "vendor_id": "",
+        "services":[
+            {
+                name: "sehaj",
+                price: 200,
+                duration: 15,
+                gender:"men"
+            }
+        ]
     };
     return dataToSend
 }
@@ -73,10 +80,12 @@ describe("Makeup Artist service test", () => {
 
         
         const dataToSend = getMUA()
+       
         const res = await request(app).post("/api/v/makeupArtist").set('authorization',"Bearer "+token).send(dataToSend);
-
+        console.log(res.body)
         expect(res.body._id).toBeDefined();
         muaid = res.body._id
+        
         // check response vendor ID problem
         expect(res.body.name).toEqual(dataToSend.name);
         expect(res.body.start_working_hours).toBeDefined();
@@ -104,8 +113,7 @@ describe("Makeup Artist service test", () => {
     },TIME)
     
 
-    test('MUA settings test', async done => {
-
+    test('MUA settings test add service', async done => {
         const service={
                 services:[{
                     name:"sehaj123",
@@ -125,13 +133,13 @@ describe("Makeup Artist service test", () => {
                 }]
         }
         const res = await request(app).put(`/api/v/makeupArtist/${muaid}/service`).set('authorization',"Bearer "+token).send(service)
+        console.log(res.body)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
     })
 
-    test('MUA settings test', async done => {
-        
+    test('MUA settings test-get services', async done => {
         const res = await request(app).get(`/api/v/makeupArtist/${muaid}/service`).set('authorization',"Bearer "+token)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)

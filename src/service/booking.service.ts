@@ -237,6 +237,7 @@ export default class BookingService extends BaseService {
                     break
                 case "status":
                     filters["status"] = q[k]
+                    break;
                 case "start_date":
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break

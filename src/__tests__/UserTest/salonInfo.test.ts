@@ -46,7 +46,7 @@ describe("User Salon Info test", () => {
     };
 
     res = await request(app).post("/api/v/login/create").send(v);
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(201);
   
     vendorId = res.body._id;
 
@@ -54,22 +54,22 @@ describe("User Salon Info test", () => {
       password: "aman23",
       email: "aman@gmail.com",
     };
-    res = await request(app).post("/api/v/login/").send(login);
-    expect(res.body.token).toBeDefined();
+    const res2 = await request(app).post("/api/v/login/").send(login);
+    expect(res2.body.token).toBeDefined();
    
-    token = res.body.token;
+    token = res2.body.token;
 
     const dataToSend = getSalon(vendorId);
-    res = await request(app)
+    const res3 = await request(app)
       .post("/api/v/salon")
       .set("authorization", "Bearer " + token)
       .send(dataToSend);
     
 
-    expect(res.body._id).toBeDefined();
+    expect(res3.body._id).toBeDefined();
     salonid = res.body._id;
    
-    expect(res.status).toEqual(200);
+    expect(res3.status).toEqual(201);
 
     done();
   }, TIME);

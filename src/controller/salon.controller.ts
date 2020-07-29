@@ -23,12 +23,12 @@ export default class SalonController extends BaseController {
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         const d: SalonI = req.body
+
+        if(d.vendor_id.length==0){
         //@ts-ignore
         d.vendor_id = req.vendorId
-        
-        console.log("***********")
-        //@ts-ignore
-        console.log(req.vendorId)
+        }
+       
 
         //@ts-ignore
         const salon = await this.service.postSalon(req.vendorId, d)
@@ -91,8 +91,9 @@ export default class SalonController extends BaseController {
         const d: ServiceI = req.body.services
         const salon_id = req.params.id
         //@ts-ignore
-        const vendor_id = req.vendorId
-        const newSalon = await this.service.addSalonService(salon_id, vendor_id, d)
+       
+    
+        const newSalon = await this.service.addSalonService(salon_id, d)
         if (newSalon === null) {
             const errMsg = `Add Services: no data with this _id and service was found`
             logger.error(errMsg)
@@ -115,7 +116,7 @@ export default class SalonController extends BaseController {
             res.send({ message: `salon Id is missing mua_id:` })
             return
         }
-        const salon = await this.service.deleteSalonService(_id, sid, vendor_id)
+        const salon = await this.service.deleteSalonService(_id, sid)
 
         if (salon === null) {
             const errMsg = `Delete Service: no data with this _id and service was found`

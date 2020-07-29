@@ -52,15 +52,15 @@ export default class SalonService extends BaseService {
                 return salon
         }
 
-        addSalonService = async (_id: string, vendor_id: string, d) => {
+        addSalonService = async (_id: string, d:any) => {
 
-                const newSalon = await this.model.findOneAndUpdate({ _id, vendor_id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
+                const newSalon = await this.model.findOneAndUpdate({ _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
                 return newSalon
 
         }
-        deleteSalonService = async (_id: string, sid: string, vendor_id) => {
+        deleteSalonService = async (_id: string, sid) => {
                
-                const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendor_id }, { $pull: { services: { _id: sid } } }, { new: true })
+                const salon = await this.model.findOneAndUpdate({ _id: _id }, { $pull: { services: { _id: sid } } }, { new: true })
                 return salon
 
         }

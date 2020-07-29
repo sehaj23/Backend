@@ -43,8 +43,7 @@ export default class DesignerService extends BaseService {
 
                 const newDesignerReq = this.model.findOneAndUpdate({ _id: designerId, events: { $nin: [eventid] } }, { $push: { events: eventid } }, { new: true })
                 const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
-                return { designerEvent}
-
+                return newDesignerReq
         }
 
         deleteDesignerEvent = async (d: EventDesignerI) => {

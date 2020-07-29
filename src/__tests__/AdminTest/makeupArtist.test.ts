@@ -83,7 +83,7 @@ describe("Makeup Artist service test", () => {
         const makeupArtistId = resM.body._id;
 
         const res = await request(app).post("/api/event").send(e);
-        expect(res.status).toEqual(200);
+        expect(res.status).toEqual(201);
         expect(res.body._id).toBeDefined();
         const event_id = res.body._id;
         const data: EventMakeupArtistI = {
@@ -103,7 +103,7 @@ describe("Makeup Artist service test", () => {
         const makeupArtistId = resM.body._id;
 
         const resE = await request(app).post("/api/event").send(e);
-        expect(resE.status).toEqual(200);
+        expect(resE.status).toEqual(201);
         expect(resE.body._id).toBeDefined();
         const event_id = resE.body._id;
         const data: EventMakeupArtistI = {
@@ -114,6 +114,8 @@ describe("Makeup Artist service test", () => {
         expect(res2.status).toEqual(200);
 
         const res = await request(app).get(`/api/makeupArtist/${makeupArtistId}`);
+        console.log("*********")
+        console.log(res.body)
         expect(res.status).toEqual(200);
         expect(Array.isArray(res.body.events)).toBeTruthy();
         const event: EventI = res.body.events[0];
@@ -156,7 +158,7 @@ describe("Makeup Artist service test", () => {
         const makeupArtistId = resM.body._id;
 
         const resE = await request(app).post("/api/event").send(e);
-        expect(resE.status).toEqual(200);
+        expect(resE.status).toEqual(201);
         expect(resE.body._id).toBeDefined();
         const event_id = resE.body._id;
         const data: EventMakeupArtistI = {

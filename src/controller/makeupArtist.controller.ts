@@ -21,10 +21,13 @@ export default class MakeupArtistController extends BaseController {
     postMua = controllerErrorHandler(async (req: Request, res: Response) => {
 
         const ma: MakeupArtistI = req.body
-        if(ma.vendor_id===null){
-        //@ts-ignore
+     
+        if(ma.vendor_id.length==0){
+               //@ts-ignore
         ma.vendor_id = req.vendorId
         }
+        console.log(ma)
+        
         const makeupArtist = await this.service.postMua(ma)
         if (makeupArtist === null) {
             const errMsg = `salon not found`;

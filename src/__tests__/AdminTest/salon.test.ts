@@ -77,22 +77,23 @@ describe('Salon service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
 
         const sid = res.body._id
 
-        const service: ServiceI = {
+        const service=[ {
             "name": "Haircut",
             "price": 230,
             "duration": 15,
             "gender":"women"
-        }
+        }]
 
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
+        console.log(res2.body)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
         const s: ServiceSI = res2.body.services[0]
-        expect(s.name).toEqual(service.name)
+        expect(s.name).toEqual(service[0].name)
         const e: EmployeeI = {
             "name": "Poppeye",
             "phone": "12345678",
@@ -113,7 +114,7 @@ describe('Salon service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
 
         const sid = res.body._id
 
@@ -145,7 +146,7 @@ describe('Salon service test', () => {
 
 })
 
-// afterAll(async (done) => {
-//     await db.disconnect()
-//     done()
-// }, TIME)
+afterAll(async (done) => {
+    await db.disconnect()
+    done()
+}, TIME)

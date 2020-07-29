@@ -28,7 +28,7 @@ export default class BaseService {
     }
 
     getId = async (id: string) => {
-         return await this.model.findById(id).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")  //.populate({
+         return await this.model.findById(id).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events")  //.populate({
             
     //     }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
     }

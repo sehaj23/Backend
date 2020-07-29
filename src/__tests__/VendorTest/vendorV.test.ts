@@ -38,11 +38,12 @@ describe('Vendor service test', () => {
 
     },TIME)
 
-    afterAll(async (done) => {
-        await db.disconnect();
-        done();
-      });
+  
 })
+afterAll(async (done) => {
+    await db.disconnect();
+    done();
+  });
 
 
 

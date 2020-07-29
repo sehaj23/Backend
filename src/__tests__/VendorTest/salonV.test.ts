@@ -51,7 +51,7 @@ describe('Salon service test', () => {
             contact_number: "+12193860967"
         }
         const res2 = await request(app).post("/api/v/login/create").send(v)
-        expect(res2.status).toEqual(200)
+        expect(res2.status).toEqual(201)
         vendorId = res2.body._id
 
         done()
