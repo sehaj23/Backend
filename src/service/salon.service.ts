@@ -99,14 +99,12 @@ export default class SalonService extends BaseService {
                
                 return emp
 
-
         }
 
         editSalonEmployee = async (v, salon_id: string, emp_id: string) => {
                 //TODO:check if employee exist in salon
                 const emp = await this.employeeModel.findOneAndUpdate({ _id: emp_id }, v, { new: true }).populate("services").exec()// to return the updated data do - returning: true
                 return emp
-
         }
 
 
