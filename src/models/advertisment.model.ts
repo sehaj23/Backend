@@ -17,15 +17,12 @@ const AdvertismentSchema = new mongoose.Schema({
         type: String
     },
     description: {
-        required: true,
         type: String
     },
-    price: {
-        required: true,
+    price:{
         type: Number
     },
     offer_price: {
-        required: true,
         type: Number
     },
     services: {
