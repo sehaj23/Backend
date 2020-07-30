@@ -21,13 +21,15 @@ salonInfoRouter.get(
   [salonInfoChecks, mySchemaValidator],
   salonController.getSalonInfo
 )
-// get names of  all salons
-salonInfoRouter.get('/names', salonController.getSalonNames)
+// get names of recommended all salons
+salonInfoRouter.get('/names', salonController.getRecomendSalon)
 //get nearby salon range 2km
 salonInfoRouter.get('/location', salonController.getSalonNearby)
 //sort by distance
 salonInfoRouter.get('/distance', salonController.getSalonDistance)
 //sort rating-wise
-salonInfoRouter.get('/sort', salonController.getSalonsRw)
+//salonInfoRouter.get('/sort', salonController.getSalonsRw)
+//get home service salons
+salonInfoRouter.get('/homesalons',salonController.getHomeServiceSalon)
 
 export default salonInfoRouter

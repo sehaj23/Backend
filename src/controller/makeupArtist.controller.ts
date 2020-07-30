@@ -111,9 +111,9 @@ export default class MakeupArtistController extends BaseController {
         //@ts-ignore
         const vendor_id = req.vendorId
         if (!id) {
-            logger.error(`Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+            logger.error(`Mua Id is missing mua_id:`)
             res.status(403)
-            res.send({ message: `Mua Id is missing mua_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+            res.send({ message: `Mua Id is missing mua_id:` })
             return
         }
         const muaService = await this.service.addMakeupArtistService(id, d)

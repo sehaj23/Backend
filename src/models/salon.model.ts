@@ -33,6 +33,11 @@ const SalonSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
+            at_home:{
+                type:Boolean,
+                required:true,
+                default:false
+            },
             name: {
                 type: String,
                 required: true

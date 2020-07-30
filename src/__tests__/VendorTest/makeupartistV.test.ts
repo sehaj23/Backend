@@ -35,6 +35,7 @@ const getMUA:()=> MakeupArtistI=() => {
         "services":[
             {
                 name: "sehaj",
+                category:"check123",
                 price: 200,
                 duration: 15,
                 gender:"men"

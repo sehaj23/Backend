@@ -66,13 +66,13 @@ export default class SalonService extends BaseService {
         }
         getService = async (id: string) => {
                 
-                const salon = await this.model.findById({ _id: id })
+                const salon = await this.model.findById({ _id: id }).select("services")
                 return salon
         }
         updateService = async (salonId: string, d, sid: string) => {
                 
                 d._id = sid
-                const salon = await this.model.update({ _id: salonId, "services._id": sid }, { "services.$": d }, { new: true })
+                const salon = await this.model.findOneAndUpdate({ _id: salonId, "services._id": sid }, { "services.$": d }, { new: true })
                 return salon
 
         }
@@ -144,30 +144,48 @@ export default class SalonService extends BaseService {
 
         }
 
-        // Salon names
-        getSalonNames = async (data: any) => {
-                const salons = await this.model.find()
+        // Salon Rating-Wise  Recommended.
+        getSalon= async () => {
+                const salons = await this.model.find().limit(10).sort({rating:-1})
                 //@ts-ignore
-                for (let [key, value] of Object.entries(salons)) data.push(value.name)
-                return data
+             //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
+                return salons
+
+        }
+        getHomeServiceSalon= async (centerPoint: any, km: string) => {
+                var checkPoint = {}
+                var salonLocation = new Array()
+                const salon = await this.model.find({"services":{$elemMatch:{at_home:true}}})
+                for (var a = 0; a < salon.length; a++) {
+                        if (salon[a].longitude != null && salon[a].latitude != null) {
+                                //@ts-ignore
+                                checkPoint.lng = salon[a].longitude
+                                //@ts-ignore
+                                checkPoint.lat = salon[a].latitude
+                                var n = await arePointsNear(checkPoint, centerPoint, km)
+                                if (n.bool) {
+                                        salonLocation.push(salon[a])
+                                }
+                        }
+                }
+                //@ts-ignore
+             //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
+                return salonLocation
 
         }
 
         // Sort salon : rating-wise
-        getSalonsRw = async (rating: any, data: any) => {
+        // getSalonsRw = async (rating: any, data: any) => {
+        //         const salons = await this.model.find({})
+
+        //         const val1 = rating === 'asc' ? -1 : 1
+        //         const val2 = -val1
+        //         for (let [key, value] of Object.entries(salons)) data.push(value)
+        //         data.sort((a, b) => (a.rating < b.rating ? val1 : val2))
+        //         return data
 
 
-                const salons = await this.model.find({})
-
-
-                const val1 = rating === 'asc' ? -1 : 1
-                const val2 = -val1
-                for (let [key, value] of Object.entries(salons)) data.push(value)
-                data.sort((a, b) => (a.rating < b.rating ? val1 : val2))
-                return data
-
-
-        }
+        // }
 
         // Search by salon/location/service
         getSearchResult = async (phrase: string) => {

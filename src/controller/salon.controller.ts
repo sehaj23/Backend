@@ -166,17 +166,7 @@ export default class SalonController extends BaseController {
             res.status(403)
             res.send({ message: "SID and ID not found" })
         }
-        const updates = Object.keys(req.body)
-        const allowedupates = ["name", "price:", "duration", "gender", "photo",]
-        const isvalid = updates.every((update) => allowedupates.includes(update))
-
-        if (!isvalid) {
-            const errMsg = "Error updating "
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-        }
+      
         const salon = await this.service.updateService(id, d, sid)
         if (salon === null) {
             const errMsg = `no service found`
@@ -185,7 +175,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send({message:"Service updated!"})
+        res.send(salon)
     })
     addSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
         const d: EmployeeI = req.body
@@ -336,35 +326,52 @@ export default class SalonController extends BaseController {
         res.status(200).send(salon)
     })
 
-    getSalonNames = controllerErrorHandler(async (req: Request, res: Response) => {
-        //TODO:validator
-        const data = new Array()
+    getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
-        const sr = await SalonRedis.get('Salons')
-        if (sr !== null) { salons = JSON.parse(sr) }
-        else {
-            salons = await this.service.getSalonNames(data)
-            SalonRedis.set('Salons', salons)
-        }
-
-        res.status(200).send(salons)
-
-    })
-    getSalonsRw = controllerErrorHandler(async (req: Request, res: Response) => {
-        const rating = req.query.rating
-        if (rating !== 'asc' && rating !== 'dsc')
-            return res.status(400).send({ message: 'Send valid sorting order' })
-        const data = new Array()
-        let salons
-        const sr = await SalonRedis.get('Salons')
-        if (sr !== null) salons = JSON.parse(sr)
-        else {
-            salons = await this.service.getSalonsRw(rating, data)
+         const sr = await SalonRedis.get('Salons')
+         if (sr !== null) { salons = JSON.parse(sr)
+          }
+         else {
+            salons = await this.service.getSalon()
             SalonRedis.set('Salons', salons)
         }
         res.status(200).send(salons)
 
     })
+    getHomeServiceSalon = controllerErrorHandler(async (req: Request, res: Response) => {
+        let salons
+        var centerPoint = {}
+        //TODO: store location of User
+        //@ts-ignore
+        centerPoint.lat = req.query.latitude
+        //@ts-ignore
+        centerPoint.lng = req.query.longitude
+        const km = req.query.km || 2
+          const sr = await SalonRedis.get('HomeSalons')
+          if (sr !== null) { salons = JSON.parse(sr)
+           }
+         else {
+            salons = await this.service.getHomeServiceSalon(centerPoint,km)
+            SalonRedis.set('HomeSalons', salons)
+        }
+        res.status(200).send(salons)
+
+    })
+    // getSalonsRw = controllerErrorHandler(async (req: Request, res: Response) => {
+    //     const rating = req.query.rating
+    //     if (rating !== 'asc' && rating !== 'dsc')
+    //         return res.status(400).send({ message: 'Send valid sorting order' })
+    //     const data = new Array()
+    //     let salons
+    //     const sr = await SalonRedis.get('Salons')
+    //     if (sr !== null) salons = JSON.parse(sr)
+    //     else {
+    //         salons = await this.service.getSalonsRw(rating, data)
+    //         SalonRedis.set('Salons', salons)
+    //     }
+    //     res.status(200).send(salons)
+
+    // })
 
     getSearchResult = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:Validato

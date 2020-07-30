@@ -131,27 +131,42 @@ describe('Salon service test', () => {
         const service= {
             services:[{
             "name": "Beard Cut",
-            "price": 2400,
+            "category":"check123",  
+            options:[{
+                "option_name":"check123",
+                "price":1234,
+                "gender":"men",
+                "duration":15
+            }],
+            
             "duration": 15,
             "gender":"men"
-        }]
+        },{
+            "name": "Beard Cut",
+            "category":"check123",  
+            options:[{
+                "option_name":"check123",
+                "price":1234,
+                "gender":"men",
+                "duration":15
+            }],
+            
+            "duration": 15,
+            "gender":"men"
+        }
+    ]
     }
-
         const res2 = await request(app).put(`/api/salon/${sid}/service`).send(service)
         console.log(res2.body)
         expect(res2.status).toEqual(200)
         expect(res2.body.services.length).toBeGreaterThan(0)
-
         const res3 = await request(app).get(`/api/salon/${sid}/service`)
         expect(res3.status).toEqual(200)
         expect(res3.body.services.length).toBeGreaterThan(0)
         const s: ServiceSI[] = res3.body.services
-        console.log("********",s)
-        const gotService = s[0]
-        expect(gotService._id).toBeDefined()
-        expect(gotService.name).toEqual(service.services[0].name)
-        expect(gotService.price).toEqual(service.services[0].price)
-
+        console.log("******",s)
+        expect(s[0]._id).toBeDefined()
+        expect(s[0].name).toEqual(service.services[0].name)
         done()
     }, TIME)
 

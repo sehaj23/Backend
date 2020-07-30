@@ -100,26 +100,21 @@ describe('Salon service test', () => {
         expect(res.body.location).toEqual(salon.location)
         expect(res.status).toEqual(200)
         done()
-
     },TIME)
     test('Salon settings test', async done => {
-
         const service={
                 services:[{
+                    category:"check123",
                     name:"sehaj123",
                     price:123,
                     duration:15,
-                    gender:"men"
-                    
-                    
-                },{
-                    
+                    gender:"men" 
+                },{             
+                    category:"check123",   
                     name:"sehaj23",
                     price:123,
                     duration:15,
-                    gender:"women"
-                    
-                    
+                    gender:"women"                          
                 }]
         }
         const res = await request(app).put(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token).send(service)
@@ -128,22 +123,16 @@ describe('Salon service test', () => {
         done()
     },TIME)
 
-    test('Salon settings test', async done => {
-        
+    test('Salon settings test', async done => {    
         const res = await request(app).get(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
-
-
     },TIME)
-
-    afterAll(async (done) => {
-        await db.disconnect();
-        done();
-      },TIME);
-
-
-
 })
+afterAll(async (done) => {
+    await db.disconnect();
+    done();
+  },TIME);
+
 

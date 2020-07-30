@@ -41,8 +41,6 @@ describe('Employee  service test', () => {
         token = (res2.body.token)
         console.log(token)
         
-    
-    
 
         vendorId = Vendoreres.body._id
 
@@ -76,6 +74,7 @@ describe('Employee  service test', () => {
             "services":[{
                 name: "sehaj",
                 price: 200,
+                category:"check123",
                 duration: 15,
                 gender:"men"
             }]
