@@ -275,7 +275,7 @@ export default class SalonService extends BaseService {
 
         getSalonReviews =  async (_id:string,q:any) => {
                 const pageNumber: number = parseInt( q.page_number || 1)
-                let pageLength: number = parseInt(q.page_length || 5)
+                let pageLength: number = parseInt(q.page_length || 10)
                  pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 const reviewsAll =  this.reviewModel.find({salon_id:_id}).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")

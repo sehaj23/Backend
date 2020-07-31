@@ -42,6 +42,8 @@ salonInfoRouter.get('/services/:id',salonController.getService)
 salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
 // get Reviews
 salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
+// check if user can Post Reviews
+salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPostReviews)
 
 
 export default salonInfoRouter
