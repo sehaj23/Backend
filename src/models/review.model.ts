@@ -25,16 +25,16 @@ const ReviewSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "makeup_artists",
     },
-    designer_id:{
+    designer_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "designers",
     },
-    type:{
+    type: {
         type: String,
         enum: ['Positive', 'Moderate', 'Negative'],
         default: 'Moderate'
     },
-    flagged:{
+    flagged: {
         type: Boolean,
         default: false
     },
@@ -46,12 +46,17 @@ const ReviewSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    tags: {
+        type: [{
+            type: String,
+        }]
+    },
     reply: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "reviews"
         }]
-    } 
+    }
 }, {
     timestamps: true
 })

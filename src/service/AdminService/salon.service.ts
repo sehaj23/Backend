@@ -161,9 +161,9 @@ export default class SalonService extends BaseService{
             const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
-                logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
+                logger.error(`Salon Id is missing`)
                 res.status(403)
-                res.send({ message: `Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}` })
+                res.send({ message: `Salon Id is missing` })
                 return
             }
 
