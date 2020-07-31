@@ -7,10 +7,11 @@ import Employee from "../../models/employees.model";
 import Vendor from "../../models/vendor.model";
 import Event from "../../models/event.model"
 import Offer from "../../models/offer.model";
-
+import Review from '../../models/review.model'
+import Booking from '../../models/booking.model'
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking)
 const salonController = new SalonController(salonService)
 salonRouter.get("/", verifyToken, salonController.get)
 salonRouter.get("/:id", verifyToken, salonController.getId)

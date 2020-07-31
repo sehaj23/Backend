@@ -11,6 +11,7 @@ import EventDesignerI from "../interfaces/eventDesigner.model";
 import { OfferI } from "../interfaces/offer.interface";
 import { SalonRedis } from "../redis/index.redis";
 import { keys } from "../seeds/data/admin/admins";
+import { ReviewI } from "../interfaces/review.interface";
 
 
 export default class SalonController extends BaseController {
@@ -131,8 +132,14 @@ export default class SalonController extends BaseController {
     })
     getService = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
+        const filter = {}
+        if(req.query.gender){
+            filter["options.gender"] ={ "$in": req.query.gender}
+        }
+        if(req.query.home){
+            filter["at_home"]=req.query.home
+        }
         console.log("calling get service api")
-        
         //TODO: validator
         if (!id) {
             const errMsg = `id is missing from the params`
@@ -141,7 +148,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const salon = await this.service.getService(id)
+        const salon = await this.service.getService(id,filter)
         if (salon === null) {
             const errMsg = `no service found`
             logger.error(errMsg)
@@ -347,9 +354,9 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         centerPoint.lng = req.query.longitude
         const km = req.query.km || 2
-          const sr = await SalonRedis.get('HomeSalons')
-          if (sr !== null) { salons = JSON.parse(sr)
-           }
+           const sr = await SalonRedis.get('HomeSalons')
+           if (sr !== null) { salons = JSON.parse(sr)
+            }
          else {
             salons = await this.service.getHomeServiceSalon(centerPoint,km)
             SalonRedis.set('HomeSalons', salons)
@@ -411,5 +418,66 @@ export default class SalonController extends BaseController {
         res.status(200).send(salonLocation)
 
     })
+
+    getSalonCategories = controllerErrorHandler(async (req: Request, res: Response) => {
+        const _id = req.params.id
+        const data = new Array()
+
+        const category  = await this.service.getSalonCategories(_id,data)
+        res.send(category)
+
+    })
+
+  getSalonReviews =  controllerErrorHandler(async (req: Request, res: Response) => {
+        const _id = req.params.id
+        const q = req.query
+        const reviews = await this.service.getSalonReviews(_id,q)
+        if(reviews===null){
+            logger.error(`No Reviews Found`)
+            res.status(400)
+            res.send({ message: `No Reviews Found` })
+            return
+        }
+        res.send(reviews)
+
+    })
+
+    postSalonReviews = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        const _id=req.params.id
+        const post:ReviewI = req.body
+        console.log(req.body)
+        //@ts-ignore
+        post.user_id = req.userId
+        post.salon_id = _id
+        
+        const postReview = await this.service.postReviews(post) 
+        if(postReview===null){
+            logger.error(`Unable to post`)
+            res.status(400)
+            res.send({ message: `Unable to post review` })
+            return
+        }
+        res.send(postReview)
+        
+
+    })
+    checkPostReviews= controllerErrorHandler(async (req: Request, res: Response) => {
+        const _id = req.params.id
+        //@ts-ignore
+        const user_id = req.userId
+        //@ts-ignore
+        console.log(req.userId)
+        const check  = await this.service.checkpostReview(user_id,_id)
+        if(check===null){
+            res.status(400)
+            res.send({ message: `User Cant Post Review,No Previous Bookings Found`,success:"false" })
+
+        }
+        res.send({success:"true"})
+
+    })
+
+
 
 }

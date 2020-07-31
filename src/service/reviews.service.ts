@@ -38,7 +38,6 @@ export default class ReviewsServices extends BaseService {
         }
         reportReviews = async (review_id: string) => {
 
-
                 const review = await Reviews.findByIdAndUpdate(review_id, { flagged: true }, { new: true })
                 return review
 

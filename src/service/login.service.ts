@@ -3,7 +3,7 @@ import BaseService from '../service/base.service'
 
 export default class LoginService extends BaseService {
   // Signup
-  post = async (user) => {
+  Create = async (user) => {
     const passwordHash = encryptData(user.password)
     user.password = passwordHash
     const gotAdmin = await this.model.create(user)

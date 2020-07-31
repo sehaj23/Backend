@@ -10,7 +10,10 @@ import Employee from "../../models/employees.model";
 import Vendor from "../../models/vendor.model";
 import Event from "../../models/event.model"
 import Offer from "../../models/offer.model";
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer)
+import Review from '../../models/review.model'
+import UserverifyToken from '../../middleware/User.jwt'
+import Booking from '../../models/booking.model'
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking)
 const salonController = new SalonController(salonService)
 
 const salonInfoRouter = Router()
@@ -31,5 +34,14 @@ salonInfoRouter.get('/distance', salonController.getSalonDistance)
 //salonInfoRouter.get('/sort', salonController.getSalonsRw)
 //get home service salons
 salonInfoRouter.get('/homesalons',salonController.getHomeServiceSalon)
+//get categories
+salonInfoRouter.get('/category/:id',salonController.getSalonCategories)
+//get services use query
+salonInfoRouter.get('/services/:id',salonController.getService)
+//post Reviews
+salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
+// get Reviews
+salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
+
 
 export default salonInfoRouter

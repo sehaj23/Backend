@@ -66,20 +66,7 @@ describe('Bookings service test', () => {
         const Useres = await User.create(us)
         userid = Useres._id
 
-<<<<<<< HEAD
-        const s: ServiceSI = {
-            name: "sehaj",
-            price: 200,
-            duration: 15,
-            gender:"men"
-
-
-        }
-        const Service_res = await Services.create(s)
-        serviceid = Service_res._id
-=======
      
->>>>>>> controller-service
 
         const email = faker.internet.email()
         const date = new Date()
@@ -230,11 +217,7 @@ describe('Bookings service test', () => {
     })
 
     test("get all bookings",async done=>{
-<<<<<<< HEAD
-        const book = await request(app).get(`/api/v/bookings/?salon_id=${salonid}`)
-=======
         const book = await request(app).get("/api/v/bookings/").set('authorization',"Bearer "+token)
->>>>>>> controller-service
         console.log(book.body)
         expect(book.status).toEqual(200)
         done()
@@ -319,11 +302,7 @@ describe('Bookings service test', () => {
         expect(res.body._id).toBeDefined()
         console.log(res.body)
         empid = res.body._id
-<<<<<<< HEAD
-    
-=======
         expect(res.body.employees[0].phone).toEqual(e.phone)
->>>>>>> controller-service
         expect(res.status).toEqual(200)
         done()
 

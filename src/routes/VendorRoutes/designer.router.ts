@@ -11,17 +11,9 @@ const designerController = new DesignerController(designerService)
 
 
 
-<<<<<<< HEAD
-designerRouter.post("/",VendorverifyToken,ds.post)
-designerRouter.patch("/:id",VendorverifyToken,ds.patchDesigner)
-designerRouter.get("/:id",VendorverifyToken,ds.getId)
-designerRouter.put("/settings/:id",VendorverifyToken,ds.designerSettings)
-designerRouter.get("/:id/photo", VendorverifyToken, ds.getPhoto)
-=======
 designerRouter.post("/",VendorverifyToken,designerController.postDesigner)
 designerRouter.patch("/:id",VendorverifyToken,designerController.patchDesigner)
 designerRouter.get("/:id",VendorverifyToken,designerController.getId)
 designerRouter.put("/settings/:id",VendorverifyToken,designerController.designerSettings)
->>>>>>> controller-service
 
 export default designerRouter

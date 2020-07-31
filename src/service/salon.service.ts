@@ -16,6 +16,7 @@ import Photo from "../models/photo.model";
 import { Model } from "mongoose";
 import { OfferI } from "../interfaces/offer.interface";
 import { arePointsNear } from "../utils/location";
+import ReviewSI, { ReviewI } from "../interfaces/review.interface";
 
 
 
@@ -24,18 +25,22 @@ export default class SalonService extends BaseService {
         vendorModel: mongoose.Model<any, any>
         eventModel: mongoose.Model<any, any>
         offerModel: mongoose.Model<any, any>
+        reviewModel: mongoose.Model<any, any>
+        bookingModel: mongoose.Model<any, any>
 
         // constructor(model: mongoose.Model<any, any>) {
         //     this.model = model
         //     this.modelName = model.modelName
         // }
 
-        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>) {
+        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>,reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>) {
                 super(salonmodel);
                 this.employeeModel = employeeModel
                 this.vendorModel = vendorModel
                 this.eventModel = eventModel
                 this.offerModel = offerModel
+                this.reviewModel=reviewModel
+                this.bookingModel=bookingModel
         }
 
 
@@ -64,9 +69,11 @@ export default class SalonService extends BaseService {
                 return salon
 
         }
-        getService = async (id: string) => {
+        getService = async (id: string,filter:any) => {
+             
+                console.log(filter)
                 
-                const salon = await this.model.findById({ _id: id }).select("services")
+                const salon = await this.model.findOne({ _id: id,services:{$elemMatch:filter}}).select("services")
                 return salon
         }
         updateService = async (salonId: string, d, sid: string) => {
@@ -256,6 +263,39 @@ export default class SalonService extends BaseService {
                 return salonLocation
 
         }
+
+        getSalonCategories = async (_id:string,data:any) => {
+               const categories = await this.model.findOne({_id:_id})     
+               //@ts-ignore
+               for (let [key, value] of Object.entries(categories.services)) data.push(value.category)
+               return data
+
+
+        }
+
+        getSalonReviews =  async (_id:string,q:any) => {
+                const pageNumber: number = parseInt( q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 5)
+                 pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                const reviewsAll =  this.reviewModel.find({salon_id:_id}).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const reviewsPage = this.reviewModel.find({salon_id:_id}).count();
+              
+                const [reviews,pageNo] = await Promise.all([reviewsAll,reviewsPage])
+                const totalPages = Math.ceil(pageNo / pageLength)
+                return {reviews,totalPages,pageNumber}
+        }
+        
+       
+        postReviews = async (post: ReviewI) => {
+                const reviews = await this.reviewModel.create(post)
+                return reviews
+        }
+        checkpostReview = async (userId:string,salon_id:string) => {
+                const check =await  this.bookingModel.find({user_id:userId,salon_id:salon_id,status:"Completed"})
+                return check
+        }
+        
 
 
 

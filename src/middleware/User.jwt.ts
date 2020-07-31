@@ -37,7 +37,7 @@ const UserverifyToken = async (req: Request, res: Response, next: NextFunction) 
     try {
         
       // verifies secret and checks exp
-      const decoded = userJWTVerification(token)
+      const decoded = await userJWTVerification(token)
       if(decoded === null){
         logger.error("Something went wrong")
         res.status(401).send({ success: false, message: 'Something went wrong' });
