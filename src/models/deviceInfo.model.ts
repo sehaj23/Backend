@@ -1,6 +1,6 @@
 import mongoose from "../database";
 
-const UserMobileInfoSchema = new mongoose.Schema({
+const deviceInfoSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -11,6 +11,6 @@ const UserMobileInfoSchema = new mongoose.Schema({
     strict: false
 })
 
-const UserMobileInfo = mongoose.model('user_mobile_info', UserMobileInfoSchema)
+const DeviceInfo = mongoose.model('device_info', deviceInfoSchema)
 
-export default UserMobileInfo
+export default DeviceInfo

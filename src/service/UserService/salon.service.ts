@@ -1,5 +1,4 @@
 import Salon from '../../models/salon.model'
-import Service from '../../models/service.model'
 import { Request, Response } from 'express'
 import CONFIG from '../../config'
 import BaseService from './base.service'
@@ -15,24 +14,11 @@ export default class SalonInfoService extends BaseService {
   getSalonInfo = async (req: Request, res: Response) => {
     try {
       const salonId = req.params.id
-      console.log(salonId);
-      
-      if (!salonId)
-        return res.status(400).send({
-          message: 'Id not provided',
-        })
-        const si: string =  await SalonRedis.get(salonId)
-        if(si !== null){
-          return res.send(JSON.parse(si))
-        }
+      const sr: string = await SalonRedis.get(salonId)
+      if (sr !== null) return res.send(JSON.parse(sr))
       const salon = await Salon.findById(salonId)
-      if (!salon)
-        return res.status(404).send({
-          message: 'Salon not found',
-        })
-        
+      SalonRedis.set(salonId, salon)
       res.status(200).send(salon)
-      SalonRedis.set(salonId,salon)
     } catch (e) {
       res.status(500).send({
         message: `${CONFIG.RES_ERROR} ${e.message}`,
@@ -40,11 +26,18 @@ export default class SalonInfoService extends BaseService {
     }
   }
 
-  // Salon data
+  // Salon names
   getSalonNames = async (req: Request, res: Response) => {
     try {
-      const salons = await Salon.find({})
       const data = new Array()
+      let salons
+      const sr = await SalonRedis.get('Salons')
+      if (sr !== null) salons = JSON.parse(sr)
+      else {
+        salons = await Salon.find()
+        SalonRedis.set('Salons', salons)
+      }
+      //@ts-ignore
       for (let [key, value] of Object.entries(salons)) data.push(value.name)
       res.status(200).send(data)
     } catch (e) {
@@ -57,12 +50,19 @@ export default class SalonInfoService extends BaseService {
   // Sort salon : rating-wise
   getSalonsRw = async (req: Request, res: Response) => {
     try {
-      const salons = await Salon.find({})
-      const data = new Array()
       const rating = req.query.rating
-      if (rating !== 'asc' && rating !== 'dsc') return res.status(400).send()
+      if (rating !== 'asc' && rating !== 'dsc')
+        return res.status(400).send({ message: 'Send valid sorting order' })
+      const data = new Array()
+      let salons
+      const sr = await SalonRedis.get('Salons')
+      if (sr !== null) salons = JSON.parse(sr)
+      else {
+        salons = await Salon.find({})
+        SalonRedis.set('Salons', salons)
+      }
       const val1 = rating === 'asc' ? -1 : 1
-      const val2 = val1 * -1
+      const val2 = -val1
       for (let [key, value] of Object.entries(salons)) data.push(value)
       data.sort((a, b) => (a.rating < b.rating ? val1 : val2))
       res.status(200).send(data)
@@ -77,25 +77,12 @@ export default class SalonInfoService extends BaseService {
   getSearchResult = async (req: Request, res: Response) => {
     try {
       const phrase = req.query.phrase
-      let result1, result2
-
       if (!phrase)
         return res.status(400).send({ message: 'Provide search phrase' })
-
-      result1 = await Salon.find(
+      const data = await Salon.find(
         { $text: { $search: phrase } },
         { score: { $meta: 'textScore' } }
       ).sort({ score: { $meta: 'textScore' } })
-
-      result2 = await Service.find(
-        { $text: { $search: phrase } },
-        { score: { $meta: 'textScore' } }
-      )
-        .sort({ score: { $meta: 'textScore' } })
-        .populate('salon_id')
-        .exec()
-
-      const data = { ...result1, ...result2 }
       res.status(200).send(data)
     } catch (e) {
       res.status(500).send({
@@ -116,7 +103,15 @@ export default class SalonInfoService extends BaseService {
       //@ts-ignore
       centerPoint.lng = req.query.longitude
       const km = req.query.km || 2
-      const salon = await Salon.find({})
+
+      let salon
+      const sr = await SalonRedis.get('Salons')
+      if (sr !== null) salon = JSON.parse(sr)
+      else {
+        salon = await Salon.find()
+        SalonRedis.set('Salons', salon)
+      }
+
       for (var a = 0; a < salon.length; a++) {
         if (salon[a].longitude != null && salon[a].latitude != null) {
           //@ts-ignore
@@ -179,40 +174,4 @@ export default class SalonInfoService extends BaseService {
       })
     }
   }
-  // search services of salon
-  getSalonService = async (req: Request, res: Response) => {
-    try {
-        const phrase = req.query.phrase
-        let result1
-        if (!phrase)
-            return res.status(400).send({ message: 'Provide search phrase' })
-        result1 = await Salon.aggregate([
-            {
-                $lookup:
-                {
-                    from: "services",
-                    localField: "services",
-                    foreignField: "_id",
-                    as: "service_info",
-                }
-            },
-            {
-                $unwind: "$service_info"
-            },
-            {
-                $match:
-                {
-                    "service_info.name":{
-                        $regex: `.*${phrase}.*`
-                    } 
-                }
-            }   
-        ])
-        res.status(200).send(result1)
-    } catch (e) {
-        res.status(500).send({
-            message: `${CONFIG.RES_ERROR} ${e.message}`,
-        })
-    }
-}
 }

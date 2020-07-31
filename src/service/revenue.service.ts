@@ -1,18 +1,24 @@
-import Booking from "../../models/booking.model"
+
 import { Request, Response } from "express"
-import { BookingI } from "../../interfaces/booking.interface"
-import logger from "../../utils/logger"
-import mongoose from "../../database"
+import { BookingI } from "../interfaces/booking.interface"
+import logger from "../utils/logger"
+import mongoose from "../database"
 import * as moment from "moment"
+import BaseService from "./base.service"
 
 
 
-export default class RevenueService {
-    revenue = async (req: Request, res: Response) => {
+export default class RevenueService extends BaseService{
+    constructor(bookingmodel: mongoose.Model<any, any>) {
+        super(bookingmodel);
+        
+       
 
-        const q = req.query
-        console.log(q)
+    }
 
+    revenue = async (q:any) => {
+
+       
         // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
         //     const message = 'None id provided'
         //     res.status(400)
@@ -65,10 +71,10 @@ export default class RevenueService {
         console.log(filters);
     
         
-        try{
-            const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
-            const revenuePagesReq = Booking.count(filters)
-            const revenueStatsReq =  Booking.aggregate([
+       
+            const revenueDetailsReq =  this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const revenuePagesReq = this.model.count(filters)
+            const revenueStatsReq =  this.model.aggregate([
                 {$match: {...filters}},
                 { $project : {
                     price : 1 ,
@@ -97,32 +103,23 @@ export default class RevenueService {
             ]).skip(skipCount).limit(pageLength).sort('-createdAt')
             const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
             const totalPages = Math.ceil(revenuePages / pageLength)
-            res.send({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
-        }catch(e){
-            console.log(e)
-            res.status(400)
-            res.send({message: e.message})
-        }        
-
-
-        return;     
+            return ({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
+          
 
     }
-    totalRevenue = async (req: Request, res: Response) => {
-        const revenue = await Booking.aggregate([
+    totalRevenue = async () => {
+        const revenue = await this.model.aggregate([
             { $unwind: '$services' },
             { $match: { status: "Completed" } },
             { $group: { _id: null, price: { $sum: "$price" }, zattire_commission: { $sum: "$services.zattire_commission" }, vendor_commission: { $sum: "$services.vendor_commission" } } }
         ])
 
-        res.send(revenue)
+        return revenue;
 
 
     }
-    revenueByBookingId = async (req: Request, res: Response) => {
-        const id = req.params.id
-        const q = req.query
-       
+    revenueByBookingId = async (id:string,q:any) => {
+        
         
 
         // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
@@ -178,10 +175,10 @@ export default class RevenueService {
         // console.log(filters);
         // console.log(pageLength)
         
-        try{
-            const revenueDetailsReq =  Booking.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
-            const revenuePagesReq = Booking.count(filters)
-            const revenueStatsReq =  Booking.aggregate([
+       
+            const revenueDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+            const revenuePagesReq = this.model.count(filters)
+            const revenueStatsReq =  this.model.aggregate([
                 {$match: {...filters}},
                 { $project : {
                     price : 1 ,
@@ -210,16 +207,12 @@ export default class RevenueService {
             ]).skip(skipCount).limit(pageLength).sort('-createdAt')
             const [revenueDetails, revenueStats, revenuePages] = await Promise.all([revenueDetailsReq, revenueStatsReq, revenuePagesReq])
             const totalPages = Math.ceil(revenuePages / pageLength)
-            res.send({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
+            return ({revenueDetails, revenueStats, totalPages, currentPage: pageNumber})
 
-        }catch(e){
-            console.log(e)
-            res.status(400)
-            res.send({message: e.message})
-        }        
+       
 
 
-        return;
+      
 
 
 

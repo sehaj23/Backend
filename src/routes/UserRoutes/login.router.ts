@@ -1,17 +1,30 @@
-import {
-    Router
-} from "express";
-import LoginService from "../../service/UserService/user.login.service";
-import * as vd from '../../validators/user-validators/login-validator'
-import {checkSchema, check, oneOf, validationResult } from '../../../node_modules/express-validator'
-import mySchemaValidator from "../../middleware/my-schema-validator";
-const ls = new LoginService()
+import { Router } from 'express'
+import LoginService from '../../service/login.service'
+import { loginChecks, signupChecks } from '../../validators/login-validator'
+import mySchemaValidator from '../../middleware/my-schema-validator'
+import { signupLimiter, loginLimiter } from '../../middleware/rate-limit'
+import User from '../../models/user.model'
+import LoginController from '../../controller/login.controller'
+import CONFIG from '../../config'
 
 const loginRouter = Router()
+const loginService = new LoginService(User)
+const loginController = new LoginController(loginService, CONFIG.USER_JWT, '30 days')
 
 // @ts-ignore
-loginRouter.post("/", [vd.loginChecks, mySchemaValidator], ls.verifyUser)
-// @ts-ignore
-loginRouter.post('/create', [vd.signupChecks, mySchemaValidator], ls.createUser)
+loginRouter.post(
+  '/',
+  loginLimiter,
+  [loginChecks, mySchemaValidator],
+  loginController.login
+)
+
+//@ts-ignore
+loginRouter.post(
+  '/create',
+  signupLimiter,
+  [signupChecks, mySchemaValidator],
+  loginController.post
+)
 
 export default loginRouter

@@ -1,15 +1,14 @@
 import mongoose from "../database";
 import { OfferI } from "./offer.interface";
 import { ReviewI } from "./review.interface";
+import OptionsI from "./options.interface"
 
 export default interface ServiceI{
     name: string
     price: number
-    photo?: string
-    offers?: OfferI[]
+    options?:OptionsI[],
+    category:string,
     duration: number
-    salon_id? : string
-    mua_id?: string,
     reviews?: ReviewI[],
     gender:string
 }

@@ -7,7 +7,7 @@ const EmployeeSchema = new mongoose.Schema({
     services: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "services"
+            
         }]
     },
     photo: {
@@ -16,6 +16,12 @@ const EmployeeSchema = new mongoose.Schema({
     },
     fcm_token: {
         type: String
+    },
+    location: {
+        type: String,
+        enum: ['Customer Place' , 'Vendor Place', 'Both'],
+        default: 'Both',
+        required: true
     }
 }, {
     timestamps: true

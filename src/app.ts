@@ -16,6 +16,7 @@ import logger from "./utils/logger";
 import * as cors from "cors";
 import startSocketIO from "./service/socketio";
 import { AdminRedis } from "./redis/index.redis";
+import redisClient from './redis/redis'
 
 const app = express();
 app.use(cors());
@@ -129,6 +130,16 @@ app.put(
     }
   }
 );
+
+// TEMP: to clear redis
+app.get("/r/clr", async (req: express.Request, res: express.Response) => {
+  try{  
+    redisClient.flushdb();
+    res.status(200).send({msg: 'Redis store cleared'})
+  }catch(e){
+    res.status(400).send(e)
+  }
+})
 
 
 app.get("/", (req, res) =>{

@@ -4,7 +4,7 @@ import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
 import loginRouter from "./login.router";
 import vendorRouter from "./vendor.router";
-import makeupArtistRouter from "./makeupArtist.route";
+ import makeupArtistRouter from "./makeupArtist.route";
 import userRouter from "./user.router";
 import bookingRouter from "./booking.router"
 import salonRouter from "./salon.router";

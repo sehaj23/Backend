@@ -51,11 +51,11 @@ describe('Salon service test', () => {
             contact_number: "+12193860967"
         }
         const res2 = await request(app).post("/api/v/login/create").send(v)
-        expect(res2.status).toEqual(200)
+        expect(res2.status).toEqual(201)
         vendorId = res2.body._id
 
         done()
-    })
+    },TIME)
     beforeAll(async (done) => {
         const login = {
             password: "sehaj23",
@@ -67,7 +67,7 @@ describe('Salon service test', () => {
         token = (res2.body.token)
         done()
     
-    })
+    },TIME)
 
 
     test('add salon ', async done => {
@@ -80,9 +80,9 @@ describe('Salon service test', () => {
         expect(res.body.start_working_hours).toBeDefined()
         expect(res.body.speciality).toEqual(dataToSend.speciality)
         expect(res.body.start_price).toEqual(dataToSend.start_price)
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
         done()
-    })
+    },TIME)
 
 
 
@@ -93,53 +93,46 @@ describe('Salon service test', () => {
         }
         console.log(salonid)
 
-        const res = await request(app).put("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
+        const res = await request(app).patch("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
 
         expect(res.body.name).toEqual(salon.name)
 
         expect(res.body.location).toEqual(salon.location)
         expect(res.status).toEqual(200)
         done()
-
-    })
+    },TIME)
     test('Salon settings test', async done => {
-
         const service={
                 services:[{
+                    category:"check123",
                     name:"sehaj123",
                     price:123,
                     duration:15,
-                    gender:"men"
-                    
-                    
-                },{
-                    
+                    gender:"men" 
+                },{             
+                    category:"check123",   
                     name:"sehaj23",
                     price:123,
                     duration:15,
-                    gender:"women"
-                    
-                    
+                    gender:"women"                          
                 }]
         }
         const res = await request(app).put(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token).send(service)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
-    })
+    },TIME)
 
-    test('Salon settings test', async done => {
-        
+    test('Salon settings test', async done => {    
         const res = await request(app).get(`/api/v/salon/${salonid}/service`).set('authorization',"Bearer "+token)
         expect(res.body).toBeDefined()
         expect(res.status).toBe(200)
         done()
-
-
-    })
-
-
-
-
+    },TIME)
 })
+afterAll(async (done) => {
+    await db.disconnect();
+    done();
+  },TIME);
+
 

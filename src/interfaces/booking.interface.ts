@@ -21,7 +21,7 @@ export interface BookingServiceI{
 }
 
 export interface BookingI{
-    user_id: string
+    user_id: string | mongoose.Schema.Types.ObjectId
     makeup_artist_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
     designer_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
     salon_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon

@@ -18,8 +18,10 @@ describe('Vendor service test', () => {
             contact_number: "12193860967"
         }
         const res = await request(app).post("/api/v/login/create").send(v)
-        expect(res.status).toEqual(200)
-        // v.email = "Preet@gmail.com"
+        expect(res.body.email).toEqual(v.email)
+        expect(res.body.password).not.toEqual(v.password)
+        expect(res.status).toEqual(201)
+         //v.email = "Preet@gmail.com"
         // const res = await request(app).post("/api/vendor/login").send(v)
         // expect(res.status).toEqual(403)
         done()
@@ -37,7 +39,14 @@ describe('Vendor service test', () => {
         done()
 
     },TIME)
+
+  
 })
+afterAll(async (done) => {
+    await db.disconnect();
+    done();
+  });
+
 
 
 

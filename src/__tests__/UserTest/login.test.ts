@@ -170,7 +170,7 @@ describe("User Login/Signup test", () => {
         password: " a bc   ",
       };
       const res = await request(app).post("/api/u/login/").send(user);
-      expect(res.status).toEqual(400);
+      expect(res.status).toEqual(401);
       done();
     },
     TIME

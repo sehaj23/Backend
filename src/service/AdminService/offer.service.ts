@@ -1,7 +1,9 @@
 import BaseService from "./base.service";
 import Offer from "../../models/offer.model";
 import { Request, Response } from "express";
-import Service from "../../models/service.model";
+import { salonInfoChecks } from "../../validators/salon-validator";
+import Salon from "../../models/salon.model";
+
 
 
 export default class OfferService extends BaseService{
@@ -12,6 +14,7 @@ export default class OfferService extends BaseService{
 
     post = async (req: Request, res: Response) => {
         try {
+            const id = req.params.id
             const serviceId = req.params.serviceId || req.body.service_id
             if(!serviceId){
                 const errMsg = `Service Id is missing`
@@ -28,8 +31,9 @@ export default class OfferService extends BaseService{
                 return
             }
             const offerId = offer._id
-            const updatedService = await Service.findByIdAndUpdate(serviceId, {$push: {offers: offerId}}, {new: true})
-            res.send(updatedService)
+            const salon = await Salon.findOneAndUpdate({ _id: id, "services._id": serviceId },{$push: { "services.$.offers": offerId }}, { new: true })  
+          //  const updatedService = await Service.findByIdAndUpdate(serviceId, {$push: {offers: offerId}}, {new: true})
+            res.send(salon)
         } catch (error) {
             const errMsg = `Error: ${error.message}`
                 res.status(400)

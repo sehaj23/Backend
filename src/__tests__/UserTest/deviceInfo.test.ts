@@ -90,13 +90,13 @@ describe("Device-info test", () => {
     "Add Device info - Invalid ID Type",
     async (done) => {
       const dInfo = {
-        user_id: "9876543210",
+        user_id: "987653210",
         device_id: 1234,
         device_type: "mobile",
         model_no: " Nokia C2-03",
       };
       const res = await request(app).post("/api/u/device-info").send(dInfo);
-      expect(res.status).toEqual(500);
+      expect(res.status).toEqual(400);
       done();
     },
     TIME

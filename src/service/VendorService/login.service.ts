@@ -68,6 +68,8 @@ export default class LoginService extends BaseService {
             res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
         }
     }
+
+    // TODO: create vendor service for getting vendor details
    get = async (req: Request, res: Response) => {
 
         try {

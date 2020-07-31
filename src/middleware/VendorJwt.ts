@@ -23,10 +23,7 @@ export const vendorJWTVerification = async (token: string) => {
 }
 
 const VendorverifyToken = async (req: Request, res: Response, next: NextFunction) =>  {
-    if(process.env.NODE_ENV === 'test') {
-      next()
-      return
-    }
+  
       // check header or url parameters or post parameters for token
       const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
       if (!token) {
@@ -37,14 +34,17 @@ const VendorverifyToken = async (req: Request, res: Response, next: NextFunction
       try {
           
         // verifies secret and checks exp
-        const decoded = vendorJWTVerification(token)
+        const decoded = await vendorJWTVerification(token)
         if(decoded === null){
           logger.error("Something went wrong")
           res.status(401).send({ success: false, message: 'Something went wrong' });
           return
         }
+      
         // @ts-ignore
         req.vendorId = decoded._id;
+          // @ts-ignore
+       
         next();
       } catch (err) {
         res.status(401).send({ auth: false, message: err });

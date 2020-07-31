@@ -10,7 +10,7 @@ import Vendor from "../../models/vendor.model";
 import Salon from "../../models/salon.model";
 import { SalonI } from "../../interfaces/salon.interface";
 import ServiceI from "../../interfaces/service.interface";
-import Service from "../../models/service.model";
+
 import { EmployeeI } from "../../interfaces/employee.interface";
 import Employee from "../../models/employees.model";
 import Offer from "../../models/offer.model";
@@ -158,7 +158,7 @@ export default class SalonService extends BaseService{
 
     addSalonService = async (req: Request, res: Response) => {
         try {
-            const d: ServiceI = req.body
+            const d: ServiceI = req.body.services
             const _id = mongoose.Types.ObjectId(req.params.id)
             if(!_id){
                 logger.error(`Salon Id is missing salon_id: ${d.salon_id} & mua_id: ${d.mua_id}`)
@@ -167,10 +167,8 @@ export default class SalonService extends BaseService{
                 return
             }
 
-            const service = await Service.create(d)
-            const service_id = mongoose.Types.ObjectId(service._id)
             //@ts-ignore
-            const newSalon = await Salon.findOneAndUpdate({_id, services: {$nin: [service_id]}}, { $push : {services  : service_id}}, {new: true}).populate("services").exec()
+            const newSalon = await Salon.findOneAndUpdate({_id}, { $push : {services  : {$each:d,$postion:0}}}, {new: true})
             if(newSalon === null){
                 const errMsg = `Add Services: no data with this _id and service was found`
                 logger.error(errMsg)
