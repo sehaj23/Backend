@@ -24,7 +24,7 @@ loginRouter.post(
   '/create',
   signupLimiter,
   [signupChecks, mySchemaValidator],
-  loginController.post
+  loginController.create
 )
 
 export default loginRouter

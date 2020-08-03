@@ -1,11 +1,9 @@
-import encryptData from '../utils/password-hash'
+
 import BaseService from '../service/base.service'
 
 export default class LoginService extends BaseService {
   // Signup
-  Create = async (user) => {
-    const passwordHash = encryptData(user.password)
-    user.password = passwordHash
+  create = async (user) => {
     const gotAdmin = await this.model.create(user)
     gotAdmin.password = ''
     return gotAdmin

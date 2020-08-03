@@ -6,6 +6,7 @@ import controllerErrorHandler from '../middleware/controller-error-handler.middl
 import encryptData from '../utils/password-hash'
 import { UserRedis } from '../redis/index.redis'
 import CONFIG from '../config'
+import logger from '../utils/logger'
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -63,4 +64,23 @@ export default class LoginController extends BaseController {
       })
     }
   })
+
+  create = controllerErrorHandler(async (req: Request, res: Response) => {
+    const user = req.body
+      var password = encryptData(user.password)
+      user.password = password
+      const createUser = await this.service.create(user)
+      if(createUser==null){
+        const errMsg = `unable to create User`;
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+      }
+      createUser.password =""
+      res.status(201).send(createUser)
+
+
+
+  })
+
 }

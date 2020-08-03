@@ -9,7 +9,7 @@ const loginRouter = Router()
 const loginService = new LoginService(Admin)
 const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '30 days')
 
-loginRouter.post("/create", loginController.post)
+loginRouter.post("/create", loginController.create)
 loginRouter.post("/",loginController.login)
 
 export default loginRouter
