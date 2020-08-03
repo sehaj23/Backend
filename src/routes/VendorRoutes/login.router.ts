@@ -15,7 +15,7 @@ const loginService = new LoginService(Vendor)
 const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days')
 
 loginRouter.post("/", loginController.login)
-loginRouter.post("/create", loginController.post)
+loginRouter.post("/create", loginController.create)
 
 // loginRouter.post("/", ls.vendorPost)
 // loginRouter.post("/create", ls.createVendor)

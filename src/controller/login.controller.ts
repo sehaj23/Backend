@@ -68,15 +68,16 @@ export default class LoginController extends BaseController {
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
       var password = encryptData(user.password)
+      
       user.password = password
       const createUser = await this.service.create(user)
+      console.log(createUser)
       if(createUser==null){
         const errMsg = `unable to create User`;
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
       }
-      createUser.password =""
       res.status(201).send(createUser)
 
 
