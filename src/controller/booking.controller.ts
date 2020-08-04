@@ -6,15 +6,78 @@ import encryptData from "../utils/password-hash";
 import logger from "../utils/logger";
 import moment = require("moment");
 import mongoose from "../database";
+import SalonService from "../service/salon.service";
+import ErrorResponse from "../utils/error-response";
+import EmployeeAbsentismService from "../service/employee-absentism.service";
 
 
 export default class BookingController extends BaseController {
 
     service: BookingService
-    constructor(service: BookingService) {
+    salonService: SalonService
+    employeeAbsentismService: EmployeeAbsentismService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsentismService) {
         super(service)
         this.service = service
+        this.salonService = salonService
+        this.employeeAbsentismService = employeeAbsentismService
     }
+
+    /**
+     * @description book the the appointment with the salon
+     */
+    bookAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
+        // get the user id
+        //@ts-ignore
+        const userId = req.id
+        // get all the services by OPTION ids
+        const gotOptionIds = req.body.option_ids as any[]
+        // get the details of the services
+        const services = await this.salonService.getServicesByOptionIds(gotOptionIds) as any[]
+        if(services.length === 0){
+            throw new ErrorResponse("No services chosen")
+        }
+        //TODO: add the tax logic
+        // get the date and time of the service
+        const gotServiceDate = req.body.date
+        const gotServiceTime = req.body.time
+        // get location of the service ["home", "store"]
+        const gotLocation = req.body.location
+        // get the employee ids if chosen
+        const gotEmployeeIds = req.body.employee_ids as any[]
+        if(gotEmployeeIds.length > 0){
+            // then check 
+                // 1. check if employee ids selected matches the number of options
+                    // a. if service loaction is home then there should be only one employee id
+                    if(gotEmployeeIds.length > 1 && gotLocation === "home") throw new ErrorResponse("Cannot select more than 1 employee when booking for home")
+                    // b. if at salon, then handle later
+
+                // 1. check if the employee ids belong to salon or not
+                const salonEmployeeIds = await this.salonService.getSalonEmployeesByIds(gotEmployeeIds) as any[]
+                if(salonEmployeeIds.length !== gotEmployeeIds.length) throw new ErrorResponse("Employee does not match with salon")
+                // 2. the avalabilty of the employee if not available
+                    // a. if not booked already
+                    const servicesByEmployees =  await this.service.getEmployeesBookingsByIdsTime(gotEmployeeIds, `${gotServiceDate} ${gotServiceTime}` ) as any[]
+                    if(servicesByEmployees.length !== 0) throw new ErrorResponse("Employees are busy")
+                    // b. if absent (only checking date)
+                    const absentEmployees = await this.employeeAbsentismService.get({"employee_id": gotEmployeeIds, "absenteeism_date": gotServiceDate}) as any[]
+                    if(absentEmployees.length === 0) throw new ErrorResponse("Employees are absent")
+                // 1.b Handling if at salon
+                if(gotEmployeeIds.length !== gotOptionIds.length){
+                    // add employees for the service
+                    // 1. get employee ids from the salon 
+                    
+                    // 2. get employees who are available
+                    // 3. get employees who do this service
+                }
+        }
+                
+                // else book the appointment
+            // else search for employees free at that time. If found
+                // then select those employees and book the appointment
+                // else send error
+                
+    })
 
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {
 

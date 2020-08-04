@@ -12,6 +12,7 @@ import sendNotificationToDevice from "../utils/send-notification";
 import moment = require("moment");
 import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
+import ErrorResponse from "../utils/error-response";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -140,7 +141,6 @@ export default class BookingService extends BaseService {
      * 
      * @description This is the service to get the employees fof the salon on given date 
      */
-
     getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
         const dateTimeD = new Date(dateTime);
         const busyEmployeesIds = [];
@@ -320,11 +320,17 @@ export default class BookingService extends BaseService {
 
 
     }
+
+    /**
+     * Get the bookings of all employees on a specific date and time
+     */
+    getEmployeesBookingsByIdsTime = async (ids, dateTime) => {
+        dateTime = moment(dateTime)
+        if(!(dateTime as moment.Moment).isValid()) throw new ErrorResponse(`Date time not valid: ${dateTime}`)
+        return this.model.find({"services.employee_id": ids, "services.service_time": dateTime})
+    }
+
     getEmployeebookings = async (q, empId: string) => {
-
-
-        console.log(q)
-
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -380,7 +386,6 @@ export default class BookingService extends BaseService {
 
         }
         filters["services.employee_id"] = {
-            //@ts-ignore  
             "$in": empId
         }
         console.log(filters);

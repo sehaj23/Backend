@@ -76,6 +76,20 @@ export default class SalonService extends BaseService {
                 const salon = await this.model.findOne({ _id: id,services:{$elemMatch:filter}}).select("services")
                 return salon
         }
+        // getService = async (id: string) => {
+        //         return this.model.findById({ _id: id }).select("services")
+        // }
+
+        getServiceByServiceId = async (id: string) => this.model.findOne({"services._id": id})
+
+        getServicesByServiceIds = async (ids: string[]) => this.model.find({"services._id": ids})
+
+        // TEST IT
+        getServiceByOptionId = async(id: string) => this.model.findOne({"services.*.options._id": id}) 
+
+        // TEST IT
+        getServicesByOptionIds = async(ids: string[]) => this.model.find({"services.*.options._id": ids})
+
         updateService = async (salonId: string, d, sid: string) => {
                 
                 d._id = sid
@@ -95,6 +109,9 @@ export default class SalonService extends BaseService {
                 return newSalon
 
         }
+
+        getSalonEmployeeById = async (id: string) => this.model.findOne({"employees": id})
+        getSalonEmployeesByIds = async (ids: string[]) => this.model.find({"employees": ids})
 
         deleteSalonEmployee = async (_id: string, eid: string, vendorId: string) => {
                 

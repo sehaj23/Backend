@@ -26,7 +26,6 @@ const BookingSchema = new mongoose.Schema({
             service_id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "services"
-                
             },
             employee_id:{
                 type: mongoose.Schema.Types.ObjectId,
