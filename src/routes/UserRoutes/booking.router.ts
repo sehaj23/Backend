@@ -1,6 +1,6 @@
 import { Router } from "express"
-import bookingService from "../../service/UserService/booking.service"
-const bs = new bookingService()
+import BookingService from "../../service/UserService/booking.service"
+const bs = new BookingService()
 
 const bookingRouter = Router()
 

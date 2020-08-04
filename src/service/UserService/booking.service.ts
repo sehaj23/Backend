@@ -10,7 +10,7 @@ import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
 // import { INTEGER } from 'sequelize/types'
 import * as moment from 'moment'
 
-export default class bookingService extends BaseService {
+export default class BookingService extends BaseService {
   constructor() {
     super(Booking)
   }

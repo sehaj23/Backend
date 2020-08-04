@@ -4,11 +4,20 @@ import BookinkService from "../../service/booking.service";
 import BookingController from "../../controller/booking.controller";
 import Booking from "../../models/booking.model";
 import Salon from "../../models/salon.model";
+import SalonService from "../../service/salon.service";
+import Employee from "../../models/employees.model";
+import Vendor from "../../models/vendor.model";
+import Offer from "../../models/offer.model";
+import EmployeeAbsentismService from "../../service/employee-absentism.service";
+import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
+import Event from "../../models/event.model";
 
 
 const bookingRouter = Router()
 const bookingService = new BookinkService(Booking,Salon)
-const bookingController = new BookingController(bookingService)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer)
+const employeeAbsenteesimService = new EmployeeAbsentismService(EmployeeAbsenteeism)
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService)
 
 bookingRouter.post("/", VendorverifyToken, bookingController.post)
 bookingRouter.get("/:id", VendorverifyToken, bookingController.getId)
