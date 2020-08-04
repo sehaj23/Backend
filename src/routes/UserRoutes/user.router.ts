@@ -7,6 +7,7 @@ import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
 import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
+import { walkUpBindingElementsAndPatterns } from "typescript";
 
 const userRouter = Router()
 const userService = new UserService(User,Booking)
@@ -20,5 +21,6 @@ userRouter.patch("/password",UserverifyToken,userController.updatePassword)
 userRouter.get("/bookings",UserverifyToken,userController.pastBooking)
 userRouter.patch("/address",UserverifyToken,userController.addAddress)
 userRouter.get("/address",UserverifyToken,userController.getAddress)
+userRouter.put("/profile-photo",UserverifyToken,userController.putProfilePic)
 
 export default userRouter

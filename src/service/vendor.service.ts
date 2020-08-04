@@ -156,6 +156,8 @@ export default class VendorService extends BaseService{
             const service = await Employee.findById(id).populate("services").populate("photos").exec()
             return service
     }
+    
+
 
 
 

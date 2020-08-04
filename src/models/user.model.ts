@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
     signin_from: {
         type: String,
     },
-    photo: {
+    profile_pic: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
     },
