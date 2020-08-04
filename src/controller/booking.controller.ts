@@ -65,7 +65,10 @@ export default class BookingController extends BaseController {
                 // 1.b Handling if at salon
                 if(gotEmployeeIds.length !== gotOptionIds.length){
                     // add employees for the service
-                    // 1. get employees who do this service
+                    // 1. get employee ids from the salon 
+                    
+                    // 2. get employees who are available
+                    // 3. get employees who do this service
                 }
         }
                 
