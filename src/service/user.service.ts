@@ -19,9 +19,9 @@ export default class UserService extends BaseService {
 
     getUser = async (userId) => {
         //@ts-ignore
-        const _id = userId
-        const user = await this.model.findById(_id)
-        user.password = ""
+        const user = await this.model.findOne({_id:userId})
+        console.log(user)
+        user.password=""
         return user
     }
     update = async (id: string,d: any) => {
@@ -39,12 +39,12 @@ export default class UserService extends BaseService {
             const updatepass = await this.model.findByIdAndUpdate({ _id }, { password: newpasswordHash }, { new: true })
             return updatepass
         } else {
-            return ("Error Updating password")
+            return ("User ID Pass doesnot match")
         }
     }
 
     pastBooking = async(id:string)=>{
-        const booking = await this.bookingModel.find({user_id:id})
+        const booking = await this.bookingModel.find({user_id:id}).populate("employee_id")
         return booking
     }
     addAddress = async(id:string,d:any)=>{

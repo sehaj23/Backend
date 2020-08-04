@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
     },
+    phone: { 
+        type: String,
+        required: true
+     },
     age: {
         type: String,
     },
@@ -49,16 +53,24 @@ const UserSchema = new mongoose.Schema({
         type: [{
             address: {
                 type: String,
+               required:true
             },
             city: {
                 type: String,
+                required:true
             },
             state: {
                 type: String,
                 enum:["Andra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Uttaranchal","Uttar Pradesh","West Bengal","Andaman and Nicobar Islands","Chandigarh","Daman and Diu","Delhi","Lakshadeep","Pondicherry"],
+                required:true
+            },
+            pincode:{
+                type: Number,
+                required:true
             },
             tag: {
                 type: String,
+                
             }
         }]
     }

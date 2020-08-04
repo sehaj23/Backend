@@ -68,7 +68,9 @@ export default class VendorController extends BaseController {
     vendorInfo =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.vendorId
+        console.log(id)
         const vendor = await this.service.getVendor(id)
+        
         if(vendor==null){
             logger.error(`Unable to fetch info. Please Login again`)
             res.status(400)

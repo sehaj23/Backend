@@ -55,10 +55,10 @@ export default class VendorService extends BaseService{
     getVendor = async (vendorId) => {
 
             //@ts-ignore
-            const _id = vendorId
-            const outlets = await this.model.findById(_id).populate("makeup_artists").populate("salons").populate("designers").populate("profile_pic").exec()
-            outlets.password = ""
-            return outlets
+            
+            const vendor = await this.model.findOne({_id:vendorId}) //.populate("makeup_artists").populate("salons").populate("designers").populate("profile_pic").exec()
+           
+            return vendor
 
     }
     update = async (id:string,d:any) => {

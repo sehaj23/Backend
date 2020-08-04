@@ -14,12 +14,11 @@ const userController= new UserController(userService)
 
 
 
-userRouter.get("/",UserverifyToken,userController.getUser)
+userRouter.get("/info",UserverifyToken,userController.getUser)
 userRouter.patch("/update",UserverifyToken,userController.update)
 userRouter.patch("/password",UserverifyToken,userController.updatePassword)
 userRouter.get("/bookings",UserverifyToken,userController.pastBooking)
 userRouter.patch("/address",UserverifyToken,userController.addAddress)
 userRouter.get("/address",UserverifyToken,userController.getAddress)
-
 
 export default userRouter

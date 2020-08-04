@@ -19,6 +19,7 @@ export default class UserController extends BaseController{
     getUser = controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
+        console.log(id)
         const user = await this.service.getUser(id)
         if(user===null){
             logger.error(`Unable to fetch user details`)
@@ -32,7 +33,18 @@ export default class UserController extends BaseController{
     update = controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore   
         const id = req.userId
+     
+        const updates = Object.keys(req.body)
         const d = req.body
+        const allowedupates = ["name", "age","gender","color_complextion","address","phone"]
+        const isvalid = updates.every((update) => allowedupates.includes(update))
+        console.log(isvalid)
+        if (!isvalid) {
+                const errMsg = `Sorry ${updates} cannot be updated!`
+                logger.error(errMsg)
+                res.send({message:errMsg})
+                return
+        }
         const user = await this.service.update(id,d)
         if(user===null){
             logger.error(`Unable to update details`)
@@ -73,6 +85,12 @@ export default class UserController extends BaseController{
     })
     addAddress = controllerErrorHandler( async (req: Request, res: Response) => {
         const d = req.body
+        if(!d.address && !d.city && !d.state){
+            res.status(400)
+            res.send({ message: `Send Full Address` })
+            return
+
+        }
          //@ts-ignore
          const id  = req.userId
          const address = await this.service.addAddress(id,d)
@@ -100,5 +118,7 @@ export default class UserController extends BaseController{
 
 
     })
+
+
 
 }

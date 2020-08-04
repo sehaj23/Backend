@@ -24,6 +24,7 @@ export default class LoginController extends BaseController {
       const email = req.body.email
       const password = encryptData(req.body.password)
       const user = await this.service.login(email, password)
+      console.log(this.jwtKey)
       console.log('USER',user)
 
       if (user == null) {
