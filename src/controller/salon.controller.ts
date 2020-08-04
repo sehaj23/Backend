@@ -326,22 +326,22 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
-        const sr: string = await SalonRedis.get(salonId)
-        if (sr !== null) return res.send(JSON.parse(sr))
+         const sr: string = await SalonRedis.get(salonId)
+         if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId)
-        SalonRedis.set(salonId, salon)
+         SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
-         const sr = await SalonRedis.get('Salons')
-         if (sr !== null) { salons = JSON.parse(sr)
-          }
-         else {
+        // const sr = await SalonRedis.get('Salons')
+        //  if (sr !== null) { salons = JSON.parse(sr)
+        //   }
+        //  else {
             salons = await this.service.getSalon()
-            SalonRedis.set('Salons', salons)
-        }
+     //       SalonRedis.set('Salons', salons)
+      //  }
         res.status(200).send(salons)
 
     })

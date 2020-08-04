@@ -153,7 +153,8 @@ export default class SalonService extends BaseService {
 
         // Salon Rating-Wise  Recommended.
         getSalon= async () => {
-                const salons = await this.model.find().limit(10).sort({rating:1})
+                //TODO: send salon with rating 5
+                const salons = await this.model.find().sort([['rating', -1], ['createdAt', -1]]).limit(10)
                 //@ts-ignore
              //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salons
