@@ -324,7 +324,7 @@ export default class SalonService extends BaseService {
          }
 
          getBrandbyId = async(id:string)=>{
-                 const brand = await this.brandModel.findOne({_id:id}).populate("salon_id")
+                 const brand = await this.brandModel.findOne({_id:id}).populate("salon_id").exec()
                 return brand
          }
 

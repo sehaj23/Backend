@@ -11,12 +11,12 @@ const BrandSchema = new mongoose.Schema({
     logo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos",
-        required: true
+   //     required: true
     },
     salon_id: {
         type: [{
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "salon"  
+                ref: "salons"  
         }]
     }
 
