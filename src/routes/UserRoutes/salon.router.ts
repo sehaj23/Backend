@@ -13,7 +13,8 @@ import Offer from "../../models/offer.model";
 import Review from '../../models/review.model'
 import UserverifyToken from '../../middleware/User.jwt'
 import Booking from '../../models/booking.model'
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking)
+import Brand from '../../models/brands.model'
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand)
 const salonController = new SalonController(salonService)
 
 const salonInfoRouter = Router()
@@ -44,6 +45,8 @@ salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonRev
 salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
 // check if user can Post Reviews
 salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPostReviews)
+
+
 
 
 export default salonInfoRouter

@@ -27,13 +27,15 @@ export default class SalonService extends BaseService {
         offerModel: mongoose.Model<any, any>
         reviewModel: mongoose.Model<any, any>
         bookingModel: mongoose.Model<any, any>
+        brandModel: mongoose.Model<any, any>
+
 
         // constructor(model: mongoose.Model<any, any>) {
         //     this.model = model
         //     this.modelName = model.modelName
         // }
 
-        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>,reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>) {
+        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>,reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>) {
                 super(salonmodel);
                 this.employeeModel = employeeModel
                 this.vendorModel = vendorModel
@@ -41,6 +43,7 @@ export default class SalonService extends BaseService {
                 this.offerModel = offerModel
                 this.reviewModel=reviewModel
                 this.bookingModel=bookingModel
+                this.brandModel=brandModel
         }
 
 
@@ -313,8 +316,22 @@ export default class SalonService extends BaseService {
                 const check =await  this.bookingModel.find({user_id:userId,salon_id:salon_id,status:"Completed"})
                 return check
         }
-        
 
+         getBrand= async () => {
+                const brand = await this.brandModel.find({})
+                return brand
+
+         }
+
+         getBrandbyId = async(id:string)=>{
+                 const brand = await this.brandModel.findOne({_id:id}).populate("salon_id")
+                return brand
+         }
+
+         addBrand= async (d:any) => {
+                const brand = await this.brandModel.create(d)
+                return brand
+         }
 
 
 }

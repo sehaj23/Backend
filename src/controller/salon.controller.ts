@@ -478,6 +478,45 @@ export default class SalonController extends BaseController {
 
     })
 
+    getBrands = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        const brand  =  await this.service.getBrand()
+        if(brand===null){
+            res.status(400)
+            res.send({ message: `No Brands Found` })
+
+        }
+        res.send(brand)
+        
+
+    })
+    getBrandbyId = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        const id = req.params.id
+        const brand = await this.service.getBrandbyId(id)
+        if(brand===null){
+            res.status(400)
+            res.send({ message: `No Brands Found` })
+
+        }
+        res.send(brand)
+        
+
+
+    })
+
+    addBrand = controllerErrorHandler(async (req: Request, res: Response) => {
+        const d = req.body
+        const brand = await this.service.addBrand(d)
+        if(brand===null){
+            res.status(400)
+            res.send({ message: `Unable to create Brand` })
+
+        }
+        res.send(brand)
+
+    })
+
 
 
 }

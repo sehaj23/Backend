@@ -6,6 +6,7 @@ import { SalonRedis } from '../redis/index.redis'
 import CONFIG from '../config'
 import { EmployeeAbsenteeismI } from '../interfaces/employeeAbsenteeism.interface'
 import logger from '../utils/logger'
+import { PhotoI } from '../interfaces/photo.interface'
 
 export default class VendorController extends BaseController {
   
@@ -158,4 +159,6 @@ export default class VendorController extends BaseController {
         res.send(emp)
 
     })
+
+   
 }

@@ -6,7 +6,7 @@ import loginRouter from "./login.router";
 import vendorRouter from "./vendor.router";
  import makeupArtistRouter from "./makeupArtist.route";
 import userRouter from "./user.router";
-import bookingRouter from "./booking.router"
+//import bookingRouter from "./booking.router"
 import salonRouter from "./salon.router";
 import offerRouter from "./offer.router";
 
@@ -19,7 +19,7 @@ router.use("/login", loginRouter);
 router.use("/vendor", vendorRouter);
 router.use("/makeupArtist", makeupArtistRouter)
 router.use("/user", userRouter)
-router.use("/booking", bookingRouter)
+//router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
 

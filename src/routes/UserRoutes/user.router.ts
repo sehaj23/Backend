@@ -7,7 +7,6 @@ import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
 import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
-import { walkUpBindingElementsAndPatterns } from "typescript";
 
 const userRouter = Router()
 const userService = new UserService(User,Booking)

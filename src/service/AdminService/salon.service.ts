@@ -242,5 +242,7 @@ export default class SalonService extends BaseService{
         }
     }
 
+
+
     
 }

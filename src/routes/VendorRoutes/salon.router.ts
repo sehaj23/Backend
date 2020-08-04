@@ -9,9 +9,10 @@ import Event from "../../models/event.model"
 import Offer from "../../models/offer.model";
 import Review from '../../models/review.model'
 import Booking from '../../models/booking.model'
+import Brand from "../../models/brands.model";
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand)
 const salonController = new SalonController(salonService)
 //const ss = new SalonService()
 
