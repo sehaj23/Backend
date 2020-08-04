@@ -6,10 +6,11 @@ import User from "../../models/user.model";
 import LoginService from "../../service/login.service";
 import CONFIG from "../../config";
 import UserController from "../../controller/user.controller";
+import Booking from "../../models/booking.model";
 
 const userRouter = Router()
 
-const userService = new UserService(User)
+const userService = new UserService(User,Booking)
 const userController= new UserController(userService)
 
 
@@ -17,7 +18,7 @@ userRouter.post("/", VendorverifyToken, userController.post)
 userRouter.get("/", VendorverifyToken, userController.get)
 userRouter.get("/:id", VendorverifyToken, userController.getId)
 userRouter.put("/:id", VendorverifyToken, userController.put)
-//userRouter.put("/:id/photo", VendorverifyToken, us.putPhoto)
+userRouter.put("/:id/photo", VendorverifyToken, userController.putPhoto)
 userRouter.get("/:id/photo", VendorverifyToken, userController.getPhoto)
 
 export default userRouter

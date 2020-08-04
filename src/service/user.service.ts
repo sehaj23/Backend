@@ -8,29 +8,54 @@ import CONFIG from "../config";
 import UserI from "../interfaces/user.interface";
 import * as crypto from "crypto"
 import mongoose from "../database";
+import encryptData from "../utils/password-hash";
 
 export default class UserService extends BaseService {
-    constructor(User: mongoose.Model<any, any>) {
+    bookingModel: mongoose.Model<any, any>
+    constructor(User: mongoose.Model<any, any>,bookingModel:mongoose.Model<any,any>) {
         super(User)
+        this.bookingModel=bookingModel
     }
 
-    postUser = async (req: Request, res: Response) => {
-        try {
-            const v: UserI = req.body
-
-            const passwordHash = crypto.createHash("md5").update(v.password!).digest("hex")
-            v.password = passwordHash
-
-            const vendor = await this.model.create(v)
-
-            res.send(vendor)
-        } catch (e) {
-            logger.error(`${e.message}`)
-            res.status(403)
-            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
+    getUser = async (userId) => {
+        //@ts-ignore
+        const _id = userId
+        const user = await this.model.findById(_id)
+        user.password = ""
+        return user
+    }
+    update = async (id: string,d: any) => {
+        const _id = mongoose.Types.ObjectId(id)
+        const user = await this.model.findByIdAndUpdate(_id, d, { new: true })
+        return user
+    }
+    updatePass = async (id: string, password: string, newpassword: String) => {
+        //@ts-ignore
+        const _id = mongoose.Types.ObjectId(id)
+        const passwordHash = encryptData(password)
+        const user = await this.model.findOne({ _id, password: passwordHash })
+        const newpasswordHash = encryptData(newpassword)
+        if (user) {
+            const updatepass = await this.model.findByIdAndUpdate({ _id }, { password: newpasswordHash }, { new: true })
+            return updatepass
+        } else {
+            return ("Error Updating password")
         }
     }
 
-    
+    pastBooking = async(id:string)=>{
+        const booking = await this.bookingModel.find({user_id:id})
+        return booking
+    }
+    addAddress = async(id:string,d:any)=>{
+        const user = await this.model.findByIdAndUpdate({_id:id},d,{new:true}).select("address")
+        return user
+    }
+
+    getAddress = async(id:string)=>{
+        const address = await this.model.findById({_id:id}).select("address")
+        return address
+    }
+
 
 }

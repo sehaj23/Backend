@@ -80,8 +80,6 @@ export default class LoginController extends BaseController {
       }
       res.status(201).send(createUser)
 
-
-
   })
 
 }

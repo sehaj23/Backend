@@ -5,9 +5,10 @@ import UserService from "../../service/user.service";
 import CONFIG from "../../config";
 import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
+import Booking from "../../models/booking.model"
 
 const userRouter = Router()
-const userService = new UserService(User)
+const userService = new UserService(User,Booking)
 const userController= new UserController(userService)
 
 userRouter.post("/", verifyToken, userController.post)
