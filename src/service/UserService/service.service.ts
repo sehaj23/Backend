@@ -26,8 +26,8 @@ export default class serviceService extends BaseService {
         //@ts-ignore
           value.services.forEach((x) => data.push(x.name))
       else {
-        const salonInfo = await Salon.findOne({ name: salonName })
-        salonInfo.services.forEach((x) => data.push(x.name))
+        // const salonInfo = await Salon.findOne({ name: salonName })
+        // salonInfo.services.forEach((x) => data.push(x.name))
       }
       res.status(200).send(data)
     } catch (e) {
