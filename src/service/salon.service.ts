@@ -35,15 +35,15 @@ export default class SalonService extends BaseService {
         //     this.modelName = model.modelName
         // }
 
-        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>,reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>) {
+        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>, reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>) {
                 super(salonmodel);
                 this.employeeModel = employeeModel
                 this.vendorModel = vendorModel
                 this.eventModel = eventModel
                 this.offerModel = offerModel
-                this.reviewModel=reviewModel
-                this.bookingModel=bookingModel
-                this.brandModel=brandModel
+                this.reviewModel = reviewModel
+                this.bookingModel = bookingModel
+                this.brandModel = brandModel
         }
 
 
@@ -60,41 +60,41 @@ export default class SalonService extends BaseService {
                 return salon
         }
 
-        addSalonService = async (_id: string, d:any) => {
+        addSalonService = async (_id: string, d: any) => {
 
-                const newSalon = await this.model.findOneAndUpdate({ _id },{ $push: { services: { $each: d, $postion: 0 } } }, { new: true })
+                const newSalon = await this.model.findOneAndUpdate({ _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
                 return newSalon
 
         }
         deleteSalonService = async (_id: string, sid) => {
-               
+
                 const salon = await this.model.findOneAndUpdate({ _id: _id }, { $pull: { services: { _id: sid } } }, { new: true })
                 return salon
 
         }
-        getService = async (id: string,filter:any) => {
-             
+        getService = async (id: string, filter: any) => {
+
                 console.log(filter)
-                
-                const salon = await this.model.findOne({ _id: id,services:{$elemMatch:filter}}).select("services")
+
+                const salon = await this.model.findOne({ _id: id, services: { $elemMatch: filter } }).select("services")
                 return salon
         }
         // getService = async (id: string) => {
         //         return this.model.findById({ _id: id }).select("services")
         // }
 
-        getServiceByServiceId = async (id: string) => this.model.findOne({"services._id": id})
+        getServiceByServiceId = async (id: string) => this.model.findOne({ "services._id": id })
 
-        getServicesByServiceIds = async (ids: string[]) => this.model.find({"services._id": ids})
-
-        // TEST IT
-        getServiceByOptionId = async(id: string) => this.model.findOne({"services.*.options._id": id}) 
+        getServicesByServiceIds = async (ids: string[]) => this.model.find({ "services._id": ids })
 
         // TEST IT
-        getServicesByOptionIds = async(ids: string[]) => this.model.find({"services.*.options._id": ids})
+        getServiceByOptionId = async (id: string) => this.model.findOne({ "services.*.options._id": id })
+
+        // TEST IT
+        getServicesByOptionIds = async (ids: string[]) => this.model.find({ "services.*.options._id": ids })
 
         updateService = async (salonId: string, d, sid: string) => {
-                
+
                 d._id = sid
                 const salon = await this.model.findOneAndUpdate({ _id: salonId, "services._id": sid }, { "services.$": d }, { new: true })
                 return salon
@@ -113,17 +113,17 @@ export default class SalonService extends BaseService {
 
         }
 
-        getSalonEmployeeById = async (id: string) => this.model.findOne({"employees": id})
-        getSalonEmployeesByIds = async (ids: string[]) => this.model.find({"employees": ids})
+        getSalonEmployeeById = async (id: string) => this.model.findOne({ "employees": id })
+        getSalonEmployeesByIds = async (ids: string[]) => this.model.find({ "employees": ids })
 
         deleteSalonEmployee = async (_id: string, eid: string, vendorId: string) => {
-                
+
                 const emp = await this.employeeModel.findByIdAndDelete(eid)
-               // console.log(emp)
+                // console.log(emp)
                 //@ts-ignore
-                const newSalon = await Salon.findOneAndUpdate({ _id:_id, vendor_id: vendorId }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec()
-              //  const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { services: { _id: sid } } }, { new: true })
-               
+                const newSalon = await Salon.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec()
+                //  const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { services: { _id: sid } } }, { new: true })
+
                 return emp
 
 
@@ -172,18 +172,18 @@ export default class SalonService extends BaseService {
         }
 
         // Salon Rating-Wise  Recommended.
-        getSalon= async () => {
+        getSalon = async () => {
                 //TODO: send salon with rating 5
-                const salons = await this.model.find().sort([['rating', -1], ['createdAt', -1]]).limit(10)
+                const salons = await this.model.find().sort([['rating', -1], ['createdAt', -1]])
                 //@ts-ignore
-             //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
+                //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salons
 
         }
-        getHomeServiceSalon= async (centerPoint: any, km: string) => {
+        getHomeServiceSalon = async (centerPoint: any, km: string) => {
                 var checkPoint = {}
                 var salonLocation = new Array()
-                const salon = await this.model.find({"services":{$elemMatch:{at_home:true}}})
+                const salon = await this.model.find({ "services": { $elemMatch: { at_home: true } } })
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
@@ -197,7 +197,7 @@ export default class SalonService extends BaseService {
                         }
                 }
                 //@ts-ignore
-             //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
+                //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salonLocation
 
         }
@@ -285,53 +285,53 @@ export default class SalonService extends BaseService {
 
         }
 
-        getSalonCategories = async (_id:string,data:any) => {
-               const categories = await this.model.findOne({_id:_id})     
-               //@ts-ignore
-               for (let [key, value] of Object.entries(categories.services)) data.push(value.category)
-               return data
+        getSalonCategories = async (_id: string, data: any) => {
+                const categories = await this.model.findOne({ _id: _id })
+                //@ts-ignore
+                for (let [key, value] of Object.entries(categories.services)) data.push(value.category)
+                return data
 
 
         }
 
-        getSalonReviews =  async (_id:string,q:any) => {
-                const pageNumber: number = parseInt( q.page_number || 1)
+        getSalonReviews = async (_id: string, q: any) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 10)
-                 pageLength = (pageLength > 100) ? 100 : pageLength
+                pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const reviewsAll =  this.reviewModel.find({salon_id:_id}).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                const reviewsPage = this.reviewModel.find({salon_id:_id}).count();
-              
-                const [reviews,pageNo] = await Promise.all([reviewsAll,reviewsPage])
+                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const reviewsPage = this.reviewModel.find({ salon_id: _id }).count();
+
+                const [reviews, pageNo] = await Promise.all([reviewsAll, reviewsPage])
                 const totalPages = Math.ceil(pageNo / pageLength)
-                return {reviews,totalPages,pageNumber}
+                return { reviews, totalPages, pageNumber }
         }
-        
-       
+
+
         postReviews = async (post: ReviewI) => {
                 const reviews = await this.reviewModel.create(post)
                 return reviews
         }
-        checkpostReview = async (userId:string,salon_id:string) => {
-                const check =await  this.bookingModel.find({user_id:userId,salon_id:salon_id,status:"Completed"})
+        checkpostReview = async (userId: string, salon_id: string) => {
+                const check = await this.bookingModel.find({ user_id: userId, salon_id: salon_id, status: "Completed" })
                 return check
         }
 
-         getBrand= async () => {
+        getBrand = async () => {
                 const brand = await this.brandModel.find({})
                 return brand
 
-         }
+        }
 
-         getBrandbyId = async(id:string)=>{
-                 const brand = await this.brandModel.findOne({_id:id}).populate("salon_id").exec()
+        getBrandbyId = async (id: string) => {
+                const brand = await this.brandModel.findOne({ _id: id }).populate("salon_id").exec()
                 return brand
-         }
+        }
 
-         addBrand= async (d:any) => {
+        addBrand = async (d: any) => {
                 const brand = await this.brandModel.create(d)
                 return brand
-         }
+        }
 
 
 }
