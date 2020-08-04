@@ -5,6 +5,7 @@ import salonInfoRouter from "./salon.router"
 import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
 import bookingRouter from './booking.router'
+import cartRouter from "./cart.router"
 
 const Userrouter = Router()
 
@@ -14,5 +15,6 @@ Userrouter.use("/salon", salonInfoRouter)
 Userrouter.use("/search", searchRouter)
 Userrouter.use("/service", serviceRouter)
 Userrouter.use("/booking", bookingRouter)
+Userrouter.use("/cart", cartRouter)
 
 export default Userrouter
