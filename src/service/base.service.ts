@@ -47,6 +47,7 @@ export default class BaseService {
 
     putPhoto = async (_id: string, photoData: PhotoI) => {
         const photo = await Photo.create(photoData)
+        //@ts-ignore
         return await this.model.findByIdAndUpdate({ _id }, { $push: { photo_ids: photo._id } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
     }
 

@@ -121,7 +121,7 @@ export default class VendorController extends BaseController {
             res.status(400).send({ success: false, message: msg });
             return
         }
-        const slots  =  await this.service.employeeSlots(id,timeSlots)
+        const slots  =  await this.service.employeeSlots(id,timeSlots.toString())
         if(slots==null){
             logger.error(`No Slots Found`)
             res.status(400)
@@ -134,7 +134,7 @@ export default class VendorController extends BaseController {
     slots =controllerErrorHandler( async (req: Request, res: Response) => {
       const id =  req.params.id
       const date = req.query.date
-      const slots = await this.service.slots(id,date)
+      const slots = await this.service.slots(id,date.toString())
       if(slots==null){
         logger.error(`No Slots Found`)
         res.status(400)

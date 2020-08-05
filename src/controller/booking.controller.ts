@@ -8,15 +8,15 @@ import moment = require("moment");
 import mongoose from "../database";
 import SalonService from "../service/salon.service";
 import ErrorResponse from "../utils/error-response";
-import EmployeeAbsentismService from "../service/employee-absentism.service";
+import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 
 
 export default class BookingController extends BaseController {
 
     service: BookingService
     salonService: SalonService
-    employeeAbsentismService: EmployeeAbsentismService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsentismService) {
+    employeeAbsentismService: EmployeeAbsenteesmService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -412,7 +412,7 @@ export default class BookingController extends BaseController {
     }
     rescheduleSlots = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = mongoose.Types.ObjectId(req.params.id) // salon id
-        const date = moment() || moment(req.query.date)
+        const date = moment() || moment(req.query.date.toString())
 
         const slots = await this.service.rescheduleSlots(id, date)
 

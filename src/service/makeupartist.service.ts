@@ -38,6 +38,7 @@ export default class MakeupartistService extends BaseService {
         const makeupartist = await this.model.create(ma)
         //@ts-ignore
         const _id = mongoose.Types.ObjectId(ma.vendor_id)
+        //@ts-ignore
         await this.vendorModel.findOneAndUpdate({ _id }, { $push: { makeup_artists: makeupartist._id } })
         return makeupartist
 
@@ -62,6 +63,7 @@ export default class MakeupartistService extends BaseService {
 
     }
     addMakeupArtistService = async (_id: string, d) => {
+        //@ts-ignore
         const muaService = await this.model.findOneAndUpdate({ _id: _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
         return muaService
     }
@@ -123,7 +125,7 @@ export default class MakeupartistService extends BaseService {
     addMakeupArtistEvent = async (data: any) => {
         const eventId = mongoose.Types.ObjectId(data.event_id)
         const makeupArtistId = mongoose.Types.ObjectId(data.makeup_artist_id)
-
+        //@ts-ignore
         const eventReq = this.eventModel.findOneAndUpdate({ _id: eventId, makeup_artists: { $nin: [makeupArtistId] } }, { $push: { makeup_artists: makeupArtistId } }, { new: true })
         //@ts-ignore
         const muaReq = this.model.findOneAndUpdate({ _id: makeupArtistId, events: { $nin: [data.event_id] } }, { $push: { events: eventId } }, { new: true })
@@ -136,6 +138,7 @@ export default class MakeupartistService extends BaseService {
 
         const eventId = mongoose.Types.ObjectId(data.event_id)
         const makeupArtistId = mongoose.Types.ObjectId(data.makeup_artist_id)
+        //@ts-ignore
         const eventReq = this.eventModel.updateOne({ _id: eventId, makeup_artists: { $in: [makeupArtistId] } }, { $pull: { makeup_artists: makeupArtistId } })
         //@ts-ignore
         const muaReq = MakeupArtist.updateOne({ _id: makeupArtistId, events: { $in: [eventId] } }, { $pull: { events: eventId } })
@@ -151,6 +154,7 @@ export default class MakeupartistService extends BaseService {
         e.unique_code = uniquecode
         const offer = await this.offerModel.create(e)
         const offerId = offer._id
+        //@ts-ignore
         const salon = await this.model.findOneAndUpdate({ _id: muaid, "services._id": serviceId }, { $push: { "services.$.offers": offerId } }, { new: true })
 
         return salon

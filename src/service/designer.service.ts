@@ -27,6 +27,7 @@ export default class DesignerService extends BaseService {
         postDesigner = async (d: DesignersI) => {
              
                 const designer = await this.model.create(d)
+                //@ts-ignore
                 await this.vendorModel.findOneAndUpdate({ _id: d.vendor_id }, { $push: { designers: designer._id } })
                 return designer
 
@@ -39,8 +40,9 @@ export default class DesignerService extends BaseService {
 
                 const eventid = mongoose.Types.ObjectId(d.event_id)
                 const designerId = mongoose.Types.ObjectId(d.designer_id)
+                //@ts-ignore
                 const designerEventReq = this.eventModel.findOneAndUpdate({ _id: eventid, designers: { $nin: [designerId] } }, { $push: { designers: designerId } }, { new: true })
-
+                //@ts-ignore
                 const newDesignerReq = this.model.findOneAndUpdate({ _id: designerId, events: { $nin: [eventid] } }, { $push: { events: eventid } }, { new: true })
                 const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
                 
@@ -50,7 +52,9 @@ export default class DesignerService extends BaseService {
         deleteDesignerEvent = async (d: EventDesignerI) => {
                 const eventid = d.event_id
                 const designerId = d.designer_id
+                //@ts-ignore
                 const designerEventReq = this.eventModel.updateOne({ _id: eventid, designers: { $in: [designerId] } }, { $pull: { "designers": designerId } })
+                //@ts-ignore
                 const newDesignerReq = this.model.updateOne({ _id: designerId, events: { $in: [eventid] } }, { $pull: { "events": eventid } })
                 const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newDesignerReq])
                 return { designerEvent, newDesigner }
