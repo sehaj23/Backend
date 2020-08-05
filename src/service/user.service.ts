@@ -71,7 +71,7 @@ export default class UserService extends BaseService {
     }
     getFavourites = async (id:string,) => {
         
-           const user = await this.model.findOne({_id:id}).lean().select("favourites").populate({path:"favourites" ,select:{name:"name",rating:"rating",location:"location",profile_pic:"profile_pic"}})
+           const user = await this.model.findOne({_id:id}).select("favourites").populate({path:"favourites" ,select:{name:"name",rating:"rating",location:"location",profile_pic:"profile_pic"}})
  
             return user
  
