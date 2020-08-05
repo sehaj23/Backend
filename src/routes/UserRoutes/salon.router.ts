@@ -1,6 +1,4 @@
 import { Router } from 'express'
-import SalonInfoService from '../../service/UserService/salon.service'
-const ss = new SalonInfoService()
 import { salonInfoChecks } from '../../validators/salon-validator'
 import mySchemaValidator from '../../middleware/my-schema-validator'
 import SalonService from "../../service/salon.service";

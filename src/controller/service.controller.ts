@@ -29,7 +29,7 @@ export default class ServiceController extends BaseController {
           //@ts-ignore
             value.services.forEach((x) => data.push(x.name))
         else {
-          const salonInfo = await this.service.getByName(salonName)
+          const salonInfo = await this.service.getByName(salonName.toString())
           salonInfo.services.forEach((x) => data.push(x.name))
         }
         res.status(200).send(data)

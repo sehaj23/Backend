@@ -49,9 +49,9 @@ export default class SalonService extends BaseService {
 
         postSalon = async (vendorId: string, d: SalonI) => {
                 const salon = await this.model.create(d)
-                //@ts-ignore
                 const _id = mongoose.Types.ObjectId(vendorId)
-                await this.vendorModel.findOneAndUpdate({ _id }, { $push: { salons: salon._id } })
+                //@ts-ignore
+                await this.vendorModel.findOneAndUpdate({ _id }, { "$push": { "salons": salon._id } })
                 return salon
         }
 
@@ -61,13 +61,13 @@ export default class SalonService extends BaseService {
         }
 
         addSalonService = async (_id: string, d: any) => {
-
+                //@ts-ignore
                 const newSalon = await this.model.findOneAndUpdate({ _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
                 return newSalon
 
         }
         deleteSalonService = async (_id: string, sid) => {
-
+                //@ts-ignore
                 const salon = await this.model.findOneAndUpdate({ _id: _id }, { $pull: { services: { _id: sid } } }, { new: true })
                 return salon
 
@@ -146,7 +146,9 @@ export default class SalonService extends BaseService {
         addSalonEvent = async (d) => {
                 const eventid = mongoose.Types.ObjectId(d.event_id)
                 const designerId = mongoose.Types.ObjectId(d.designer_id)
+                //@ts-ignore
                 const designerEventReq = this.eventModel.findOneAndUpdate({ _id: eventid, designers: { $nin: [designerId] } }, { $push: { designers: designerId } }, { new: true })
+                //@ts-ignore
                 const newSalonReq = this.model.findOneAndUpdate({ _id: designerId, events: { $nin: [eventid] } }, { $push: { events: eventid } }, { new: true })
                 const [designerEvent, newDesigner] = await Promise.all([designerEventReq, newSalonReq])
                 return { designerEvent, newDesigner }
@@ -160,8 +162,8 @@ export default class SalonService extends BaseService {
                 e.unique_code = uniquecode
                 const offer = await this.offerModel.create(e)
                 const offerId = offer._id
+                //@ts-ignore
                 const salon = await this.model.findOneAndUpdate({ _id: salon_id, "services._id": serviceId }, { $push: { "services.$.offers": offerId } }, { new: true })
-
                 return offer
 
         }

@@ -137,7 +137,7 @@ export default class SalonController extends BaseController {
             filter["options.gender"] ={ "$in": req.query.gender}
         }
         if(req.query.home){
-            filter["at_home"]=req.query.home
+            filter["options.at_home"]=req.query.home
         }
         console.log("calling get service api")
         //TODO: validator
@@ -355,10 +355,11 @@ export default class SalonController extends BaseController {
         centerPoint.lng = req.query.longitude
         const km = req.query.km || 2
            const sr = await SalonRedis.get('HomeSalons')
-           if (sr !== null) { salons = JSON.parse(sr)
+           if (sr !== null) { 
+               salons = JSON.parse(sr)
             }
          else {
-            salons = await this.service.getHomeServiceSalon(centerPoint,km)
+            salons = await this.service.getHomeServiceSalon(centerPoint,km.toString())
             SalonRedis.set('HomeSalons', salons)
         }
         res.status(200).send(salons)
@@ -382,7 +383,7 @@ export default class SalonController extends BaseController {
 
     getSearchResult = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:Validato
-        const phrase = req.query.phrase
+        const phrase = req.query.phrase as string
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
         const salon = await this.service.getSearchResult(phrase)
@@ -395,7 +396,7 @@ export default class SalonController extends BaseController {
         centerPoint.lat = req.query.latitude
         //@ts-ignore
         centerPoint.lng = req.query.longitude
-        const km = req.query.km || 2
+        const km = (req.query.km || 2).toString()
         let salon
         const sr = await SalonRedis.get('Salons')
         if (sr !== null) salon = JSON.parse(sr)
@@ -413,7 +414,7 @@ export default class SalonController extends BaseController {
         centerPoint.lat = req.query.latitude
         //@ts-ignore
         centerPoint.lng = req.query.longitude
-        const km = req.query.km || 2
+        const km = (req.query.km || 2).toString()
         const salonLocation = await this.service.getSalonDistance(centerPoint, km)
         res.status(200).send(salonLocation)
 

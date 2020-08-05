@@ -31,7 +31,7 @@ export default class ReviewsServices extends BaseService {
         }
 
         replyReviews = async (review_id: String) => {
-
+                //@ts-ignore
                 const review = await Reviews.findByIdAndUpdate(review_id, { $push: { reply: review_id } }, { new: true })
                 return review
 
