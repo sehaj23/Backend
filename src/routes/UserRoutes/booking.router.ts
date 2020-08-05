@@ -1,6 +1,5 @@
 import { Router } from "express"
-import UserverifyToken from "../../middleware/User.jwt"
-import BookingService from "../../service/booking.service"
+
 import Booking from "../../models/booking.model"
 import Salon from "../../models/salon.model"
 import BookingController from "../../controller/booking.controller"
@@ -13,6 +12,7 @@ import Review from "../../models/review.model"
 import Brand from "../../models/brands.model"
 import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
+import BookingService from "../../service/booking.service"
 
 const bookingService = new BookingService(Booking, Salon)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)

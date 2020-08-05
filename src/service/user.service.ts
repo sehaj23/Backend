@@ -63,7 +63,8 @@ export default class UserService extends BaseService {
        const salonid = mongoose.Types.ObjectId(salon_id)
       // const user = await this.model.findOne({_id:id})
     
-      //  const user = await this.model.findById({_id:id})  
+      //  const user = await this.model.findById({_id:id}) 
+      //@ts-ignore 
           const user = await this.model.findOneAndUpdate({_id:id},{$push:{favourites:salonid}},{new:true})
 
             return user
