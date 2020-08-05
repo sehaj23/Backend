@@ -35,12 +35,11 @@ export default class UserService extends BaseService {
         const passwordHash = encryptData(password)
         const user = await this.model.findOne({ _id, password: passwordHash })
         const newpasswordHash = encryptData(newpassword)
-        if (user) {
+        if (user !== null) {
             const updatepass = await this.model.findByIdAndUpdate({ _id }, { password: newpasswordHash }, { new: true })
             return updatepass
-        } else {
-            return ("User ID Pass doesnot match")
-        }
+        } 
+        return null
     }
 
     pastBooking = async(id:string)=>{
