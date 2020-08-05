@@ -24,8 +24,8 @@ export default class BookingService extends BaseService {
         const q = req.query
         console.log(q)
 
-        const pageNumber: number = parseInt(q.page_number || 1)
-        let pageLength: number = parseInt(q.page_length || 25)
+        const pageNumber: number = parseInt(q.page_number.toString() || "1")
+        let pageLength: number = parseInt(q.page_length.toString() || "25")
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
@@ -43,12 +43,12 @@ export default class BookingService extends BaseService {
             switch (k) {
                 case "service_id":
                     filters["services.service_id"] = {
-                        "$in": q[k].split(",")
+                        "$in": q[k].toString().split(",")
                     }
                     break
                 case "employee_id":
                     filters["services.employee_id"] = {
-                        "$in": q[k].split(",")
+                        "$in": q[k].toString().split(",")
                     }
                     break
                 case "status":
@@ -61,11 +61,11 @@ export default class BookingService extends BaseService {
                     filters["salon_id"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                    dateFilter["start_date"] = moment(q[k].toString()).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                    
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    dateFilter["end_date"] = moment(q[k].toString()).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     filters["date_time"] = {
                         "$gte": dateFilter["start_date"],
                         "$lt": dateFilter["end_date"]
@@ -112,8 +112,8 @@ export default class BookingService extends BaseService {
         const q = req.query
         console.log(q)
 
-        const pageNumber: number = parseInt(q.page_number || 1)
-        let pageLength: number = parseInt(q.page_length || 25)
+        const pageNumber: number = parseInt(q.page_number.toString() || "1")
+        let pageLength: number = parseInt(q.page_length.toString() || "25")
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
@@ -139,7 +139,7 @@ export default class BookingService extends BaseService {
             switch (k) {
                 case "service_id":
                     filters["services.service_id"] = {
-                        "$in": q[k].split(",")
+                        "$in": q[k].toString().split(",")
                     }
                     break
                 case "status":
@@ -150,10 +150,10 @@ export default class BookingService extends BaseService {
                     filters["salon_id"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                    dateFilter["start_date"] = moment(q[k].toString()).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    dateFilter["end_date"] = moment(q[k].toString()).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     filters["date_time"] = {
                         "$gte": dateFilter["start_date"],
                         "$lt": dateFilter["end_date"]
@@ -208,7 +208,7 @@ export default class BookingService extends BaseService {
 
         try {
             const id = mongoose.Types.ObjectId(req.params.id) // salon id
-            const date = moment() || moment(req.query.date)
+            const date = moment() || moment(req.query.date.toString())
             const salon = await Salon.findById(id)
             
             const starting_hours = salon.start_working_hours
@@ -280,12 +280,4 @@ export default class BookingService extends BaseService {
         }
 
     }
-   
-
-
-
-
-
-
-
 }
