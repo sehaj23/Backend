@@ -21,5 +21,7 @@ userRouter.get("/bookings",UserverifyToken,userController.pastBooking)
 userRouter.patch("/address",UserverifyToken,userController.addAddress)
 userRouter.get("/address",UserverifyToken,userController.getAddress)
 userRouter.put("/profile-photo",UserverifyToken,userController.putProfilePic)
+userRouter.patch('/favourite',UserverifyToken,userController.addToFavourites)
+userRouter.get('/favourite',UserverifyToken,userController.getFavourites)
 
 export default userRouter
