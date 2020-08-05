@@ -119,6 +119,37 @@ export default class UserController extends BaseController{
 
     })
 
+    addToFavourites =  controllerErrorHandler( async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const salonid = req.body.salon_id
+        console.log(id)
+        const user = await this.service.addToFavourites(id,salonid)
+        if(user===null){
+            logger.error(`Unable to add favorites`)
+            res.status(400)
+            res.send({ message: `Unable to add to favourites`})
+            return
+        }
+        res.send(user)
+
+    })
+    getFavourites =  controllerErrorHandler( async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+    
+        console.log(id)
+        const user = await this.service.getFavourites(id)
+        if(user===null){
+            logger.error(`No Favourites`)
+            res.status(400)
+            res.send({ message: `No Favourites Found`,success:"false" })
+            return
+        }
+        res.send(user)
+
+    })
+
 
 
 }

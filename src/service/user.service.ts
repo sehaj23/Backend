@@ -9,6 +9,8 @@ import UserI from "../interfaces/user.interface";
 import * as crypto from "crypto"
 import mongoose from "../database";
 import encryptData from "../utils/password-hash";
+import { MigrationHubConfig } from "aws-sdk";
+import { Mongoose } from "mongoose";
 
 export default class UserService extends BaseService {
     bookingModel: mongoose.Model<any, any>
@@ -55,23 +57,26 @@ export default class UserService extends BaseService {
         const address = await this.model.findById({_id:id}).select("address")
         return address
     }
-    updateProfilePic = async (req: Request, res: Response) => {
-        try {
-           
-            //@ts-ignore
-            const _id = req.vendorId
-            const photoData: PhotoI = req.body
-            // saving photos 
-            const photo = await Photo.create(photoData)
-            // adding it to event
-            const newEvent = await this.model.findByIdAndUpdate({ _id }, { photo: photo._id }, { new: true }).populate("photo").exec() // to return the updated data do - returning: true
-            res.send(newEvent)
-        } catch (e) {
-            logger.error(`User Put Photo ${e.message}`)
-            res.status(400)
-            res.send({ message: `${CONFIG.RES_ERROR} ${e.message}` })
-        }
+    
+
+    addToFavourites = async (id:string,salon_id:string) => {
+       const salonid = mongoose.Types.ObjectId(salon_id)
+      // const user = await this.model.findOne({_id:id})
+    
+      //  const user = await this.model.findById({_id:id})  
+          const user = await this.model.findOneAndUpdate({_id:id},{$push:{favourites:salonid}},{new:true})
+
+            return user
+
     }
+    getFavourites = async (id:string,) => {
+        
+           const user = await this.model.findOne({_id:id}).select("favourites").populate("favourites")
+ 
+             return user
+ 
+     }
+ 
 
 
 }
