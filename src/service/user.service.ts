@@ -47,7 +47,7 @@ export default class UserService extends BaseService {
         return booking
     }
     addAddress = async(id:string,d:any)=>{
-        const user = await this.model.findByIdAndUpdate({_id:id},d,{new:true}).select("address")
+        const user = await this.model.findByIdAndUpdate({_id:id},{$push:d},{new:true}).select("address")
         return user
     }
 
