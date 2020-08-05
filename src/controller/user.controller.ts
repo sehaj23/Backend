@@ -143,7 +143,7 @@ export default class UserController extends BaseController{
         if(user===null){
             logger.error(`No Favourites`)
             res.status(400)
-            res.send({ message: `No Favourites Found`,success:"false" })
+            res.send({ message: `No Favourites Found`,success:"alse" })
             return
         }
         res.send(user)
