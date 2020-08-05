@@ -137,7 +137,7 @@ export default class SalonController extends BaseController {
             filter["options.gender"] ={ "$in": req.query.gender}
         }
         if(req.query.home){
-            filter["at_home"]=req.query.home
+            filter["options.at_home"]=req.query.home
         }
         console.log("calling get service api")
         //TODO: validator

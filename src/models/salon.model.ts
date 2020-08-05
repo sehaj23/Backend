@@ -33,16 +33,16 @@ const SalonSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            at_home:{
-                type:Boolean,
-                required:true,
-                default:false
-            },
             name: {
                 type: String,
                 required: true
             },
             options: [{
+                at_home:{
+                    type:Boolean,
+                    required:true,
+                    default:false
+                },
                 option_name: {
                     type: String,
                     default: 'DIRECT',
@@ -61,7 +61,7 @@ const SalonSchema = new mongoose.Schema({
                 },
                 gender: {
                     type: String,
-                    enum: ["men", "women"],
+                    enum: ["men", "women", "both"],
                     required: true
                 },
                 photo: {
