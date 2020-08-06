@@ -14,28 +14,14 @@ export default class CartController extends BaseController{
      * This is to add an option id to an exsisting cart
      */
 
-    createCart =controllerErrorHandler( async (req: Request, res: Response) => {
-        const {option_ids,salon_id,total} = req.body
-      
-        
-        var d = {}
+    post =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
-        d.salon_id = salon_id
-        //@ts-ignore
-        d.user_id = req.userId
-        //@ts-ignore
-        console.log(req.userId)
-        //@ts-ignore
-        d.option_ids= [option_ids]
-        //@ts-ignore
-        d.total = total
-        const data = await this.cartService.createCart(d)
+        req.body.user_id = req.userId
+        const data = await this.cartService.createCart(req.body)
         if(data==null){
             return res.send({message:"Unable to add data in cart",success:"false"})
         }
         res.send(data) 
-        
-
     })
 
     addOptionToCart =controllerErrorHandler( async (req: Request, res: Response) => {

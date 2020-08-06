@@ -7,7 +7,7 @@ import UserverifyToken from "../../middleware/User.jwt";
 const cartRouter = Router()
 const cartService = new CartService(Cart)
 const cartController = new CartController(cartService)
-cartRouter.post("/", UserverifyToken, cartController.createCart)
+cartRouter.post("/", UserverifyToken, cartController.post)
 cartRouter.get("/",UserverifyToken, cartController.getLastCartByUserId)
 cartRouter.patch("/add-option/:cartId", UserverifyToken, cartController.addOptionToCart)
 

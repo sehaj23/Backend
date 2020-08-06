@@ -1,10 +1,15 @@
 import mongoose from "../database";
 
+interface CartOption{
+    option_id: string
+    quantity: number
+}
+
 export default interface CartI{
-    option_ids: any[] // option ids of the service
-    total: number
+    options: CartOption[] // option ids of the service
+    total?: number
     salon_id: string
-    user_id: string
+    user_id?: string
 }
 
 export interface CartSI extends CartI, mongoose.Document{}

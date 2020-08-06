@@ -4,16 +4,24 @@ import CartI, { CartSI } from "../interfaces/cart.interface";
 
 
 const CartSchema = new mongoose.Schema({
-    option_ids:[{
-        type: String
-    }],
+    options:[
+        {
+            option_id: {
+                type: String
+            },
+            quantity: {
+                type: Number
+            }
+        }
+    ],
     total: {
         type: Number,
         default: 0
     },
     salon_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "salons"
+        ref: "salons",
+        required: true
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
