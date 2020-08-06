@@ -20,7 +20,7 @@ export default class UserController extends BaseController{
         //@ts-ignore
         const id = req.userId
         console.log(id)
-        const user = await this.service.getUser(id)
+        const user = await this.service.getId(id)
         if(user===null){
             logger.error(`Unable to fetch user details`)
             res.status(400)
