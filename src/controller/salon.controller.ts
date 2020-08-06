@@ -2,7 +2,7 @@ import BaseController from "./base.controller";
 import SalonService from "../service/salon.service";
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import { SalonI } from "../interfaces/salon.interface";
+import SalonSI, { SalonI } from "../interfaces/salon.interface";
 import logger from "../utils/logger";
 import ServiceI from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
@@ -134,12 +134,12 @@ export default class SalonController extends BaseController {
         const id = req.params.id
         const filter = {}
         if(req.query.gender){
-            filter["options.gender"] ={ "$in": req.query.gender}
+            filter["gender"] =req.query.gender
         }
         if(req.query.home){
-            filter["options.at_home"]=req.query.home
+            console.log(req.query)
+            filter["at_home"]= Boolean(req.query.home)
         }
-        console.log("calling get service api")
         //TODO: validator
         if (!id) {
             const errMsg = `id is missing from the params`
@@ -148,7 +148,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const salon = await this.service.getService(id,filter)
+        const salon = await this.service.getService(id,filter) as SalonSI
         if (salon === null) {
             const errMsg = `no service found`
             logger.error(errMsg)
@@ -156,10 +156,31 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
+        const services = salon.services
+        for(let i = 0; i < services.length; i++){
+            const service = services[i]
+            const {options} = service
+            for(let j = 0; j < options.length; j++){
+                let opt = options[j]
+                let optionPass = true // this is to check if the option satisfies the filter
+                if(req.query.gender){
+                    if(opt.gender !== req.query.gender){
+                        optionPass = false
+                    }
+                }
+                if(req.query.home){
+                    if(opt.at_home !== Boolean(req.query.home)){
+                        optionPass = false
+                    }
+                }
+                if(optionPass === false){
+                    salon.services[i].options.splice(j, 1)
+                }
+            }
+        }
         res.send(salon)
-
-
     })
+
     updateService = controllerErrorHandler(async (req: Request, res: Response) => {
         const d = req.body
         const id = req.params.id
