@@ -84,7 +84,8 @@ export default class BaseController {
     putProfilePic = async (req: Request, res: Response) => {
         try {
             const photoData: PhotoI = req.body
-            const _id = req.params.id
+            //@ts-ignore
+            const _id = req.params.id || req.userId
             // saving photos 
             const newEvent = await this.service.putProfilePic(photoData,_id)
            
