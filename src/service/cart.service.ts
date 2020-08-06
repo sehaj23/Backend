@@ -24,4 +24,10 @@ export default class CartService extends BaseService{
         return this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
     } 
 
+    createCart= async (d:any) =>{
+        return this.model.create(d)
+    
+
+    }
+
 }

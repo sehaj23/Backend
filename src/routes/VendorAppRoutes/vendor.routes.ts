@@ -5,12 +5,17 @@ import verifyToken from "../../middleware/jwt";
 import Vendor from "../../models/vendor.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import VendorController from "../../controller/vendor.controller";
+import LoginService from "../../service/login.service";
+import LoginController from "../../controller/login.controller";
+import CONFIG from "../../config";
 const vendorRouter = Router()
 
 const vs = new VendorService(Vendor,EmployeeAbsenteeism)
 const vendorController = new VendorController(vs)
+const loginService = new LoginService(Vendor)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days')
 
-vendorRouter.post("/",vendorController.vendorLogin);
+vendorRouter.post("/",loginController.login);
 vendorRouter.post("/absent",VendorverifyToken,vendorController.employeeAbsent)
 vendorRouter.post("/absent/update",VendorverifyToken,vendorController.employeeAbsent)
 vendorRouter.get("/",VendorverifyToken ,vendorController.vendorInfo)

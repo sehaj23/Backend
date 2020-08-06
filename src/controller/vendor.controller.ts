@@ -15,24 +15,24 @@ export default class VendorController extends BaseController {
     super(service)
     this.service = service
   }
-  vendorLogin =controllerErrorHandler( async (req: Request, res: Response) => {
-    const { email, password } = req.body
-    console.log(req.body)
-    if (!email || !password) {
+//   vendorLogin =controllerErrorHandler( async (req: Request, res: Response) => {
+//     const { email, password } = req.body
+//     console.log(req.body)
+//     if (!email || !password) {
 
-        res.status(400)
-        res.send({ message: "Send all data" })
-        return
-    }
-    const token = await this.service.vendorLogin(email,password)
-    if (token == null) {
-        res.status(400)
-        res.send({ message: "Username password does not match" })
-        return
-    }
-    res.send(token)
+//         res.status(400)
+//         res.send({ message: "Send all data" })
+//         return
+//     }
+//     const token = await this.service.vendorLogin(email,password)
+//     if (token == null) {
+//         res.status(400)
+//         res.send({ message: "Username password does not match" })
+//         return
+//     }
+//     res.send(token)
  
-    })
+//     })
 
 
   employeeAbsent=controllerErrorHandler( async (req: Request, res: Response) => {

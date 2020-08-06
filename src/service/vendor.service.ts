@@ -29,15 +29,15 @@ export default class VendorService extends BaseService{
         this.employeeAbsenteeismModel=employeeAbsenteeismModel
     }
 
-    vendorLogin  = async (email,password) => {
+    // vendorLogin  = async (email,password) => {
           
-            const passwordHash = encryptData(password)
-            const vendor = await this.model.findOne({ email, password: passwordHash })
-            vendor.password = ""
-            const token = await jwt.sign(vendor.toJSON(), CONFIG.VENDOR_JWT, { expiresIn: "7 days" })
-             return({ token })  //made change here for ID
+    //         const passwordHash = encryptData(password)
+    //         const vendor = await this.model.findOne({ email, password: passwordHash })
+    //         vendor.password=""
+    //         const token = await jwt.sign(vendor.toJSON(), CONFIG.VENDOR_JWT, { expiresIn: "7 days" })
+    //          return({ token })  //made change here for ID
        
-    }
+    // }
 
     employeeAbsent = async (d:EmployeeAbsenteeismI) => {
 
