@@ -174,7 +174,10 @@ export default class SalonController extends BaseController {
                     }
                 }
                 if(optionPass === false){
-                    salon.services[i].options.splice(j, 1)
+                    if(salon.services[i].options.length === 1)
+                        salon.services.splice(i, 1)
+                    else
+                        salon.services[i].options.splice(j, 1)
                 }
             }
         }
