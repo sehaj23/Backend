@@ -169,7 +169,7 @@ export default class SalonService extends BaseService {
 
         }
         getSalonInfo = async (salonId: string) => {
-                const salon = await this.model.findById(salonId)
+                const salon = await this.model.findById(salonId).populate("photo_ids")
                 return salon
 
         }
