@@ -393,7 +393,7 @@ export default class SalonService extends BaseService {
                         case "brand":
                                 filters["brand"]= q[k]
                                 break
-                        case "when":
+                        case "time":
                                 console.log(q[k])
                                 var day =  moment(q[k]).set({hour:1,minute:0,second:0,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
                                   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
@@ -405,7 +405,7 @@ export default class SalonService extends BaseService {
                                 }
                                 break
                                 //TODO: location
-                                case "where":
+                                case "location":
                                         filters["location"]= q[k]
                                         break
                         case "page_number":
