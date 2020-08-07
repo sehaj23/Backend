@@ -17,6 +17,7 @@ import { Model } from "mongoose";
 import { OfferI } from "../interfaces/offer.interface";
 import { arePointsNear } from "../utils/location";
 import ReviewSI, { ReviewI } from "../interfaces/review.interface";
+import moment = require("moment");
 
 
 
@@ -174,9 +175,21 @@ export default class SalonService extends BaseService {
         }
 
         // Salon Rating-Wise  Recommended.
-        getSalon = async () => {
-                //TODO: send salon with rating 5
-                const salons = await this.model.find().sort([['rating', -1], ['createdAt', -1]])
+        getSalon = async (q:any) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 8)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                 //TODO: send salon with rating 5
+                 const salons = await this.model.find().skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+               // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const salonPage = this.reviewModel.find().count();
+
+                const [salon, pageNo] = await Promise.all([salons, salonPage])
+                const totalPages = Math.ceil(pageNo / pageLength)
+                return { salon, totalPages, pageNumber }
+
+               
                 //@ts-ignore
                 //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salons
@@ -381,10 +394,20 @@ export default class SalonService extends BaseService {
                                 filters["brand"]= q[k]
                                 break
                         case "when":
-                                filters["start_working_hours"]={
-                                        
+                                console.log(q[k])
+                                var day =  moment(q[k]).set({hour:1,minute:0,second:0,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
+                                  var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
+                                var dayofweek =moment(day).day()
+                                console.log(dayofweek)  
+                                filters[`start_working_hours.[${dayofweek}]`]={
+                                             $gt:day,
+                                             $lt:endDay        
                                 }
-                                
+                                break
+                                //TODO: location
+                                case "where":
+                                        filters["location"]= q[k]
+                                        break
                         case "page_number":
                         case "page_length":
                             break
