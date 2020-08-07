@@ -380,15 +380,15 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         centerPoint.lng = req.query.longitude
         const km = req.query.km || 2
-           const sr = await SalonRedis.get('HomeSalons')
-           if (sr !== null) { 
-               salons = JSON.parse(sr)
-            }
-         else {
+        //    const sr = await SalonRedis.get('HomeSalons')
+        //    if (sr !== null) { 
+        //        salons = JSON.parse(sr)
+        //     }
+      //   else {
              console.log("not redis")
             salons = await this.service.getHomeServiceSalon(centerPoint,km.toString())
             SalonRedis.set('HomeSalons', salons)
-        }
+     //   }
         res.status(200).send(salons)
 
     })
