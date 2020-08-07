@@ -97,10 +97,10 @@ export default class UserController extends BaseController{
          if(address===null){
             logger.error(`Unable to add Address`)
             res.status(400)
-            res.send({ message: `Address Added`,success:"true"})
+            res.send({ message: `Unable to add Address`,success:"false"})
             return
         }
-        res.send(address)
+        res.send({ message: `Address added`,success:"true"})
 
 
     })
