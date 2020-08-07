@@ -17,6 +17,7 @@ import { Model } from "mongoose";
 import { OfferI } from "../interfaces/offer.interface";
 import { arePointsNear } from "../utils/location";
 import ReviewSI, { ReviewI } from "../interfaces/review.interface";
+import moment = require("moment");
 
 
 
@@ -174,9 +175,21 @@ export default class SalonService extends BaseService {
         }
 
         // Salon Rating-Wise  Recommended.
-        getSalon = async () => {
-                //TODO: send salon with rating 5
-                const salons = await this.model.find().sort([['rating', -1], ['createdAt', -1]])
+        getSalon = async (q:any) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 8)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                 //TODO: send salon with rating 5
+                 const salons = await this.model.find().skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+               // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const salonPage = this.reviewModel.find().count();
+
+                const [salon, pageNo] = await Promise.all([salons, salonPage])
+                const totalPages = Math.ceil(pageNo / pageLength)
+                return { salon, totalPages, pageNumber }
+
+               
                 //@ts-ignore
                 //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salons
@@ -289,6 +302,7 @@ export default class SalonService extends BaseService {
 
         }
 
+
         getSalonCategories = async (_id: string, data: any) => {
                 const categories = await this.model.findOne({ _id: _id })
                 //@ts-ignore
@@ -336,6 +350,87 @@ export default class SalonService extends BaseService {
                 const brand = await this.brandModel.create(d)
                 return brand
         }
+
+        searchFilter = async (q:any) => {
+
+       
+                // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
+                //     const message = 'None id provided'
+                //     res.status(400)
+                //     res.send({message})
+                //     return
+                // }
+        
+                // pagination
+                const pageNumber: number = parseInt( q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 25)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                console.log(pageLength)
+                console.log(skipCount)
+                
+                const keys = Object.keys(q)
+                const filters = {}
+                
+                for (const k of keys) {
+                    switch(k){
+                        case "end_price":
+                            filters["end_price"] = {
+                               $lt:q[k],
+                        
+                            } 
+                            break
+                        case "start_price":
+                                filters["start_price"] = {
+                                   $gt:q[k],
+                            
+                                } 
+                            break
+                        case "gender":
+                                filters["services"]={
+                                        $elemMatch:{"options.gender" :q[k]}
+
+                                }    
+                                break
+                        case "brand":
+                                filters["brand"]= q[k]
+                                break
+                        case "time":
+                                // console.log(q[k])
+                                // var day =  moment(q[k]).set({hour:0,minute:0,second:1,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
+                                //   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
+                                // var dayofweek =moment(day).day()
+                                // console.log(dayofweek)  
+                                // filters[`start_working_hours.[${dayofweek}]`]={
+                                //              $gt:day,
+                                //              $lt:endDay        
+                                // }
+                                break
+                                //TODO: location
+                                case "location":
+                                        filters["location"]= q[k]
+                                        break
+                        case "page_number":
+                        case "page_length":
+                            break
+                        default:
+                            filters[k] = q[k]
+                    }
+                }
+              
+                console.log(filters);
+            
+                
+               
+                    const salonFilter =  this.model.find(filters).skip(skipCount).limit(pageLength)
+                    const salonPagesReq = this.model.count(filters)
+                    
+                    const [salonDetails,  salonPages] = await Promise.all([salonFilter,salonPagesReq])
+                    const totalPages = Math.ceil(salonPages / pageLength)
+                    return ({salonDetails, totalPages, currentPage: pageNumber})
+                  
+        
+            }
 
 
 }
