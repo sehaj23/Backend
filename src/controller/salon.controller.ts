@@ -383,6 +383,7 @@ export default class SalonController extends BaseController {
                salons = JSON.parse(sr)
             }
          else {
+             console.log("not redis")
             salons = await this.service.getHomeServiceSalon(centerPoint,km.toString())
             SalonRedis.set('HomeSalons', salons)
         }

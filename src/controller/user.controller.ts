@@ -97,7 +97,7 @@ export default class UserController extends BaseController{
          if(address===null){
             logger.error(`Unable to add Address`)
             res.status(400)
-            res.send({ message: `Unable to add Address` })
+            res.send({ message: `Address Added`,success:"true"})
             return
         }
         res.send(address)
@@ -131,7 +131,7 @@ export default class UserController extends BaseController{
             res.send({ message: `Unable to add to favourites`})
             return
         }
-        res.send(user)
+        res.send({ message: `added to favourites`,success:"true"})
 
     })
     getFavourites =  controllerErrorHandler( async (req: Request, res: Response) => {

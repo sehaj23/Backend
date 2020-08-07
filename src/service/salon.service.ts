@@ -182,10 +182,12 @@ export default class SalonService extends BaseService {
                 return salons
 
         }
+        //gives option with at_home=false
         getHomeServiceSalon = async (centerPoint: any, km: string) => {
                 var checkPoint = {}
+                //TODO:ask preet how to get only at_home=true option
                 var salonLocation = new Array()
-                const salon = await this.model.find({ "services": { $elemMatch: { at_home: true } } })
+                const salon = await this.model.find({ "services.options": { $elemMatch: { at_home: true } } })
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
