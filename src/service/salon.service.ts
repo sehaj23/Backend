@@ -394,15 +394,15 @@ export default class SalonService extends BaseService {
                                 filters["brand"]= q[k]
                                 break
                         case "time":
-                                console.log(q[k])
-                                var day =  moment(q[k]).set({hour:1,minute:0,second:0,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
-                                  var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
-                                var dayofweek =moment(day).day()
-                                console.log(dayofweek)  
-                                filters[`start_working_hours.[${dayofweek}]`]={
-                                             $gt:day,
-                                             $lt:endDay        
-                                }
+                                // console.log(q[k])
+                                // var day =  moment(q[k]).set({hour:0,minute:0,second:1,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
+                                //   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
+                                // var dayofweek =moment(day).day()
+                                // console.log(dayofweek)  
+                                // filters[`start_working_hours.[${dayofweek}]`]={
+                                //              $gt:day,
+                                //              $lt:endDay        
+                                // }
                                 break
                                 //TODO: location
                                 case "location":
