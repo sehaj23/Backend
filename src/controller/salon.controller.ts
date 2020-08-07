@@ -350,8 +350,8 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
-         const sr: string = await SalonRedis.get(salonId)
-         if (sr !== null) return res.send(JSON.parse(sr))
+        //  const sr: string = await SalonRedis.get(salonId)
+        //  if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId)
          SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
