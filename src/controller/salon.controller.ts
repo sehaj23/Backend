@@ -538,6 +538,19 @@ export default class SalonController extends BaseController {
         res.send(brand)
 
     })
+    searchFilter =controllerErrorHandler( async (req: Request, res: Response) => {
+        const q = req.query
+        
+        const search = await this.service.searchFilter(q)
+       if(search==null){
+        const errMsg = "No search Result";
+        logger.error(errMsg);
+        res.status(400);
+        res.send({ message: errMsg });
+    }
+        res.send(search)
+        
+    })
 
 
 

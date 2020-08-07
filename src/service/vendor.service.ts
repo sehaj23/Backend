@@ -56,7 +56,7 @@ export default class VendorService extends BaseService{
 
             //@ts-ignore
             
-            const vendor = await this.model.findOne({_id:vendorId}) //.populate("makeup_artists").populate("salons").populate("designers").populate("profile_pic").exec()
+            const vendor = await this.model.findOne({_id:vendorId}).populate("makeup_artists").populate("salons").populate("designers").populate("profile_pic").exec()
            
             return vendor
 

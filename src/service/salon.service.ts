@@ -287,6 +287,7 @@ export default class SalonService extends BaseService {
 
         }
 
+
         getSalonCategories = async (_id: string, data: any) => {
                 const categories = await this.model.findOne({ _id: _id })
                 //@ts-ignore
@@ -334,6 +335,77 @@ export default class SalonService extends BaseService {
                 const brand = await this.brandModel.create(d)
                 return brand
         }
+
+        searchFilter = async (q:any) => {
+
+       
+                // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
+                //     const message = 'None id provided'
+                //     res.status(400)
+                //     res.send({message})
+                //     return
+                // }
+        
+                // pagination
+                const pageNumber: number = parseInt( q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 25)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                console.log(pageLength)
+                console.log(skipCount)
+                
+                const keys = Object.keys(q)
+                const filters = {}
+                
+                for (const k of keys) {
+                    switch(k){
+                        case "end_price":
+                            filters["end_price"] = {
+                               $lt:q[k],
+                        
+                            } 
+                            break
+                        case "start_price":
+                                filters["start_price"] = {
+                                   $gt:q[k],
+                            
+                                } 
+                            break
+                        case "gender":
+                                filters["services"]={
+                                        $elemMatch:{"options.gender" :q[k]}
+
+                                }    
+                                break
+                        case "brand":
+                                filters["brand"]= q[k]
+                                break
+                        case "when":
+                                filters["start_working_hours"]={
+                                        
+                                }
+                                
+                        case "page_number":
+                        case "page_length":
+                            break
+                        default:
+                            filters[k] = q[k]
+                    }
+                }
+              
+                console.log(filters);
+            
+                
+               
+                    const salonFilter =  this.model.find(filters).skip(skipCount).limit(pageLength)
+                    const salonPagesReq = this.model.count(filters)
+                    
+                    const [salonDetails,  salonPages] = await Promise.all([salonFilter,salonPagesReq])
+                    const totalPages = Math.ceil(salonPages / pageLength)
+                    return ({salonDetails, totalPages, currentPage: pageNumber})
+                  
+        
+            }
 
 
 }
