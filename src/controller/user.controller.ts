@@ -52,7 +52,7 @@ export default class UserController extends BaseController{
             res.send({ message: `Unable to fetch update details` })
             return
         }
-        res.send(user)
+        res.send({message: "details updated",success:"true"})
 
     })
 
