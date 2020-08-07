@@ -360,14 +360,14 @@ export default class SalonController extends BaseController {
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
 
-         const sr = await SalonRedis.get('Salons')
-         const q = req.query
-          if (sr !== null) { salons = JSON.parse(sr)
-           }
-          else {
+        //  const sr = await SalonRedis.get('Salons')
+          const q = req.query
+        //   if (sr !== null) { salons = JSON.parse(sr)
+        //    }
+        //   else {
             salons = await this.service.getSalon(q)
-            SalonRedis.set('Salons', salons)
-        }
+      //      SalonRedis.set('Salons', salons)
+       // }
         res.status(200).send(salons)
 
     })
