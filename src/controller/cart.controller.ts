@@ -31,6 +31,22 @@ export default class CartController extends BaseController{
         res.send(data)
     })
 
+    updateCartOption = controllerErrorHandler( async (req: Request, res: Response) => {
+        const {cartId, optionId} = req.params
+        //@ts-ignore
+        const userId = req.userId
+        const quantity = req.body.quantity as number
+        const data = await this.cartService.updateCartOption(userId, optionId, quantity)
+        res.send(data)
+    })
+    delteOptionFromCart = controllerErrorHandler( async (req: Request, res: Response) => {
+        const {optionId} = req.params
+        //@ts-ignore
+        const userId = req.userId
+        const data = await this.cartService.deleteOptionFromCart(userId, optionId)
+        res.send(data)
+    })
+
     /**
      * Getting the latest cart by user id
      */

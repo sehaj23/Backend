@@ -10,5 +10,7 @@ const cartController = new CartController(cartService)
 cartRouter.post("/", UserverifyToken, cartController.post)
 cartRouter.get("/",UserverifyToken, cartController.getLastCartByUserId)
 cartRouter.patch("/add-option/:cartId", UserverifyToken, cartController.addOptionToCart)
+cartRouter.patch("/update-option/:optionId", UserverifyToken, cartController.updateCartOption)
+cartRouter.delete("/delete-option/:optionId", UserverifyToken, cartController.delteOptionFromCart)
 
 export default cartRouter
