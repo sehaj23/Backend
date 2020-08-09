@@ -7,21 +7,22 @@ import logger from "../utils/logger";
 import Review from "../models/review.model";
 import RevenueService from "../service/revenue.service";
 import ReviewSI from "../interfaces/review.interface";
+import ErrorResponse from "../utils/error-response";
 
 
-export default class UserController extends BaseController{
+export default class UserController extends BaseController {
     service: UserService
     constructor(service: UserService) {
         super(service)
         this.service = service
     }
 
-    getUser = controllerErrorHandler( async (req: Request, res: Response) => {
+    getUser = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
         console.log(id)
         const user = await this.service.getId(id)
-        if(user===null){
+        if (user === null) {
             logger.error(`Unable to fetch user details`)
             res.status(400)
             res.send({ message: `Unable to fetch user details` })
@@ -30,39 +31,39 @@ export default class UserController extends BaseController{
         res.send(user)
 
     })
-    update = controllerErrorHandler( async (req: Request, res: Response) => {
+    update = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore   
         const id = req.userId
-     
+
         const updates = Object.keys(req.body)
         const d = req.body
-        const allowedupates = ["email","name", "age","gender","color_complextion","address","phone", "profile_pic"]
+        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
         console.log(isvalid)
         if (!isvalid) {
-                const errMsg = `Sorry ${updates} cannot be updated!`
-                logger.error(errMsg)
-                res.send({message:errMsg})
-                return
+            const errMsg = `Sorry ${updates} cannot be updated!`
+            logger.error(errMsg)
+            res.send({ message: errMsg })
+            return
         }
-        const user = await this.service.update(id,d)
-        if(user===null){
+        const user = await this.service.update(id, d)
+        if (user === null) {
             logger.error(`Unable to update details`)
             res.status(400)
             res.send({ message: `Unable to fetch update details` })
             return
         }
-        res.send({message: "details updated",success:"true"})
+        res.send({ message: "details updated", success: "true" })
 
     })
 
-    updatePassword = controllerErrorHandler( async (req: Request, res: Response) => {
+    updatePassword = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id  = req.userId
+        const id = req.userId
         const password = req.body.password
         const newPassword = req.body.newPassword
-        const update = await this.service.updatePass(id,password,newPassword)
-        if(update===null){
+        const update = await this.service.updatePass(id, password, newPassword)
+        if (update === null) {
             logger.error(`Unable to update password`)
             res.status(400)
             res.send({ message: `Unable to update password` })
@@ -70,11 +71,11 @@ export default class UserController extends BaseController{
         }
         res.send(update)
     })
-    pastBooking = controllerErrorHandler( async (req: Request, res: Response) => {
+    pastBooking = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id  = req.userId
+        const id = req.userId
         const booking = await this.service.pastBooking(id)
-        if(booking===null){
+        if (booking === null) {
             logger.error(`No bookings found`)
             res.status(400)
             res.send({ message: `No bookings found` })
@@ -83,32 +84,50 @@ export default class UserController extends BaseController{
         res.send(booking)
 
     })
-    addAddress = controllerErrorHandler( async (req: Request, res: Response) => {
+    addAddress = controllerErrorHandler(async (req: Request, res: Response) => {
         const d = req.body
-        if(!d.address && !d.city && !d.state){
+        if (!d.address && !d.city && !d.state) {
             res.status(400)
             res.send({ message: `Send Full Address` })
             return
 
         }
-         //@ts-ignore
-         const id  = req.userId
-         const address = await this.service.addAddress(id,d)
-         if(address===null){
+        //@ts-ignore
+        const id = req.userId
+        const address = await this.service.addAddress(id, d)
+        if (address === null) {
             logger.error(`Unable to add Address`)
             res.status(400)
-            res.send({ message: `Unable to add Address`,success:"false"})
+            res.send({ message: `Unable to add Address`, success: "false" })
             return
         }
-        res.send({ message: `Address added`,success:"true"})
+        res.send(address)
 
 
     })
-    getAddress = controllerErrorHandler( async (req: Request, res: Response) => {
-         //@ts-ignore
-         const id  = req.userId
-         const address = await this.service.getAddress(id)
-         if(address===null){
+
+    updateAddress = controllerErrorHandler(async (req: Request, res: Response) => {
+        const d = req.body
+        //@ts-ignore
+        const id = req.userId
+        const addressId = req.params.addressId
+        const address = await this.service.updateAddress(id, addressId, d)
+        res.send(address)
+    })
+
+    deleteAddress = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const addressId = req.params.addressId
+        const address = await this.service.deleteAddress(id, addressId)
+        res.send(address)
+    })
+
+    getAddress = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const address = await this.service.getAddress(id)
+        if (address === null) {
             logger.error(`No address found`)
             res.status(400)
             res.send({ message: `No address found` })
@@ -119,31 +138,31 @@ export default class UserController extends BaseController{
 
     })
 
-    addToFavourites =  controllerErrorHandler( async (req: Request, res: Response) => {
+    addToFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
         const salonid = req.body.salon_id
         console.log(id)
-        const user = await this.service.addToFavourites(id,salonid)
-        if(user===null){
+        const user = await this.service.addToFavourites(id, salonid)
+        if (user === null) {
             logger.error(`Unable to add favorites`)
             res.status(400)
-            res.send({ message: `Unable to add to favourites`})
+            res.send({ message: `Unable to add to favourites` })
             return
         }
-        res.send({ message: `added to favourites`,success:"true"})
+        res.send({ message: `added to favourites`, success: "true" })
 
     })
-    getFavourites =  controllerErrorHandler( async (req: Request, res: Response) => {
+    getFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-    
+
         console.log(id)
         const user = await this.service.getFavourites(id)
-        if(user===null){
+        if (user === null) {
             logger.error(`No Favourites`)
             res.status(400)
-            res.send({ message: `No Favourites Found`,success:"alse" })
+            res.send({ message: `No Favourites Found`, success: "alse" })
             return
         }
         res.send(user)
