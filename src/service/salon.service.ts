@@ -181,7 +181,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                  //TODO: send salon with rating 5
-                 const salons = await this.model.find().skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+                 const salons = await this.model.find().populate("photo_ids").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                 const salonPage = this.reviewModel.find().count();
 
