@@ -21,7 +21,7 @@ export default interface UserI {
     color_complextion ? : string
     blocked ? : boolean
     approved ? : boolean
-    address: UserAddressI[]
+    address?: UserAddressI[]
 }
 
 export interface UserSI extends UserI, mongoose.Document {}
