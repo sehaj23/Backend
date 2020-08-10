@@ -9,6 +9,7 @@ type BookingLoaction = 'Customer Place' | 'Vendor Place'
 
 export interface BookingServiceI{
     service_id: string,
+    option_id: string,
     employee_id?: string,
     service_name: string,
     service_real_price: number,

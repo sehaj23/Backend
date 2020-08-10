@@ -9,9 +9,13 @@ import mongoose from "../database";
 import SalonService from "../service/salon.service";
 import ErrorResponse from "../utils/error-response";
 import EmployeeAbsenteesmService from "../service/employee-absentism.service";
+import SalonSI from "../interfaces/salon.interface";
+import { BookingI, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 
 
 export default class BookingController extends BaseController {
+
+    ZATTIRE_COMMISSION_PECENT = 20
 
     service: BookingService
     salonService: SalonService
@@ -23,10 +27,85 @@ export default class BookingController extends BaseController {
         this.employeeAbsentismService = employeeAbsentismService
     }
 
+
+    getAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const bookings = await this.service.getByUserId(req.userId)
+        res.send(bookings)
+    })
+
     /**
      * @description book the the appointment with the salon
      */
     bookAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
+
+        const d = {
+            "booking_date_time": "11-28-2020 04:50am",
+            "payment_type": "COD or Online",
+            "location": "'Customer Place' | 'Vendor Place'",
+            "services": [{
+                "service_id": "",
+                "option_id": "",
+                "employee_id": ""
+            }]
+        }
+        const gotServices = req.body.services as {service_id: string, option_id: string, employee_id?: string}[]
+        //@ts-ignore
+        const userId = req.userId
+
+        // getting the salon 
+        const sanlon = await this.salonService.getServiceByServiceId(gotServices[0].service_id) as SalonSI
+        let totalPrice = 0
+        let totalTime = 0 // in mins
+
+        const finalServices: BookingServiceI[] = []
+        for(let service of sanlon.services){
+            for(let i = 0; i < gotServices.length; i++){
+                const ser = gotServices[i]
+                //@ts-ignore
+                if(service._id.toString() === ser.service_id){
+                    for(let option of service.options){
+                        //@ts-ignore
+                        if(option._id.toString() === ser.option_id){
+
+                            const price = option.duration.valueOf()
+                            const zattire_commission = price * (this.ZATTIRE_COMMISSION_PECENT/100)
+                            const vendor_commission = price - zattire_commission
+                            const bookinService: BookingServiceI = {
+                                //@ts-ignore
+                                service_id: ser.option_id.toString(),
+                                option_id: ser.option_id,
+                                service_name: `${service.name} ${option.option_name}`,
+                                service_real_price: option.price.valueOf(),
+                                service_total_price: option.price.valueOf(),
+                                service_time: req.body.booking_date_time,
+                                zattire_commission,
+                                vendor_commission
+                            }
+                            finalServices.push(bookinService)
+
+                            totalPrice += option.price.valueOf()
+                            totalTime += option.duration.valueOf()
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        const b: BookingI = {
+            user_id: userId,
+            price: totalPrice,
+            date_time: req.body.booking_date_time,
+            payment_type: req.body.payment_type,
+            location: req.body.location,
+            services: finalServices
+        }
+
+        const booking = await this.service.post(b) as BookingSI
+        
+        return res.send(booking)
+
         // get the user id
         //@ts-ignore
         const userId = req.id
@@ -34,7 +113,7 @@ export default class BookingController extends BaseController {
         const gotOptionIds = req.body.option_ids as any[]
         // get the details of the services
         const services = await this.salonService.getServicesByOptionIds(gotOptionIds) as any[]
-        if(services.length === 0){
+        if (services.length === 0) {
             throw new ErrorResponse("No services chosen")
         }
         //TODO: add the tax logic
@@ -45,38 +124,38 @@ export default class BookingController extends BaseController {
         const gotLocation = req.body.location
         // get the employee ids if chosen
         const gotEmployeeIds = req.body.employee_ids as any[]
-        if(gotEmployeeIds.length > 0){
+        if (gotEmployeeIds.length > 0) {
             // then check 
-                // 1. check if employee ids selected matches the number of options
-                    // a. if service loaction is home then there should be only one employee id
-                    if(gotEmployeeIds.length > 1 && gotLocation === "home") throw new ErrorResponse("Cannot select more than 1 employee when booking for home")
-                    // b. if at salon, then handle later
+            // 1. check if employee ids selected matches the number of options
+            // a. if service loaction is home then there should be only one employee id
+            if (gotEmployeeIds.length > 1 && gotLocation === "home") throw new ErrorResponse("Cannot select more than 1 employee when booking for home")
+            // b. if at salon, then handle later
 
-                // 1. check if the employee ids belong to salon or not
-                const salonEmployeeIds = await this.salonService.getSalonEmployeesByIds(gotEmployeeIds) as any[]
-                if(salonEmployeeIds.length !== gotEmployeeIds.length) throw new ErrorResponse("Employee does not match with salon")
-                // 2. the avalabilty of the employee if not available
-                    // a. if not booked already
-                    const servicesByEmployees =  await this.service.getEmployeesBookingsByIdsTime(gotEmployeeIds, `${gotServiceDate} ${gotServiceTime}` ) as any[]
-                    if(servicesByEmployees.length !== 0) throw new ErrorResponse("Employees are busy")
-                    // b. if absent (only checking date)
-                    const absentEmployees = await this.employeeAbsentismService.get({"employee_id": gotEmployeeIds, "absenteeism_date": gotServiceDate}) as any[]
-                    if(absentEmployees.length === 0) throw new ErrorResponse("Employees are absent")
-                // 1.b Handling if at salon
-                if(gotEmployeeIds.length !== gotOptionIds.length){
-                    // add employees for the service
-                    // 1. get employee ids from the salon 
-                    
-                    // 2. get employees who are available
-                    // 3. get employees who do this service
-                }
+            // 1. check if the employee ids belong to salon or not
+            const salonEmployeeIds = await this.salonService.getSalonEmployeesByIds(gotEmployeeIds) as any[]
+            if (salonEmployeeIds.length !== gotEmployeeIds.length) throw new ErrorResponse("Employee does not match with salon")
+            // 2. the avalabilty of the employee if not available
+            // a. if not booked already
+            const servicesByEmployees = await this.service.getEmployeesBookingsByIdsTime(gotEmployeeIds, `${gotServiceDate} ${gotServiceTime}`) as any[]
+            if (servicesByEmployees.length !== 0) throw new ErrorResponse("Employees are busy")
+            // b. if absent (only checking date)
+            const absentEmployees = await this.employeeAbsentismService.get({ "employee_id": gotEmployeeIds, "absenteeism_date": gotServiceDate }) as any[]
+            if (absentEmployees.length === 0) throw new ErrorResponse("Employees are absent")
+            // 1.b Handling if at salon
+            if (gotEmployeeIds.length !== gotOptionIds.length) {
+                // add employees for the service
+                // 1. get employee ids from the salon 
+
+                // 2. get employees who are available
+                // 3. get employees who do this service
+            }
         }
-                
-                // else book the appointment
-            // else search for employees free at that time. If found
-                // then select those employees and book the appointment
-                // else send error
-                
+
+        // else book the appointment
+        // else search for employees free at that time. If found
+        // then select those employees and book the appointment
+        // else send error
+
     })
 
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {

@@ -21,9 +21,9 @@ const bc = new BookingController(bookingService, salonService, empAbsenteesimSer
 const bookingRouter = Router()
 
 // get available employees by date & time
-bookingRouter.get("/ae", bc.bookAppointment)
+bookingRouter.get("/", bc.getAppointment)
 
 // create a booking
-bookingRouter.post("/create", bc.post)
+bookingRouter.post("/", bc.bookAppointment)
 
 export default bookingRouter
