@@ -26,5 +26,6 @@ bookingRouter.get("/",UserverifyToken, bc.getAppointment)
 
 // create a booking
 bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
+bookingRouter.post("/employees/:salonId",UserverifyToken, bc.getSalonEmployees)
 
 export default bookingRouter
