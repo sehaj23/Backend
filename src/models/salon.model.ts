@@ -35,7 +35,8 @@ const SalonSchema = new mongoose.Schema({
             },
             name: {
                 type: String,
-                required: true
+                required: true,
+                index: true,
             },
             options: [{
                 at_home:{
@@ -46,7 +47,8 @@ const SalonSchema = new mongoose.Schema({
                 option_name: {
                     type: String,
                     default: 'DIRECT',
-                    required: true
+                    required: true,
+                    index: true,
                 },
                 price: {
                     type: Number,
@@ -148,7 +150,7 @@ const SalonSchema = new mongoose.Schema({
     timestamps: true
 })
 
-SalonSchema.index({ name: 'text', location: 'text', 'services.name': 'text' });
+SalonSchema.index({ name: 'text', location: 'text', 'services.name': 'text','services.options.option_name': 'text' });
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 

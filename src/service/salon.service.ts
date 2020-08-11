@@ -232,16 +232,7 @@ export default class SalonService extends BaseService {
 
         // }
 
-        // Search by salon/location/service
-        getSearchResult = async (phrase: string) => {
-
-                const data = await this.model.find(
-                        { $text: { $search: phrase } },
-                        { score: { $meta: 'textScore' } }
-                ).sort({ score: { $meta: 'textScore' } })
-                return data
-
-        }
+     
 
         //get Salons nearby
         getSalonNearby = async (centerPoint: any, km: string) => {
@@ -350,6 +341,26 @@ export default class SalonService extends BaseService {
                 const brand = await this.brandModel.create(d)
                 return brand
         }
+           // Search by salon
+        getSearchResult = async (phrase: string) => {
+
+                const data = await this.model.find(
+                        { $text: { $search: phrase } },
+                        { score: { $meta: 'textScore' } }
+                ).sort({ score: { $meta: 'textScore' } })
+                return data
+
+        }
+
+        getSearchservice = async (phrase: string) => {
+
+                const data = await this.model.find(
+                        { $text: { $search: phrase } },
+                        { score: { $meta: 'textScore' } }
+                ).sort({ score: { $meta: 'textScore' } })
+                return data
+
+        }
 
         searchFilter = async (q:any) => {
 
@@ -388,7 +399,7 @@ export default class SalonService extends BaseService {
                             break
                         case "gender":
                                 filters["services"]={
-                                        $elemMatch:{"options.gender" :q[k]}
+                                $elemMatch:{"options.gender" :q[k]}
 
                                 }    
                                 break
@@ -410,13 +421,6 @@ export default class SalonService extends BaseService {
                                 case "location":
                                         filters["location"]= q[k]
                                         break
-                                case "phrase":
-                                        filters["phrase"]={
-                                        $text: { $search: q[k]},
-                                        score: { $meta: 'textScore' } 
-                                }
-                                        break
-                                        
                         case "page_number":
                         case "page_length":
                             break
