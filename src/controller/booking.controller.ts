@@ -64,6 +64,7 @@ export default class BookingController extends BaseController {
                 const ser = gotServices[i]
                 //@ts-ignore
                 if(service._id.toString() === ser.service_id){
+                    let found = false
                     for(let option of service.options){
                         //@ts-ignore
                         if(option._id.toString() === ser.option_id){
@@ -86,12 +87,17 @@ export default class BookingController extends BaseController {
 
                             totalPrice += option.price.valueOf()
                             totalTime += option.duration.valueOf()
+                            found = true
                             break
                         }
                     }
+                    if(!found) throw new ErrorResponse(`Service id and option id does not match for service id: ${ser.service_id}`)
                 }
             }
         }
+
+        if(totalPrice === 0) throw new ErrorResponse(`Total price cannot be 0.`)
+        if(finalServices.length === 0) throw new ErrorResponse("Final services array cannot be of length 0.")
 
         const b: BookingI = {
             user_id: userId,
@@ -117,14 +123,14 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return;
         }
-        if (!req.body.dateTime) {
+        if (!req.query.dateTime) {
             const errMsg = `dateTime not found`;
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
             return
         }
-        const salon = await this.service.getSalonEmployees(req.body.username, req.body.dateTime)
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime as string) )
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);

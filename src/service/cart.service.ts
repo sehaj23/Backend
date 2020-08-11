@@ -82,8 +82,6 @@ export default class CartService extends BaseService{
 
     createCart= async (d:any) =>{
         return this.model.create(d)
-    
-
     }
 
 }

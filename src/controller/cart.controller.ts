@@ -2,6 +2,7 @@ import BaseController from "./base.controller"
 import CartService from "../service/cart.service"
 import { Request, Response } from "express"
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware"
+import CartI from "../interfaces/cart.interface"
 
 export default class CartController extends BaseController{
     
@@ -17,7 +18,14 @@ export default class CartController extends BaseController{
     post =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
         req.body.user_id = req.userId
-        const data = await this.cartService.createCart(req.body)
+        const cart:CartI = {
+            //@ts-ignore
+            user_id: req.userId,
+            options:[{option_id: req.body.option_id, quantity: 1}],
+            total: 100,
+            salon_id: req.body.salon_id
+        }
+        const data = await this.cartService.createCart(cart)
         if(data==null){
             return res.send({message:"Unable to add data in cart",success:"false"})
         }
