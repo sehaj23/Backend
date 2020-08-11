@@ -25,7 +25,7 @@ export default class CartController extends BaseController{
             total: 100,
             salon_id: req.body.salon_id
         }
-        const data = await this.cartService.createCart(req.body)
+        const data = await this.cartService.createCart(cart)
         if(data==null){
             return res.send({message:"Unable to add data in cart",success:"false"})
         }
