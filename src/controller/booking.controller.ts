@@ -99,7 +99,8 @@ export default class BookingController extends BaseController {
             date_time: req.body.booking_date_time,
             payment_type: req.body.payment_type,
             location: req.body.location,
-            services: finalServices
+            services: finalServices,
+            salon_id:req.body.salon_id
         }
 
         const booking = await this.service.post(b) as BookingSI
