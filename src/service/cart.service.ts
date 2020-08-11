@@ -25,7 +25,7 @@ export default class CartService extends BaseService{
                 break
             }
         }
-        if(optionFound === false){
+        if(optionFound === true){
             cart.options.push({
                 option_id,
                 quantity: 1
