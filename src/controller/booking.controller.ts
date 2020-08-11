@@ -64,6 +64,7 @@ export default class BookingController extends BaseController {
                 const ser = gotServices[i]
                 //@ts-ignore
                 if(service._id.toString() === ser.service_id){
+                    let found = false
                     for(let option of service.options){
                         //@ts-ignore
                         if(option._id.toString() === ser.option_id){
@@ -86,12 +87,17 @@ export default class BookingController extends BaseController {
 
                             totalPrice += option.price.valueOf()
                             totalTime += option.duration.valueOf()
+                            found = true
                             break
                         }
                     }
+                    if(!found) throw new ErrorResponse(`Service id and option id does not match for service id: ${ser.service_id}`)
                 }
             }
         }
+
+        if(totalPrice === 0) throw new ErrorResponse(`Total price cannot be 0.`)
+        if(finalServices.length === 0) throw new ErrorResponse("Final services array cannot be of length 0.")
 
         const b: BookingI = {
             user_id: userId,
@@ -99,7 +105,7 @@ export default class BookingController extends BaseController {
             date_time: req.body.booking_date_time,
             payment_type: req.body.payment_type,
             location: req.body.location,
-            services: finalServices
+            services: finalServices,
         }
 
         const booking = await this.service.post(b) as BookingSI
