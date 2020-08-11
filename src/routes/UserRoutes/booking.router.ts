@@ -13,6 +13,7 @@ import Brand from "../../models/brands.model"
 import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
 import BookingService from "../../service/booking.service"
+import UserverifyToken from "../../middleware/User.jwt"
 
 const bookingService = new BookingService(Booking, Salon)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)
@@ -21,9 +22,9 @@ const bc = new BookingController(bookingService, salonService, empAbsenteesimSer
 const bookingRouter = Router()
 
 // get available employees by date & time
-bookingRouter.get("/", bc.getAppointment)
+bookingRouter.get("/",UserverifyToken, bc.getAppointment)
 
 // create a booking
-bookingRouter.post("/", bc.bookAppointment)
+bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
 
 export default bookingRouter
