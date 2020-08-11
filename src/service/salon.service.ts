@@ -410,6 +410,13 @@ export default class SalonService extends BaseService {
                                 case "location":
                                         filters["location"]= q[k]
                                         break
+                                case "phrase":
+                                        filters["phrase"]={
+                                        $text: { $search: q[k]},
+                                        score: { $meta: 'textScore' } 
+                                }
+                                        break
+                                        
                         case "page_number":
                         case "page_length":
                             break
