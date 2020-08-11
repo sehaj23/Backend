@@ -24,15 +24,17 @@ const BookingSchema = new mongoose.Schema({
     services: {
         type: [{
             service_id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "services"
+                type: String,
+                required:true
+          
+            },
+            option_id: {
+                type: String,
+                required:true
             },
             employee_id:{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "employees"
-            },
-            option_id: {
-                type: mongoose.Schema.Types.ObjectId,   
             },
             service_name: {
                 type: String,
