@@ -31,7 +31,6 @@ loginRouter.post(
 loginRouter.post(
   '/google',
   signupLimiter,
-  [signupChecks, mySchemaValidator],
   loginController.loginwithGoogle
 )
 
