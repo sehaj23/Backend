@@ -228,7 +228,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(newSalon)
+        res.send({message:"Employee Added",success:"true"})
 
     })
     deleteSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -254,7 +254,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(newSalon)
+        res.send({message:"Employee Removed",success:"true"})
 
     })
     editSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
