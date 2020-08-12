@@ -94,18 +94,20 @@ export default class UserService extends BaseService {
 
     addToFavourites = async (id:string,salon_id:string) => {
        const salonid = mongoose.Types.ObjectId(salon_id)
+       console.log("salon id",salonid)
+       console.log("user",id)
       // const user = await this.model.findOne({_id:id})
     
       //  const user = await this.model.findById({_id:id}) 
       //@ts-ignore 
-          const user = await this.model.findOneAndUpdate({_id:id},{$push:{favourites:salonid}},{new:true})
+          const user = await this.model.update({_id:id},{$push:{favourites:[salonid]}},{new:true})
 
             return user
 
     }
     getFavourites = async (id:string,) => {
         
-           const user = await this.model.findOne({_id:id}).select("favourites").populate({path:"favourites" ,select:{name:"name",rating:"rating",location:"location",profile_pic:"profile_pic"}})
+           const user = await this.model.findOne({_id:id}).select("favourites").populate({path:"favourites" ,select:{name:"name",rating:"rating",location:"location"}}).select("profile_pic").populate("photo_id")
  
             return user
  

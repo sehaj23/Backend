@@ -14,8 +14,10 @@ export default class CartService extends BaseService{
      * This is to add an option id to an exsisting cart
      */
     addOptionToCart = async (cartId: string, option_id: string) => {
+
         const cart = await this.getId(cartId) as CartSI
         const {options} = cart
+       // const exist = await this.model.findOne({"options.option_id": option_id, "user_id": userId}
         let optionFound = false
         for(let i = 0; i < options.length; i++){
             const option = options[i]
