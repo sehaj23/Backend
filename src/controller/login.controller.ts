@@ -86,6 +86,7 @@ export default class LoginController extends BaseController {
 
   loginwithGoogle =controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
+    
     const createUser = await this.service.create(user)
     if(createUser==null){
       const errMsg = `unable to create User`;
