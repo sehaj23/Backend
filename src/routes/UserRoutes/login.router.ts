@@ -27,4 +27,12 @@ loginRouter.post(
   loginController.create
 )
 
+//@ts-ignore
+loginRouter.post(
+  '/google',
+  signupLimiter,
+  [signupChecks, mySchemaValidator],
+  loginController.loginwithGoogle
+)
+
 export default loginRouter
