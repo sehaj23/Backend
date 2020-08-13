@@ -30,7 +30,6 @@ loginRouter.post(
 //@ts-ignore
 loginRouter.post(
   '/google',
-  signupLimiter,
   loginController.loginwithGoogle
 )
 
