@@ -20,8 +20,8 @@ export default class LoginService extends BaseService {
     return await this.model.findOne({ email })
   }
 
-  getbyUID = async (uid: string) => {
-    return await this.model.findOne({uid:uid })
+  getbyUID = async (uid: string,email:string) => {
+    return await this.model.findOne({uid:uid,email:email })
   }
 
 }

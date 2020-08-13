@@ -86,8 +86,9 @@ export default class LoginController extends BaseController {
 
   loginwithGoogle =controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
+    const {uid,email} = req.body
 
-    const getUser = await this.service.getbyUID(req.body.uid)
+    const getUser = await this.service.getbyUID(uid,email)
     if(getUser === null){
     
     const createUser = await this.service.create(user)
