@@ -1,6 +1,7 @@
 import BaseService from "./base.service";
 import mongoose from "../database";
 import { CartSI } from "../interfaces/cart.interface";
+import { selectFields } from "express-validator/src/select-fields";
 
 export default class CartService extends BaseService{
 
@@ -80,10 +81,12 @@ export default class CartService extends BaseService{
     getCartByUserId = async (userId: string, last: boolean = false) =>{
        let salon;
         if(!last){ 
-          salon =  this.model.find({"user_id": userId})
-     }
-        salon = this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
-        console.log(salon)
+          salon = await this.model.find({"user_id": userId})
+         }
+        salon = await this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
+        
+    
+        return salon._id
         } 
 
     createCart= async (d:any) =>{
