@@ -78,9 +78,13 @@ export default class CartService extends BaseService{
      * Getting the cart by user id
      */
     getCartByUserId = async (userId: string, last: boolean = false) =>{
-        if(!last) return this.model.find({"user_id": userId})
-        return this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
-    } 
+       let salon;
+        if(!last){ 
+          salon =  this.model.find({"user_id": userId})
+     }
+        salon = this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
+        console.log(salon)
+        } 
 
     createCart= async (d:any) =>{
         return this.model.create(d)

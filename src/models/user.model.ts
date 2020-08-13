@@ -26,6 +26,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         
      },
+    uid:{
+        type:String,
+    },
     age: {
         type: String,
     },
@@ -77,9 +80,7 @@ const UserSchema = new mongoose.Schema({
             tag: {
                 type: String,   
             },
-            uid:{
-                type:String,
-            },
+           
         }]
     }
 })
