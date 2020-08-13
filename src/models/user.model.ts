@@ -75,9 +75,11 @@ const UserSchema = new mongoose.Schema({
                 type: Number,
             },
             tag: {
-                type: String,
-                
-            }
+                type: String,   
+            },
+            uid:{
+                type:String,
+            },
         }]
     }
 })

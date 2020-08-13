@@ -86,6 +86,9 @@ export default class LoginController extends BaseController {
 
   loginwithGoogle =controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
+
+    const getUser = await this.service.getbyUID(req.body.uid)
+    if(getUser === null){
     
     const createUser = await this.service.create(user)
     if(createUser==null){
@@ -96,12 +99,22 @@ export default class LoginController extends BaseController {
           return
     }
     createUser.password = ''
+  
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
       token,
-    })        
+    })
+  }
+  getUser.password = ''
+  const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    expiresIn: this.jwtValidity,
+  })
+  return res.status(200).send({
+    token,
+  })
+
     
   })
 
