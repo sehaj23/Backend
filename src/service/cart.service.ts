@@ -84,9 +84,7 @@ export default class CartService extends BaseService{
           salon = await this.model.find({"user_id": userId})
          }
         salon = await this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
-        
-    
-        return salon._id
+        return salon
         } 
 
     createCart= async (d:any) =>{
