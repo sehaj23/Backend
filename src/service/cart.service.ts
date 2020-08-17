@@ -60,16 +60,7 @@ export default class CartService extends BaseService{
     updateCartOption = async (userId, optionId: string, qty: number) => {
         const cart = await this.model.update({"options.option_id": optionId, "user_id": userId}, {$set: {"options.$.quantity": qty}}) as CartSI
         if(cart === null) throw new Error("Cart not found")
-        const {options} = cart
-        for(let i = 0; i < options.length; i++){
-            const option = options[i]
-            if(option.option_id === optionId){
-                cart.options.splice(i, 1)
-                await cart.save()
-                return cart
-            }
-        }
-        throw new Error("Error while deleteing the id. Check cart id and option id")
+        return cart
     }
 
     /**
