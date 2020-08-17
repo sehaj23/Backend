@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+
     },
     signin_from: {
         type: String,
@@ -24,8 +24,11 @@ const UserSchema = new mongoose.Schema({
     },
     phone: { 
         type: String,
-        required: true
+        
      },
+    uid:{
+        type:String,
+    },
     age: {
         type: String,
     },
@@ -75,9 +78,9 @@ const UserSchema = new mongoose.Schema({
                 type: Number,
             },
             tag: {
-                type: String,
-                
-            }
+                type: String,   
+            },
+           
         }]
     }
 })

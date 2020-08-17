@@ -145,10 +145,10 @@ export default class BookingService extends BaseService {
         const dateTimeD = new Date(dateTime);
         const busyEmployeesIds = [];
         // @ts-ignore
-        const bookingsDbReq =  Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
-        const salonDbReq =  this.salonModel.findById(salonId).populate("employees").exec();
-        const [bookings, salon] = await Promise.all([bookingsDbReq, salonDbReq])
-        if (bookings !== null) busyEmployeesIds.concat(bookings.services.map(s => s.employee_id))
+      //  const bookingsDbReq =  Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
+        const salonDbReq =  this.salonModel.findById(salonId).select("employees").populate("employees").exec();
+        const [ salon] = await Promise.all([ salonDbReq])
+     //   if (bookings !== null) busyEmployeesIds.concat(bookings.services.map(s => s.employee_id))
         for (const bemp of busyEmployeesIds) {
             //@ts-ignore
             const i = salon.employees.findIndex((e) => e._id === bemp);

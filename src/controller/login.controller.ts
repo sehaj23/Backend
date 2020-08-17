@@ -78,9 +78,45 @@ export default class LoginController extends BaseController {
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
+            return
       }
       res.status(201).send(createUser)
 
+  })
+
+  loginwithGoogle =controllerErrorHandler(async (req: Request, res: Response) => {
+    const user = req.body
+    const {uid,email} = req.body
+
+    const getUser = await this.service.getbyUID(uid,email)
+    if(getUser === null){
+    
+    const createUser = await this.service.create(user)
+    if(createUser==null){
+      const errMsg = `unable to create User`;
+          logger.error(errMsg);
+          res.status(400);
+          res.send({ message: errMsg });
+          return
+    }
+    createUser.password = ''
+  
+    const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    return res.status(200).send({
+      token,
+    })
+  }
+  getUser.password = ''
+  const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    expiresIn: this.jwtValidity,
+  })
+  return res.status(200).send({
+    token,
+  })
+
+    
   })
 
 }

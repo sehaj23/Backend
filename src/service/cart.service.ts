@@ -1,6 +1,7 @@
 import BaseService from "./base.service";
 import mongoose from "../database";
 import { CartSI } from "../interfaces/cart.interface";
+import { selectFields } from "express-validator/src/select-fields";
 
 export default class CartService extends BaseService{
 
@@ -14,8 +15,10 @@ export default class CartService extends BaseService{
      * This is to add an option id to an exsisting cart
      */
     addOptionToCart = async (cartId: string, option_id: string) => {
+
         const cart = await this.getId(cartId) as CartSI
         const {options} = cart
+       // const exist = await this.model.findOne({"options.option_id": option_id, "user_id": userId}
         let optionFound = false
         for(let i = 0; i < options.length; i++){
             const option = options[i]
@@ -67,9 +70,14 @@ export default class CartService extends BaseService{
      * Getting the cart by user id
      */
     getCartByUserId = async (userId: string, last: boolean = false) =>{
-        if(!last) return this.model.find({"user_id": userId})
-        return this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1)
-    } 
+       
+        // if(!last){ 
+        //  const cart = await this.model.find({"user_id": userId}) as CartSI
+        //  }
+        const cart = await this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1) as CartSI
+        console.log(cart.options)
+        return cart
+        } 
 
     createCart= async (d:any) =>{
         return this.model.create(d)

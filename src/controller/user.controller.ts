@@ -142,7 +142,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         const salonid = req.body.salon_id
-        console.log(id)
+        
         const user = await this.service.addToFavourites(id, salonid)
         if (user === null) {
             logger.error(`Unable to add favorites`)
@@ -168,6 +168,8 @@ export default class UserController extends BaseController {
         res.send(user)
 
     })
+
+   
 
 
 

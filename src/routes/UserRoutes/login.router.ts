@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import LoginService from '../../service/login.service'
-import { loginChecks, signupChecks } from '../../validators/login-validator'
+import { loginChecks, signupChecks,emailChecks } from '../../validators/login-validator'
 import mySchemaValidator from '../../middleware/my-schema-validator'
 import { signupLimiter, loginLimiter } from '../../middleware/rate-limit'
 import User from '../../models/user.model'
@@ -25,6 +25,12 @@ loginRouter.post(
   signupLimiter,
   [signupChecks, mySchemaValidator],
   loginController.create
+)
+
+//@ts-ignore
+loginRouter.post(
+  '/google',
+  loginController.loginwithGoogle
 )
 
 export default loginRouter

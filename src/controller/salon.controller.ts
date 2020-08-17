@@ -228,7 +228,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(newSalon)
+        res.send({message:"Employee Added",success:"true"})
 
     })
     deleteSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -254,7 +254,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send(newSalon)
+        res.send({message:"Employee Removed",success:"true"})
 
     })
     editSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -407,13 +407,20 @@ export default class SalonController extends BaseController {
     //     res.status(200).send(salons)
 
     // })
-
     getSearchResult = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:Validato
         const phrase = req.query.phrase as string
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
         const salon = await this.service.getSearchResult(phrase)
+        res.status(200).send(salon)
+    })
+    getSearchservice= controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:Validator
+        const phrase = req.query.phrase as string
+        if (!phrase)
+            return res.status(400).send({ message: 'Provide search phrase' })
+        const salon = await this.service.getSearchservice(phrase)
         res.status(200).send(salon)
     })
     getSalonNearby = controllerErrorHandler(async (req: Request, res: Response) => {
