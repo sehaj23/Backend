@@ -1,15 +1,26 @@
 import BaseService from "./base.service";
 import mongoose from "../database";
 import { CartSI } from "../interfaces/cart.interface";
-import { selectFields } from "express-validator/src/select-fields";
+import SalonSI from "../interfaces/salon.interface";
 
-export default class CartService extends BaseService{
+export default class CartService extends BaseService {
 
-    cartService: mongoose.Model<any, any>
-    constructor(cartService: mongoose.Model<any, any>){
-        super(cartService)
+    salonModel: mongoose.Model<any, any>
+    constructor(cartModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
+        super(cartModel)
+        this.salonModel = salonModel
     }
 
+    getPriceByOptionId: (optionId: string) => Promise<number> = async (optionId: string) => {
+        const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
+        if (salon === null || !salon) throw new Error("Salon not found")
+        for (let service of salon.services) {
+            for (let option of service.options) {
+                if (option._id.toString() === optionId) return option.price.valueOf()
+            }
+        }
+        throw new Error("Option not found")
+    }
 
     /**
      * This is to add an option id to an exsisting cart
@@ -17,37 +28,44 @@ export default class CartService extends BaseService{
     addOptionToCart = async (cartId: string, option_id: string) => {
 
         const cart = await this.getId(cartId) as CartSI
-        const {options} = cart
-       // const exist = await this.model.findOne({"options.option_id": option_id, "user_id": userId}
+        const { options } = cart
+        // const exist = await this.model.findOne({"options.option_id": option_id, "user_id": userId}
         let optionFound = false
-        for(let i = 0; i < options.length; i++){
+        for (let i = 0; i < options.length; i++) {
             const option = options[i]
-            if(option.option_id === option_id){
+            if (option.option_id === option_id) {
                 option.quantity += 1
                 optionFound = true
                 break
             }
         }
-        if(optionFound === false){
+        if (optionFound === false) {
             cart.options.push({
                 option_id,
                 quantity: 1
             })
         }
-        return  await cart.save()
+        // getting the price of the by option id
+        const optionPrice = await this.getPriceByOptionId(option_id)
+        const newPrice = cart.total + optionPrice
+        cart.total = newPrice
+        return await cart.save()
     }
 
     /**
      * This is the function to delete the option from the cart
      */
-     
+
     deleteOptionFromCart = async (userId, optionId: string) => {
-        const cart = await this.model.findOne({"options.option_id": optionId, "user_id": userId}) as CartSI
-        if(cart === null) throw new Error("Cart not found")
-        const {options} = cart
-        for(let i = 0; i < options.length; i++){
+        const cart = await this.model.findOne({ "options.option_id": optionId, "user_id": userId }) as CartSI
+        if (cart === null) throw new Error("Cart not found")
+        const { options } = cart
+        for (let i = 0; i < options.length; i++) {
             const option = options[i]
-            if(option.option_id === optionId){
+            if (option.option_id === optionId) {
+                const optionPrice = await this.getPriceByOptionId(optionId)
+                const amntToMinus = optionPrice * option.quantity
+                cart.total -= amntToMinus
                 cart.options.splice(i, 1)
                 await cart.save()
                 return cart
@@ -59,27 +77,42 @@ export default class CartService extends BaseService{
     /**
      * This is the function to delete the option from the cart
      */
-     
+
     updateCartOption = async (userId, optionId: string, qty: number) => {
-        const cart = await this.model.update({"options.option_id": optionId, "user_id": userId}, {$set: {"options.$.quantity": qty}}) as CartSI
-        if(cart === null) throw new Error("Cart not found")
+        if (qty === 0) return this.deleteOptionFromCart(userId, optionId)
+        const cart = await this.model.findOne({ "options.option_id": optionId, "user_id": userId }) as CartSI
+        if (cart === null) throw new Error("Cart not found")
+        for (let option of cart.options) {
+            if (option.option_id === optionId) {
+                const optionPrice = await this.getPriceByOptionId(optionId)
+
+                if (option.quantity < qty) {
+                    cart.total += optionPrice
+                } else if (option.quantity > qty) {
+                    cart.total -= optionPrice
+                }
+                option.quantity = qty
+                break
+            }
+        }
+        await cart.save()
         return cart
     }
 
     /**
      * Getting the cart by user id
      */
-    getCartByUserId = async (userId: string, last: boolean = false) =>{
-       
+    getCartByUserId = async (userId: string, last: boolean = false) => {
+
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
-        const cart = await this.model.find({user_id: userId}).sort({"created_at": 1}).limit(1) as CartSI
+        const cart = await this.model.find({ user_id: userId }).sort({ "created_at": 1 }).limit(1) as CartSI
         console.log(cart.options)
         return cart
-        } 
+    }
 
-    createCart= async (d:any) =>{
+    createCart = async (d: any) => {
         return this.model.create(d)
     }
 

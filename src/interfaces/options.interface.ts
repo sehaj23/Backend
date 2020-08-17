@@ -3,6 +3,7 @@ import { OfferI } from "./offer.interface";
 
 
 export default interface OptionI{
+    _id?: mongoose.Schema.Types.ObjectId
     option_name:String,
     price:Number,
     duration:Number,
