@@ -17,15 +17,7 @@ export default class CartController extends BaseController{
 
     post =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
-        req.body.user_id = req.userId
-        const cart:CartI = {
-            //@ts-ignore
-            user_id: req.userId,
-            options:[{option_id: req.body.option_id, quantity: 1}],
-            total: 100,
-            salon_id: req.body.salon_id
-        }
-        const data = await this.cartService.createCart(cart)
+        const data = await this.cartService.createCart(req.userId, req.body.salon_id, req.body.option_id)
         if(data==null){
             return res.send({message:"Unable to add data in cart",success:"false"})
         }
