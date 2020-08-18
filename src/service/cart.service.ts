@@ -111,7 +111,7 @@ export default class CartService extends BaseService {
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
-        const cart = await this.model.find({ user_id: userId }).sort({ "created_at": -1 }).limit(1) as CartSI
+        const cart = await this.model.find({ user_id: userId }).sort({ "created_at": 1 }).limit(1) as CartSI
         console.log(cart.options)
         return cart
     }
