@@ -67,7 +67,10 @@ export default class CartService extends BaseService {
                 const amntToMinus = optionPrice * option.quantity
                 cart.total -= amntToMinus
                 cart.options.splice(i, 1)
-                if(cart.options.length === 0) await cart.remove()
+                if(cart.options.length === 0){ 
+                    await cart.remove()
+                    return null
+                }
                 else await cart.save()
                 return cart
             }
