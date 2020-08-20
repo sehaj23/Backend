@@ -248,6 +248,9 @@ export default class BookingService extends BaseService {
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break
+                case "location":
+                    filters["location"]=q[k]
+                    break
                 case "page_number":
                 case "page_length":
 
