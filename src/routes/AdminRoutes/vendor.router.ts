@@ -4,9 +4,10 @@ import VendorService from "../../service/vendor.service";
 import VendorController from "../../controller/vendor.controller"
 import Vendor from "../../models/vendor.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
+import ReportVendor from "../../models/reportVendor.model";
 
 const vendorRouter = Router()
-const vs = new VendorService(Vendor,EmployeeAbsenteeism)
+const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor)
 const vendorController = new VendorController(vs)
 
 vendorRouter.post("/", verifyToken, vendorController.post)

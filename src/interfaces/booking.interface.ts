@@ -33,7 +33,8 @@ export interface BookingI{
     balance?: number
     date_time: Date
     location: BookingLoaction
-    reviews?: ReviewSI[]
+    reviews?: ReviewSI[],
+    address?:string
 }
 
 export interface BookingSI extends BookingI, mongoose.Document{}

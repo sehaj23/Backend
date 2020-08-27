@@ -66,6 +66,7 @@ const BookingSchema = new mongoose.Schema({
                 type: Date,
                 
             }
+        
         }]
     },
     status: {
@@ -96,6 +97,9 @@ const BookingSchema = new mongoose.Schema({
         type: String,
         enum: ['Customer Place' , 'Vendor Place'],
         default: 'Vendor Place'
+    },
+    address:{
+        type:String,    
     },
     reviews: {
         type: mongoose.Schema.Types.ObjectId, 

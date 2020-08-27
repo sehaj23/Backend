@@ -18,15 +18,18 @@ import Employee from "../models/employees.model"
 import moment = require("moment");
 import { String } from "aws-sdk/clients/appstream";
 import encryptData from "../utils/password-hash";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 
 
 
 
 export default class VendorService extends BaseService{
     employeeAbsenteeismModel : mongoose.Model<any, any>
-    constructor(Vendor: mongoose.Model<any, any>, employeeAbsenteeismModel : mongoose.Model<any, any>) {
+    reportVendorModel : mongoose.Model<any, any>
+    constructor(Vendor: mongoose.Model<any, any>, employeeAbsenteeismModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>) {
         super(Vendor)
         this.employeeAbsenteeismModel=employeeAbsenteeismModel
+        this.reportVendorModel=reportVendorModel
     }
 
     // vendorLogin  = async (email,password) => {
@@ -155,6 +158,12 @@ export default class VendorService extends BaseService{
     employeebyId = async (id:string) => {
             const service = await Employee.findById(id).populate("services").populate("photos").exec()
             return service
+    }
+
+    report = async (data:ReportVendorI)=>{
+        console.log(data)
+        const report = await this.reportVendorModel.create(data)
+        return report
     }
     
 
