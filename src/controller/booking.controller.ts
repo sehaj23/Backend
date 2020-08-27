@@ -51,7 +51,7 @@ export default class BookingController extends BaseController {
             }]
         }
         console.log(req.body.address)
-        const gotServices = req.body.services as {service_id: string, option_id: string, employee_id?: string,service_time?: Date}[]
+        const gotServices = req.body.services as {service_id: string, option_id: string, employee_id?: string,service_time?: Date,duration?:number}[]
         //@ts-ignore
         const userId = req.userId
 
@@ -80,6 +80,7 @@ export default class BookingController extends BaseController {
                                 option_id: ser.option_id,
                                 employee_id:ser.employee_id,
                                 service_name: `${service.name} ${option.option_name}`,
+                                duration:ser.duration,
                                 service_real_price: option.price.valueOf(),
                                 service_total_price: option.price.valueOf(),
                                 service_time: ser.service_time,

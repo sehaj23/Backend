@@ -13,6 +13,7 @@ export interface BookingServiceI{
     employee_id?: string,
     service_name: string,
     service_real_price: number,
+    duration:number,
     service_discount?: number,
     service_discount_code?: string,
     service_total_price: number,
