@@ -18,6 +18,11 @@ export default class EmployeeController extends BaseController {
         this.service = service
     }
 
+    getByIdWithService = controllerErrorHandler(async (req: Request, res: Response) => {
+        const emp = await this.service.getByIdWithService(req.params.id)
+        res.send(emp)
+    })
+
     employeeLogin = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const { phone, otp } = req.body
@@ -108,7 +113,7 @@ export default class EmployeeController extends BaseController {
         res.send(absent)
 
     })
-    updateEmployee = async (req: Request, res: Response) => {
+    updateEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
 
         const d = req.body
         //@ts-ignore
@@ -123,7 +128,17 @@ export default class EmployeeController extends BaseController {
         res.send(update)
 
 
-    }
+    })
+
+    addServicesByCatgoryNames = controllerErrorHandler(async (req: Request, res: Response) => {
+        const {salonId, employeeId} = req.params
+        const {selectedCategoryNames} = req.body
+        console.log("employeeId", employeeId)
+        console.log("selectedCategoryNames", selectedCategoryNames)
+        console.log("salonId", salonId)
+        const employee = await this.service.addServicesByCatgoryNames(salonId, employeeId, selectedCategoryNames)
+        res.send(employee)
+    })
 
 
 }

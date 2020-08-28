@@ -9,6 +9,9 @@ import reviewsRouter from "./reviews.router"
 import revenueRouter from "./revenue.router"
 import dashboardRouter from "./dashboard.router";
 import userRouter from "./user.router";
+import vendorRouter from "./vendor.router";
+import bookingRouter from "./booking.router";
+import employeeRouter from "./employee.router";
 
 
 const Vendorrouter = Router();
@@ -17,13 +20,15 @@ const Vendorrouter = Router();
 Vendorrouter.use("/login", loginRouter);
 Vendorrouter.use("/designer", designerRouter);
 Vendorrouter.use("/makeupArtist", makeupArtistRouter);
-//Vendorrouter.use("/bookings",bookingRouter)
+Vendorrouter.use("/bookings",bookingRouter)
 Vendorrouter.use("/salon",salonRouter)
 Vendorrouter.use("/offer",offerRouter)
 Vendorrouter.use("/reviews",reviewsRouter)
 Vendorrouter.use("/revenue",revenueRouter)
 Vendorrouter.use("/dashboard", dashboardRouter)
 Vendorrouter.use("/user",userRouter)
+Vendorrouter.use("/vendor",vendorRouter)
+Vendorrouter.use("/employee", employeeRouter)
 
 
 export default Vendorrouter

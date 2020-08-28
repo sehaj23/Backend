@@ -25,12 +25,8 @@ export default class SalonController extends BaseController {
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         const d: SalonI = req.body
 
-        if(d.vendor_id.length==0){
         //@ts-ignore
         d.vendor_id = req.vendorId
-        }
-       
-
         //@ts-ignore
         const salon = await this.service.postSalon(req.vendorId, d)
         if (salon === null) {
@@ -89,11 +85,9 @@ export default class SalonController extends BaseController {
 
     })
     addSalonService = controllerErrorHandler(async (req: Request, res: Response) => {
-        const d: ServiceI = req.body.services
+        const d = req.body
         const salon_id = req.params.id
-        //@ts-ignore
-       
-    
+        console.log(d)
         const newSalon = await this.service.addSalonService(salon_id, d)
         if (newSalon === null) {
             const errMsg = `Add Services: no data with this _id and service was found`

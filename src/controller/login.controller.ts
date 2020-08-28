@@ -7,6 +7,8 @@ import encryptData from '../utils/password-hash'
 import { UserRedis } from '../redis/index.redis'
 import CONFIG from '../config'
 import logger from '../utils/logger'
+import Vendor from '../models/vendor.model'
+import ErrorResponse from '../utils/error-response'
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -18,6 +20,17 @@ export default class LoginController extends BaseController {
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
   }
+
+  loginVendor = controllerErrorHandler(async (req: Request, res: Response) => {
+    const {email, password} = req.body
+    const v = await Vendor.findOne({email, password: encryptData(password)})
+    if(v == null) throw new ErrorResponse("Email id password does not match")
+    v.password = undefined
+    const token = await jwt.sign(v.toJSON(), CONFIG.VENDOR_JWT, {
+      expiresIn: this.jwtValidity,
+    })
+    res.send({token})
+  })
 
   login = controllerErrorHandler(async (req: Request, res: Response) => {
     try {
