@@ -310,8 +310,11 @@ export default class BookingService extends BaseService {
         return bookings
 
     }
+
+   
+
     rescheduleSlots = async (id, date) => {
-        const salon = await this.salonModel.findById(id)
+        const salon =  await this.salonModel.findById(id)
 
         const starting_hours = salon.start_working_hours
         var start_time = starting_hours.map(function (val) {

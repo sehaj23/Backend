@@ -358,8 +358,8 @@ export default class BookingController extends BaseController {
     getbookingbyId = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const booking = await this.service.bookingByID(id)
-        if (booking === null) {
-            const errMsg = "unable to fetch boooking"
+         if (booking === null) {
+            const errMsg = "unable to update boooking"
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })

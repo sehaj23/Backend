@@ -29,6 +29,7 @@ bookingRouter.get("/reschedule/:id",VendorverifyToken,bookingController.reschedu
 bookingRouter.patch("/reschedule/:id",VendorverifyToken,bookingController.reschedulebooking)
 bookingRouter.patch("/updatestatus/:id",VendorverifyToken,bookingController.updateStatusBookings)
 bookingRouter.get("/status",VendorverifyToken,bookingController.bookingStatus)
+bookingRouter.get("/photo/:id",VendorverifyToken,bookingController.getPhoto)
 
 
 //employee
@@ -37,6 +38,7 @@ bookingRouter.patch("/employee/updatestatus/:id",EmployeeverifyToken,bookingCont
 bookingRouter.get("/employee/reschedule/:id",EmployeeverifyToken,bookingController.rescheduleSlots)
 bookingRouter.patch("/employee/reschedule/:id",EmployeeverifyToken,bookingController.reschedulebooking)
 bookingRouter.get("/employee/booking",EmployeeverifyToken,bookingController.getEmployeebookings)
+bookingRouter.get("/photo/:id",EmployeeverifyToken,bookingController.getPhoto)
 
 
 
