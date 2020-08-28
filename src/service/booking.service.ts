@@ -225,8 +225,8 @@ export default class BookingService extends BaseService {
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
-        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
-        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+//        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
+  //      dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
         for (const k of keys) {
             switch (k) {
                 case "service_id":
@@ -248,6 +248,9 @@ export default class BookingService extends BaseService {
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break
+                case "location":
+                    filters["location"]=q[k]
+                    break
                 case "page_number":
                 case "page_length":
 
@@ -268,7 +271,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 

@@ -89,7 +89,11 @@ app.use(express.json());
 app.use("/api", router);
 app.use("/api/v", Vendorrouter)
 app.use("/api/u", Userrouter)
+<<<<<<< HEAD
 app.use("/api/vendorapp/", VendorApprouter)
+=======
+app.use("/api/vendorapp",VendorApprouter)
+>>>>>>> a4db49e441a22e3d8450a6d4b086f05abec9ca34
 app.get(
   "/app/get-vendor",
   async (req: express.Request, res: express.Response) => {

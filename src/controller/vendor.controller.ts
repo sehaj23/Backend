@@ -7,6 +7,7 @@ import CONFIG from '../config'
 import { EmployeeAbsenteeismI } from '../interfaces/employeeAbsenteeism.interface'
 import logger from '../utils/logger'
 import { PhotoI } from '../interfaces/photo.interface'
+import { ReportVendorI } from '../interfaces/reportVendor.interface'
 
 export default class VendorController extends BaseController {
   
@@ -157,6 +158,19 @@ export default class VendorController extends BaseController {
             return
         }
         res.send(emp)
+
+    })
+
+    report = controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:ReportVendorI = req.body
+        const createReport = await this.service.report(data)
+        if(createReport===null){
+            logger.error(`Unable to create report`)
+            res.status(400)
+            res.send({ message: `Unable to create report` })
+            return
+        }
+        res.send(createReport)
 
     })
 

@@ -43,13 +43,15 @@ export default class BookingController extends BaseController {
             "booking_date_time": "11-28-2020 04:50am",
             "payment_type": "COD or Online",
             "location": "'Customer Place' | 'Vendor Place'",
+            "address":"",
             "services": [{
                 "service_id": "",
                 "option_id": "",
                 "employee_id": ""
             }]
         }
-        const gotServices = req.body.services as {service_id: string, option_id: string, employee_id?: string}[]
+        console.log(req.body.address)
+        const gotServices = req.body.services as {service_id: string, option_id: string, employee_id?: string,service_time?: Date,duration?:number}[]
         //@ts-ignore
         const userId = req.userId
 
@@ -76,10 +78,12 @@ export default class BookingController extends BaseController {
                                 //@ts-ignore
                                 service_id: ser.option_id.toString(),
                                 option_id: ser.option_id,
+                                employee_id:ser.employee_id,
                                 service_name: `${service.name} ${option.option_name}`,
+                                duration:ser.duration,
                                 service_real_price: option.price.valueOf(),
                                 service_total_price: option.price.valueOf(),
-                                service_time: req.body.booking_date_time,
+                                service_time: ser.service_time,
                                 zattire_commission,
                                 vendor_commission
                             }
@@ -105,6 +109,7 @@ export default class BookingController extends BaseController {
             date_time: req.body.booking_date_time,
             payment_type: req.body.payment_type,
             location: req.body.location,
+            address:req.body.address,
             services: finalServices,
             salon_id:req.body.salon_id
         }
