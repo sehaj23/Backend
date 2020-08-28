@@ -24,6 +24,7 @@ const bookingController = new BookingController(bookingService, salonService, em
 
 
 bookingRouter.get("/",VendorverifyToken,bookingController.getbookings)
+bookingRouter.get("/:id",VendorverifyToken,bookingController.getId)
 bookingRouter.get("/reschedule/:id",VendorverifyToken,bookingController.rescheduleSlots)
 bookingRouter.patch("/reschedule/:id",VendorverifyToken,bookingController.reschedulebooking)
 bookingRouter.patch("/updatestatus/:id",VendorverifyToken,bookingController.updateStatusBookings)
