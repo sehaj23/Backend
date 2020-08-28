@@ -355,6 +355,21 @@ export default class BookingController extends BaseController {
         res.send(bookings)
 
     })
+    getbookingbyId = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const booking = await this.service.bookingByID(id)
+        if (booking === null) {
+            const errMsg = "unable to fetch boooking"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+        res.status(200).send(booking)
+        
+
+    })
     reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const date_time = req.body.date_time
