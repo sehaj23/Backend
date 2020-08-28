@@ -25,14 +25,14 @@ export const vendorJWTVerification = async (token: string) => {
 const VendorverifyToken = async (req: Request, res: Response, next: NextFunction) =>  {
   
       // check header or url parameters or post parameters for token
-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-      if (!token) {
+      const tokenPresent = req.headers.authorization && req.headers.authorization.split(' ')[1];
+      if (!tokenPresent) {
         logger.error("No token provided.")
         res.status(401).send({ success: false, message: 'No token provided.' });
         return 
       }
       try {
-          
+        const token = req.headers.authorization.split(' ')[1];
         // verifies secret and checks exp
         const decoded = await vendorJWTVerification(token)
         if(decoded === null){

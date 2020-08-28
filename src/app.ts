@@ -17,6 +17,9 @@ import * as cors from "cors";
 import startSocketIO from "./service/socketio";
 import { AdminRedis } from "./redis/index.redis";
 import redisClient from './redis/redis'
+import Vendor from "./models/vendor.model";
+import encryptData from "./utils/password-hash";
+import { VendorI } from "./interfaces/vendor.interface";
 
 const app = express();
 app.use(cors());
@@ -84,15 +87,36 @@ app.use(
 app.use(express.json());
 
 app.use("/api", router);
-app.use("/api/v",Vendorrouter)
+app.use("/api/v", Vendorrouter)
 app.use("/api/u", Userrouter)
-app.use("/api/vendorapp/",VendorApprouter)
+app.use("/api/vendorapp/", VendorApprouter)
 app.get(
   "/app/get-vendor",
   async (req: express.Request, res: express.Response) => {
     try {
       const nv = await NewVendor.find();
       res.send(nv);
+    } catch (e) {
+      logger.error(e.message);
+      res.status(403);
+      res.send({ error: e.message });
+    }
+  }
+);
+
+app.get("/cv",
+  async (req: express.Request, res: express.Response) => {
+    try {
+
+      const vendor: VendorI = {
+        name: "Preet",
+        email: "preet@gmail.com",
+        password: encryptData("preet123"),
+        contact_number: "1234567890",
+      };
+      const v = await Vendor.create(vendor)
+      console.log(v)
+      res.send(v)
     } catch (e) {
       logger.error(e.message);
       res.status(403);
@@ -133,16 +157,16 @@ app.put(
 
 // TEMP: to clear redis
 app.get("/r/clr", async (req: express.Request, res: express.Response) => {
-  try{  
+  try {
     redisClient.flushdb();
-    res.status(200).send({msg: 'Redis store cleared'})
-  }catch(e){
+    res.status(200).send({ msg: 'Redis store cleared' })
+  } catch (e) {
     res.status(400).send(e)
   }
 })
 
 
-app.get("/", (req, res) =>{
+app.get("/", (req, res) => {
   res.send("hello from the Zattire")
 })
 

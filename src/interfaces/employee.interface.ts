@@ -1,5 +1,6 @@
 import ServiceI from "./service.interface";
 import mongoose from "../database";
+import OptionI from "./options.interface";
 
 type ServiceLoaction = 'Customer Place' | 'Vendor Place' | 'Both'
 

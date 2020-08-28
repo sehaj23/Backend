@@ -6,7 +6,7 @@ import EventDesignerI from "../interfaces/eventDesigner.model";
 import mongoose from "../database";
 import BaseService from "../service/base.service";
 import { DesignersI } from "../interfaces/designer.interface";
-import { SalonI } from "../interfaces/salon.interface";
+import SalonSI, { SalonI } from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
 import Offer from "../models/offer.model";
@@ -18,6 +18,7 @@ import { OfferI } from "../interfaces/offer.interface";
 import { arePointsNear } from "../utils/location";
 import ReviewSI, { ReviewI } from "../interfaces/review.interface";
 import moment = require("moment");
+import OptionI from "../interfaces/options.interface";
 
 
 
@@ -61,12 +62,181 @@ export default class SalonService extends BaseService {
                 return salon
         }
 
-        addSalonService = async (_id: string, d: any) => {
-                //@ts-ignore
-                const newSalon = await this.model.findOneAndUpdate({ _id }, { $push: { services: { $each: d, $postion: 0 } } }, { new: true })
-                return newSalon
+        addSalonService = async (_id: string, da: any) => {
+                const salon = await this.model.findOne({ _id }) as SalonSI
+                if (salon === null) throw new Error("Salon not found")
+                console.log("data", da)
+                const data = da.services as any[]
+                for (let di = 0; di < data.length; di++) {
+                        const gotService = data[di]
+                        let categoryFound = -1
+                        let serviceFound = -1
+                        for (let i = 0; i < salon.services.length; i++) {
+                                const service = salon.services[i]
+                                console.log("service.category", service.category)
+                                console.log("da.category_name", da.category_name)
+                                if (service.category === da.category_name) {
+                                        categoryFound = i
+                                        console.log("gotService.service_name", gotService.service_name)
+                                        console.log("service.name", service.name)
+                                        if (gotService.service_name === service.name) {
+                                                serviceFound = i
+                                                if (gotService.service_checked === false) {
+                                                        console.log(`Deleting the service at ${i} ${service.name}`)
+                                                        salon.services = salon.services.splice(i, 0)
+                                                        break
+                                                }
+                                                // if service is checked
+                                                console.log("Changing the location of the options")
+                                                for (let opts of service.options) {
+                                                        opts.at_home = gotService.service_loaction === "Home Only" ? true : false
+                                                }
+                                                console.log("Adding/ updating options")
+                                                for (let gotOpt of gotService.options) {
+                                                        let found = false
+                                                        let menFound = -1
+                                                        let womenFound = -1
+                                                        for (let o = 0; o < service.options.length; o++) {
+                                                                const opt = service.options[o]
+                                                                console.log("opt.option_name", opt.option_name)
+                                                                console.log("gotOpt.option_name", gotOpt.option_name)
+                                                                if (opt.option_name === gotOpt.option_name) {
+                                                                        found = true
+                                                                        if (gotOpt.option_checked === false) {
+                                                                                service.options = service.options.splice(o, 1)
+                                                                        }else{
 
+                                                                                opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
+                                                                                if (opt.gender === "men") {
+                                                                                        opt.duration = gotOpt.option_men_duration
+                                                                                        opt.price = gotOpt.option_men_price
+                                                                                        menFound = o
+                                                                                } else if(opt.gender === "women"){
+                                                                                        opt.duration = gotOpt.option_women_duration
+                                                                                        opt.price = gotOpt.option_women_price
+                                                                                        womenFound = o
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+
+                                                        // removing the gender
+                                                        console.log("gotOpt.option_gender", gotOpt.option_gender)
+                                                        console.log("menFound", menFound)
+                                                        console.log("womenFound", womenFound)
+                                                        if( gotOpt.option_gender === "Women" && menFound > -1){
+                                                                console.log("Removing men")
+                                                                service.options =  service.options.splice(menFound, 1)
+                                                        }
+                                                        if( gotOpt.option_gender === "Men" && womenFound > -1){
+                                                                console.log("Removing women")
+                                                                service.options =  service.options.splice(womenFound, 1)
+                                                        }
+
+                                                        // adding the missing gender
+                                                        console.log("gotOpt.option_gender", gotOpt.option_gender)
+                                                        console.log("menFound", menFound)
+                                                        if( ( gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1){
+                                                                const option: OptionI = {
+                                                                        option_name: gotOpt.option_name,
+                                                                        price: gotOpt.option_men_price,
+                                                                        gender: "men",
+                                                                        duration: gotOpt.option_men_duration
+                                                                }
+                                                                service.options.push(option)
+                                                        }
+                                                        if( ( gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") && womenFound === -1){
+                                                                const option: OptionI = {
+                                                                        option_name: gotOpt.option_name,
+                                                                        price: gotOpt.option_women_price,
+                                                                        gender: "women",
+                                                                        duration: gotOpt.option_men_duration
+                                                                }
+                                                                service.options.push(option)
+                                                        }
+
+                                                        
+
+
+                                                        console.log("Found:", found)
+                                                        if (found === false && gotOpt.option_checked === true) {
+                                                                console.log("Adding the option")
+                                                                if (gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") {
+                                                                        const option: OptionI = {
+                                                                                option_name: gotOpt.option_name,
+                                                                                price: gotOpt.option_men_price,
+                                                                                gender: "men",
+                                                                                duration: gotOpt.option_men_duration
+                                                                        }
+                                                                        service.options.push(option)
+                                                                }
+                                                                if (gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") {
+                                                                        const option: OptionI = {
+                                                                                option_name: gotOpt.option_name,
+                                                                                price: gotOpt.option_women_price,
+                                                                                gender: "women",
+                                                                                duration: gotOpt.option_men_duration
+                                                                        }
+                                                                        service.options.push(option)
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                        console.log("serviceFound", serviceFound)
+                        console.log("categoryFound", categoryFound)
+                        // if(serviceFound === -1 && categoryFound > -1){
+                        //         console.log("Service not found category found")
+                        //         this.getTheOptions(gotService, salon.services[categoryFound])
+                        // }
+                        console.log("da.category_name", da.category_name)
+                        if (categoryFound === -1 || serviceFound === -1) {
+                                const service: ServiceI = {
+                                        name: gotService.service_name,
+                                        price: 0,
+                                        category: da.category_name,
+                                        duration: 15,
+                                        gender: 'men',
+                                        options: []
+                                }
+
+                                // getting the options
+                                this.getTheOptions(gotService, service)
+
+                                salon.services.push(service)
+                        }
+                }
+                await salon.save()
+                return salon
         }
+
+        protected getTheOptions(gotService: any, service: ServiceI) {
+                for (let opt of gotService.options) {
+                        if (opt.option_checked === true) {
+
+                                if (opt.option_gender === "Men" || opt.option_gender === "Both") {
+                                        const option: OptionI = {
+                                                option_name: opt.option_name,
+                                                price: opt.option_men_price,
+                                                duration: opt.option_men_duration,
+                                                gender: 'men'
+                                        }
+                                        service.options.push(option)
+                                }
+                                if (opt.option_gender === "Women" || opt.option_gender === "Both") {
+                                        const option: OptionI = {
+                                                option_name: opt.option_name,
+                                                price: opt.option_women_price,
+                                                duration: opt.option_women_duration,
+                                                gender: 'women'
+                                        }
+                                        service.options.push(option)
+                                }
+                        }
+                }
+        }
+
         deleteSalonService = async (_id: string, sid) => {
                 //@ts-ignore
                 const salon = await this.model.findOneAndUpdate({ _id: _id }, { $pull: { services: { _id: sid } } }, { new: true })
@@ -75,9 +245,11 @@ export default class SalonService extends BaseService {
         }
         getService = async (id: string, filter: any) => {
 
-                console.log(filter)
+                console.log(id)
 
-                const salon = await this.model.findOne({ _id: id, services: { $elemMatch: filter } }).select("services")
+                const salon = await this.model.findOne({ _id: id}).select("services")
+                console.log(salon)
+
                 return salon
         }
         // getService = async (id: string) => {
@@ -175,21 +347,21 @@ export default class SalonService extends BaseService {
         }
 
         // Salon Rating-Wise  Recommended.
-        getSalon = async (q:any) => {
+        getSalon = async (q: any) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                 //TODO: send salon with rating 5
-                 const salons = await this.model.find().populate("photo_ids").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
-               // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                //TODO: send salon with rating 5
+                const salons = await this.model.find().populate("photo_ids").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                 const salonPage = this.reviewModel.find().count();
 
                 const [salon, pageNo] = await Promise.all([salons, salonPage])
                 const totalPages = Math.ceil(pageNo / pageLength)
                 return { salon, totalPages, pageNumber }
 
-               
+
                 //@ts-ignore
                 //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
                 return salons
@@ -232,7 +404,7 @@ export default class SalonService extends BaseService {
 
         // }
 
-     
+
 
         //get Salons nearby
         getSalonNearby = async (centerPoint: any, km: string) => {
@@ -341,7 +513,7 @@ export default class SalonService extends BaseService {
                 const brand = await this.brandModel.create(d)
                 return brand
         }
-           // Search by salon
+        // Search by salon
         getSearchResult = async (phrase: string) => {
 
                 const data = await this.model.find(
@@ -362,85 +534,85 @@ export default class SalonService extends BaseService {
 
         }
 
-        searchFilter = async (q:any) => {
+        searchFilter = async (q: any) => {
 
-       
+
                 // if(!q.makeup_artist_id && !q.designer_id && !q.salon_id){
                 //     const message = 'None id provided'
                 //     res.status(400)
                 //     res.send({message})
                 //     return
                 // }
-        
+
                 // pagination
-                const pageNumber: number = parseInt( q.page_number || 1)
+                const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 25)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 console.log(pageLength)
                 console.log(skipCount)
-                
+
                 const keys = Object.keys(q)
                 const filters = {}
-                
-                for (const k of keys) {
-                    switch(k){
-                        case "end_price":
-                            filters["end_price"] = {
-                               $lt:q[k],
-                        
-                            } 
-                            break
-                        case "start_price":
-                                filters["start_price"] = {
-                                   $gt:q[k],
-                            
-                                } 
-                            break
-                        case "gender":
-                                filters["services"]={
-                                $elemMatch:{"options.gender" :q[k]}
 
-                                }    
-                                break
-                        case "brand":
-                                filters["brand"]= q[k]
-                                break
-                        case "time":
-                                // console.log(q[k])
-                                // var day =  moment(q[k]).set({hour:0,minute:0,second:1,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
-                                //   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
-                                // var dayofweek =moment(day).day()
-                                // console.log(dayofweek)  
-                                // filters[`start_working_hours.[${dayofweek}]`]={
-                                //              $gt:day,
-                                //              $lt:endDay        
-                                // }
-                                break
+                for (const k of keys) {
+                        switch (k) {
+                                case "end_price":
+                                        filters["end_price"] = {
+                                                $lt: q[k],
+
+                                        }
+                                        break
+                                case "start_price":
+                                        filters["start_price"] = {
+                                                $gt: q[k],
+
+                                        }
+                                        break
+                                case "gender":
+                                        filters["services"] = {
+                                                $elemMatch: { "options.gender": q[k] }
+
+                                        }
+                                        break
+                                case "brand":
+                                        filters["brand"] = q[k]
+                                        break
+                                case "time":
+                                        // console.log(q[k])
+                                        // var day =  moment(q[k]).set({hour:0,minute:0,second:1,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
+                                        //   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
+                                        // var dayofweek =moment(day).day()
+                                        // console.log(dayofweek)  
+                                        // filters[`start_working_hours.[${dayofweek}]`]={
+                                        //              $gt:day,
+                                        //              $lt:endDay        
+                                        // }
+                                        break
                                 //TODO: location
                                 case "location":
-                                        filters["location"]= q[k]
+                                        filters["location"] = q[k]
                                         break
-                        case "page_number":
-                        case "page_length":
-                            break
-                        default:
-                            filters[k] = q[k]
-                    }
+                                case "page_number":
+                                case "page_length":
+                                        break
+                                default:
+                                        filters[k] = q[k]
+                        }
                 }
-              
+
                 console.log(filters);
-            
-                
-               
-                    const salonFilter =  this.model.find(filters).skip(skipCount).limit(pageLength)
-                    const salonPagesReq = this.model.count(filters)
-                    
-                    const [salonDetails,  salonPages] = await Promise.all([salonFilter,salonPagesReq])
-                    const totalPages = Math.ceil(salonPages / pageLength)
-                    return ({salonDetails, totalPages, currentPage: pageNumber})
-                  
-        
-            }
+
+
+
+                const salonFilter = this.model.find(filters).skip(skipCount).limit(pageLength)
+                const salonPagesReq = this.model.count(filters)
+
+                const [salonDetails, salonPages] = await Promise.all([salonFilter, salonPagesReq])
+                const totalPages = Math.ceil(salonPages / pageLength)
+                return ({ salonDetails, totalPages, currentPage: pageNumber })
+
+
+        }
 
 }
