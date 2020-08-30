@@ -79,7 +79,7 @@ export default class BookingController extends BaseController {
                                 service_id: ser.option_id.toString(),
                                 option_id: ser.option_id,
                                 employee_id:ser.employee_id,
-                                service_name: `${service.name} ${option.option_name}`,
+                                service_name: `${service.name}-${option.option_name}`,
                                 duration:ser.duration,
                                 service_real_price: option.price.valueOf(),
                                 service_total_price: option.price.valueOf(),
