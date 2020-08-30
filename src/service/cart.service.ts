@@ -22,6 +22,20 @@ export default class CartService extends BaseService {
         throw new Error("Option not found")
     }
 
+    getPriceAndNameByOptionId: (optionId: string) => Promise<{name: string, price: number}> = async (optionId: string) => {
+        const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
+        if (salon === null || !salon) throw new Error("Salon not found")
+        for (let service of salon.services) {
+            for (let option of service.options) {
+                if (option._id.toString() === optionId) return {
+                    name: option.option_name.valueOf(),
+                    price: option.price.valueOf()
+                }
+            }
+        }
+        throw new Error("Option not found")
+    }
+
     /**
      * This is to add an option id to an exsisting cart
      */
@@ -112,7 +126,13 @@ export default class CartService extends BaseService {
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
         const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
-        console.log(cart.options)
+        for(let c of cart.options){
+            const {name, price} = await this.getPriceAndNameByOptionId(c.option_id)
+            //@ts-ignore
+            c.option_name = name
+            //@ts-ignore
+            c.price = price
+        }
         return cart
     }
 
