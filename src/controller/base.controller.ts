@@ -75,9 +75,7 @@ export default class BaseController {
     getPhoto = async (req: Request, res: Response) => {
         try {
             const id = req.params.id
-        
             const resource = await this.service.getPhoto(id)
-            
             res.send(resource)
         } catch (e) {
             res.status(403).send({ message: e.message })

@@ -283,7 +283,7 @@ export default class BookingService extends BaseService {
 
     }
     bookingByID = async (id: string) => {
-        const booking = await this.model.findById(id).populate("user_id").populate("services.employee_id").exec()
+        const booking = await this.model.findById(id).populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
         return booking
 
 
