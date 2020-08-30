@@ -79,7 +79,7 @@ export default class BookingController extends BaseController {
                                 service_id: ser.option_id.toString(),
                                 option_id: ser.option_id,
                                 employee_id:ser.employee_id,
-                                service_name: `${service.name} ${option.option_name}`,
+                                service_name: `${service.name}-${option.option_name}`,
                                 duration:ser.duration,
                                 service_real_price: option.price.valueOf(),
                                 service_total_price: option.price.valueOf(),
@@ -353,6 +353,21 @@ export default class BookingController extends BaseController {
 
         }
         res.send(bookings)
+
+    })
+    getbookingbyId = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const booking = await this.service.bookingByID(id)
+         if (booking === null) {
+            const errMsg = "unable to update boooking"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+        res.status(200).send(booking)
+        
 
     })
     reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {

@@ -12,7 +12,7 @@
     "testU": "set NODE_ENV=test && jest /src/__tests__/UserTest/salonInfo.test.ts --no-cache --runInBand --watch --detectOpenHandles",
     "vcheck": "tsc -v",
     "seed:dev": "seed -u 'mongodb://127.0.0.1:27017/zattire' ./src/seeds/data",
-    "tscc":"tsc -v"
+    "tscc": "tsc -v"
   },
   "jest": {
     "testEnvironment": "node",

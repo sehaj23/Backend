@@ -271,7 +271,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
@@ -279,6 +279,12 @@ export default class BookingService extends BaseService {
         const [bookingDetails, bookingStats, bookingPages] = await Promise.all([bookingDetailsReq, bookingStatsReq, bookingPagesReq])
         return ({ bookingDetails, bookingStats, bookingPages })
 
+
+
+    }
+    bookingByID = async (id: string) => {
+        const booking = await this.model.findById(id).populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
+        return booking
 
 
     }
@@ -304,8 +310,11 @@ export default class BookingService extends BaseService {
         return bookings
 
     }
+
+   
+
     rescheduleSlots = async (id, date) => {
-        const salon = await this.salonModel.findById(id)
+        const salon =  await this.salonModel.findById(id)
 
         const starting_hours = salon.start_working_hours
         var start_time = starting_hours.map(function (val) {
