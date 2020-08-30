@@ -125,13 +125,17 @@ export default class CartService extends BaseService {
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
-        const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1)
-        for(let c of cart.options){
-            const {name, price} = await this.getPriceAndNameByOptionId(c.option_id)
-            //@ts-ignore
-            c.option_name = name
-            //@ts-ignore
-            c.price = price
+        const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI[]
+        if(cart.length > 0){
+            for(let cc of cart){
+                for(let c of cc.options){
+                    const {name, price} = await this.getPriceAndNameByOptionId(c.option_id)
+                    //@ts-ignore
+                    c.option_name = name
+                    //@ts-ignore
+                    c.price = price
+                }
+            }
         }
         return cart
     }
