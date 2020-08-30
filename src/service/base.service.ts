@@ -52,7 +52,8 @@ export default class BaseService {
     }
 
     getPhoto = async (_id: string) => {
-        return await this.model.findById(_id).select("photo_ids").populate("photo_ids").exec()
+     
+        return await Photo.findById(_id)
     }
 
     putProfilePic = async (photoData:PhotoI,_id:string) => {
