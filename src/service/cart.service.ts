@@ -22,7 +22,7 @@ export default class CartService extends BaseService {
         throw new Error("Option not found")
     }
 
-    getPriceAndNameByOptionId: (optionId: string) => Promise<{name: string, price: number}> = async (optionId: string) => {
+    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
@@ -81,7 +81,7 @@ export default class CartService extends BaseService {
                 const amntToMinus = optionPrice * option.quantity
                 cart.total -= amntToMinus
                 cart.options.splice(i, 1)
-                if(cart.options.length === 0){ 
+                if (cart.options.length === 0) {
                     await cart.remove()
                     return null
                 }
@@ -125,14 +125,13 @@ export default class CartService extends BaseService {
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
-        const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI[]
-        if(cart.length > 0){
-            for(let cc of cart){
-                for(let c of cc.options){
-                    const {name, price} = await this.getPriceAndNameByOptionId(c.option_id)
-                    //@ts-ignore
+        const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
+        console.log(cart)
+        if (cart.length > 0) {
+            for (let cc of cart) {
+                for (let c of cc.options) {
+                    const { name, price } = await this.getPriceAndNameByOptionId(c.option_id)
                     c.option_name = name
-                    //@ts-ignore
                     c.price = price
                 }
             }
@@ -141,13 +140,13 @@ export default class CartService extends BaseService {
     }
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
-        
+
         const optionPrice = await this.getPriceByOptionId(optionId)
 
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
-            options: [{option_id: optionId, quantity: 1}],
+            options: [{ option_id: optionId, quantity: 1 }],
             total: optionPrice
         }
 
