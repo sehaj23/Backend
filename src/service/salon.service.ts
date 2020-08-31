@@ -204,6 +204,7 @@ export default class SalonService extends BaseService {
                                 // getting the options
                                 this.getTheOptions(gotService, service)
 
+                                //@ts-ignore
                                 salon.services.push(service)
                         }
                 }

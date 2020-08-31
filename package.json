@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc -p tsconfig.json",
-    "start:dev": "nodemon -x ts-node src/server.ts",
+    "start:dev": "nodemon --watch src -x ts-node src/server.ts",
     "start:t": "set NODE_ENV=test && nodemon -x ts-node src/server.ts",
     "test": "set NODE_ENV=test && jest --no-cache --runInBand ",
     "testU": "set NODE_ENV=test && jest /src/__tests__/UserTest/salonInfo.test.ts --no-cache --runInBand --watch --detectOpenHandles",

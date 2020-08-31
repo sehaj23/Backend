@@ -10,8 +10,8 @@ export interface SalonI{
     email: string
     start_price?: number
     end_price?: number
-    services?: ServiceSI[]
-    employees?: EmployeeSI[]
+    services?: ServiceI[] | ServiceSI[]
+    employees?: EmployeeI[] | EmployeeSI[]
     speciality?: string[]
     location?: string
     insta_link?: string

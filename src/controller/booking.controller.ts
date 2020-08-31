@@ -13,6 +13,7 @@ import SalonSI from "../interfaces/salon.interface";
 import { BookingI, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 import CartService from "../service/cart.service";
 import { CartSI } from "../interfaces/cart.interface";
+import { ServiceSI } from "../interfaces/service.interface";
 
 
 export default class BookingController extends BaseController {
@@ -73,7 +74,7 @@ export default class BookingController extends BaseController {
                             lastDateTime = lastDateTime.add(salonOption.duration.valueOf(), 'minutes')
                         }
                         const bookingService: BookingServiceI = {
-                            service_id: salonService._id.toString(),
+                            service_id: (salonService as ServiceSI)._id.toString(),
                             option_id: salonOption._id.toString(),
                             service_name: `${salonService.name} - ${salonOption.option_name}`,
                             service_real_price: salonOption.price.valueOf(),
