@@ -4,7 +4,6 @@ import { ReviewI } from "./review.interface";
 import OptionsI from "./options.interface"
 
 export default interface ServiceI{
-    _id?: string
     name: string
     price: number
     options?:OptionsI[],
