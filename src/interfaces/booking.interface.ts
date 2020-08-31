@@ -19,7 +19,8 @@ export interface BookingServiceI{
     service_total_price: number,
     zattire_commission: number,
     vendor_commission: number,
-    service_time: Date
+    service_time: Date,
+    rescheduled_service_time?: Date
 }
 
 export interface BookingI{

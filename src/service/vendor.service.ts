@@ -156,7 +156,7 @@ export default class VendorService extends BaseService{
 
     }
     employeebyId = async (id:string) => {
-            const service = await Employee.findById(id).populate("services").populate("photos").exec()
+            const service = await Employee.findById(id).populate("services").populate("photo").exec()
             return service
     }
 
