@@ -261,10 +261,10 @@ export default class SalonService extends BaseService {
         getServicesByServiceIds = async (ids: string[]) => this.model.find({ "services._id": ids })
 
         // TEST IT
-        getServiceByOptionId = async (id: string) => this.model.findOne({ "services.*.options._id": id })
+        getServiceByOptionId = async (id: string) => this.model.findOne({ "services.options._id": id })
 
         // TEST IT
-        getServicesByOptionIds = async (ids: string[]) => this.model.find({ "services.*.options._id": ids })
+        getServicesByOptionIds = async (ids: string[]) => this.model.find({ "services.options._id": ids })
 
         updateService = async (salonId: string, d, sid: string) => {
 

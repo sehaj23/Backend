@@ -13,13 +13,16 @@ import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Event from "../../models/event.model";
 import Review from "../../models/review.model";
 import Brand from "../../models/brands.model";
+import Cart from "../../models/cart.model";
+import CartService from "../../service/cart.service";
 
 
 const bookingRouter = Router()
 const bookingService = new BookinkService(Booking,Salon)
 const employeeAbsenteeism = new EmployeeAbsentismService(EmployeeAbsenteeism)
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand)
-const bookingController = new BookingController(bookingService,salonService,employeeAbsenteeism)
+const cartService = new CartService(Cart, Salon)
+const bookingController = new BookingController(bookingService,salonService,employeeAbsenteeism, cartService)
 
 
 // // bookingRouter.post("/", VendorverifyToken, bookingController.post)

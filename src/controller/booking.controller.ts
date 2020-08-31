@@ -11,6 +11,8 @@ import ErrorResponse from "../utils/error-response";
 import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 import SalonSI from "../interfaces/salon.interface";
 import { BookingI, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import CartService from "../service/cart.service";
+import { CartSI } from "../interfaces/cart.interface";
 
 
 export default class BookingController extends BaseController {
@@ -20,11 +22,13 @@ export default class BookingController extends BaseController {
     service: BookingService
     salonService: SalonService
     employeeAbsentismService: EmployeeAbsenteesmService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService) {
+    cartService: CartService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService) {
         super(service)
         this.service = service
         this.salonService = salonService
         this.employeeAbsentismService = employeeAbsentismService
+        this.cartService = cartService
     }
 
 
@@ -39,6 +43,67 @@ export default class BookingController extends BaseController {
      */
     bookAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
 
+        //@ts-ignore
+        const userId = req.userId
+
+        const { payment_type, location, date_time } = req.body
+
+        console.log("req.body", req.body)
+
+        // getting the cart
+        const carts = await this.cartService.getCartByUserId(userId) as CartSI[]
+        let salon: SalonSI
+        for(let cart of carts){
+            if(cart.options.length > 0){
+                salon = await this.cartService.getSalonByOptionId(cart.options[0].option_id)
+            }else{
+                throw new ErrorResponse("Cart options are 0")
+            }
+        }
+
+        const bookingServices: BookingServiceI[] = []
+        let lastDateTime: moment.Moment = null
+        for(let option of carts[0].options){
+            for(let salonService of salon.services){
+                for(let salonOption of salonService.options){
+                    if(salonOption._id.toString() === option.option_id){
+                        if(lastDateTime === null) {
+                            lastDateTime = moment(date_time)
+                        }else{
+                            lastDateTime = lastDateTime.add(salonOption.duration.valueOf(), 'minutes')
+                        }
+                        const bookingService: BookingServiceI = {
+                            service_id: salonService._id.toString(),
+                            option_id: salonOption._id.toString(),
+                            service_name: `${salonService.name} - ${salonOption.option_name}`,
+                            service_real_price: salonOption.price.valueOf(),
+                            service_total_price: salonOption.price.valueOf(),
+                            zattire_commission: salonOption.price.valueOf() * (1-salon.commision_percentage),
+                            vendor_commission: salonOption.price.valueOf() * salon.commision_percentage,
+                            duration: salonOption.duration.valueOf(),
+                            service_time: lastDateTime.toDate()
+                        }
+
+                        bookingServices.push(bookingService)
+                    }
+                }
+            }
+        }
+
+        const booking: BookingI = {
+            user_id: userId,
+            payment_type,
+            price: carts[0].total,
+            location,
+            date_time,
+            salon_id: carts[0].salon_id,
+            services: bookingServices
+        }
+
+        const bookingCreate = await this.service.post(booking)
+        res.send(bookingCreate)
+        return
+        /* -----------
         const d = {
             "booking_date_time": "11-28-2020 04:50am",
             "payment_type": "COD or Online",
@@ -116,7 +181,7 @@ export default class BookingController extends BaseController {
 
         const booking = await this.service.post(b) as BookingSI
         
-        return res.send(booking)
+        return res.send(booking)*/
     })
 
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {

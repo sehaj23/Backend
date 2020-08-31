@@ -11,6 +11,12 @@ export default class CartService extends BaseService {
         this.salonModel = salonModel
     }
 
+    getSalonByOptionId : (optionId: string) => Promise<SalonSI> = async (optionId: string) => {
+        const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
+        if (salon === null || !salon) throw new Error("getSalonByOptionId - Salon not found")
+        return salon
+    }
+
     getPriceByOptionId: (optionId: string) => Promise<number> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")

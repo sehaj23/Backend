@@ -14,11 +14,14 @@ import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
 import BookingService from "../../service/booking.service"
 import UserverifyToken from "../../middleware/User.jwt"
+import CartService from "../../service/cart.service"
+import Cart from "../../models/cart.model"
 
 const bookingService = new BookingService(Booking, Salon)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService)
+const cartService = new CartService(Cart, Salon)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService)
 const bookingRouter = Router()
 
 // get available employees by date & time

@@ -14,13 +14,16 @@ import EmployeeAbsentismService from "../../service/employee-absentism.service";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Review from "../../models/review.model";
 import Brand from "../../models/brands.model";
+import CartService from "../../service/cart.service";
+import Cart from "../../models/cart.model";
 
 
 const bookingRouter = Router()
 const bookingService = new BookinkService(Booking,Salon)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)
 const employeeAbsenteesimService = new EmployeeAbsentismService(EmployeeAbsenteeism)
-const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService)
+const cartService = new CartService(Cart, Salon)
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService)
 
 
 bookingRouter.get("/",VendorverifyToken,bookingController.getbookings)

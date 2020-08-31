@@ -1,6 +1,6 @@
-import ServiceI from "./service.interface";
+import ServiceI, { ServiceSI } from "./service.interface";
 import mongoose from "../database";
-import { EmployeeI } from "./employee.interface";
+import EmployeeSI, { EmployeeI } from "./employee.interface";
 
 
 export interface SalonI{
@@ -10,8 +10,8 @@ export interface SalonI{
     email: string
     start_price?: number
     end_price?: number
-    services?: ServiceI[]
-    employees?: EmployeeI[]
+    services?: ServiceSI[]
+    employees?: EmployeeSI[]
     speciality?: string[]
     location?: string
     insta_link?: string
