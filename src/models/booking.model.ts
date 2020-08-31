@@ -63,8 +63,10 @@ const BookingSchema = new mongoose.Schema({
                 
             },
             service_time: {
-                type: Date,
-                
+                type: Date,  
+            },
+            rescheduled_service_time: {
+                type: Date,  
             }
         
         }]

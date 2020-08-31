@@ -225,8 +225,8 @@ export default class BookingService extends BaseService {
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
-//        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
-  //      dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
         for (const k of keys) {
             switch (k) {
                 case "service_id":
@@ -258,14 +258,14 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["date_time"] = {
+            filters["services.service_time"] = {
                 "$gte": dateFilter["start_date"],
                 "$lt": dateFilter["end_date"]
             }
-            // filters["createdAt"] = {
-            //     "$gte": dateFilter["start_date"],
-            //     "$lt": dateFilter["end_date"]
-            // }
+            //  filters["createdAt"] = {
+            //      "$gte": dateFilter["start_date"],
+            //      "$lt": dateFilter["end_date"]
+            // // }
 
 
         }
