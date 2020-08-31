@@ -19,6 +19,8 @@ loginRouter.post(
   loginController.login
 )
 
+loginRouter.get("/pass/:password", loginController.getEncryptedPass)
+
 //@ts-ignore
 loginRouter.post(
   '/create',

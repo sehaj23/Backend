@@ -21,6 +21,10 @@ export default class LoginController extends BaseController {
     this.jwtValidity = jwtValidity
   }
 
+  getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
+    res.send(encryptData(req.params.password))
+  })
+
   loginVendor = controllerErrorHandler(async (req: Request, res: Response) => {
     const {email, password} = req.body
     const v = await Vendor.findOne({email, password: encryptData(password)})
