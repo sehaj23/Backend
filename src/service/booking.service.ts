@@ -197,9 +197,9 @@ export default class BookingService extends BaseService {
 
     updateStatusBookings = async (bookingId: string, status: string) => {
         
-        const bookings = await this.model.findOne({_id:bookingId})
-        console.log(bookings)
-       // const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
+      //  const bookings = await this.model.findOne({_id:bookingId})
+      
+        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
         return bookings
     }
 
@@ -245,10 +245,10 @@ export default class BookingService extends BaseService {
                     filters["status"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     break
                 case "location":
                     filters["location"]=q[k]
@@ -381,10 +381,10 @@ export default class BookingService extends BaseService {
                     filters["salon_id"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
  
                     break
                 case "page_number":
