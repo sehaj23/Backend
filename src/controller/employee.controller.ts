@@ -38,6 +38,11 @@ export default class EmployeeController extends BaseController {
             res.send({ message: "otp or mobile number does not match" })
             return
         }
+        if(employee.blocked===true){
+            res.status(403)
+            res.send({ message: "Account deleted" })
+            return
+        }
         const token = await jwt.sign(employee.toJSON(), CONFIG.EMP_JWT, { expiresIn: "7 days" })
         res.send({ token })
 
@@ -74,14 +79,16 @@ export default class EmployeeController extends BaseController {
         const empId = req.empId
 
         // getting the date from the frontend for which he needs the slots for
-        let slotsDate = req.body.slots_date
-        if (slotsDate) {
+        let slotsDate = req.query.date
+        console.log(slotsDate)
+        if (!slotsDate) {
             const msg = "Something went wrong"
             logger.error(msg)
             res.status(400).send({ success: false, message: msg });
             return
         }
         slotsDate = new Date(slotsDate)
+        
         const slots = await this.service.employeeSlots(empId, slotsDate)
         res.send(slots)
 
@@ -138,6 +145,20 @@ export default class EmployeeController extends BaseController {
         console.log("salonId", salonId)
         const employee = await this.service.addServicesByCatgoryNames(salonId, employeeId, selectedCategoryNames)
         res.send(employee)
+    })
+
+    employeeDelete = controllerErrorHandler(async (req: Request, res: Response) => {
+      //@ts-ignore
+        const id = req.empId
+        const employee = await this.service.employeeDelete(id)
+        if(employee==null){
+            logger.error(`unable to delete account `)
+            res.status(400)
+            res.send({ message: `unable to delete account` })
+            return
+        }
+        res.send({message:"Account Deleted",success:"true"})
+
     })
 
 

@@ -18,7 +18,8 @@ employeeRouter.get("/",EmployeeverifyToken ,employeeController.get)
 employeeRouter.put("/", EmployeeverifyToken, employeeController.updateEmployee)
 employeeRouter.put("/profile-pic", EmployeeverifyToken, employeeController.putProfilePic)
 employeeRouter.get("/info",EmployeeverifyToken,employeeController.getEmp)
-employeeRouter.get("/:id",EmployeeverifyToken,employeeController.getId)
+employeeRouter.get("/info/:id",EmployeeverifyToken,employeeController.getId)
 employeeRouter.get("/employee-slots", EmployeeverifyToken, employeeController.employeeSlots)
+employeeRouter.patch("/delete",EmployeeverifyToken,employeeController.employeeDelete)
 
 export default employeeRouter

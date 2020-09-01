@@ -173,6 +173,22 @@ export default class VendorController extends BaseController {
         res.send(createReport)
 
     })
+    
+    vendorDelete = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+          const id = req.vendorId
+          const vendor = await this.service.vendorDelete(id)
+          if(vendor==null){
+              logger.error(`unable to delete account `)
+              res.status(400)
+              res.send({ message: `unable to delete account` })
+              return
+          }
+          res.send({message:"Account Deleted",success:"true"})
+  
+      })
+  
+
 
    
 }

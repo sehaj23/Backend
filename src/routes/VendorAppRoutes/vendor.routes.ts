@@ -26,6 +26,7 @@ vendorRouter.get("/employee-slots/:id",VendorverifyToken, vendorController.emplo
 vendorRouter.get("/slots/:id",VendorverifyToken,vendorController.slots)
 vendorRouter.get("/employee/:id",VendorverifyToken,vendorController.employeebyId)
 vendorRouter.post("/report",VendorverifyToken,vendorController.report)
+vendorRouter.patch("/delete",VendorverifyToken,vendorController.vendorDelete)
 
 vendorRouter.put("/profile-pic", VendorverifyToken, vendorController.putProfilePic)
 

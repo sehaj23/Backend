@@ -19,7 +19,7 @@ export const employeeJWTVerification = async (token: string) => {
     }
   
     // @ts-ignore
-    console.log(decoded)
+  
     return decoded
   } catch (err) {
     logger.error(err.message)

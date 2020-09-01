@@ -61,6 +61,7 @@ export default class EmployeeService extends BaseService {
     employeeLogin = async (phone: string, otp: string) => {
         console.log(phone)
         const employee = await this.model.findOne({ phone: phone })
+    
         return employee
 
     }
@@ -92,14 +93,16 @@ export default class EmployeeService extends BaseService {
 
 
     employeeSlots = async (empId: any, slotsDate: Date) => {
-        const salonReq = this.salonModel.findOne({ employees: [empId] })
+        const salonReq =  this.salonModel.findOne({ employees: [empId] })
+        
         const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
         const starting_hours = salon.start_working_hours
         var slots = starting_hours.map(function (val) {
             const storeDate = moment(val).format('hh:mm a')
+            if(employeesAbsenteeism!==null){
             const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
-            if (employeeAbsentSlots.length === 0) {
+            if (employeesAbsenteeism === 0) {
                 return {
                     store_date: storeDate,
                     absent: false
@@ -114,6 +117,7 @@ export default class EmployeeService extends BaseService {
                     }
                 }
             }
+        }
             return {
                 store_date: storeDate,
                 absent: false
@@ -143,6 +147,13 @@ export default class EmployeeService extends BaseService {
         console.log("employee.services", employee.services)
         await employee.save()
         return employee
+    }
+
+    employeeDelete = async (id: any) => {
+        const employee = await this.model.findOneAndUpdate({_id:id},{blocked:true},{new:true})
+        return employee
+
+
     }
 
 

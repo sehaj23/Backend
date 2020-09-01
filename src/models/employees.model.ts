@@ -21,7 +21,11 @@ const EmployeeSchema = new mongoose.Schema({
         enum: ['Customer Place' , 'Vendor Place', 'Both'],
         default: 'Both',
         required: true
-    }
+    },
+    blocked: {
+        type: Boolean,
+        default: false
+    },
 }, {
     timestamps: true
 })

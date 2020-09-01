@@ -166,6 +166,11 @@ export default class VendorService extends BaseService{
         return report
     }
     
+    vendorDelete = async (id: any) => {
+        const vendor = await this.model.findOneAndUpdate({_id:id},{blocked:true},{new:true})
+        return vendor
+
+    }
 
 
 
