@@ -550,8 +550,10 @@ export default class BookingController extends BaseController {
     })
     getEmployeebookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
+
         //@ts-ignore
         const empId = req.empId
+        console.log(empId)
         const bookings = await this.service.getEmployeebookings(q, empId)
 
         if (bookings == null) {
