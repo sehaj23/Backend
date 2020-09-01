@@ -341,8 +341,9 @@ export default class SalonService extends BaseService {
                 return offer
 
         }
+        //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string) => {
-                const salon = await this.model.findById(salonId).populate("photo_ids").populate("employees").exec()
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).exec()
                 return salon
 
         }

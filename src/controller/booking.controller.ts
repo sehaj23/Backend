@@ -537,16 +537,15 @@ export default class BookingController extends BaseController {
 
         const slots = await this.service.rescheduleSlots(id, date)
 
-        res.send(slots)
+       
         if (!slots) {
             const errMsg = 'No slots Found'
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })
             return
-
         }
-
+        res.send(slots)
     })
     getEmployeebookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
@@ -556,15 +555,15 @@ export default class BookingController extends BaseController {
         console.log(empId)
         const bookings = await this.service.getEmployeebookings(q, empId)
 
-        // if (bookings == null) {
-        //     const errMsg = 'No Bookings Found!'
-        //     logger.error(errMsg)
-        //     res.status(400)
-        //     res.send({ message: errMsg })
-        //     return
+        if (bookings == null) {
+            const errMsg = 'No Bookings Found!'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
 
-        // }
-        res.send("hello")
+        }
+        res.send(bookings)
     })
 
 }
