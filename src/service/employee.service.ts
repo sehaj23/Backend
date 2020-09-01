@@ -59,7 +59,7 @@ export default class EmployeeService extends BaseService {
     }
 
     employeeLogin = async (phone: string, otp: string) => {
-
+        console.log(phone)
         const employee = await this.model.findOne({ phone: phone })
         return employee
 

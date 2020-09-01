@@ -347,6 +347,7 @@ export default class BookingService extends BaseService {
     }
 
     getEmployeebookings = async (q, empId: string) => {
+        console.log(empId)
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
