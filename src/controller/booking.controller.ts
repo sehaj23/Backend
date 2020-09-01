@@ -358,7 +358,7 @@ export default class BookingController extends BaseController {
             return
 
         }
-        const booking = this.service.updateStatusBookings(bookingid, status)
+        const booking = await this.service.updateStatusBookings(bookingid, status)
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
@@ -367,7 +367,7 @@ export default class BookingController extends BaseController {
             return
 
         }
-        res.send(booking)
+        res.send({message:"Booking status changed",success:"true"})
 
     })
     assigneEmployeeBookings = controllerErrorHandler(async (req: Request, res: Response) => {

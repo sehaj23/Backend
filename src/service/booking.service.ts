@@ -196,8 +196,10 @@ export default class BookingService extends BaseService {
 
 
     updateStatusBookings = async (bookingId: string, status: string) => {
-
-        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
+        
+        const bookings = await this.model.findOne({_id:bookingId})
+        console.log(bookings)
+       // const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
         return bookings
     }
 
