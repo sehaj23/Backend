@@ -17,6 +17,7 @@ export const employeeJWTVerification = async (token: string) => {
       logger.error("_id not found from decoced token")
       return null
     }
+  
     // @ts-ignore
     return decoded
   } catch (err) {

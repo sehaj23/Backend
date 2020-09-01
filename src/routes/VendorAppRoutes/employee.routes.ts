@@ -5,9 +5,11 @@ import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Employee from "../../models/employees.model";
 import Salon from "../../models/salon.model";
 import EmployeeController from "../../controller/employee.controller";
+
 const employeeRouter = Router()
 const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon)
 const employeeController  = new EmployeeController(es)
+
 
 employeeRouter.post("/",employeeController.employeeLogin)
 employeeRouter.post("/absent",EmployeeverifyToken,employeeController.employeeAbsent)
