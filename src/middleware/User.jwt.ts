@@ -10,7 +10,7 @@ export const userJWTVerification = async (token: string) => {
   
     // verifies secret and checks exp
     const decoded: string | object = await jwt.verify(token,CONFIG.USER_JWT);
-     console.log(decoded)
+    
     // @ts-ignore
     if (!decoded._id) {
       logger.error("_id not found from decoced token")

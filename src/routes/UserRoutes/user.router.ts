@@ -25,5 +25,6 @@ userRouter.delete("/address/:addressId",UserverifyToken,userController.deleteAdd
 userRouter.put("/profile-photo",UserverifyToken,userController.putProfilePic)
 userRouter.patch('/favourite',UserverifyToken,userController.addToFavourites)
 userRouter.get('/favourite',UserverifyToken,userController.getFavourites)
+userRouter.delete('/favourite',UserverifyToken,userController.removeFavourites)
 
 export default userRouter
