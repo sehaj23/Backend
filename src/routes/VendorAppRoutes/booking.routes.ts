@@ -26,7 +26,7 @@ const cartService = new CartService(Cart, Salon)
 const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService)
 
 
-bookingRouter.get("/",VendorverifyToken,bookingController.getbookings)
+//bookingRouter.get("/",VendorverifyToken,bookingController.getbookings)
 bookingRouter.get("/:id",VendorverifyToken,bookingController.getbookingbyId )
 bookingRouter.get("/reschedule/:id",VendorverifyToken,bookingController.rescheduleSlots)
 bookingRouter.patch("/reschedule/:id",VendorverifyToken,bookingController.reschedulebooking)

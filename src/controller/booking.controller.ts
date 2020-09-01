@@ -556,15 +556,15 @@ export default class BookingController extends BaseController {
         console.log(empId)
         const bookings = await this.service.getEmployeebookings(q, empId)
 
-        if (bookings == null) {
-            const errMsg = 'No Bookings Found!'
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
+        // if (bookings == null) {
+        //     const errMsg = 'No Bookings Found!'
+        //     logger.error(errMsg)
+        //     res.status(400)
+        //     res.send({ message: errMsg })
+        //     return
 
-        }
-        res.send(bookings)
+        // }
+        res.send("hello")
     })
 
 }
