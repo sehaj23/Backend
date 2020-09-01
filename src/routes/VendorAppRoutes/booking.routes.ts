@@ -39,6 +39,7 @@ const bookingController = new BookingController(bookingService, salonService, em
 bookingRouter.get("/employee",EmployeeverifyToken,bookingController.getEmployeebookings) //salon id required
 bookingRouter.patch("/employee/updatestatus/:id",EmployeeverifyToken,bookingController.updateStatusBookings) //booking id required
 bookingRouter.get("/employee/reschedule/:id",EmployeeverifyToken,bookingController.rescheduleSlots)
+bookingRouter.get("/employee/info/:id",EmployeeverifyToken,bookingController.getbookingbyId )
 bookingRouter.patch("/employee/reschedule/:id",EmployeeverifyToken,bookingController.reschedulebooking)
 //bookingRouter.get("/employee/booking",EmployeeverifyToken,bookingController.getEmployeebookings)
 bookingRouter.get("/photo/:id",EmployeeverifyToken,bookingController.getPhoto)
