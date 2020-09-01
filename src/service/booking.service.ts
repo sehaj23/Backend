@@ -391,7 +391,7 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["date_time"] = {
+            filters["services.service_time"] = {
                 "$gte": dateFilter["start_date"],
                 "$lt": dateFilter["end_date"]
             }
