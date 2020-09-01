@@ -378,14 +378,11 @@ export default class BookingService extends BaseService {
                     filters["salon_id"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
-                    filters["date_time"] = {
-                        "$gte": dateFilter["start_date"],
-                        "$lt": dateFilter["end_date"]
-                    }
+                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+ 
                     break
                 case "page_number":
                 case "page_length":
@@ -393,6 +390,10 @@ export default class BookingService extends BaseService {
                     break
                 default:
                     filters[k] = q[k]
+            }
+            filters["date_time"] = {
+                "$gte": dateFilter["start_date"],
+                "$lt": dateFilter["end_date"]
             }
 
             // filters["date_time"] = {
