@@ -16,9 +16,10 @@ import BookingService from "../../service/booking.service"
 import UserverifyToken from "../../middleware/User.jwt"
 import CartService from "../../service/cart.service"
 import Cart from "../../models/cart.model"
+import ReportSalon from "../../models/reportSalon.model"
 
 const bookingService = new BookingService(Booking, Salon)
-const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
 const cartService = new CartService(Cart, Salon)
 const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService)

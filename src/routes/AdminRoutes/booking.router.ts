@@ -16,10 +16,11 @@ import Review from "../../models/review.model";
 import Brand from "../../models/brands.model";
 import CartService from "../../service/cart.service";
 import Cart from "../../models/cart.model";
+import ReportSalon from "../../models/reportSalon.model"
 
 const bookingRouter = Router()
 const bookingService = new BookinkService(Booking,Salon)
-const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsenteeism)
 const cartService = new CartService(Cart, Salon)
 const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService)

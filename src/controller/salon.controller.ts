@@ -556,6 +556,29 @@ export default class SalonController extends BaseController {
         
     })
 
+    reportSalon =controllerErrorHandler( async (req: Request, res: Response) => {
+        var q=req.body
+        //@ts-ignore
+        q.user_id=req.userId
+        if(!q.salon_id){
+            const errMsg = "send salon_id";
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+        }
+        const report = await this.service.reportError(q)
+        if(report===null){
+            const errMsg = "unable to report";
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+        }
+        res.status(200).send({message:"Report submitted",success:"true"})
+
+
+    })
+
+
 
 
 }

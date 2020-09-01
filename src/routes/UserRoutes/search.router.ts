@@ -9,9 +9,9 @@ import SalonController from "../../controller/salon.controller"
 import Review from '../../models/review.model'
 import Booking from '../../models/booking.model'
 import Brand from "../../models/brands.model"
-
+import ReportSalon from "../../models/reportSalon.model"
 const searchRouter = Router()
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
 const salonController = new SalonController(salonService)
 searchRouter.get("/", salonController.getSearchResult)
 searchRouter.get("/salon",salonController.searchFilter)

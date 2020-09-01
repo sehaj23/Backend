@@ -11,8 +11,9 @@ import Offer from "../../models/offer.model";
 import Review from '../../models/review.model'
 import UserverifyToken from '../../middleware/User.jwt'
 import Booking from '../../models/booking.model'
+import ReportSalon from "../../models/reportSalon.model"
 import Brand from '../../models/brands.model'
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
 const salonController = new SalonController(salonService)
 
 const salonInfoRouter = Router()
@@ -47,6 +48,8 @@ salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPo
 salonInfoRouter.get('/brands',salonController.getBrands)
 // get brands by ID
 salonInfoRouter.get('/brand/:id',salonController.getBrandbyId)
+
+salonInfoRouter.post("/report/",UserverifyToken, salonController.reportSalon)
 
 
 export default salonInfoRouter
