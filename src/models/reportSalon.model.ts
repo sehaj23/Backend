@@ -2,7 +2,7 @@ import mongoose from "../database";
 import salons = require("../seeds/data/salons/salons");
 
 
-const ReportSchema = new mongoose.Schema({
+const ReportSalonSchema = new mongoose.Schema({
     
     user_id:{
         type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +23,6 @@ const ReportSchema = new mongoose.Schema({
 
 
 })
-const ReportSalon = mongoose.model("reportSalon", ReportSchema)
+const ReportSalon = mongoose.model("reportSalon", ReportSalonSchema)
 
 export default ReportSalon

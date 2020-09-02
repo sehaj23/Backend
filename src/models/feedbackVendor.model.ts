@@ -2,7 +2,7 @@ import mongoose from "../database";
 
 
 
-const ReportSchema = new mongoose.Schema({
+const FeedbackSchema = new mongoose.Schema({
     
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -11,6 +11,10 @@ const ReportSchema = new mongoose.Schema({
     employee_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "employees",
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
     },
     rating:{
         type:Number
@@ -26,6 +30,6 @@ const ReportSchema = new mongoose.Schema({
 
 
 })
-const FeedbackVendor = mongoose.model("feedback", ReportSchema)
+const FeedbackVendor = mongoose.model("feedback", FeedbackSchema)
 
 export default FeedbackVendor
