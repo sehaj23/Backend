@@ -74,7 +74,7 @@ export default class LoginController extends BaseController {
 
       res.status(403).send({
         message:
-          'Account blocked due to numerous failed login attempts. Reset password to unblock account.',
+          'Account blocked ',
       })
     } catch (e) {
       res.status(500).send({

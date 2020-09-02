@@ -8,6 +8,8 @@ import EmployeeService from "../service/employee.service";
 import * as jwt from "jwt-then";
 import CONFIG from "../config";
 import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
+import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 
 
 export default class EmployeeController extends BaseController {
@@ -36,6 +38,11 @@ export default class EmployeeController extends BaseController {
         if (employee == null) {
             res.status(403)
             res.send({ message: "otp or mobile number does not match" })
+            return
+        }
+        if(employee.blocked===true){
+            res.status(403)
+            res.send({ message: "Account deleted" })
             return
         }
         const token = await jwt.sign(employee.toJSON(), CONFIG.EMP_JWT, { expiresIn: "7 days" })
@@ -74,14 +81,16 @@ export default class EmployeeController extends BaseController {
         const empId = req.empId
 
         // getting the date from the frontend for which he needs the slots for
-        let slotsDate = req.body.slots_date
-        if (slotsDate) {
+        let slotsDate = req.query.date
+        console.log(slotsDate)
+        if (!slotsDate) {
             const msg = "Something went wrong"
             logger.error(msg)
             res.status(400).send({ success: false, message: msg });
             return
         }
         slotsDate = new Date(slotsDate)
+        
         const slots = await this.service.employeeSlots(empId, slotsDate)
         res.send(slots)
 
@@ -139,6 +148,55 @@ export default class EmployeeController extends BaseController {
         const employee = await this.service.addServicesByCatgoryNames(salonId, employeeId, selectedCategoryNames)
         res.send(employee)
     })
+
+    employeeDelete = controllerErrorHandler(async (req: Request, res: Response) => {
+      //@ts-ignore
+        const id = req.empId
+        const employee = await this.service.employeeDelete(id)
+        if(employee==null){
+            logger.error(`unable to delete account `)
+            res.status(400)
+            res.send({ message: `unable to delete account` })
+            return
+        }
+        res.send({message:"Account Deleted",success:"true"})
+
+    })
+    feedback= controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:FeedbackVendorI = req.body
+        //@ts-ignore
+        data.employee_id=req.empId
+        const feedback = await this.service.feedback(data)
+        if(feedback===null){
+            logger.error(`Unable to create feedback`)
+            res.status(400)
+            res.send({ message: `Unable to create feedback` })
+            return
+        }
+        res.status(200).send({message:"Thank you for your feedback",success:true})
+
+    }) 
+    report = controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:ReportVendorI = req.body
+        //@ts-ignore
+        data.employee_id=req.empId
+        const createReport = await this.service.report(data)
+        if(createReport===null){
+            logger.error(`Unable to create report`)
+            res.status(400)
+            res.send({ message: `Unable to create report` })
+            return
+        }
+        res.send(createReport)
+
+    })  
+    empService = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id= req.empId 
+        const service =await this.service.employeeService(id)
+        res.send(service)
+
+  })
 
 
 }

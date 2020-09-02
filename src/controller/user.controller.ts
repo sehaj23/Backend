@@ -153,6 +153,21 @@ export default class UserController extends BaseController {
         res.send({ message: `added to favourites`, success: "true" })
 
     })
+    removeFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const salonid = req.body.salon_id
+        
+        const user = await this.service.removeFavourites(id, salonid)
+        if (user === null) {
+            logger.error(`Unable to remove favorites`)
+            res.status(400)
+            res.send({ message: `Unable to remove from favourites` })
+            return
+        }
+        res.send({ message: `Removed from favourites`, success: "true" })
+    
+    })
     getFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId

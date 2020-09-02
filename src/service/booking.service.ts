@@ -196,8 +196,10 @@ export default class BookingService extends BaseService {
 
 
     updateStatusBookings = async (bookingId: string, status: string) => {
-
-        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true }).populate("user_id").exec()
+        
+      //  const bookings = await this.model.findOne({_id:bookingId})
+      
+        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
         return bookings
     }
 
@@ -243,10 +245,10 @@ export default class BookingService extends BaseService {
                     filters["status"] = q[k]
                     break;
                 case "start_date":
-                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD")
+                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     break
                 case "location":
                     filters["location"]=q[k]
@@ -347,6 +349,7 @@ export default class BookingService extends BaseService {
     }
 
     getEmployeebookings = async (q, empId: string) => {
+    
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -359,8 +362,9 @@ export default class BookingService extends BaseService {
         const dateFilter = {}
 
 
-        // dateFilter["start_date"] = moment().format("YYYY-MM-DD")
-        // dateFilter["end_date"] = moment().format("YYYY-MM-DD")
+        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(1, "days").format("YYYY-MM-DD")
+
 
         for (const k of keys) {
             switch (k) {
@@ -381,10 +385,7 @@ export default class BookingService extends BaseService {
                     break
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
-                    filters["date_time"] = {
-                        "$gte": dateFilter["start_date"],
-                        "$lt": dateFilter["end_date"]
-                    }
+ 
                     break
                 case "page_number":
                 case "page_length":
@@ -393,20 +394,25 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
+            
 
             // filters["date_time"] = {
             //     "$gte": dateFilter["start_date"],
             //     "$lt": dateFilter["end_date"]
             // }
-
-
         }
+        filters["services.service_time"] = {
+            "$gte": dateFilter["start_date"],
+            "$lt": dateFilter["end_date"]
+        }
+
         filters["services.employee_id"] = {
             "$in": empId
         }
         console.log(filters);
+   
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id").populate("services.employee_id").populate("services.service_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 

@@ -30,6 +30,7 @@ export default class SalonService extends BaseService {
         reviewModel: mongoose.Model<any, any>
         bookingModel: mongoose.Model<any, any>
         brandModel: mongoose.Model<any, any>
+        reportSalonModel: mongoose.Model<any, any>
 
 
         // constructor(model: mongoose.Model<any, any>) {
@@ -37,7 +38,7 @@ export default class SalonService extends BaseService {
         //     this.modelName = model.modelName
         // }
 
-        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>, reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>) {
+        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>, reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>,reportSalonModel: mongoose.Model<any, any>) {
                 super(salonmodel);
                 this.employeeModel = employeeModel
                 this.vendorModel = vendorModel
@@ -46,6 +47,7 @@ export default class SalonService extends BaseService {
                 this.reviewModel = reviewModel
                 this.bookingModel = bookingModel
                 this.brandModel = brandModel
+                this.reportSalonModel=reportSalonModel
         }
 
 
@@ -341,8 +343,9 @@ export default class SalonService extends BaseService {
                 return offer
 
         }
+        //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string) => {
-                const salon = await this.model.findById(salonId).populate("photo_ids")
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).exec()
                 return salon
 
         }
@@ -612,6 +615,14 @@ export default class SalonService extends BaseService {
                 const [salonDetails, salonPages] = await Promise.all([salonFilter, salonPagesReq])
                 const totalPages = Math.ceil(salonPages / pageLength)
                 return ({ salonDetails, totalPages, currentPage: pageNumber })
+
+
+        }
+
+        reportError = async (q) => {
+
+               const report = await this.reportSalonModel.create(q)
+               return report
 
 
         }

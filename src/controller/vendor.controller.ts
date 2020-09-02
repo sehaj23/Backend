@@ -8,13 +8,17 @@ import { EmployeeAbsenteeismI } from '../interfaces/employeeAbsenteeism.interfac
 import logger from '../utils/logger'
 import { PhotoI } from '../interfaces/photo.interface'
 import { ReportVendorI } from '../interfaces/reportVendor.interface'
+import { FeedbackVendorI } from '../interfaces/feedbackVendor.interface'
+import EmployeeService from '../service/employee.service'
 
 export default class VendorController extends BaseController {
   
-  service: VendorService
-  constructor(service: VendorService) {
+  service: VendorService;
+  employeeService:EmployeeService
+  constructor(service: VendorService,employeeService:EmployeeService) {
     super(service)
     this.service = service
+    this.employeeService=employeeService
   }
 //   vendorLogin =controllerErrorHandler( async (req: Request, res: Response) => {
 //     const { email, password } = req.body
@@ -158,11 +162,12 @@ export default class VendorController extends BaseController {
             return
         }
         res.send(emp)
-
     })
 
     report = controllerErrorHandler(async (req: Request, res: Response) =>{
         const data:ReportVendorI = req.body
+        //@ts-ignore
+        data.employee_id=req.vendorId
         const createReport = await this.service.report(data)
         if(createReport===null){
             logger.error(`Unable to create report`)
@@ -173,6 +178,67 @@ export default class VendorController extends BaseController {
         res.send(createReport)
 
     })
+    feedback= controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:FeedbackVendorI = req.body
+         //@ts-ignore
+         data.employee_id=req.vendorId
+        const feedback = await this.service.feedback(data)
+        if(feedback===null){
+            logger.error(`Unable to create feedback`)
+            res.status(400)
+            res.send({ message: `Unable to create feedback` })
+            return
+        }
+        res.status(200).send({message:"Thank you for your feedback",success:true})
+
+    })
+    
+    vendorDelete = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+          const id = req.vendorId
+          const vendor = await this.service.vendorDelete(id)
+          if(vendor==null){
+              logger.error(`unable to delete account `)
+              res.status(400)
+              res.send({ message: `unable to delete account` })
+              return
+          }
+          res.send({message:"Account Deleted",success:"true"})
+  
+      })
+
+      vendorService = controllerErrorHandler(async (req: Request, res: Response) => {
+            const id = req.params.id
+            //@ts-ignore
+            const vendorId = req.vendorId
+            const service =await this.service.vendorService(id,vendorId)
+            if(service==null){
+                logger.error(`unable to get services`)
+                res.status(400)
+                res.send({ message: `unable to get services` })
+                return
+            }
+            res.send(service)
+
+      })
+
+      employeeServicecount = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+       
+        const service =await this.employeeService.employeeService(id)   
+      
+        if(service==null){
+            logger.error(`unable to get services`)
+            res.status(400)
+            res.send({ message: `unable to get services` })
+            return
+        }
+        res.send(service)
+
+      })
+
+  
+
 
    
 }

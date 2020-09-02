@@ -5,10 +5,15 @@ import VendorController from "../../controller/vendor.controller"
 import Vendor from "../../models/vendor.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import ReportVendor from "../../models/reportVendor.model";
+import FeedbackVendor from "../../models/feedbackVendor.model"
+import EmployeeService from "../../service/employee.service";
+import Employee from "../../models/employees.model";
+import Salon from "../../models/salon.model";
 
 const vendorRouter = Router()
-const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor)
-const vendorController = new VendorController(vs)
+const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,FeedbackVendor)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendor,ReportVendor)
+const vendorController = new VendorController(vs,es)
 
 vendorRouter.post("/", verifyToken, vendorController.post)
 vendorRouter.get("/", verifyToken, vendorController.get)

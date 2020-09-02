@@ -15,16 +15,21 @@ import { PhotoI } from "../interfaces/photo.interface";
 import moment = require("moment");
 import SalonSI from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
+import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 
 
 
 export default class EmployeeService extends BaseService {
     employeeAbsenteeismModel: mongoose.Model<any, any>
     salonModel: mongoose.Model<any, any>
-    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
+    feedbackVendorModel : mongoose.Model<any, any>
+    reportVendorModel : mongoose.Model<any, any>
+    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, feedbackVendorModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>) {
         super(employeeModel)
         this.employeeAbsenteeismModel = employeeAbsenteeismModel
         this.salonModel = salonModel
+        this.feedbackVendorModel=feedbackVendorModel
     }
 
     // ovveride getId to populate the services
@@ -59,8 +64,9 @@ export default class EmployeeService extends BaseService {
     }
 
     employeeLogin = async (phone: string, otp: string) => {
-
+        console.log(phone)
         const employee = await this.model.findOne({ phone: phone })
+    
         return employee
 
     }
@@ -92,14 +98,16 @@ export default class EmployeeService extends BaseService {
 
 
     employeeSlots = async (empId: any, slotsDate: Date) => {
-        const salonReq = this.salonModel.findOne({ employees: [empId] })
+        const salonReq =  this.salonModel.findOne({ employees: [empId] })
+        
         const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
         const starting_hours = salon.start_working_hours
         var slots = starting_hours.map(function (val) {
             const storeDate = moment(val).format('hh:mm a')
+            if(employeesAbsenteeism!==null){
             const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
-            if (employeeAbsentSlots.length === 0) {
+            if (employeesAbsenteeism === 0) {
                 return {
                     store_date: storeDate,
                     absent: false
@@ -114,6 +122,7 @@ export default class EmployeeService extends BaseService {
                     }
                 }
             }
+        }
             return {
                 store_date: storeDate,
                 absent: false
@@ -144,6 +153,38 @@ export default class EmployeeService extends BaseService {
         await employee.save()
         return employee
     }
+
+    employeeDelete = async (id: any) => {
+        const employee = await this.model.findOneAndUpdate({_id:id},{blocked:true},{new:true})
+        return employee
+
+
+    }
+    report = async (data:ReportVendorI)=>{
+        console.log(data)
+        const report = await this.reportVendorModel.create(data)
+        return report
+    }
+    feedback = async (data:FeedbackVendorI)=>{
+        console.log(data)
+        const report = await this.feedbackVendorModel.create(data)
+        return report
+    }
+
+    employeeService = async(id:string)=>{
+        console.log("******");
+        console.log(id)
+        const _id=mongoose.Types.ObjectId(id)
+        const service = await this.model.aggregate()
+        .match({_id: _id})
+        .project({
+            name:1,
+            services: {$size:"$services"}
+        })
+        return service
+    }
+
+    
 
 
 

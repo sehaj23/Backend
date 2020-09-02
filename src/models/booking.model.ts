@@ -101,7 +101,17 @@ const BookingSchema = new mongoose.Schema({
         default: 'Vendor Place'
     },
     address:{
-        type:String,    
+        type:{
+            address:{
+                type:String
+            },
+            latitude:{
+                type:Number
+            },
+            longitude:{
+                type:Number
+            }
+        },    
     },
     reviews: {
         type: mongoose.Schema.Types.ObjectId, 
