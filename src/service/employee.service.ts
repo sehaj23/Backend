@@ -103,31 +103,33 @@ export default class EmployeeService extends BaseService {
         const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
         const starting_hours = salon.start_working_hours
-        var slots = starting_hours.map(function (val) {
-            const storeDate = moment(val).format('hh:mm a')
-            if(employeesAbsenteeism!==null){
-            const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
-            if (employeesAbsenteeism === 0) {
-                return {
-                    store_date: storeDate,
-                    absent: false
-                }
+
+        // getting the day from the date
+        let day = moment(slotsDate).day() - 1
+        if(day < 0 ) day = 6
+        if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
+        const selectedStartingHour = moment(starting_hours[day])
+        if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
+        const selectedEndHour = moment(salon.end_working_hours[day])
+        const slots = []
+        for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
+            
+            const time = moment(i).format('hh:mm a')
+            const theSlot = {
+                store_date: time,
+                absent: false
             }
-            for (let slot of employeeAbsentSlots) {
-                slot = moment(slot).format('hh:mm a')
-                if (slot === storeDate) {
-                    return {
-                        store_date: storeDate,
-                        absent: true
+            if(employeesAbsenteeism !== null){
+                const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
+                for (let slot of employeeAbsentSlots) {
+                    slot = moment(slot).format('hh:mm a')
+                    if (slot === time) {
+                            theSlot.absent =  true
                     }
                 }
             }
+            slots.push(theSlot)
         }
-            return {
-                store_date: storeDate,
-                absent: false
-            }
-        })
         return slots
 
     }
