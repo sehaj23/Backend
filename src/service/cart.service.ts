@@ -104,8 +104,9 @@ export default class CartService extends BaseService {
 
     updateCartOption = async (userId, optionId: string, qty: number) => {
         if (qty === 0) return this.deleteOptionFromCart(userId, optionId)
-        const cart = await this.model.findOne({ "options.option_id": optionId, "user_id": userId }) as CartSI
+        const cart = await this.model.findOne({ "options.option_id": optionId, "user_id": userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
         if (cart === null) throw new Error("Cart not found")
+        console.log(`Cart salon id ${cart.salon_id}`)
         for (let option of cart.options) {
             if (option.option_id === optionId) {
                 const optionPrice = await this.getPriceByOptionId(optionId)
@@ -119,6 +120,7 @@ export default class CartService extends BaseService {
                 break
             }
         }
+        console.log(`Cart salon id now ${cart.salon_id}`)
         await cart.save()
         return cart
     }
