@@ -114,6 +114,7 @@ export default class UserService extends BaseService {
      }
      removeFavourites = async (id:string,salon_id:string) => {
         console.log(salon_id)
+        //@ts-ignore
         const user = await this.model.findByIdAndUpdate({_id:id},{$pull:{favourites:salon_id}},{new:true})
         console.log(user)
 

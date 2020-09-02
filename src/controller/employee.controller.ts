@@ -81,15 +81,15 @@ export default class EmployeeController extends BaseController {
         const empId = req.empId
 
         // getting the date from the frontend for which he needs the slots for
-        let slotsDate = req.query.date
-        console.log(slotsDate)
-        if (!slotsDate) {
+        let gotSlotsDate = req.query.date
+        console.log(gotSlotsDate)
+        if (!gotSlotsDate) {
             const msg = "Something went wrong"
             logger.error(msg)
             res.status(400).send({ success: false, message: msg });
             return
         }
-        slotsDate = new Date(slotsDate)
+        const slotsDate = new Date(gotSlotsDate.toString())
         
         const slots = await this.service.employeeSlots(empId, slotsDate)
         res.send(slots)
