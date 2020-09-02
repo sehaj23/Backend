@@ -15,16 +15,21 @@ import { PhotoI } from "../interfaces/photo.interface";
 import moment = require("moment");
 import SalonSI from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
+import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 
 
 
 export default class EmployeeService extends BaseService {
     employeeAbsenteeismModel: mongoose.Model<any, any>
     salonModel: mongoose.Model<any, any>
-    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
+    feedbackVendorModel : mongoose.Model<any, any>
+    reportVendorModel : mongoose.Model<any, any>
+    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, feedbackVendorModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>) {
         super(employeeModel)
         this.employeeAbsenteeismModel = employeeAbsenteeismModel
         this.salonModel = salonModel
+        this.feedbackVendorModel=feedbackVendorModel
     }
 
     // ovveride getId to populate the services
@@ -155,6 +160,31 @@ export default class EmployeeService extends BaseService {
 
 
     }
+    report = async (data:ReportVendorI)=>{
+        console.log(data)
+        const report = await this.reportVendorModel.create(data)
+        return report
+    }
+    feedback = async (data:FeedbackVendorI)=>{
+        console.log(data)
+        const report = await this.feedbackVendorModel.create(data)
+        return report
+    }
+
+    employeeService = async(id:string)=>{
+        console.log("******");
+        console.log(id)
+        const _id=mongoose.Types.ObjectId(id)
+        const service = await this.model.aggregate()
+        .match({_id: _id})
+        .project({
+            name:1,
+            services: {$size:"$services"}
+        })
+        return service
+    }
+
+    
 
 
 

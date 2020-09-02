@@ -8,6 +8,8 @@ import EmployeeService from "../service/employee.service";
 import * as jwt from "jwt-then";
 import CONFIG from "../config";
 import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
+import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 
 
 export default class EmployeeController extends BaseController {
@@ -160,6 +162,41 @@ export default class EmployeeController extends BaseController {
         res.send({message:"Account Deleted",success:"true"})
 
     })
+    feedback= controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:FeedbackVendorI = req.body
+        //@ts-ignore
+        data.employee_id=req.empId
+        const feedback = await this.service.feedback(data)
+        if(feedback===null){
+            logger.error(`Unable to create feedback`)
+            res.status(400)
+            res.send({ message: `Unable to create feedback` })
+            return
+        }
+        res.status(200).send({message:"Thank you for your feedback",success:true})
+
+    }) 
+    report = controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:ReportVendorI = req.body
+        //@ts-ignore
+        data.employee_id=req.empId
+        const createReport = await this.service.report(data)
+        if(createReport===null){
+            logger.error(`Unable to create report`)
+            res.status(400)
+            res.send({ message: `Unable to create report` })
+            return
+        }
+        res.send(createReport)
+
+    })  
+    empService = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id= req.empId 
+        const service =await this.service.employeeService(id)
+        res.send(service)
+
+  })
 
 
 }

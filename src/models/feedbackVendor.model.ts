@@ -1,5 +1,5 @@
 import mongoose from "../database";
-import salons = require("../seeds/data/salons/salons");
+
 
 
 const ReportSchema = new mongoose.Schema({
@@ -12,25 +12,20 @@ const ReportSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "employees",
     },
-    name: {
-        required: true,
-        type: String,
+    rating:{
+        type:Number
     },
     title: {
-        required: true,
         type: String,
     },
     description: {
         required: true,
         type: String,
     },
-    photo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "photos"
-    },
+   
 
 
 })
-const ReportVendor = mongoose.model("reportVendor", ReportSchema)
+const FeedbackVendor = mongoose.model("feedback", ReportSchema)
 
-export default ReportVendor
+export default FeedbackVendor

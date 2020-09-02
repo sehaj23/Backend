@@ -19,6 +19,7 @@ import moment = require("moment");
 import { String } from "aws-sdk/clients/appstream";
 import encryptData from "../utils/password-hash";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
+import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
 
 
 
@@ -26,10 +27,12 @@ import { ReportVendorI } from "../interfaces/reportVendor.interface";
 export default class VendorService extends BaseService{
     employeeAbsenteeismModel : mongoose.Model<any, any>
     reportVendorModel : mongoose.Model<any, any>
-    constructor(Vendor: mongoose.Model<any, any>, employeeAbsenteeismModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>) {
+    feedbackVendorModel : mongoose.Model<any, any>
+    constructor(Vendor: mongoose.Model<any, any>, employeeAbsenteeismModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>,feedbackVendorModel : mongoose.Model<any, any>) {
         super(Vendor)
         this.employeeAbsenteeismModel=employeeAbsenteeismModel
         this.reportVendorModel=reportVendorModel
+        this.feedbackVendorModel=feedbackVendorModel
     }
 
     // vendorLogin  = async (email,password) => {
@@ -159,18 +162,37 @@ export default class VendorService extends BaseService{
             const service = await Employee.findById(id).populate("services").populate("photo").exec()
             return service
     }
+    
 
     report = async (data:ReportVendorI)=>{
         console.log(data)
         const report = await this.reportVendorModel.create(data)
         return report
     }
+    feedback = async (data:FeedbackVendorI)=>{
+        console.log(data)
+        const report = await this.feedbackVendorModel.create(data)
+        return report
+    }
     
-    vendorDelete = async (id: any) => {
+    vendorDelete = async (id: string) => {
         const vendor = await this.model.findOneAndUpdate({_id:id},{blocked:true},{new:true})
         return vendor
 
     }
+
+    vendorService = async(id:string,vendorId:string)=>{
+        const _id=mongoose.Types.ObjectId(id)
+        const service = await Salon.aggregate()
+        .match({_id: _id})
+        .project({
+            name:1,
+            services: {$size:"$services"}
+        })
+        return service
+    }
+
+    
 
 
 
