@@ -15,5 +15,6 @@ const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,B
 const salonController = new SalonController(salonService)
 searchRouter.get("/", salonController.getSearchResult)
 searchRouter.get("/salon",salonController.searchFilter)
+searchRouter.get("/service",salonController.getSearchservice)
 
 export default searchRouter

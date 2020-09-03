@@ -150,7 +150,8 @@ const SalonSchema = new mongoose.Schema({
     timestamps: true
 })
 
-SalonSchema.index({ name: 'text', location: 'text', 'services.name': 'text','services.options.option_name': 'text' });
+//SalonSchema.index({ name: 'text', location: 'text', services:{name:'text'},'services.options.option_name': 'text' });
+SalonSchema.index({"$**": `text`});
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 
