@@ -346,8 +346,8 @@ export default class BookingService extends BaseService {
 
     }
 
-    reschedulebooking = async (id: string, date_time: string) => {
-        const booking = await this.model.findByIdAndUpdate(id, { date_time: date_time, status: "Rescheduled" }, { new: true }).populate("user_id").exec()
+    reschedulebooking = async (id: string, date_time: DateTime) => {
+        const booking = await this.model.findByIdAndUpdate(id, { rescheduled_service_time: date_time, status: "Rescheduled" }, { new: true })
         return booking
 
 

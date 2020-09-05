@@ -537,6 +537,47 @@ export default class SalonService extends BaseService {
                 return data
 
         }
+        getSalonService = async (phrase: string) => {
+                
+                   
+                  var  result1 = await this.model.aggregate([
+                       {
+                                $project:{
+                                        _id:1,
+                                        services:1,
+                                        profile_pic:1,
+                                        name:1
+                                }
+                       },
+                       
+                        {
+                            $lookup:
+                            {
+                                from: "photos",
+                                localField: "profile_pic",
+                                foreignField: "_id",
+                                as: "profile_pic",
+                            },
+                       },
+                        // {
+                        //     $unwind: "$service_info"
+                        // },
+                        {
+                            
+                            $match:
+                            {
+                                "services.name":{
+                                    $regex: `.*${phrase}.*`
+                                } 
+                            }
+                        }   
+                    ])
+                   return result1
+               
+            }
+            
+
+
 
         searchFilter = async (q: any) => {
 
@@ -620,11 +661,11 @@ export default class SalonService extends BaseService {
         }
 
         reportError = async (q) => {
-
                const report = await this.reportSalonModel.create(q)
                return report
-
-
         }
+
+        
+
 
 }
