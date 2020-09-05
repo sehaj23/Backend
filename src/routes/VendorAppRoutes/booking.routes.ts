@@ -20,10 +20,10 @@ import ReportSalon from "../../models/reportSalon.model"
 
 
 const bookingRouter = Router()
-const bookingService = new BookinkService(Booking,Salon)
+const cartService = new CartService(Cart, Salon)
+const bookingService = new BookinkService(Booking,Salon, cartService)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const employeeAbsenteesimService = new EmployeeAbsentismService(EmployeeAbsenteeism)
-const cartService = new CartService(Cart, Salon)
 const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService)
 
 

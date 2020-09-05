@@ -10,6 +10,7 @@ export default interface CartI{
     total?: number
     salon_id: string
     user_id?: string
+    booked?: boolean
 }
 
 export interface CartSI extends CartI, mongoose.Document{}

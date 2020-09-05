@@ -53,7 +53,7 @@ export default class CartController extends BaseController{
     getLastCartByUserId =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
-        const data = await this.cartService.getCartByUserId(userId, true)
+        const data = await this.cartService.getCartByUserIdLean(userId, true)
         res.send(data)
     } )
 
