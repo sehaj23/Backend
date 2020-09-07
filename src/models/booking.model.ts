@@ -67,6 +67,13 @@ const BookingSchema = new mongoose.Schema({
             },
             rescheduled_service_time: {
                 type: Date,  
+            },
+            rescheduled_available_slots:{
+                type: [
+                    {
+                        type: [Date]
+                    }
+                ]
             }
         
         }]

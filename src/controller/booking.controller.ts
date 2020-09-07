@@ -14,6 +14,7 @@ import { BookingI, BookingServiceI, BookingSI } from "../interfaces/booking.inte
 import CartService from "../service/cart.service";
 import { CartSI } from "../interfaces/cart.interface";
 import { ServiceSI } from "../interfaces/service.interface";
+import { map } from "bluebird";
 
 
 export default class BookingController extends BaseController {
@@ -438,18 +439,16 @@ export default class BookingController extends BaseController {
     })
     reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
-        const date_time = req.body.date_time
+        const datetime = req.body.date_time
+      
+    
 
-        const date = moment().format('YYYY-MM-DD, h:mm:ss a')
-
+       // const rescheduleDate = moment(date_time).toDate()
+        const date = moment()
+        console.log("*********")
         console.log(date)
-        if (date_time < date) {
-            const errMsg = "Cannot reschedule for past dates!"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-        }
+        
+       
         if (!id) {
             const errMsg = "Error Booking not found"
             logger.error(errMsg)
@@ -457,7 +456,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const booking = await this.service.reschedulebooking(id, date_time)
+        const booking = await this.service.reschedulebooking(id, datetime)
         if (booking === null) {
             const errMsg = "unable to update boooking"
             logger.error(errMsg)
@@ -554,7 +553,7 @@ export default class BookingController extends BaseController {
         const empId = req.empId
         console.log(empId)
         const bookings = await this.service.getEmployeebookings(q, empId)
-
+        console.log(bookings)
         if (bookings == null) {
             const errMsg = 'No Bookings Found!'
             logger.error(errMsg)
