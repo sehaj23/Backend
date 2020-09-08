@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import { Request, Response } from "express";
-import { BookingI } from "../interfaces/booking.interface";
+import { BookingI, BookingServiceI, BookingAddressI } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
 import mongoose from "../database";
 
@@ -13,17 +13,72 @@ import moment = require("moment");
 import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
 import ErrorResponse from "../utils/error-response";
+import CartService from "./cart.service";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
 
-
-    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
+    cartService: CartService
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService) {
         super(bookingmodel);
         this.salonModel = salonModel
-
+        this.cartService = cartService
     }
 
+    bookAppointment = async (userId: string, payment_method: string, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
+        try {
+            const justDate = date_time.substring(0, 10)
+            const justTime = date_time.substring(27, 35)
+            logger.info(`justDate ${justDate}`)
+            logger.info(`justTime ${justTime}`)
+            let convertedDateTime: moment.Moment = moment(`${justDate} ${justTime}`, "YYYY-MM-DD hh:mm a").local()
+
+            let nextDateTime: moment.Moment
+            const services: BookingServiceI[] = options.map((o) => {
+                const totalPrice = o.quantity * o.price
+                const zattire_commission = totalPrice * 0.25
+                const vendor_commission = totalPrice - zattire_commission
+
+                const totalTime = o.quantity * o.duration
+                let service_time: Date
+                if (nextDateTime === null || !nextDateTime) {
+                    service_time = convertedDateTime.toDate()
+                    nextDateTime = convertedDateTime.add(totalTime, 'minutes')
+                } else {
+                    service_time = nextDateTime.toDate()
+                    nextDateTime = nextDateTime.add(totalTime, 'minutes')
+                }
+
+                const bookingService: BookingServiceI = {
+                    option_id: o.option_id,
+                    service_name: o.name,
+                    service_real_price: o.price,
+                    quantity: o.quantity,
+                    duration: o.duration,
+                    service_total_price: totalPrice,
+                    zattire_commission,
+                    vendor_commission,
+                    service_time
+                }
+                return bookingService
+            })
+            
+            const booking: BookingI = {
+                user_id: userId,
+                salon_id: salon_id,
+                payment_type: 'COD',
+                location: location,
+                services,
+                address
+            }
+            const b = await this.model.create(booking)
+            // delete the cart of the user
+            await this.cartService.bookCartByUserId(userId)
+            return b
+        } catch (e) {
+            throw e
+        }
+    }
 
     // post = async (req: Request, res: Response) => {
     //   try {
@@ -145,10 +200,10 @@ export default class BookingService extends BaseService {
         const dateTimeD = new Date(dateTime);
         const busyEmployeesIds = [];
         // @ts-ignore
-      //  const bookingsDbReq =  Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
-        const salonDbReq =  this.salonModel.findById(salonId).select("employees").populate("employees").exec();
-        const [ salon] = await Promise.all([ salonDbReq])
-     //   if (bookings !== null) busyEmployeesIds.concat(bookings.services.map(s => s.employee_id))
+        //  const bookingsDbReq =  Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
+        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate("employees").exec();
+        const [salon] = await Promise.all([salonDbReq])
+        //   if (bookings !== null) busyEmployeesIds.concat(bookings.services.map(s => s.employee_id))
         for (const bemp of busyEmployeesIds) {
             //@ts-ignore
             const i = salon.employees.findIndex((e) => e._id === bemp);
@@ -196,9 +251,9 @@ export default class BookingService extends BaseService {
 
 
     updateStatusBookings = async (bookingId: string, status: string) => {
-        
-      //  const bookings = await this.model.findOne({_id:bookingId})
-      
+
+        //  const bookings = await this.model.findOne({_id:bookingId})
+
         const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
         return bookings
     }
@@ -210,7 +265,7 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        return this.model.find({"user_id": userId}).populate("salon_id")
+        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id")
     }
 
     getbookings = async (q) => {
@@ -251,7 +306,7 @@ export default class BookingService extends BaseService {
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     break
                 case "location":
-                    filters["location"]=q[k]
+                    filters["location"] = q[k]
                     break
                 case "page_number":
                 case "page_length":
@@ -273,7 +328,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
@@ -285,7 +340,7 @@ export default class BookingService extends BaseService {
 
     }
     bookingByID = async (id: string) => {
-        const booking = await this.model.findById(id).populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
+        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         return booking
 
 
@@ -316,10 +371,10 @@ export default class BookingService extends BaseService {
 
     }
 
-   
+
 
     rescheduleSlots = async (id, date) => {
-        const salon =  await this.salonModel.findById(id)
+        const salon = await this.salonModel.findById(id)
 
         const starting_hours = salon.start_working_hours
         var start_time = starting_hours.map(function (val) {
@@ -347,12 +402,12 @@ export default class BookingService extends BaseService {
      */
     getEmployeesBookingsByIdsTime = async (ids, dateTime) => {
         dateTime = moment(dateTime)
-        if(!(dateTime as moment.Moment).isValid()) throw new ErrorResponse(`Date time not valid: ${dateTime}`)
-        return this.model.find({"services.employee_id": ids, "services.service_time": dateTime})
+        if (!(dateTime as moment.Moment).isValid()) throw new ErrorResponse(`Date time not valid: ${dateTime}`)
+        return this.model.find({ "services.employee_id": ids, "services.service_time": dateTime })
     }
 
     getEmployeebookings = async (q, empId: string) => {
-    
+
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -388,7 +443,7 @@ export default class BookingService extends BaseService {
                     break
                 case "end_date":
                     dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
- 
+
                     break
                 case "page_number":
                 case "page_length":
@@ -397,7 +452,7 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            
+
 
             // filters["date_time"] = {
             //     "$gte": dateFilter["start_date"],
@@ -413,9 +468,9 @@ export default class BookingService extends BaseService {
             "$in": empId
         }
         console.log(filters);
-   
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate: { path: 'profile_pic' }}).populate("services.employee_id").exec()
+
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 

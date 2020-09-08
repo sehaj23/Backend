@@ -11,6 +11,13 @@ export default class CartService extends BaseService {
         this.salonModel = salonModel
     }
 
+    bookCartByUserId: (userId: string) => Promise<CartSI> = async (userId: string) => {
+        const cart = await this.getCartByUserId(userId)
+        cart.booked = true
+        await cart.save()
+        return cart
+    }
+
     getSalonByOptionId : (optionId: string) => Promise<SalonSI> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("getSalonByOptionId - Salon not found")
@@ -123,10 +130,16 @@ export default class CartService extends BaseService {
         return cart
     }
 
+    getCartByUserId = async (userId: string) => {
+        const cart = await this.model.findOne({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
+        if(cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
+        return cart
+    }
+
     /**
      * Getting the cart by user id
      */
-    getCartByUserId = async (userId: string, last: boolean = false) => {
+    getCartByUserIdLean = async (userId: string, last: boolean = false) => {
 
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
@@ -135,6 +148,7 @@ export default class CartService extends BaseService {
         console.log(cart)
         if (cart.length > 0) {
             for (let cc of cart) {
+                if(cc.booked === true) return []
                 for (let c of cc.options) {
                     const { name, price } = await this.getPriceAndNameByOptionId(c.option_id)
                     c.option_name = name

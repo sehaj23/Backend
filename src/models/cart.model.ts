@@ -26,6 +26,10 @@ const CartSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
+    },
+    booked: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

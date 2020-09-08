@@ -18,10 +18,10 @@ import CartService from "../../service/cart.service"
 import Cart from "../../models/cart.model"
 import ReportSalon from "../../models/reportSalon.model"
 
-const bookingService = new BookingService(Booking, Salon)
+const cartService = new CartService(Cart, Salon)
+const bookingService = new BookingService(Booking, Salon, cartService)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
-const cartService = new CartService(Cart, Salon)
 const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService)
 const bookingRouter = Router()
 

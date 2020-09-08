@@ -23,11 +23,6 @@ const BookingSchema = new mongoose.Schema({
     },
     services: {
         type: [{
-            service_id: {
-                type: String,
-                required:true
-          
-            },
             option_id: {
                 type: String,
                 required:true
@@ -38,11 +33,9 @@ const BookingSchema = new mongoose.Schema({
             },
             service_name: {
                 type: String,
-                
             },
             service_real_price: {
                 type: Number,
-                
             },
             service_discount: {
                 type: Number,
@@ -54,13 +47,14 @@ const BookingSchema = new mongoose.Schema({
                 type: Number,
                 
             },
-            zattire_commission: {
+            quantity: {
                 type: Number,
-                
+            },
+            zattire_commission: {
+                type: Number,  
             },
             vendor_commission: {
                 type: Number,
-                
             },
             service_time: {
                 type: Date,  
@@ -75,7 +69,6 @@ const BookingSchema = new mongoose.Schema({
                     }
                 ]
             }
-        
         }]
     },
     status: {
@@ -83,24 +76,10 @@ const BookingSchema = new mongoose.Schema({
         enum: ['Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled"],
         default:'Requested'
     },
-    price: {
-        type: Number,
-        required: true
-    },
     payment_type: {
         type: String,
         enum: ['COD' , 'Online'],
         default: 'COD'
-    },
-    balance:{
-        type: Number,
-        required: true,
-        default: 0
-    },
-    date_time: {
-        type: Date,
-        required: true,
-        default: Date.now()
     },
     location: {
         type: String,
@@ -110,7 +89,8 @@ const BookingSchema = new mongoose.Schema({
     address:{
         type:{
             address:{
-                type:String
+                type:String,
+                required: true
             },
             latitude:{
                 type:Number
