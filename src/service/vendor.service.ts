@@ -196,6 +196,10 @@ export default class VendorService extends BaseService{
         })
         return service
     }
+    updateNotification = async (id:string,status:boolean)=>{
+        const notification = await this.model.findByIdAndUpdate(id,{notification:status},{new:true})
+        return notification
+    }
 
     
 

@@ -26,6 +26,10 @@ const EmployeeSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    notification: {
+        type: Boolean,
+        default:true
+    }
 }, {
     timestamps: true
 })

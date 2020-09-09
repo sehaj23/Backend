@@ -212,5 +212,19 @@ export default class EmployeeController extends BaseController {
         res.status(403).send(`${e.message}` )
     }
 }
+notificationUpdate = controllerErrorHandler(async (req: Request, res: Response) => {
+    //@ts-ignore
+    const id = req.empId
+    const status = req.body.status
+    
+    const notification = await this.service.updateNotification(id,status)
+    if(notification==null){
+        logger.error(`something went wrong`)
+        res.status(400)
+        res.send({ message: `something went wrong`,success:false })
+        return
+    }
+    res.send({message:"Notification status update",success:true})
+  })
 
 }

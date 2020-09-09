@@ -240,6 +240,21 @@ export default class VendorController extends BaseController {
 
       })
 
+      notificationUpdate = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.vendorId
+        const status = req.body.status
+        
+        const notification = await this.service.updateNotification(id,status)
+        if(notification==null){
+            logger.error(`something went wrong`)
+            res.status(400)
+            res.send({ message: `something went wrong`,success:false })
+            return
+        }
+        res.send({message:"Notification status update",success:true})
+      })
+
   
 
 

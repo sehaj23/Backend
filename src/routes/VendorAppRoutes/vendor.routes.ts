@@ -36,6 +36,7 @@ vendorRouter.post("/feedback",VendorverifyToken,vendorController.feedback)
 vendorRouter.patch("/delete",VendorverifyToken,vendorController.vendorDelete)
 vendorRouter.get("/service/:id",VendorverifyToken,vendorController.vendorService)
 vendorRouter.get("/service/employee/:id",VendorverifyToken,vendorController.employeeServicecount)
+vendorRouter.patch("/notification",VendorverifyToken,vendorController.notificationUpdate)
 
 
 

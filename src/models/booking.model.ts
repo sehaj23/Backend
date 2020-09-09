@@ -62,13 +62,7 @@ const BookingSchema = new mongoose.Schema({
             rescheduled_service_time: {
                 type: Date,  
             },
-            rescheduled_available_slots:{
-                type: [
-                    {
-                        type: [Date]
-                    }
-                ]
-            }
+           
         }]
     },
     status: {
@@ -85,6 +79,13 @@ const BookingSchema = new mongoose.Schema({
         type: String,
         enum: ['Customer Place' , 'Vendor Place'],
         default: 'Vendor Place'
+    },
+    rescheduled_available_slots:{
+        type: [
+            {
+                type: [Date]
+            }
+        ]
     },
     address:{
         type:{

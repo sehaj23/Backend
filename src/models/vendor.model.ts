@@ -52,6 +52,10 @@ const VendorSchema = new mongoose.Schema({
     },
     fcm_token: {
         type: String
+    },
+    notification: {
+        type: Boolean,
+        default:true
     }
 }, {
     timestamps: true

@@ -194,6 +194,11 @@ export default class EmployeeService extends BaseService {
         const newEvent = await this.model.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
         return newEvent 
 }   
+
+        updateNotification = async (id:string,status:boolean)=>{
+            const notification = await this.model.findByIdAndUpdate(id,{notification:status},{new:true})
+            return notification
+        }
     
 
 
