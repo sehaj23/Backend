@@ -348,7 +348,7 @@ export default class BookingService extends BaseService {
 
     reschedulebooking = async (id: string, date_time: Array<Date>) => {
        
-
+        //@ts-ignore
         const booking = await this.model.findByIdAndUpdate(id, { $push:{"services.$.service_time": date_time}, status: "Rescheduled" }, { new: true })
         console.log(booking)
         return booking
