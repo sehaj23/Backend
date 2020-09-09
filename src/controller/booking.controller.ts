@@ -312,9 +312,12 @@ export default class BookingController extends BaseController {
     
 
        // const rescheduleDate = moment(date_time).toDate()
-        const date = moment()
+        
         console.log("*********")
-        console.log(date)
+        datetime.map(function (o){
+           return moment(o).toDate()
+        })
+        console.log(datetime)
         
        
         if (!id) {
