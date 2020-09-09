@@ -3,7 +3,7 @@ import EmployeeSI from "../interfaces/employee.interface";
 
 const EmployeeSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    phone: { type: String, required: true ,unique:true},
+    phone: { type: String, required: true},
     services: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
