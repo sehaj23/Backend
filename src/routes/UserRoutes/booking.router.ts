@@ -27,6 +27,7 @@ const bookingRouter = Router()
 
 // get available employees by date & time
 bookingRouter.get("/",UserverifyToken, bc.getAppointment)
+bookingRouter.get("/:id",UserverifyToken, bc.getId)
 
 // create a booking
 bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
