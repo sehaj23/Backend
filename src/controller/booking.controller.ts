@@ -434,4 +434,11 @@ export default class BookingController extends BaseController {
         res.send(bookings)
     })
 
+    cancelBooking = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+        const {booking_id, reason} = req.body
+        return this.service.cancelBooking(userId, booking_id, reason)
+    })
+
 }

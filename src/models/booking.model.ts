@@ -96,6 +96,9 @@ const BookingSchema = new mongoose.Schema({
     reviews: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'reviews',
+    },
+    cancel_reason: {
+        type: String,
     }
 }, {
     timestamps: true
