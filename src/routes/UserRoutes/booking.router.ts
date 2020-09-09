@@ -32,4 +32,6 @@ bookingRouter.get("/",UserverifyToken, bc.getAppointment)
 bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
 bookingRouter.post("/employees/:salonId",UserverifyToken, bc.getSalonEmployees)
 
+bookingRouter.patch("/cancel/:bookingId", UserverifyToken, bc.cancelBooking )
+
 export default bookingRouter
