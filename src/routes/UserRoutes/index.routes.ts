@@ -7,6 +7,7 @@ import serviceRouter from "./service.router"
 import bookingRouter from './booking.router'
 import userRouter from "./user.router"
 import cartRouter from "./cart.router"
+import reportAppRouter from "./report-app.route"
 
 const Userrouter = Router()
 
@@ -18,5 +19,6 @@ Userrouter.use("/service", serviceRouter)
 Userrouter.use("/booking", bookingRouter)
 Userrouter.use("/user", userRouter)
 Userrouter.use("/cart", cartRouter)
+Userrouter.use("/report-app", reportAppRouter)
 
 export default Userrouter
