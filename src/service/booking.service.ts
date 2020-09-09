@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import { Request, Response } from "express";
-import { BookingI, BookingServiceI, BookingAddressI } from "../interfaces/booking.interface";
+import { BookingI, BookingServiceI, BookingAddressI, BookingSI } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
 import mongoose from "../database";
 
@@ -348,7 +348,7 @@ export default class BookingService extends BaseService {
 
     reschedulebooking = async (id: string, date_time: Array<Date>) => {
        
-
+        //@ts-ignore
         const booking = await this.model.findByIdAndUpdate(id, { $push:{"services.$.service_time": date_time}, status: "Rescheduled" }, { new: true })
         console.log(booking)
         return booking
@@ -481,6 +481,17 @@ export default class BookingService extends BaseService {
 
 
 
+    }
+
+    cancelBooking = async (userId: string, bookingId: string, reasonText: string) => {
+        const booking = await this.model.findOne({user_id: userId, _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
+        if(booking === null) throw new Error(`No booking found with this booking id ${bookingId} for the current user`)
+        booking.status = 'Customer Cancelled'
+        if(reasonText && reasonText !== ""){
+            booking.cancel_reason = reasonText
+        }
+        await booking.save()
+        return booking
     }
 
 

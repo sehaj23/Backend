@@ -40,6 +40,7 @@ export interface BookingI{
     location: BookingLoaction
     reviews?: ReviewSI[],
     address:BookingAddressI
+    cancel_reason?: string
 }
 
 export interface BookingSI extends BookingI, mongoose.Document{}
