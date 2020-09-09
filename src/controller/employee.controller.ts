@@ -10,6 +10,7 @@ import CONFIG from "../config";
 import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
+import { PhotoI } from "../interfaces/photo.interface";
 
 
 export default class EmployeeController extends BaseController {
@@ -197,6 +198,19 @@ export default class EmployeeController extends BaseController {
         res.send(service)
 
   })
-
+  addProfilePic = async (req: Request, res: Response) => {
+    try {
+        const photoData: PhotoI = req.body
+        //@ts-ignore
+        const _id = req.params.id || req.userId || req.vendorId || req.empId
+        // saving photos 
+        const newEvent = await this.service.addProfilePic(photoData,_id)
+       
+        res.send(newEvent)
+    } catch (e) {
+        logger.error(`User Put Photo ${e.message}`)
+        res.status(403).send(`${e.message}` )
+    }
+}
 
 }

@@ -95,16 +95,21 @@ export default class VendorService extends BaseService{
            
             //@ts-ignore
             const empId = mongoose.Types.ObjectId(id)
+            console.log(empId)
+            
 
             // getting the date from the frontend for which he needs the slots for
             
 
-          let  slotsDate = new Date(timeSlots)
+         
+          
+          
             //@ts-ignore
             const salonReq = Salon.findOne({ employees: [empId] })
             //@ts-ignore
-            const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({ employee_id: empId, absenteeism_date: slotsDate })
+            const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({ employee_id: empId, absenteeism_date: timeSlots })
             const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
+            console.log(employeesAbsenteeism)
             const starting_hours = salon.start_working_hours
             var slots = starting_hours.map(function (val) {
                 const storeDate = moment(val).format('hh:mm a')

@@ -17,6 +17,7 @@ import SalonSI from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
 import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
+import Photo from "../models/photo.model";
 
 
 
@@ -186,6 +187,13 @@ export default class EmployeeService extends BaseService {
         return service
     }
 
+    addProfilePic = async (photoData:PhotoI,_id:string) => {
+        // saving photos 
+        const photo = await Photo.create(photoData)
+        // adding it to event
+        const newEvent = await this.model.findByIdAndUpdate({_id},  { photo: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+        return newEvent 
+}   
     
 
 

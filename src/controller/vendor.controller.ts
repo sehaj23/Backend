@@ -118,15 +118,18 @@ export default class VendorController extends BaseController {
     })
     employeeSlots =controllerErrorHandler ( async (req: Request, res: Response)=>{
         const id = req.params.id
-        const timeSlots = req.query.slots_date
+        let gotSlotsDate =   req.query.slots_date
         //TODO:validator
-        if (!timeSlots) {
+        if (!gotSlotsDate) {
             const msg = "Something went wrong"
             logger.error(msg)
             res.status(400).send({ success: false, message: msg });
             return
         }
-        const slots  =  await this.service.employeeSlots(id,timeSlots.toString())
+        const slotsDate = new Date(gotSlotsDate.toString())
+        
+        const slots = await this.employeeService.employeeSlots(id, slotsDate)
+        res.send(slots)
         if(slots==null){
             logger.error(`No Slots Found`)
             res.status(400)
