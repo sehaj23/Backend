@@ -28,5 +28,6 @@ employeeRouter.patch("/delete",EmployeeverifyToken,employeeController.employeeDe
 employeeRouter.post("/feedback",EmployeeverifyToken,employeeController.feedback)
 employeeRouter.post("/report",EmployeeverifyToken,employeeController.report)
 employeeRouter.get("/service",EmployeeverifyToken,employeeController.empService)
+employeeRouter.patch("/notification",EmployeeverifyToken,employeeController.notificationUpdate)
 
 export default employeeRouter
