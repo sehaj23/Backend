@@ -21,6 +21,9 @@ import Vendor from "./models/vendor.model";
 import encryptData from "./utils/password-hash";
 import { VendorI } from "./interfaces/vendor.interface";
 import OtpService from "./service/otp.service";
+import MongoCounterService from "./service/mongo-counter.service";
+import MongoCounter from "./models/mongo-counter.model";
+import { MongoCounterI } from "./interfaces/mongo-counter.interface";
 
 const app = express();
 app.use(cors());
@@ -58,7 +61,17 @@ const upload = multer({
 app.get("/otp", async (request, response) => {
   const otp = new OtpService()
   const res = await otp.sendOtp("9650006422", "Hello from Zattire test!")
-  res.send({res})
+  response.send({res})
+})
+
+app.get("/bookingcounter", async (request, response) => {
+  const mongoCounterService = new MongoCounterService(MongoCounter)
+  const mongoCounter: MongoCounterI = {
+    name: "booking_id",
+    count: 1
+  }
+  const c = await mongoCounterService.post(mongoCounter)
+  response.send(c)
 })
 
 // TODO : Change to AWS

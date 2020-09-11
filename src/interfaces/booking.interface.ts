@@ -40,6 +40,7 @@ export interface BookingI{
     location: BookingLoaction
     reviews?: ReviewSI[],
     address:BookingAddressI
+    booking_numeric_id: number
     cancel_reason?: string
 }
 

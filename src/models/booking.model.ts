@@ -107,6 +107,10 @@ const BookingSchema = new mongoose.Schema({
     },
     cancel_reason: {
         type: String,
+    },
+    booking_numeric_id:{
+        type: Number,
+        required: true
     }
 }, {
     timestamps: true

@@ -14,15 +14,18 @@ import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
 import ErrorResponse from "../utils/error-response";
 import CartService from "./cart.service";
+import MongoCounterService from "./mongo-counter.service";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
 
     cartService: CartService
-    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService) {
+    mongoCounterService: MongoCounterService
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService) {
         super(bookingmodel);
         this.salonModel = salonModel
         this.cartService = cartService
+        this.mongoCounterService = mongoCounterService
     }
 
     bookAppointment = async (userId: string, payment_method: string, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
@@ -62,14 +65,15 @@ export default class BookingService extends BaseService {
                 }
                 return bookingService
             })
-            
+            const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
                 payment_type: 'COD',
                 location: location,
                 services,
-                address
+                address,
+                booking_numeric_id
             }
             const b = await this.model.create(booking)
             // delete the cart of the user
