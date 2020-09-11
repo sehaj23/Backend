@@ -64,15 +64,6 @@ app.get("/otp", async (request, response) => {
   response.send({res})
 })
 
-app.get("/bookingcounter", async (request, response) => {
-  const mongoCounterService = new MongoCounterService(MongoCounter)
-  const mongoCounter: MongoCounterI = {
-    name: "booking_id",
-    count: 1
-  }
-  const c = await mongoCounterService.post(mongoCounter)
-  response.send(c)
-})
 
 // TODO : Change to AWS
 app.post("/upload", function (request, response, next) {
