@@ -61,12 +61,6 @@ const upload = multer({
   }),
 }).array("upload", 1);
 
-app.get("/otp", async (request, response) => {
-  const otp = new OtpService()
-  const res = await otp.sendOtp("9650006422", "Hello from Zattire test!")
-  response.send({res})
-})
-
 
 // TODO : Change to AWS  
 app.post("/upload", function (request, response, next) {
