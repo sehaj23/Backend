@@ -178,7 +178,7 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
 
 
 app.get("/", (req, res) => {
-  res.send("hello from the Zattire")
+  res.send("Hey you at Zattire")
 })
 
 // this is for 404
