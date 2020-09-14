@@ -441,7 +441,8 @@ export default class BookingController extends BaseController {
         const userId = req.userId
         const bookingId = req.params.bookingId
         const {reason} = req.body
-        return this.service.cancelBooking(userId, bookingId, reason)
+        const data = await  this.service.cancelBooking(userId, bookingId, reason)
+        res.send(data)
     })
 
 }
