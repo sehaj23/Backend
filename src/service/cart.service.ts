@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import mongoose from "../database";
-import CartI, { CartSI } from "../interfaces/cart.interface";
+import CartI, { CartSI, CartOption } from "../interfaces/cart.interface";
 import SalonSI from "../interfaces/salon.interface";
 
 export default class CartService extends BaseService {
@@ -171,6 +171,25 @@ export default class CartService extends BaseService {
         }
 
         return this.model.create(cart)
+    }
+
+    createCartWithMultipleOptions = async (userId: string, salonId: string, options: CartOption[]) => {
+
+        let total = 0
+        for(let opt of options){
+            const optionPrice = await this.getPriceByOptionId(opt.option_id)
+            total += optionPrice * opt.quantity
+        }
+
+        const cart: CartI = {
+            user_id: userId,
+            salon_id: salonId,
+            options: options,
+            total
+        }
+
+        return this.model.create(cart)
+
     }
 
 }

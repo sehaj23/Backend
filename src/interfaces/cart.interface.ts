@@ -1,6 +1,6 @@
 import mongoose from "../database";
 
-interface CartOption{
+export interface CartOption{
     option_id: string
     quantity: number
 }
