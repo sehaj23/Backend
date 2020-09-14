@@ -26,7 +26,9 @@ import MongoCounter from "./models/mongo-counter.model";
 import { MongoCounterI } from "./interfaces/mongo-counter.interface";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://vendor.zattire.com']
+}));
 
 export const http = require('http').createServer(app);
 
