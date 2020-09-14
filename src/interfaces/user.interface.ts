@@ -22,6 +22,7 @@ export default interface UserI {
     blocked ? : boolean
     approved ? : boolean
     address?: UserAddressI[]
+    phone?: string
 }
 
 export interface UserSI extends UserI, mongoose.Document {}
