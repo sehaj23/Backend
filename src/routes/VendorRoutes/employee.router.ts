@@ -7,9 +7,18 @@ import Salon from "../../models/salon.model";
 import EmployeeController from "../../controller/employee.controller";
 import FeedbackVendor from "../../models/feedbackVendor.model"
 import ReportVendor from "../../models/reportVendor.model"
+import Booking from "../../models/booking.model";
+import Otp from "../../models/otp.model";
+import User from "../../models/user.model";
+import OtpService from "../../service/otp.service";
+import UserService from "../../service/user.service";
 const employeeRouter = Router()
-const es = new EmployeeService(Employee, EmployeeAbsenteeism, Salon,FeedbackVendor,ReportVendor)
-const ec = new EmployeeController(es)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendor,ReportVendor)
+const us = new UserService(User, Booking)
+const otpService = new OtpService(Otp, us, es)
+const ec  = new EmployeeController(es, otpService)
+
+
 
 
 employeeRouter.put("/edit/:id",VendorverifyToken,ec.put)

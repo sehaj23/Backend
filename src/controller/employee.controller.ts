@@ -11,14 +11,17 @@ import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interfac
 import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import { PhotoI } from "../interfaces/photo.interface";
+import OtpService from "../service/otp.service";
 
 
 export default class EmployeeController extends BaseController {
 
     service: EmployeeService
-    constructor(service: EmployeeService) {
+    otpService: OtpService
+    constructor(service: EmployeeService, otpService: OtpService) {
         super(service)
         this.service = service
+        this.otpService = otpService
     }
 
     getByIdWithService = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -35,6 +38,7 @@ export default class EmployeeController extends BaseController {
             res.send({ message: "Send all data" })
             return
         }
+        await this.otpService.verifyEmployeeOtp(phone, otp)
         const employee = await this.service.employeeLogin(phone, otp)
         if (employee == null) {
             res.status(403)

@@ -7,12 +7,19 @@ import Salon from "../../models/salon.model";
 import EmployeeController from "../../controller/employee.controller";
 import FeedbackVendor from "../../models/feedbackVendor.model"
 import ReportVendor from "../../models/reportVendor.model"
+import OtpService from "../../service/otp.service";
+import Otp from "../../models/otp.model";
+import UserService from "../../service/user.service";
+import Booking from "../../models/booking.model";
+import User from "../../models/user.model";
 
 
 
 const employeeRouter = Router()
 const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendor,ReportVendor)
-const employeeController  = new EmployeeController(es)
+const us = new UserService(User, Booking)
+const otpService = new OtpService(Otp, us, es)
+const employeeController  = new EmployeeController(es, otpService)
 
 
 employeeRouter.post("/",employeeController.employeeLogin)
