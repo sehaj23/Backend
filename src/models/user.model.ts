@@ -8,7 +8,6 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
         unique: true
     },
     password: {
@@ -51,6 +50,13 @@ const UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "salons"
         }]
+    },
+    fcm_token: {
+        type: String
+    },
+    notification: {
+        type: Boolean,
+        default:true
     },
     address: {
         type: [{
