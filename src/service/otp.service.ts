@@ -19,7 +19,7 @@ export default class OtpService extends BaseService{
         this.employeeService = employeeService
     }
 
-    protected async sendOtp(phoneNumber: string, text: string) {
+    protected async sendOtp(phone: string, text: string) {
         const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
         const res = await axios.get(url)
         if(res.status === 200){
@@ -28,7 +28,7 @@ export default class OtpService extends BaseService{
         throw Error(`sendOtp status code: ${res.status} and message ${res.data}`)
     }
 
-    public async sendEmployeeOtp(phone: string){
+    public async sendEmployeeOtp(phone: string): Promise<OtpSI>{
         const emp = await this.employeeService.getOne({phone}) as EmployeeSI
         if(emp === null) throw new Error(`No employee found with this phone number`);
         const otpNumber: string = this.getRandomInt(9999, 999).toString()
@@ -43,7 +43,7 @@ export default class OtpService extends BaseService{
         return otpD
     }
 
-    public async sendUserOtp(phone: string){
+    public async sendUserOtp(phone: string): Promise<OtpSI>{
         const otpNumber: string = this.getRandomInt(9999, 999).toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {
@@ -57,7 +57,7 @@ export default class OtpService extends BaseService{
         return otpD
     }
 
-    public async verifyUserOtp(phone: string, otp: string, userId: string){
+    public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
         const otpD = await this.model.findOne({phone, otp, verified: false}) as OtpSI
         if(otpD === null) throw new Error(`Phone and otp do not match`)
         otpD.verified = true
@@ -69,7 +69,7 @@ export default class OtpService extends BaseService{
         return {otpD, user}
     }
 
-    public async verifyEmployeeOtp(phone: string, otp: string){
+    public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{
         const otpD = await this.getOne({phone, otp, verified: false}) as OtpSI
         if(otpD === null) throw new Error(`Phone and otp do not match`)
         otpD.verified = true
