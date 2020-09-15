@@ -7,6 +7,7 @@ import UserService from "./user.service"
 import { UserSI } from "../interfaces/user.interface"
 import EmployeeService from "./employee.service"
 import EmployeeSI from "../interfaces/employee.interface"
+import { phone } from "faker"
 
 export default class OtpService extends BaseService{
 
@@ -18,8 +19,8 @@ export default class OtpService extends BaseService{
         this.employeeService = employeeService
     }
 
-    public async sendOtp(phoneNumber: string, text: string) {
-        const url = `http://staticking.org/index.php/smsapi/httpapi/?uname=attire&password=Zattire121&receiver=${phoneNumber}&route=PA&msgtype=1&sender=default&sms=${text}`
+    protected async sendOtp(phoneNumber: string, text: string) {
+        const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
         const res = await axios.get(url)
         if(res.status === 200){
             return res.data
@@ -30,7 +31,7 @@ export default class OtpService extends BaseService{
     public async sendEmployeeOtp(phone: string){
         const emp = await this.employeeService.getOne({phone}) as EmployeeSI
         if(emp === null) throw new Error(`No employee found with this phone number`);
-        const otpNumber: string = '1234'// this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt(9999, 999).toString()
         const text: string = `Your login otp is ${otpNumber}`
         const otp: OtpI = {
             phone: phone,
@@ -38,12 +39,12 @@ export default class OtpService extends BaseService{
             user_type: 'Vendor'
         }
         const otpD = await this.post(otp)
-        // await this.sendOtp(phoneNumber, text)
+        await this.sendOtp(phone, text)
         return otpD
     }
 
     public async sendUserOtp(phone: string){
-        const otpNumber: string = '1234' //this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt(9999, 999).toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {
             phone: phone,
@@ -52,7 +53,7 @@ export default class OtpService extends BaseService{
             
         }
         const otpD = await this.post(otp)
-        // await this.sendOtp(phoneNumber, text)
+        await this.sendOtp(phone, text)
         return otpD
     }
 
