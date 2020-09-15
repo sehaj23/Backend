@@ -37,7 +37,7 @@ export default class UserController extends BaseController {
 
         const updates = Object.keys(req.body)
         const d = req.body
-        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic"]
+        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","fcm_token"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
         console.log(isvalid)
         if (!isvalid) {
