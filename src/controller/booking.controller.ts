@@ -445,4 +445,10 @@ export default class BookingController extends BaseController {
         res.send(data)
     })
 
+    getFullBookingById = controllerErrorHandler(async (req: Request, res: Response) => {
+        const bookingId = req.params.id
+        const data = await this.service.getFullBookingById(bookingId)
+        res.send(data)
+    })
+
 }

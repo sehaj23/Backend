@@ -3,7 +3,7 @@ import ReviewSI from "./review.interface";
 
 
 type Provider = 'MUA' | 'Salon' | 'Designer'
-type BookinStatus = 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed'
+export type BookinStatus = 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed'
 type BookingPaymentType = 'COD' | 'Online'
 type BookingLoaction = 'Customer Place' | 'Vendor Place'
 

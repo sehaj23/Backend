@@ -1,5 +1,14 @@
 import mongoose from "../database";
-import { BookingSI } from "../interfaces/booking.interface";
+import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import SalonService from "../service/salon.service";
+import Brand from "./brands.model";
+import Employee from "./employees.model";
+import Offer from "./offer.model";
+import ReportSalon from "./reportSalon.model";
+import Review from "./review.model";
+import Salon from "./salon.model";
+import Vendor from "./vendor.model";
+import Event from './event.model'
 
 
 

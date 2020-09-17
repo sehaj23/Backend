@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import { Request, Response } from "express";
-import { BookingI, BookingServiceI, BookingAddressI, BookingSI } from "../interfaces/booking.interface";
+import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
 import mongoose from "../database";
 
@@ -15,6 +15,7 @@ import { DateTime } from "aws-sdk/clients/devicefarm";
 import ErrorResponse from "../utils/error-response";
 import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
+import SalonSI from "../interfaces/salon.interface";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -255,11 +256,11 @@ export default class BookingService extends BaseService {
 
 
     updateStatusBookings = async (bookingId: string, status: string) => {
-
-        //  const bookings = await this.model.findOne({_id:bookingId})
-
-        const bookings = await this.model.findByIdAndUpdate({ _id: bookingId }, { status: status }, { new: true, runValidators: true })
-        return bookings
+        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
+        if(booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
+        booking.status = status as BookinStatus
+        await booking.save()
+        return booking
     }
 
     assigneEmployeeBookings = async (bookingId: String, serviceName: String, employeeId: String) => {
@@ -496,6 +497,28 @@ export default class BookingService extends BaseService {
         }
         await booking.save()
         return booking
+    }
+
+    getFullBookingById = async (bookingId: string): Promise<BookingI> => {
+        const booking = await this.model.findOne({_id: mongoose.Types.ObjectId(bookingId)}).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events") as BookingSI
+        const json: BookingI = booking.toJSON()
+        const salons: SalonSI[] = await this.salonModel.find({ "services.options._id": json.services.map((s: BookingServiceI) => s.option_id) }).lean()
+        console.log(`Salons ${salons.length}`)
+        // for(let bookingService of json.services){
+        //     for(let salon of salons){
+        //         for(let salonService of salon.services){
+        //             for(let salonOption of salonService.options){
+        //                 if(salonOption._id.toString() === bookingService.option_id.toString()){
+        //                     //@ts-ignore
+        //                     salonOption.service_name = salonService.name
+        //                     //@ts-ignore
+        //                     bookingService.option_id = salonOption
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        return json
     }
 
 
