@@ -9,6 +9,7 @@ import CONFIG from '../config'
 import logger from '../utils/logger'
 import Vendor from '../models/vendor.model'
 import ErrorResponse from '../utils/error-response'
+import { UserSI } from '../interfaces/user.interface'
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -88,7 +89,7 @@ export default class LoginController extends BaseController {
       var password = encryptData(user.password)
       
       user.password = password
-      const createUser = await this.service.create(user)
+      const createUser: UserSI = await this.service.create(user)
       console.log(createUser)
       if(createUser==null){
         const errMsg = `unable to create User`;
@@ -97,7 +98,10 @@ export default class LoginController extends BaseController {
             res.send({ message: errMsg });
             return
       }
-      res.status(201).send(createUser)
+      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+        expiresIn: this.jwtValidity,
+      })
+      res.status(201).send({token})
 
   })
 
