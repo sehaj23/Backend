@@ -33,9 +33,7 @@ app.use(cors({
 
 export const http = require('http').createServer(app);
 
-export const io: SocketIO.Server = require("socket.io")(http, {
-  path: "/ws"
-});
+export const io: SocketIO.Server = require("socket.io")(http);
 
 startSocketIO(io)
 
