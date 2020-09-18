@@ -308,7 +308,9 @@ export default class BookingService extends BaseService {
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    if(moment(q[k]).isValid()){
+                        dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    }
                     break
                 case "location":
                     filters["location"] = q[k]

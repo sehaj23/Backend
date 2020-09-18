@@ -32,7 +32,7 @@ const bookingController = new BookingController(bookingService,salonService,empl
 
 // // bookingRouter.post("/", VendorverifyToken, bookingController.post)
 bookingRouter.get("/:id", VendorverifyToken, bookingController.getFullBookingById)
-// // bookingRouter.get("/", VendorverifyToken, bookingController.getbookings) //filter can be used here
+bookingRouter.get("/", VendorverifyToken, bookingController.getbookings) //filter can be used here
 // // bookingRouter.put("/assignEmployee/:id", VendorverifyToken, bookingController.assigneEmployeeBookings)
 bookingRouter.get("/all/salon/:id",VendorverifyToken,bookingController.getAllSalonBookings)  //test cases left
 // // bookingRouter.get("/all/makeupArtist/:id",VendorverifyToken,bookingController.getAllMuaBookings) //test cases left
