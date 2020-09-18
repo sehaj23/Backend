@@ -2,10 +2,10 @@ import { check } from 'express-validator'
 import User from '../models/user.model'
 
 export const signupChecks = [
-  check('name', 'Name too short').isLength({
-    min: 3,
-  }),
-  check('name', 'Invalid characters in name').isAlpha(),
+  // check('name', 'Name too short').isLength({
+  //   min: 3,
+  // }),
+  // check('name', 'Invalid characters in name').isAlpha(),
   check('email', 'Invalid email')
     .isEmail()
     .custom(async (value) => {
