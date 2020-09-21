@@ -173,7 +173,7 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
 
 
 app.get("/", (req, res) => {
-  res.send("Hey you at Zattire..")
+  res.send("Hey you at Zattire (P)..")
 })
 
 // this is for 404
