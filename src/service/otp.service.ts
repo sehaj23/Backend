@@ -7,7 +7,6 @@ import UserService from "./user.service"
 import { UserSI } from "../interfaces/user.interface"
 import EmployeeService from "./employee.service"
 import EmployeeSI from "../interfaces/employee.interface"
-import { phone } from "faker"
 
 export default class OtpService extends BaseService{
 
@@ -26,6 +25,17 @@ export default class OtpService extends BaseService{
             return res.data
         }
         throw Error(`sendOtp status code: ${res.status} and message ${res.data}`)
+    }
+
+    protected async verifyOtp(phone: string, otp: string): Promise<OtpSI> {
+        const otpD = await this.model.findOne({phone, verified: false}).sort({ "createdAt": -1 }) as OtpSI
+        if(otpD === null) throw new Error(`Phone does not match`)
+        if(otpD.otp !== otp){
+            throw new Error("Otp does not match")
+        }
+        otpD.verified = true
+        await otpD.save()
+        return otpD
     }
 
     public async sendEmployeeOtp(phone: string): Promise<OtpSI>{
@@ -58,10 +68,16 @@ export default class OtpService extends BaseService{
     }
 
     public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
-        const otpD = await this.model.findOne({phone, otp, verified: false}) as OtpSI
-        if(otpD === null) throw new Error(`Phone and otp do not match`)
-        otpD.verified = true
-        await otpD.save()
+        const otpD = await this.verifyOtp(phone, otp)
+        const user = await this.userService.getId(userId) as UserSI
+        if(user === null) throw new Error(`User not found to update phone number`)
+        user.phone = phone
+        await user.save()
+        return {otpD, user}
+    }
+
+    public async signupUserWithPhone(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
+        const otpD = await this.verifyOtp(phone, otp)
         const user = await this.userService.getId(userId) as UserSI
         if(user === null) throw new Error(`User not found to update phone number`)
         user.phone = phone
@@ -70,10 +86,7 @@ export default class OtpService extends BaseService{
     }
 
     public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{
-        const otpD = await this.getOne({phone, otp, verified: false}) as OtpSI
-        if(otpD === null) throw new Error(`Phone and otp do not match`)
-        otpD.verified = true
-        await otpD.save()
+        const otpD = await this.verifyOtp(phone, otp)
         return otpD
     }
 
