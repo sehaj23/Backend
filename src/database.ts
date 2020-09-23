@@ -22,7 +22,7 @@ const password: string = process.env.DB_PASS || "zattire_dev_password";
 
 let uri: string 
 if(process.env.DB_URI){
-  uri = `${process.env.DB_URI}/${db}`
+  uri = `${process.env.DB_URI}`
 }else{
   uri  = `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`
 }
