@@ -13,6 +13,11 @@ import FeedbackVendor from "../../models/feedbackVendor.model"
 import Employee from "../../models/employees.model";
 import Salon from "../../models/salon.model";
 import EmployeeService from "../../service/employee.service";
+import Booking from "../../models/booking.model";
+import Otp from "../../models/otp.model";
+import User from "../../models/user.model";
+import OtpService from "../../service/otp.service";
+import UserService from "../../service/user.service";
 const vendorRouter = Router()
 
 const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,FeedbackVendor)
@@ -20,7 +25,11 @@ const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendo
 const vendorController = new VendorController(vs,es)
 
 const loginService = new LoginService(Vendor)
-const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days')
+
+const userService = new UserService(User, Booking)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, FeedbackVendor, ReportVendor)
+const otpService = new OtpService(Otp, userService, employeeService)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService)
 
 vendorRouter.post("/",loginController.login);
 vendorRouter.post("/absent",VendorverifyToken,vendorController.employeeAbsent)

@@ -11,8 +11,8 @@ export interface UserAddressI{
 }
 
 export default interface UserI {
-    name: string
-    email: string
+    name?: string
+    email?: string
     password ? : string
     signin_from ? : string
     photo ? : string

@@ -10,16 +10,19 @@ import logger from '../utils/logger'
 import Vendor from '../models/vendor.model'
 import ErrorResponse from '../utils/error-response'
 import { UserSI } from '../interfaces/user.interface'
+import OtpService from '../service/otp.service'
 
 export default class LoginController extends BaseController {
   jwtKey: string
   jwtValidity: string
   service: LoginService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string) {
+  otpService: OtpService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
+    this.otpService = otpService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -27,14 +30,14 @@ export default class LoginController extends BaseController {
   })
 
   loginVendor = controllerErrorHandler(async (req: Request, res: Response) => {
-    const {email, password} = req.body
-    const v = await Vendor.findOne({email, password: encryptData(password)})
-    if(v === null) throw new Error("Email id password does not match")
+    const { email, password } = req.body
+    const v = await Vendor.findOne({ email, password: encryptData(password) })
+    if (v === null) throw new Error("Email id password does not match")
     v.password = undefined
     const token = await jwt.sign(v.toJSON(), CONFIG.VENDOR_JWT, {
       expiresIn: this.jwtValidity,
     })
-    res.send({token})
+    res.send({ token })
   })
 
   login = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -43,7 +46,7 @@ export default class LoginController extends BaseController {
       const password = encryptData(req.body.password)
       const user = await this.service.login(email, password)
       console.log(this.jwtKey)
-      console.log('USER',user)
+      console.log('USER', user)
 
       if (user == null) {
         let count: number = 1
@@ -52,8 +55,8 @@ export default class LoginController extends BaseController {
           count = parseInt(failedCount) + 1
           if (count === 6) {
             const usr = await this.service.getByEmail(email)
-              usr.blocked = true
-              usr.save()            
+            usr.blocked = true
+            usr.save()
           }
         }
         UserRedis.set('Login', count, { email })
@@ -86,58 +89,76 @@ export default class LoginController extends BaseController {
 
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
-      var password = encryptData(user.password)
-      
-      user.password = password
-      const createUser: UserSI = await this.service.create(user)
-      console.log(createUser)
-      if(createUser==null){
-        const errMsg = `unable to create User`;
-            logger.error(errMsg);
-            res.status(400);
-            res.send({ message: errMsg });
-            return
-      }
-      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
-        expiresIn: this.jwtValidity,
-      })
-      res.status(201).send({token})
+    var password = encryptData(user.password)
+
+    user.password = password
+    const createUser: UserSI = await this.service.create(user)
+    console.log(createUser)
+    if (createUser == null) {
+      const errMsg = `unable to create User`;
+      logger.error(errMsg);
+      res.status(400);
+      res.send({ message: errMsg });
+      return
+    }
+    const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    res.status(201).send({ token })
 
   })
 
-  loginwithGoogle =controllerErrorHandler(async (req: Request, res: Response) => {
+  loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
-    const {uid,email} = req.body
+    const { uid, email } = req.body
 
-    const getUser = await this.service.getbyUID(uid,email)
-    if(getUser === null){
-    
-    const createUser = await this.service.create(user)
-    if(createUser==null){
-      const errMsg = `unable to create User`;
-          logger.error(errMsg);
-          res.status(400);
-          res.send({ message: errMsg });
-          return
+    const getUser = await this.service.getbyUID(uid, email)
+    if (getUser === null) {
+
+      const createUser = await this.service.create(user)
+      if (createUser == null) {
+        const errMsg = `unable to create User`;
+        logger.error(errMsg);
+        res.status(400);
+        res.send({ message: errMsg });
+        return
+      }
+      createUser.password = ''
+
+      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+        expiresIn: this.jwtValidity,
+      })
+      return res.status(200).send({
+        token,
+      })
     }
-    createUser.password = ''
-  
-    const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+    getUser.password = ''
+    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
       token,
     })
-  }
-  getUser.password = ''
-  const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
-    expiresIn: this.jwtValidity,
-  })
-  return res.status(200).send({
-    token,
+
+
   })
 
-    
+  signupWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {
+    const { phone } = req.body
+    await this.otpService.signupUserWithPhoneSendOtp(phone)
+    res.send({ message: "OTP Sent" })
   })
+  signupWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
+    const { phone, otp } = req.body
+    const getUser = await this.otpService.signupUserWithPhoneVerifyOtp(phone, otp)
+    getUser.password = ''
+    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    return res.status(200).send({
+      token,
+    })
+  })
+
 
 }
