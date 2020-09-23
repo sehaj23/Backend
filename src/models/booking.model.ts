@@ -120,6 +120,9 @@ const BookingSchema = new mongoose.Schema({
     booking_numeric_id:{
         type: Number,
         required: true
+    },
+    razorpay_order_id: {
+        type: String
     }
 }, {
     timestamps: true

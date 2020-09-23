@@ -160,5 +160,27 @@ export default class LoginController extends BaseController {
     })
   })
 
+  loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {
+    const {phone} = req.body
+    const user = await this.service.getOne({phone}) as UserSI
+    if(user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    await this.otpService.sendUserOtp(phone)
+    res.send({message: "Otp sent"})
+  })
+
+  loginWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
+    const {phone, otp} = req.body
+    const user = await this.service.getOne({phone}) as UserSI
+    if(user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    await this.otpService.verifyUserOtp(phone, otp, user._id.toString())
+    user.password = ''
+    const token = await jwt.sign(user.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    return res.status(200).send({
+      token,
+    })
+  })
+
 
 }

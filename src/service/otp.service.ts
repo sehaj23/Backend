@@ -60,7 +60,6 @@ export default class OtpService extends BaseService{
             phone: phone,
             otp: otpNumber,
             user_type: 'User',
-            
         }
         const otpD = await this.post(otp)
         await this.sendOtp(phone, text)

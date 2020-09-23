@@ -42,6 +42,7 @@ export interface BookingI{
     address:BookingAddressI
     booking_numeric_id: number
     cancel_reason?: string
+    razorpay_order_id?: string
 }
 
 export interface BookingSI extends BookingI, mongoose.Document{}

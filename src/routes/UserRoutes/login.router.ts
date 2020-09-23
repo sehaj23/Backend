@@ -42,6 +42,16 @@ loginRouter.post(
   loginController.signupWithOtpVerifyOtp
 )
 
+loginRouter.post(
+  '/otp-login-send',
+  loginController.loginWithOtpSendOtp
+)
+
+loginRouter.post(
+  '/otp-login-verify',
+  loginController.loginWithOtpVerifyOtp
+)
+
 loginRouter.get("/pass/:password", loginController.getEncryptedPass)
 
 //@ts-ignore

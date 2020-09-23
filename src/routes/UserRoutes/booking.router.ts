@@ -31,6 +31,7 @@ const bookingRouter = Router()
 // get available employees by date & time
 bookingRouter.get("/",UserverifyToken, bc.getAppointment)
 bookingRouter.get("/:id",UserverifyToken, bc.getId)
+bookingRouter.get("/razorpay-orderid/:id",UserverifyToken, bc.getRazorpayOrderId)
 
 // create a booking
 bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
