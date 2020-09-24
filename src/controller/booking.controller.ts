@@ -15,6 +15,7 @@ import CartService from "../service/cart.service";
 import { CartSI } from "../interfaces/cart.interface";
 import { ServiceSI } from "../interfaces/service.interface";
 import { map } from "bluebird";
+import RazorPayService from "../service/razorpay.service";
 
 
 export default class BookingController extends BaseController {
@@ -38,6 +39,19 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const bookings = await this.service.getByUserId(req.userId)
         res.send(bookings)
+    })
+
+    getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
+        const {id} = req.params
+        const booking = await this.service.getId(id) as BookingSI
+        if(booking === null) throw new ErrorResponse("No booking found with this id")
+        if(booking.razorpay_order_id && booking.razorpay_order_id !== null){
+            res.send({order_id: booking.razorpay_order_id})
+            return
+        }
+        const rp = new RazorPayService()
+        const order = await rp.createOrderId(booking._id.toString())
+        res.send({order_id: order['id']})
     })
 
     /**

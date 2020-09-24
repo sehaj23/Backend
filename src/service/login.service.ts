@@ -1,5 +1,8 @@
 
+import mongoose from '../database'
 import BaseService from '../service/base.service'
+import OtpService from './otp.service'
+import UserService from './user.service'
 
 export default class LoginService extends BaseService {
   // Signup

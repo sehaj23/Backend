@@ -76,7 +76,7 @@ const BookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled"],
+        enum: ['Online Payment Requested', 'Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled"],
         default:'Requested'
     },
     payment_type: {
@@ -120,6 +120,9 @@ const BookingSchema = new mongoose.Schema({
     booking_numeric_id:{
         type: Number,
         required: true
+    },
+    razorpay_order_id: {
+        type: String
     }
 }, {
     timestamps: true

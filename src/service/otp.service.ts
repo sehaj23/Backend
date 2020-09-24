@@ -4,7 +4,7 @@ import BaseService from "./base.service"
 import OtpSI, { OtpI } from "../interfaces/otp.interface"
 import mongoose from "../database"
 import UserService from "./user.service"
-import { UserSI } from "../interfaces/user.interface"
+import UserI, { UserSI } from "../interfaces/user.interface"
 import EmployeeService from "./employee.service"
 import EmployeeSI from "../interfaces/employee.interface"
 
@@ -60,7 +60,6 @@ export default class OtpService extends BaseService{
             phone: phone,
             otp: otpNumber,
             user_type: 'User',
-            
         }
         const otpD = await this.post(otp)
         await this.sendOtp(phone, text)
@@ -76,13 +75,28 @@ export default class OtpService extends BaseService{
         return {otpD, user}
     }
 
-    public async signupUserWithPhone(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
-        const otpD = await this.verifyOtp(phone, otp)
-        const user = await this.userService.getId(userId) as UserSI
-        if(user === null) throw new Error(`User not found to update phone number`)
-        user.phone = phone
-        await user.save()
-        return {otpD, user}
+    public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI>{
+        const user = await this.userService.getOne({phone})
+        if(user !== null) throw new Error(`User already registered with this email id`)
+        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const text: string = `Your otp is ${otpNumber}`
+        const otp: OtpI = {
+            phone: phone,
+            otp: otpNumber,
+            user_type: 'User',
+        }
+        const otpD = await this.post(otp)
+        await this.sendOtp(phone, text)
+        return otpD
+    }
+
+    public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI>{
+        await this.verifyOtp(phone, otp)
+        const user: UserI = {
+            phone
+        }
+        const userSI = await this.userService.post(user) as UserSI
+        return userSI
     }
 
     public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{

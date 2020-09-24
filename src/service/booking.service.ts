@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import { Request, Response } from "express";
-import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus, BookingPaymentType } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
 import mongoose from "../database";
 
@@ -29,7 +29,7 @@ export default class BookingService extends BaseService {
         this.mongoCounterService = mongoCounterService
     }
 
-    bookAppointment = async (userId: string, payment_method: string, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
+    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
         try {
             const justDate = date_time.substring(0, 10)
             const justTime = date_time.substring(27, 35)
@@ -67,14 +67,16 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
+            const status: BookinStatus = (payment_method === 'COD') ? 'Online Payment Requested' : 'Requested'
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
-                payment_type: 'COD',
+                payment_type: payment_method,
                 location: location,
                 services,
                 address,
-                booking_numeric_id
+                booking_numeric_id,
+                status
             }
             const b = await this.model.create(booking)
             // delete the cart of the user
