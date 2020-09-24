@@ -257,7 +257,7 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId: string, status: string) => {
+    updateStatusBookings = async (bookingId: string, status: BookinStatus) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
         if(booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
         booking.status = status as BookinStatus
