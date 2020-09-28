@@ -497,14 +497,17 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         const user_id = req.userId
         //@ts-ignore
-        console.log(req.userId)
         const check  = await this.service.checkpostReview(user_id,_id)
-        if(check===null){
+        console.log(check)
+        if(check==null){
             res.status(400)
             res.send({ message: `User Cant Post Review,No Previous Bookings Found`,success:"false" })
-
+            return
+            
         }
         res.send({success:"true"})
+    
+  
 
     })
 
@@ -514,7 +517,7 @@ export default class SalonController extends BaseController {
         if(brand===null){
             res.status(400)
             res.send({ message: `No Brands Found` })
-
+            return
         }
         res.send(brand)
         
@@ -527,7 +530,7 @@ export default class SalonController extends BaseController {
         if(brand===null){
             res.status(400)
             res.send({ message: `No Brands Found` })
-
+            return
         }
         res.send(brand)
     })
@@ -538,7 +541,7 @@ export default class SalonController extends BaseController {
         if(brand===null){
             res.status(400)
             res.send({ message: `Unable to create Brand` })
-
+            return
         }
         res.send(brand)
 
@@ -552,6 +555,7 @@ export default class SalonController extends BaseController {
         logger.error(errMsg);
         res.status(400);
         res.send({ message: errMsg });
+        return
     }
         res.send(search)
         
@@ -573,6 +577,7 @@ export default class SalonController extends BaseController {
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
+            return
         }
         res.status(200).send({message:"Report submitted",success:"true"})
 
