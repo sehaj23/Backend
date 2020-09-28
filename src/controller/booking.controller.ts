@@ -257,8 +257,10 @@ export default class BookingController extends BaseController {
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
         const date_time = req.body.date_time
+        //@ts-ignore
+        const userId = req.userId
         var rescheduleditime =  moment(date_time).toDate()
-        const booking = await this.service.confirmRescheduleSlot(bookingId,rescheduleditime)
+        const booking = await this.service.confirmRescheduleSlot(bookingId,rescheduleditime,userId)
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
