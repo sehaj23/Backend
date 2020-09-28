@@ -12,6 +12,7 @@ import { OfferI } from "../interfaces/offer.interface";
 import { SalonRedis } from "../redis/index.redis";
 import { keys } from "../seeds/data/admin/admins";
 import { ReviewI } from "../interfaces/review.interface";
+import Salon from "../models/salon.model";
 
 
 export default class SalonController extends BaseController {
@@ -593,6 +594,13 @@ export default class SalonController extends BaseController {
 
         const result = await this.service.getSalonService(phrase)
         res.send(result)
+    })
+
+    getRatings =controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const rating = await this.service.getReviewsRating(id)
+        res.send(rating)
+
     })
 
 

@@ -271,6 +271,11 @@ export default class BookingService extends BaseService {
 
     }
 
+    confirmRescheduleSlot = async (bookingId:string,date_time:Date)=>{
+       
+        return this.model.findByIdAndUpdate({_id:bookingId},{"services.rescheduled_service_time":date_time,status:"Rescheduled"},{new:true})
+    }
+
     getByUserId = async (userId: string) => {
         return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id")
     }

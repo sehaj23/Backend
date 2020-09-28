@@ -665,6 +665,13 @@ export default class SalonService extends BaseService {
                return report
         }
 
+        getReviewsRating = async(_id:string)=>{
+                const id = mongoose.Types.ObjectId(_id)
+                    const rating = await this.model.find({})
+                    return rating
+        }
+
+
         
 
 

@@ -253,6 +253,23 @@ export default class BookingController extends BaseController {
         res.send({message:"Booking status changed",success:"true"})
 
     })
+
+    confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
+        const bookingId = req.params.id
+        const date_time = req.body.date_time
+        var rescheduleditime =  moment(date_time).toDate()
+        const booking = await this.service.confirmRescheduleSlot(bookingId,rescheduleditime)
+        if (!booking) {
+            const errMsg = 'No Bookings Found'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg,success:false })
+            return
+
+        }
+        res.send({message:"Booking Confirmed",success:true})
+
+    })
     assigneEmployeeBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
         const employeeId = req.body.employee_id

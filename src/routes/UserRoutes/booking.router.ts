@@ -33,7 +33,7 @@ bookingRouter.get("/",UserverifyToken, bc.getAppointment)
 bookingRouter.get("/:id",UserverifyToken, bc.getId)
 bookingRouter.get("/razorpay-orderid/:id",UserverifyToken, bc.getRazorpayOrderId)
 bookingRouter.patch("/update-status/:id", UserverifyToken, bc.updateStatusBookings)
-
+bookingRouter.patch("/rescheduled/:id",UserverifyToken,bc.confirmRescheduleSlot)
 // create a booking
 bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
 bookingRouter.post("/employees/:salonId",UserverifyToken, bc.getSalonEmployees)
