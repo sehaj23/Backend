@@ -256,7 +256,7 @@ export default class BookingController extends BaseController {
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
-        const date_time = req.body.date_time
+        const date_time = req.body.rescheduled_service_time
         //@ts-ignore
         const userId = req.userId
         var rescheduleditime =  moment(date_time).toDate()
