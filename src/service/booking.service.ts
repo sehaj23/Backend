@@ -277,7 +277,7 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id")
+        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id",'name')
     }
 
     getbookings = async (q) => {
