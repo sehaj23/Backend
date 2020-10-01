@@ -341,6 +341,7 @@ export default class BookingController extends BaseController {
     reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const datetime = req.body.date_time
+        const currentTime = moment().toDate()
       
     
 
@@ -360,7 +361,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const booking = await this.service.reschedulebooking(id, datetime)
+        const booking = await this.service.reschedulebooking(id, datetime,currentTime)
         if (booking === null) {
             const errMsg = "unable to update boooking"
             logger.error(errMsg)

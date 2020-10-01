@@ -96,6 +96,9 @@ const BookingSchema = new mongoose.Schema({
             }
         ]
     },
+    rescheduled_request_datetime:{
+        type:Date
+    },
     address:{
         type:{
             address:{

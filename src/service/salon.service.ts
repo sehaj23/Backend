@@ -667,9 +667,58 @@ export default class SalonService extends BaseService {
 
         getReviewsRating = async(_id:string)=>{
                 const id = mongoose.Types.ObjectId(_id)
-                    const rating = await this.model.find({})
+                var reviews = [
+                        {"$match":{
+                            "salon_id":id,
+                            }
+                        },
+                
+                    { 
+                        "$group": { 
+                           
+                            "_id": "$salon_id", 
+                             
+                              "counts": {"$push": {"rating": "$rating", "count": "$counts"}},
+                               "totalItemcount": {"$sum": 1},          
+                               "totalRating": {"$sum": "$rating"},
+                            "5_star_ratings": {
+                                
+                                "$sum": {
+                                  
+                                    "$cond": [ { "$eq": [ "$rating", 5 ] }, 1, 0 ]
+                                }
+                            },
+                            "4_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 4 ] }, 1, 0 ]
+                                }
+                            },
+                            "3_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 3 ] }, 1, 0 ]
+                                }
+                            },
+                            "2_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 2 ] }, 1, 0 ]
+                                }
+                            },
+                            "1_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 1 ] }, 1, 0 ]
+                                }
+                            }           
+                        }  
+                    },
+                
+                ]
+
+                    const rating = await this.model.aggregate(reviews)
+
                     return rating
         }
+
+
 
 
         
