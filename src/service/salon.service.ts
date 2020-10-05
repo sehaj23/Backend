@@ -669,7 +669,7 @@ export default class SalonService extends BaseService {
                 const id = mongoose.Types.ObjectId(_id)
                 var reviews = [
                         {"$match":{
-                            "salon_id":_id,
+                            "salon_id":id,
                             }
                         },
                 
