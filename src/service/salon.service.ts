@@ -669,7 +669,7 @@ export default class SalonService extends BaseService {
                 const id = mongoose.Types.ObjectId(_id)
                 var reviews = [
                         {"$match":{
-                            "salon_id":id,
+                            "salon_id":_id,
                             }
                         },
                 
@@ -713,7 +713,7 @@ export default class SalonService extends BaseService {
                 
                 ]
 
-                    const rating = await this.model.aggregate(reviews)
+                    const rating = await this.reviewModel.aggregate(reviews)
 
                     return rating
         }
