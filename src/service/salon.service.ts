@@ -195,7 +195,7 @@ export default class SalonService extends BaseService {
                         console.log("da.category_name", da.category_name)
                         if (categoryFound === -1 || serviceFound === -1) {
                                 const service: ServiceI = {
-                                        name: gotService?.service_name ?? da.category_name,
+                                        name: gotService?.service_name ?? da.category_name ?? "Some Service",
                                         price: 0,
                                         category: da.category_name,
                                         duration: 15,
