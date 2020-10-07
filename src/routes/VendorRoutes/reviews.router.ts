@@ -18,4 +18,5 @@ reviewsRouter.put("/reply/:id",VendorverifyToken,reviewsController.replyReviews)
 reviewsRouter.get("/new",VendorverifyToken,reviewsController.newReviews)
 reviewsRouter.put("/report/:id",VendorverifyToken,reviewsController.reportReviews)
 
+
 export default reviewsRouter

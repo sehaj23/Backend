@@ -271,8 +271,13 @@ export default class BookingService extends BaseService {
 
     }
 
+    confirmRescheduleSlot = async (bookingId:string,date_time:Date,user_id:string)=>{
+       
+        return this.model.findOneAndUpdate({_id:bookingId,user_id:user_id},{"services.$.rescheduled_service_time":date_time,status:"Rescheduled"},{new:true})
+    }
+
     getByUserId = async (userId: string) => {
-        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id")
+        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id",'name')
     }
 
     getbookings = async (q) => {
@@ -355,10 +360,10 @@ export default class BookingService extends BaseService {
 
     }
 
-    reschedulebooking = async (id: string, date_time: Array<Date>) => {
+    reschedulebooking = async (id: string, date_time: Array<Date>,current_time:Date) => {
        
         //@ts-ignore
-        const booking = await this.model.findByIdAndUpdate(id, {rescheduled_available_slots: date_time, status: "Rescheduled" }, { new: true })
+        const booking = await this.model.findByIdAndUpdate(id, {rescheduled_available_slots: date_time, status: "Rescheduled and Pending",rescheduled_request_datetime:current_time }, { new: true })
         console.log(booking)
         return booking
 

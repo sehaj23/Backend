@@ -253,6 +253,25 @@ export default class BookingController extends BaseController {
         res.send({message:"Booking status changed",success:"true"})
 
     })
+
+    confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
+        const bookingId = req.params.id
+        const date_time = req.body.rescheduled_service_time
+        //@ts-ignore
+        const userId = req.userId
+        var rescheduleditime =  moment(date_time).toDate()
+        const booking = await this.service.confirmRescheduleSlot(bookingId,rescheduleditime,userId)
+        if (!booking) {
+            const errMsg = 'No Bookings Found'
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg,success:false })
+            return
+
+        }
+        res.send({message:"Booking Confirmed",success:true})
+
+    })
     assigneEmployeeBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
         const employeeId = req.body.employee_id
@@ -322,6 +341,7 @@ export default class BookingController extends BaseController {
     reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const datetime = req.body.date_time
+        const currentTime = moment().toDate()
       
     
 
@@ -341,7 +361,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const booking = await this.service.reschedulebooking(id, datetime)
+        const booking = await this.service.reschedulebooking(id, datetime,currentTime)
         if (booking === null) {
             const errMsg = "unable to update boooking"
             logger.error(errMsg)

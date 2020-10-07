@@ -51,5 +51,7 @@ salonInfoRouter.get('/brand/:id',salonController.getBrandbyId)
 
 salonInfoRouter.post("/report/",UserverifyToken, salonController.reportSalon)
 
+salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
+
 
 export default salonInfoRouter

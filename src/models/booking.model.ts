@@ -76,7 +76,7 @@ const BookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Online Payment Failed', 'Online Payment Requested', 'Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled"],
+        enum: ['Online Payment Failed', 'Online Payment Requested', 'Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled","Rescheduled and Pending"],
         default:'Requested'
     },
     payment_type: {
@@ -95,6 +95,9 @@ const BookingSchema = new mongoose.Schema({
                 type: [Date]
             }
         ]
+    },
+    rescheduled_request_datetime:{
+        type:Date
     },
     address:{
         type:{
