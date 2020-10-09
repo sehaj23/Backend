@@ -415,7 +415,7 @@ export default class SalonService extends BaseService {
                 var checkPoint = {}
                 var salonLocation = new Array()
 
-                const salon = await this.model.find().populate("photo_ids")
+                const salon = await this.model.find().populate("photo_ids").populate("profile_pic")
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
@@ -442,7 +442,7 @@ export default class SalonService extends BaseService {
                 //@ts-ignore
                 centerPoint.lng = req.query.longitude
 
-                const salon = await this.model.find({}).populate("photo_ids").lean()
+                const salon = await this.model.find({}).populate("photo_ids").populate("profile_pic").lean()
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
