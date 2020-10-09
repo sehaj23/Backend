@@ -345,12 +345,11 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
-        console.log("******")
-        console.log(salonId)
+
     
         var centerPoint = {}
         //TODO: store location of User
-        if(!req.query.latitude && !req.query.longitude){
+        if(req.query.latitude && req.query.longitude){
 
 
         
