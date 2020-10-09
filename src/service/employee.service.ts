@@ -15,7 +15,7 @@ import { PhotoI } from "../interfaces/photo.interface";
 import moment = require("moment");
 import SalonSI from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
-import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { FeedbackI } from "../interfaces/feedback.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import Photo from "../models/photo.model";
 
@@ -168,7 +168,7 @@ export default class EmployeeService extends BaseService {
         const report = await this.reportVendorModel.create(data)
         return report
     }
-    feedback = async (data:FeedbackVendorI)=>{
+    feedback = async (data:FeedbackI)=>{
         console.log(data)
         const report = await this.feedbackVendorModel.create(data)
         return report

@@ -9,7 +9,7 @@ import LoginService from "../../service/login.service";
 import LoginController from "../../controller/login.controller";
 import ReportVendor from "../../models/reportVendor.model"
 import CONFIG from "../../config";
-import FeedbackVendor from "../../models/feedbackVendor.model"
+import Feedback from "../../models/feedback.model"
 import Employee from "../../models/employees.model";
 import Salon from "../../models/salon.model";
 import EmployeeService from "../../service/employee.service";
@@ -20,14 +20,14 @@ import OtpService from "../../service/otp.service";
 import UserService from "../../service/user.service";
 const vendorRouter = Router()
 
-const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,FeedbackVendor)
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendor,ReportVendor)
+const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor)
 const vendorController = new VendorController(vs,es)
 
 const loginService = new LoginService(Vendor)
 
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, FeedbackVendor, ReportVendor)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
 const otpService = new OtpService(Otp, userService, employeeService)
 const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService)
 

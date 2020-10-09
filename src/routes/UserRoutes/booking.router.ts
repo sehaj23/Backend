@@ -19,13 +19,16 @@ import Cart from "../../models/cart.model"
 import ReportSalon from "../../models/reportSalon.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import MongoCounterService from "../../service/mongo-counter.service"
+import FeedbackService from "../../service/feedback.service"
+import Feedback from "../../models/feedback.model"
 
 const cartService = new CartService(Cart, Salon)
+const feedbackService = new  FeedbackService(Feedback)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService)
 const bookingRouter = Router()
 
 // get available employees by date & time
@@ -39,5 +42,6 @@ bookingRouter.post("/",UserverifyToken, bc.bookAppointment)
 bookingRouter.post("/employees/:salonId",UserverifyToken, bc.getSalonEmployees)
 
 bookingRouter.patch("/cancel/:bookingId", UserverifyToken, bc.cancelBooking )
+bookingRouter.post("/feedback/:id",UserverifyToken,bc.bookingFeedback)
 
 export default bookingRouter

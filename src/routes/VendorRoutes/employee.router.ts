@@ -5,7 +5,7 @@ import Employee from "../../models/employees.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Salon from "../../models/salon.model";
 import EmployeeController from "../../controller/employee.controller";
-import FeedbackVendor from "../../models/feedbackVendor.model"
+import Feedback from "../../models/feedback.model"
 import ReportVendor from "../../models/reportVendor.model"
 import Booking from "../../models/booking.model";
 import Otp from "../../models/otp.model";
@@ -13,7 +13,7 @@ import User from "../../models/user.model";
 import OtpService from "../../service/otp.service";
 import UserService from "../../service/user.service";
 const employeeRouter = Router()
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,FeedbackVendor,ReportVendor)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor)
 const us = new UserService(User, Booking)
 const otpService = new OtpService(Otp, us, es)
 const ec  = new EmployeeController(es, otpService)

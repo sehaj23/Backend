@@ -6,10 +6,13 @@ import CONFIG from "../../config";
 import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
 import Booking from "../../models/booking.model"
+import FeedbackService from "../../service/feedback.service";
+import Feedback from "../../models/feedback.model";
 
 const userRouter = Router()
 const userService = new UserService(User,Booking)
-const userController= new UserController(userService)
+const feedbackService = new  FeedbackService(Feedback)
+const userController= new UserController(userService,feedbackService)
 
 userRouter.post("/", verifyToken, userController.post)
 userRouter.get("/", verifyToken, userController.get)

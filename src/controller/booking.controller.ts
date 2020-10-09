@@ -16,6 +16,8 @@ import { CartSI } from "../interfaces/cart.interface";
 import { ServiceSI } from "../interfaces/service.interface";
 import { map } from "bluebird";
 import RazorPayService from "../service/razorpay.service";
+import FeedbackService from "../service/feedback.service";
+import { FeedbackI } from "../interfaces/feedback.interface";
 
 
 export default class BookingController extends BaseController {
@@ -26,12 +28,14 @@ export default class BookingController extends BaseController {
     salonService: SalonService
     employeeAbsentismService: EmployeeAbsenteesmService
     cartService: CartService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService) {
+    feedbackService:FeedbackService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService) {
         super(service)
         this.service = service
         this.salonService = salonService
         this.employeeAbsentismService = employeeAbsentismService
         this.cartService = cartService
+        this.feedbackService=feedbackService
     }
 
 
@@ -485,4 +489,12 @@ export default class BookingController extends BaseController {
         res.send(data)
     })
 
+    bookingFeedback = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO: check if the user had that booking
+        const bookingId = req.params.id
+        const data:FeedbackI =req.body
+        data.booking_id=bookingId
+        const feedback = await this.feedbackService.post(data)
+        res.send(feedback)
+    })
 }

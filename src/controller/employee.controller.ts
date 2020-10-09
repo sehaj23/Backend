@@ -8,7 +8,7 @@ import EmployeeService from "../service/employee.service";
 import * as jwt from "jwt-then";
 import CONFIG from "../config";
 import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
-import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { FeedbackI } from "../interfaces/feedback.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import { PhotoI } from "../interfaces/photo.interface";
 import OtpService from "../service/otp.service";
@@ -168,7 +168,7 @@ export default class EmployeeController extends BaseController {
 
     })
     feedback= controllerErrorHandler(async (req: Request, res: Response) =>{
-        const data:FeedbackVendorI = req.body
+        const data:FeedbackI = req.body
         //@ts-ignore
         data.employee_id=req.empId
         const feedback = await this.service.feedback(data)

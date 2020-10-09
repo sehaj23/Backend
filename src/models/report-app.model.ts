@@ -3,6 +3,7 @@ import ReportAppSI from "../interfaces/report-app.interface";
 
 
 const ReportAppSchema = new mongoose.Schema({
+
     name: {
         type: String,
         required: true
@@ -18,7 +19,8 @@ const ReportAppSchema = new mongoose.Schema({
         required: true
     },
     photo: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "photos"
     }
 }, {
     timestamps: true

@@ -16,6 +16,10 @@ const FeedbackSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
     },
+    booking_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+    },
     rating:{
         type:Number
     },
@@ -30,6 +34,6 @@ const FeedbackSchema = new mongoose.Schema({
 
 
 })
-const FeedbackVendor = mongoose.model("feedback", FeedbackSchema)
+const Feedback = mongoose.model("feedback", FeedbackSchema)
 
-export default FeedbackVendor
+export default Feedback
