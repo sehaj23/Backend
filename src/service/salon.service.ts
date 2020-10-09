@@ -349,7 +349,7 @@ export default class SalonService extends BaseService {
                // console.log(centerPoint)
                 //@ts-ignore
                 
-                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).exec()
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).lean().exec()
                 
                         if (salon.longitude != null && salon.latitude != null) {
                                 //@ts-ignore
