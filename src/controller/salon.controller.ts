@@ -345,13 +345,20 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
+        console.log("******")
+        console.log(salonId)
+    
         var centerPoint = {}
         //TODO: store location of User
-        //@ts-ignore
-        // centerPoint.lat = req.query.latitude
-        // //@ts-ignore
-        // centerPoint.lng = req.query.longitude
+        if(!req.query.latitude && !req.query.longitude){
+
+
         
+        //@ts-ignore
+         centerPoint.lat = req.query.latitude
+         //@ts-ignore
+         centerPoint.lng = req.query.longitude
+        }
         //  const sr: string = await SalonRedis.get(salonId)
         //  if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId,centerPoint)
