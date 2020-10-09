@@ -348,14 +348,14 @@ export default class SalonController extends BaseController {
         var centerPoint = {}
         //TODO: store location of User
         //@ts-ignore
-        centerPoint.lat = req.query.latitude
-        //@ts-ignore
-        centerPoint.lng = req.query.longitude
+        // centerPoint.lat = req.query.latitude
+        // //@ts-ignore
+        // centerPoint.lng = req.query.longitude
         
         //  const sr: string = await SalonRedis.get(salonId)
         //  if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId,centerPoint)
-         SalonRedis.set(salonId, salon)
+        // SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
     })
 

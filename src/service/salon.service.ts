@@ -346,26 +346,22 @@ export default class SalonService extends BaseService {
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string,centerPoint: any) => {
                 var checkPoint = {}
-                
-
                 //@ts-ignore
-                centerPoint.lat = req.query.latitude
-                //@ts-ignore
-                centerPoint.lng = req.query.longitude
-                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).lean().exec()
                 
-                        if (salon.longitude != null && salon.latitude != null) {
-                                //@ts-ignore
-                                checkPoint.lng = salon.longitude
-                                //@ts-ignore
-                                checkPoint.lat = salon.latitude
-                                var n = await arePointsNear(checkPoint, centerPoint, 1000)
-                                if (n.bool) {
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).exec()
+                
+                        // if (salon.longitude != null && salon.latitude != null) {
+                        //         //@ts-ignore
+                        //         checkPoint.lng = salon.longitude
+                        //         //@ts-ignore
+                        //         checkPoint.lat = salon.latitude
+                        //         var n = await arePointsNear(checkPoint, centerPoint, 1000)
+                        //         if (n.bool) {
                                       
-                                        // @ts-ignore
-                                        salon.distance = n.difference       
-                                }
-                        }
+                        //                 // @ts-ignore
+                        //                 salon.distance = n.difference       
+                        //         }
+                        // }
                 return salon
 
         }
