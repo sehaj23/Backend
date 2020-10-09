@@ -59,7 +59,7 @@ export default class SalonController extends BaseController {
         res.send(salon)
     })
     salonSettings = controllerErrorHandler(async (req: Request, res: Response) => {
-        
+
         const salon_id = req.params.id
         //@ts-ignore
         const vendor_id = req.vendorId
@@ -69,12 +69,12 @@ export default class SalonController extends BaseController {
         const isvalid = updates.every((update) => allowedupates.includes(update))
         console.log(isvalid)
         if (!isvalid) {
-                const errMsg = `Sorry ${updates} cannot be updated!`
-                logger.error(errMsg)
-                res.send({message:errMsg})
-                return
+            const errMsg = `Sorry ${updates} cannot be updated!`
+            logger.error(errMsg)
+            res.send({ message: errMsg })
+            return
         }
-        const salon = await this.service.patchSalon(salon_id,vendor_id,d)
+        const salon = await this.service.patchSalon(salon_id, vendor_id, d)
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
@@ -128,12 +128,12 @@ export default class SalonController extends BaseController {
     getService = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const filter = {}
-        if(req.query.gender){
-            filter["gender"] =req.query.gender
+        if (req.query.gender) {
+            filter["gender"] = req.query.gender
         }
-        if(req.query.home){
+        if (req.query.home) {
             console.log(req.query)
-            filter["at_home"]= Boolean(req.query.home)
+            filter["at_home"] = Boolean(req.query.home)
         }
         //TODO: validator
         if (!id) {
@@ -143,7 +143,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const salon = await this.service.getService(id,filter) as SalonSI
+        const salon = await this.service.getService(id, filter) as SalonSI
         if (salon === null) {
             const errMsg = `no service found`
             logger.error(errMsg)
@@ -152,24 +152,24 @@ export default class SalonController extends BaseController {
             return
         }
         const services = salon.services
-        for(let i = 0; i < services.length; i++){
+        for (let i = 0; i < services.length; i++) {
             const service = services[i]
-            const {options} = service
-            for(let j = 0; j < options.length; j++){
+            const { options } = service
+            for (let j = 0; j < options.length; j++) {
                 let opt = options[j]
                 let optionPass = true // this is to check if the option satisfies the filter
-                if(req.query.gender){
-                    if(opt.gender !== req.query.gender){
+                if (req.query.gender) {
+                    if (opt.gender !== req.query.gender) {
                         optionPass = false
                     }
                 }
-                if(req.query.home){
-                    if(opt.at_home !== Boolean(req.query.home)){
+                if (req.query.home) {
+                    if (opt.at_home !== Boolean(req.query.home)) {
                         optionPass = false
                     }
                 }
-                if(optionPass === false){
-                    if(salon.services[i].options.length === 1)
+                if (optionPass === false) {
+                    if (salon.services[i].options.length === 1)
                         salon.services.splice(i, 1)
                     else
                         salon.services[i].options.splice(j, 1)
@@ -192,7 +192,7 @@ export default class SalonController extends BaseController {
             res.status(403)
             res.send({ message: "SID and ID not found" })
         }
-      
+
         const salon = await this.service.updateService(id, d, sid)
         if (salon === null) {
             const errMsg = `no service found`
@@ -223,7 +223,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send({message:"Employee Added",success:"true"})
+        res.send({ message: "Employee Added", success: "true" })
 
     })
     deleteSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -231,7 +231,7 @@ export default class SalonController extends BaseController {
         const eid = req.params.eid
         //@ts-ignore
         const vendor_id = req.vendorId
-    
+
         //:TODO:validator
         if (!_id || !eid) {
             const errMsg = `delete Emp: no data with this _id and service was found`
@@ -249,7 +249,7 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        res.send({message:"Employee Removed",success:"true"})
+        res.send({ message: "Employee Removed", success: "true" })
 
     })
     editSalonEmployee = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -346,21 +346,19 @@ export default class SalonController extends BaseController {
         //TODO:validator
         const salonId = req.params.id;
 
-    
+
         var centerPoint = {}
         //TODO: store location of User
-        if(req.query.latitude && req.query.longitude){
+        if (req.query.latitude && req.query.longitude) {
 
-
-        
-        //@ts-ignore
-         centerPoint.lat = req.query.latitude
-         //@ts-ignore
-         centerPoint.lng = req.query.longitude
+            //@ts-ignore
+            centerPoint.lat = req.query.latitude
+            //@ts-ignore
+            centerPoint.lng = req.query.longitude
         }
         //  const sr: string = await SalonRedis.get(salonId)
         //  if (sr !== null) return res.send(JSON.parse(sr))
-        const salon = await this.service.getSalonInfo(salonId,centerPoint)
+        const salon = await this.service.getSalonInfo(salonId, centerPoint)
         // SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
     })
@@ -369,13 +367,13 @@ export default class SalonController extends BaseController {
         let salons
 
         //  const sr = await SalonRedis.get('Salons')
-          const q = req.query
+        const q = req.query
         //   if (sr !== null) { salons = JSON.parse(sr)
         //    }
         //   else {
-            salons = await this.service.getSalon(q)
-      //      SalonRedis.set('Salons', salons)
-       // }
+        salons = await this.service.getSalon(q)
+        //      SalonRedis.set('Salons', salons)
+        // }
         res.status(200).send(salons)
 
     })
@@ -392,11 +390,11 @@ export default class SalonController extends BaseController {
         //    if (sr !== null) { 
         //        salons = JSON.parse(sr)
         //     }
-      //   else {
-             console.log("not redis")
-            salons = await this.service.getHomeServiceSalon(centerPoint,km.toString())
-            SalonRedis.set('HomeSalons', salons)
-     //   }
+        //   else {
+        console.log("not redis")
+        salons = await this.service.getHomeServiceSalon(centerPoint, km.toString())
+        SalonRedis.set('HomeSalons', salons)
+        //   }
         res.status(200).send(salons)
 
     })
@@ -426,7 +424,7 @@ export default class SalonController extends BaseController {
     // getSearchservice= controllerErrorHandler(async (req: Request, res: Response) => {
     //     //TODO:Validator
     //     const phrase = req.query.phrase as string
-       
+
     //     if (!phrase)
     //         return res.status(400).send({ message: 'Provide search phrase' })
     //     const salon = await this.service.getSearchservice(phrase)
@@ -467,16 +465,16 @@ export default class SalonController extends BaseController {
         const _id = req.params.id
         const data = new Array()
 
-        const category  = await this.service.getSalonCategories(_id,data)
+        const category = await this.service.getSalonCategories(_id, data)
         res.send(category)
 
     })
 
-  getSalonReviews =  controllerErrorHandler(async (req: Request, res: Response) => {
+    getSalonReviews = controllerErrorHandler(async (req: Request, res: Response) => {
         const _id = req.params.id
         const q = req.query
-        const reviews = await this.service.getSalonReviews(_id,q)
-        if(reviews===null){
+        const reviews = await this.service.getSalonReviews(_id, q)
+        if (reviews === null) {
             logger.error(`No Reviews Found`)
             res.status(400)
             res.send({ message: `No Reviews Found` })
@@ -488,60 +486,60 @@ export default class SalonController extends BaseController {
 
     postSalonReviews = controllerErrorHandler(async (req: Request, res: Response) => {
 
-        const _id=req.params.id
-        const post:ReviewI = req.body
+        const _id = req.params.id
+        const post: ReviewI = req.body
         console.log(req.body)
         //@ts-ignore
         post.user_id = req.userId
         post.salon_id = _id
-        
-        const postReview = await this.service.postReviews(post) 
-        if(postReview===null){
+
+        const postReview = await this.service.postReviews(post)
+        if (postReview === null) {
             logger.error(`Unable to post`)
             res.status(400)
             res.send({ message: `Unable to post review` })
             return
         }
         res.send(postReview)
-        
+
 
     })
-    checkPostReviews= controllerErrorHandler(async (req: Request, res: Response) => {
+    checkPostReviews = controllerErrorHandler(async (req: Request, res: Response) => {
         const _id = req.params.id
         //@ts-ignore
         const user_id = req.userId
         //@ts-ignore
-        const check  = await this.service.checkpostReview(user_id,_id)
+        const check = await this.service.checkpostReview(user_id, _id)
         console.log(check)
-        if(check==null){
+        if (check == null) {
             res.status(400)
-            res.send({ message: `User Cant Post Review,No Previous Bookings Found`,success:"false" })
+            res.send({ message: `User Cant Post Review,No Previous Bookings Found`, success: "false" })
             return
-            
+
         }
-        res.send({success:"true"})
-    
-  
+        res.send({ success: "true" })
+
+
 
     })
 
     getBrands = controllerErrorHandler(async (req: Request, res: Response) => {
 
-        const brand  =  await this.service.getBrand()
-        if(brand===null){
+        const brand = await this.service.getBrand()
+        if (brand === null) {
             res.status(400)
             res.send({ message: `No Brands Found` })
             return
         }
         res.send(brand)
-        
+
 
     })
     getBrandbyId = controllerErrorHandler(async (req: Request, res: Response) => {
 
         const id = req.params.id
         const brand = await this.service.getBrandbyId(id)
-        if(brand===null){
+        if (brand === null) {
             res.status(400)
             res.send({ message: `No Brands Found` })
             return
@@ -552,7 +550,7 @@ export default class SalonController extends BaseController {
     addBrand = controllerErrorHandler(async (req: Request, res: Response) => {
         const d = req.body
         const brand = await this.service.addBrand(d)
-        if(brand===null){
+        if (brand === null) {
             res.status(400)
             res.send({ message: `Unable to create Brand` })
             return
@@ -560,56 +558,56 @@ export default class SalonController extends BaseController {
         res.send(brand)
 
     })
-    searchFilter =controllerErrorHandler( async (req: Request, res: Response) => {
+    searchFilter = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
-        
+
         const search = await this.service.searchFilter(q)
-       if(search==null){
-        const errMsg = "No search Result";
-        logger.error(errMsg);
-        res.status(400);
-        res.send({ message: errMsg });
-        return
-    }
+        if (search == null) {
+            const errMsg = "No search Result";
+            logger.error(errMsg);
+            res.status(400);
+            res.send({ message: errMsg });
+            return
+        }
         res.send(search)
-        
+
     })
 
-    reportSalon =controllerErrorHandler( async (req: Request, res: Response) => {
-        var q=req.body
+    reportSalon = controllerErrorHandler(async (req: Request, res: Response) => {
+        var q = req.body
         //@ts-ignore
-        q.user_id=req.userId
-        if(!q.salon_id){
+        q.user_id = req.userId
+        if (!q.salon_id) {
             const errMsg = "send salon_id";
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
         }
         const report = await this.service.reportError(q)
-        if(report===null){
+        if (report === null) {
             const errMsg = "unable to report";
             logger.error(errMsg);
             res.status(400);
             res.send({ message: errMsg });
             return
         }
-        res.status(200).send({message:"Report submitted",success:"true"})
+        res.status(200).send({ message: "Report submitted", success: "true" })
 
 
     })
 
 
-    getSearchservice= controllerErrorHandler(async (req: Request, res: Response) => {
+    getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string
-    
-    if (!phrase)
-        return res.status(400).send({ message: 'Provide search phrase' })
+
+        if (!phrase)
+            return res.status(400).send({ message: 'Provide search phrase' })
 
         const result = await this.service.getSalonService(phrase)
         res.send(result)
     })
 
-    getRatings =controllerErrorHandler(async (req: Request, res: Response) => {
+    getRatings = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const rating = await this.service.getReviewsRating(id)
         res.send(rating)
