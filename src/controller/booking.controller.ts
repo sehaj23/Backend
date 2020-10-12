@@ -18,6 +18,7 @@ import { map } from "bluebird";
 import RazorPayService from "../service/razorpay.service";
 import FeedbackService from "../service/feedback.service";
 import { FeedbackI } from "../interfaces/feedback.interface";
+import sendNotificationToDevice from "../utils/send-notification";
 
 
 export default class BookingController extends BaseController {
@@ -254,6 +255,13 @@ export default class BookingController extends BaseController {
             return
 
         }
+        var message = {
+            notification: {
+              title: '$FooCorp up 1.43% on the day',
+              body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
+            },
+          };
+        sendNotificationToDevice("dIHYFzDfSkRqmFz0fXgfQP:APA91bHY7Heuln_-h4Vx3bCgcXVjkqx5qejHqyL7Sc0cA6hI1hPTrdrZXSdLiIEYGhtzIeo41zKdItd1w65B1fnxsd1DlbFeRTvRepswOZz-hWB-c8wBL-i22Q24T-9OJ0ANkxQYzZIX",message)
         res.send({message:"Booking status changed",success:"true"})
 
     })

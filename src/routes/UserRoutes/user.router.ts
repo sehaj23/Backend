@@ -13,7 +13,6 @@ import Feedback from "../../models/feedback.model";
 const userRouter = Router()
 const feedbackService = new  FeedbackService(Feedback)
 const userService = new UserService(User,Booking)
-
 const userController= new UserController(userService,feedbackService)
 
 
