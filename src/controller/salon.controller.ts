@@ -13,6 +13,7 @@ import { SalonRedis } from "../redis/index.redis";
 import { keys } from "../seeds/data/admin/admins";
 import { ReviewI } from "../interfaces/review.interface";
 import Salon from "../models/salon.model";
+import moment = require("moment");
 
 
 export default class SalonController extends BaseController {
@@ -143,7 +144,8 @@ export default class SalonController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const salon = await this.service.getService(id, filter) as SalonSI
+        const salonn = await this.service.getService(id, filter) as SalonSI
+        const salon = salonn.toObject()
         if (salon === null) {
             const errMsg = `no service found`
             logger.error(errMsg)
@@ -611,6 +613,31 @@ export default class SalonController extends BaseController {
         const id = req.params.id
         const rating = await this.service.getReviewsRating(id)
         res.send(rating)
+
+    })
+    salonSlots =controllerErrorHandler ( async (req: Request, res: Response)=>{
+        const id = req.params.id
+        let gotSlotsDate =   req.query.slots_date || moment.now()
+        
+        //TODO:validator
+        if (!gotSlotsDate) {
+            const msg = "Something went wrong"
+            logger.error(msg)
+            res.status(400).send({ success: false, message: msg });
+            return
+        }
+        const slotsDate = new Date(gotSlotsDate)
+        console.log(slotsDate)
+      
+        const slots = await this.service.salonSlots(id, slotsDate)
+  
+        if(slots==null){
+            logger.error(`No Slots Found`)
+            res.status(400)
+            res.send({ message: `No Slots Found` })
+            return
+        }
+        res.send(slots)
 
     })
 

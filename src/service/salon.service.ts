@@ -735,6 +735,28 @@ export default class SalonService extends BaseService {
 
                 return rating
         }
+        salonSlots = async (id: any, slotsDate: Date) => {
+                const salon = await  this.model.findById(id)
+                const starting_hours = salon.start_working_hours
+                // getting the day from the date
+                let day = moment(slotsDate).day() - 1
+                if(day < 0 ) day = 6
+                console.log(day)
+                if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
+                const selectedStartingHour = moment(starting_hours[day])
+                if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
+                const selectedEndHour = moment(salon.end_working_hours[day])
+                const slots = []
+                for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
+      
+                                const slot = moment(i).format('hh:mm a')
+                                slots.push(slot)
+                         
+
+                }
+                return slots
+        
+            }
 
 
 
