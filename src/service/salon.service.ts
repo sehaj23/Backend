@@ -540,7 +540,7 @@ export default class SalonService extends BaseService {
                 const data = await this.model.find(
                         { $text: { $search: phrase } },
                         { score: { $meta: 'textScore' } }
-                ).sort({ score: { $meta: 'textScore' } })
+                ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
                 return data
 
         }
@@ -667,7 +667,7 @@ export default class SalonService extends BaseService {
 
 
 
-                const salonFilter = this.model.find(filters).skip(skipCount).limit(pageLength)
+                const salonFilter = this.model.find(filters).populate("profile_pic").skip(skipCount).limit(pageLength)
                 const salonPagesReq = this.model.count(filters)
 
                 const [salonDetails, salonPages] = await Promise.all([salonFilter, salonPagesReq])
