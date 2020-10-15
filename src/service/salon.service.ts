@@ -501,7 +501,9 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 10)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate : {
+                        path : 'profile_pic'
+                      }})
                 const reviewsPage = this.reviewModel.find({ salon_id: _id }).count();
 
                 const [reviews, pageNo] = await Promise.all([reviewsAll, reviewsPage])
