@@ -32,10 +32,12 @@ export default class BookingService extends BaseService {
     bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
         try {
             const justDate = date_time.substring(0, 10)
-            const justTime = date_time.substring(27, 35)
+            const justTime = date_time.substring(11, 35)
             logger.info(`justDate ${justDate}`)
             logger.info(`justTime ${justTime}`)
             let convertedDateTime: moment.Moment = moment(`${justDate} ${justTime}`, "YYYY-MM-DD hh:mm a").local()
+            console.log("********")
+            console.log(convertedDateTime)
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
