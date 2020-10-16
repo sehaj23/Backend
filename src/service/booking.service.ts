@@ -35,7 +35,9 @@ export default class BookingService extends BaseService {
             const justTime = date_time.substring(27, 35)
             logger.info(`justDate ${justDate}`)
             logger.info(`justTime ${justTime}`)
-            let convertedDateTime: moment.Moment = moment(`${justDate} ${justTime}`, "YYYY-MM-DD hh:mm a").local()
+            let convertedDateTime = moment(`${justDate} ${justTime}`).toDate()
+            console.log("********")
+            console.log(convertedDateTime)
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
@@ -46,8 +48,8 @@ export default class BookingService extends BaseService {
                 const totalTime = o.quantity * o.duration
                 let service_time: Date
                 if (nextDateTime === null || !nextDateTime) {
-                    service_time = convertedDateTime.toDate()
-                    nextDateTime = convertedDateTime.add(totalTime, 'minutes')
+                    service_time = convertedDateTime
+                    nextDateTime =  moment(convertedDateTime).add(totalTime, 'minutes')
                 } else {
                     service_time = nextDateTime.toDate()
                     nextDateTime = nextDateTime.add(totalTime, 'minutes')

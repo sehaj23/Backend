@@ -68,6 +68,8 @@ export default class BookingController extends BaseController {
         const userId = req.userId
 
         const { payment_method, location, date_time, salon_id, options, address } = req.body
+        console.log("*******")
+        console.log(date_time)
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
         logger.info("info", booking)
         res.send(booking);
