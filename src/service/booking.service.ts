@@ -69,7 +69,7 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
-            const status: BookinStatus = (payment_method === 'COD') ? 'Online Payment Requested' : 'Requested'
+            const status: BookinStatus = (payment_method === 'COD') ?   'Requested':'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
