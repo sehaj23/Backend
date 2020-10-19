@@ -26,7 +26,6 @@ if(process.env.DB_URI){
 }else{
   uri  = `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`
 }
-uri = 'mongodb+srv://zattire_dev:zattire_dev_password@production.8kbli.mongodb.net/zattire_pro?retryWrites=true&w=majority'
 
 export const connectt = () => {
   return new Promise(function (fulfill, reject){
