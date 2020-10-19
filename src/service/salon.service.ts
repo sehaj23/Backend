@@ -65,6 +65,7 @@ export default class SalonService extends BaseService {
         }
 
         addSalonService = async (_id: string, da: any) => {
+                console.log("_id", _id)
                 const salon = await this.model.findOne({ _id }) as SalonSI
                 if (salon === null) throw new Error("Salon not found")
                 console.log("data", da)
@@ -85,6 +86,7 @@ export default class SalonService extends BaseService {
                                                 serviceFound = i
                                                 if (gotService.service_checked === false) {
                                                         console.log(`Deleting the service at ${i} ${service.name}`)
+                                                        console.log(salon.services[i])
                                                         salon.services = salon.services.splice(i, 0)
                                                         break
                                                 }
@@ -103,17 +105,18 @@ export default class SalonService extends BaseService {
                                                                 console.log("opt.option_name", opt.option_name)
                                                                 console.log("gotOpt.option_name", gotOpt.option_name)
                                                                 if (opt.option_name === gotOpt.option_name) {
-                                                                        found = true
                                                                         if (gotOpt.option_checked === false) {
+                                                                                found = true
                                                                                 service.options = service.options.splice(o, 1)
-                                                                        } else {
-
+                                                                        }else{
                                                                                 opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
                                                                                 if (opt.gender === "men") {
+                                                                                        found = true
                                                                                         opt.duration = gotOpt.option_men_duration
                                                                                         opt.price = gotOpt.option_men_price
                                                                                         menFound = o
-                                                                                } else if (opt.gender === "women") {
+                                                                                } else if(opt.gender === "women"){
+                                                                                        found = true
                                                                                         opt.duration = gotOpt.option_women_duration
                                                                                         opt.price = gotOpt.option_women_price
                                                                                         womenFound = o
@@ -152,7 +155,7 @@ export default class SalonService extends BaseService {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_women_price,
                                                                         gender: "women",
-                                                                        duration: gotOpt.option_men_duration
+                                                                        duration: gotOpt.option_women_duration
                                                                 }
                                                                 service.options.push(option)
                                                         }
@@ -193,9 +196,9 @@ export default class SalonService extends BaseService {
                         //         this.getTheOptions(gotService, salon.services[categoryFound])
                         // }
                         console.log("da.category_name", da.category_name)
-                        if (categoryFound === -1 || serviceFound === -1) {
+                        if ((categoryFound === -1 || serviceFound === -1) && gotService.service_checked === true) {
                                 const service: ServiceI = {
-                                        name: gotService?.service_name ?? da.category_name,
+                                        name: gotService?.service_name ?? da.category_name ?? "Some Service",
                                         price: 0,
                                         category: da.category_name,
                                         duration: 15,

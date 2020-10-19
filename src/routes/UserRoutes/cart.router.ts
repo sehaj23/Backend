@@ -13,5 +13,6 @@ cartRouter.get("/",UserverifyToken, cartController.getLastCartByUserId)
 cartRouter.patch("/add-option/:cartId", UserverifyToken, cartController.addOptionToCart)
 cartRouter.patch("/update-option/:optionId", UserverifyToken, cartController.updateCartOption)
 cartRouter.delete("/delete-option/:optionId", UserverifyToken, cartController.delteOptionFromCart)
+cartRouter.delete("/delete-cart/:id", UserverifyToken, cartController.delete)
 cartRouter.post("/multiple-options", UserverifyToken, cartController.createCartWithMultipleOptions)
 export default cartRouter
