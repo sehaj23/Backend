@@ -17,7 +17,7 @@ export default class RazorPayService {
 
     createOrderId = async (bookingId: string, totalAmount: number) => {
         var options = {
-            amount: totalAmount,  // amount in the smallest currency unit
+            amount: totalAmount * 100,  // amount in the smallest currency unit
             currency: "INR",
             receipt: bookingId
         };
