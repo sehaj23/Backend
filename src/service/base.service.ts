@@ -61,4 +61,8 @@ export default class BaseService {
         return newEvent 
 }    
 
+    delete = async (id: string) => {
+        return this.model.deleteOne({_id: id})
+    }
+
 }

@@ -96,4 +96,16 @@ export default class BaseController {
         }
     }
 
+    delete = async (req: Request, res: Response) => {
+        const {id} = req.params
+        try {
+            // saving photos 
+            const newEvent = await this.service.delete(id)
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403).send(`${e.message}` )
+        }
+    }
+
 }
