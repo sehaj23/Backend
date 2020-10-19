@@ -200,9 +200,10 @@ export default class UserController extends BaseController {
         res.status(200).send({message:"Thank you for your feedback",success:true})
 
     })
-
-   
-
-
+    sendNotifcation= controllerErrorHandler(async (req: Request, res: Response) =>{
+        
+        const notification =  await this.service.sendNotification("asdsad","sadsad")
+        res.send(notification)
+    })
 
 }
