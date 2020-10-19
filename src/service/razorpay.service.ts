@@ -15,14 +15,13 @@ export default class RazorPayService {
         this.instance.orders.all().then(console.log).catch(console.error);
     }
 
-    createOrderId = async (bookingId: string) => {
+    createOrderId = async (bookingId: string, totalAmount: number) => {
         var options = {
-            amount: 50000,  // amount in the smallest currency unit
+            amount: totalAmount * 100,  // amount in the smallest currency unit
             currency: "INR",
             receipt: bookingId
         };
         const order = await this.instance.orders.create(options);
-        console.log(order)
         return order
     }
 }

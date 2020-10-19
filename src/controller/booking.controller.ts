@@ -55,23 +55,24 @@ export default class BookingController extends BaseController {
             return
         }
         const rp = new RazorPayService()
-        const order = await rp.createOrderId(booking._id.toString())
-        res.send({order_id: order['id']})
+        const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
+        const totalAmountWithTax = Math.round( (totalAmount +  (totalAmount * 0.18) ) * 100) / 100
+        logger.info(`totalAmount ${totalAmountWithTax}`)
+        const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
+        const order_id = order['id']
+        logger.info(`order_id ${order_id}`)
+        console.log(order)
+        res.send({order_id})
     })
 
     /**
      * @description book the the appointment with the salon
      */
     bookAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
-
         //@ts-ignore
         const userId = req.userId
-
         const { payment_method, location, date_time, salon_id, options, address } = req.body
-        console.log("*******")
-        console.log(date_time)
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
-        logger.info("info", booking)
         res.send(booking);
     })
 
@@ -232,6 +233,7 @@ export default class BookingController extends BaseController {
     updateStatusBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingid = req.params.id
         const status = req.body.status
+        logger.info(status)
 
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
@@ -361,11 +363,9 @@ export default class BookingController extends BaseController {
 
        // const rescheduleDate = moment(date_time).toDate()
         
-        console.log("*********")
         datetime.map(function (o){
            return moment(o).toDate()
         })
-        console.log(datetime)
         
        
         if (!id) {
@@ -470,9 +470,7 @@ export default class BookingController extends BaseController {
 
         //@ts-ignore
         const empId = req.empId
-        console.log(empId)
         const bookings = await this.service.getEmployeebookings(q, empId)
-        console.log(bookings)
         if (bookings == null) {
             const errMsg = 'No Bookings Found!'
             logger.error(errMsg)
