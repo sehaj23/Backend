@@ -33,8 +33,6 @@ export default class MakeupartistService extends BaseService {
 
     postMua = async (ma: MakeupArtistI) => {
 
-
-
         const makeupartist = await this.model.create(ma)
         //@ts-ignore
         const _id = mongoose.Types.ObjectId(ma.vendor_id)

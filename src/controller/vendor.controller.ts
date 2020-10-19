@@ -8,7 +8,7 @@ import { EmployeeAbsenteeismI } from '../interfaces/employeeAbsenteeism.interfac
 import logger from '../utils/logger'
 import { PhotoI } from '../interfaces/photo.interface'
 import { ReportVendorI } from '../interfaces/reportVendor.interface'
-import { FeedbackVendorI } from '../interfaces/feedbackVendor.interface'
+import { FeedbackI } from '../interfaces/feedback.interface'
 import EmployeeService from '../service/employee.service'
 
 export default class VendorController extends BaseController {
@@ -182,9 +182,9 @@ export default class VendorController extends BaseController {
 
     })
     feedback= controllerErrorHandler(async (req: Request, res: Response) =>{
-        const data:FeedbackVendorI = req.body
+        const data:FeedbackI = req.body
          //@ts-ignore
-         data.employee_id=req.vendorId
+         data.vendor_id=req.vendorId
         const feedback = await this.service.feedback(data)
         if(feedback===null){
             logger.error(`Unable to create feedback`)

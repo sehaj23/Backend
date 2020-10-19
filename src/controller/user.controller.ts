@@ -2,19 +2,22 @@ import BaseController from "./base.controller";
 import UserService from "../service/user.service";
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-
+import FeedbackService from "../service/feedback.service"
 import logger from "../utils/logger";
 import Review from "../models/review.model";
 import RevenueService from "../service/revenue.service";
 import ReviewSI from "../interfaces/review.interface";
 import ErrorResponse from "../utils/error-response";
+import { FeedbackI } from "../interfaces/feedback.interface";
 
 
 export default class UserController extends BaseController {
     service: UserService
-    constructor(service: UserService) {
+    feedbackService:FeedbackService
+    constructor(service: UserService,feedbackService:FeedbackService) {
         super(service)
         this.service = service
+        this.feedbackService=feedbackService
     }
 
     getUser = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -37,7 +40,7 @@ export default class UserController extends BaseController {
 
         const updates = Object.keys(req.body)
         const d = req.body
-        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","fcm_token"]
+        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","fcm_token","notification"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
         console.log(isvalid)
         if (!isvalid) {
@@ -177,10 +180,24 @@ export default class UserController extends BaseController {
         if (user === null) {
             logger.error(`No Favourites`)
             res.status(400)
-            res.send({ message: `No Favourites Found`, success: "alse" })
+            res.send({ message: `No Favourites Found`, success: false })
             return
         }
         res.send(user)
+
+    })
+    postFeedback= controllerErrorHandler(async (req: Request, res: Response) =>{
+        const data:FeedbackI = req.body
+         //@ts-ignore
+         data.user_id=req.userId
+        const feedback = await this.feedbackService.post(data)
+        if(feedback===null){
+            logger.error(`Unable to create feedback`)
+            res.status(400)
+            res.send({ message: `Unable to create feedback` })
+            return
+        }
+        res.status(200).send({message:"Thank you for your feedback",success:true})
 
     })
 

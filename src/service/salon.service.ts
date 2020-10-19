@@ -38,7 +38,7 @@ export default class SalonService extends BaseService {
         //     this.modelName = model.modelName
         // }
 
-        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>, reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>,reportSalonModel: mongoose.Model<any, any>) {
+        constructor(salonmodel: mongoose.Model<any, any>, employeeModel: mongoose.Model<any, any>, vendorModel: mongoose.Model<any, any>, eventModel: mongoose.Model<any, any>, offerModel: mongoose.Model<any, any>, reviewModel: mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>, brandModel: mongoose.Model<any, any>, reportSalonModel: mongoose.Model<any, any>) {
                 super(salonmodel);
                 this.employeeModel = employeeModel
                 this.vendorModel = vendorModel
@@ -47,7 +47,7 @@ export default class SalonService extends BaseService {
                 this.reviewModel = reviewModel
                 this.bookingModel = bookingModel
                 this.brandModel = brandModel
-                this.reportSalonModel=reportSalonModel
+                this.reportSalonModel = reportSalonModel
         }
 
 
@@ -106,14 +106,14 @@ export default class SalonService extends BaseService {
                                                                         found = true
                                                                         if (gotOpt.option_checked === false) {
                                                                                 service.options = service.options.splice(o, 1)
-                                                                        }else{
+                                                                        } else {
 
                                                                                 opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
                                                                                 if (opt.gender === "men") {
                                                                                         opt.duration = gotOpt.option_men_duration
                                                                                         opt.price = gotOpt.option_men_price
                                                                                         menFound = o
-                                                                                } else if(opt.gender === "women"){
+                                                                                } else if (opt.gender === "women") {
                                                                                         opt.duration = gotOpt.option_women_duration
                                                                                         opt.price = gotOpt.option_women_price
                                                                                         womenFound = o
@@ -126,19 +126,19 @@ export default class SalonService extends BaseService {
                                                         console.log("gotOpt.option_gender", gotOpt.option_gender)
                                                         console.log("menFound", menFound)
                                                         console.log("womenFound", womenFound)
-                                                        if( gotOpt.option_gender === "Women" && menFound > -1){
+                                                        if (gotOpt.option_gender === "Women" && menFound > -1) {
                                                                 console.log("Removing men")
-                                                                service.options =  service.options.splice(menFound, 1)
+                                                                service.options = service.options.splice(menFound, 1)
                                                         }
-                                                        if( gotOpt.option_gender === "Men" && womenFound > -1){
+                                                        if (gotOpt.option_gender === "Men" && womenFound > -1) {
                                                                 console.log("Removing women")
-                                                                service.options =  service.options.splice(womenFound, 1)
+                                                                service.options = service.options.splice(womenFound, 1)
                                                         }
 
                                                         // adding the missing gender
                                                         console.log("gotOpt.option_gender", gotOpt.option_gender)
                                                         console.log("menFound", menFound)
-                                                        if( ( gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1){
+                                                        if ((gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1) {
                                                                 const option: OptionI = {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_men_price,
@@ -147,7 +147,7 @@ export default class SalonService extends BaseService {
                                                                 }
                                                                 service.options.push(option)
                                                         }
-                                                        if( ( gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") && womenFound === -1){
+                                                        if ((gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") && womenFound === -1) {
                                                                 const option: OptionI = {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_women_price,
@@ -157,7 +157,7 @@ export default class SalonService extends BaseService {
                                                                 service.options.push(option)
                                                         }
 
-                                                        
+
 
 
                                                         console.log("Found:", found)
@@ -250,7 +250,7 @@ export default class SalonService extends BaseService {
 
                 console.log(id)
 
-                const salon = await this.model.findOne({ _id: id}).select("services")
+                const salon = await this.model.findOne({ _id: id }).select("services")
                 console.log(salon)
 
                 return salon
@@ -344,8 +344,25 @@ export default class SalonService extends BaseService {
 
         }
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
-        getSalonInfo = async (salonId: string) => {
-                const salon = await this.model.findById(salonId).populate("photo_ids").populate({path:"employees",name:"employees.name",populate: { path: 'photo' }}).exec()
+        getSalonInfo = async (salonId: string, centerPoint: any) => {
+                var checkPoint = {}
+
+
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
+                if (salon.longitude != null && salon.latitude != null) {
+
+                        //@ts-ignore
+                        checkPoint.lng = salon.longitude
+                        //@ts-ignore
+                        checkPoint.lat = salon.latitude
+                        var n = await arePointsNear(checkPoint, centerPoint, 1000)
+                        if (n.bool) {
+                                console.log(n.difference)
+                                // @ts-ignore
+                                salon.distance = n.difference.toFixed()
+                        }
+                }
+
                 return salon
 
         }
@@ -357,7 +374,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 //TODO: send salon with rating 5
-                const salons = await this.model.find().populate("photo_ids").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+                const salons = await this.model.find().populate("photo_ids").populate("profile_pic").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
                 // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                 const salonPage = this.reviewModel.find().count();
 
@@ -415,7 +432,7 @@ export default class SalonService extends BaseService {
                 var checkPoint = {}
                 var salonLocation = new Array()
 
-                const salon = await this.model.find().populate("photo_ids")
+                const salon = await this.model.find().populate("photo_ids").populate("profile_pic")
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
@@ -442,7 +459,7 @@ export default class SalonService extends BaseService {
                 //@ts-ignore
                 centerPoint.lng = req.query.longitude
 
-                const salon = await this.model.find({}).populate("photo_ids").lean()
+                const salon = await this.model.find({}).populate("photo_ids").populate("profile_pic").lean()
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
@@ -484,7 +501,9 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 10)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate : {
+                        path : 'profile_pic'
+                      }})
                 const reviewsPage = this.reviewModel.find({ salon_id: _id }).count();
 
                 const [reviews, pageNo] = await Promise.all([reviewsAll, reviewsPage])
@@ -498,7 +517,7 @@ export default class SalonService extends BaseService {
                 return reviews
         }
         checkpostReview = async (userId: string, salon_id: string) => {
-                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id})
+                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id })
                 return check
         }
 
@@ -523,7 +542,7 @@ export default class SalonService extends BaseService {
                 const data = await this.model.find(
                         { $text: { $search: phrase } },
                         { score: { $meta: 'textScore' } }
-                ).sort({ score: { $meta: 'textScore' } })
+                ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
                 return data
 
         }
@@ -538,44 +557,44 @@ export default class SalonService extends BaseService {
 
         }
         getSalonService = async (phrase: string) => {
-                
-                   
-                  var  result1 = await this.model.aggregate([
-                       {
-                                $project:{
-                                        _id:1,
-                                        services:1,
-                                        profile_pic:1,
-                                        name:1
-                                }
-                       },
-                       
+
+
+                var result1 = await this.model.aggregate([
                         {
-                            $lookup:
-                            {
-                                from: "photos",
-                                localField: "profile_pic",
-                                foreignField: "_id",
-                                as: "profile_pic",
-                            },
-                       },
+                                $project: {
+                                        _id: 1,
+                                        services: 1,
+                                        profile_pic: 1,
+                                        name: 1
+                                }
+                        },
+
+                        {
+                                $lookup:
+                                {
+                                        from: "photos",
+                                        localField: "profile_pic",
+                                        foreignField: "_id",
+                                        as: "profile_pic",
+                                },
+                        },
                         // {
                         //     $unwind: "$service_info"
                         // },
                         {
-                            
-                            $match:
-                            {
-                                "services.name":{
-                                    $regex: `.*${phrase}.*`
-                                } 
-                            }
-                        }   
-                    ])
-                   return result1
-               
-            }
-            
+
+                                $match:
+                                {
+                                        "services.name": {
+                                                $regex: `.*${phrase}.*`
+                                        }
+                                }
+                        }
+                ])
+                return result1
+
+        }
+
 
 
 
@@ -650,7 +669,7 @@ export default class SalonService extends BaseService {
 
 
 
-                const salonFilter = this.model.find(filters).skip(skipCount).limit(pageLength)
+                const salonFilter = this.model.find(filters).populate("profile_pic").skip(skipCount).limit(pageLength)
                 const salonPagesReq = this.model.count(filters)
 
                 const [salonDetails, salonPages] = await Promise.all([salonFilter, salonPagesReq])
@@ -661,67 +680,90 @@ export default class SalonService extends BaseService {
         }
 
         reportError = async (q) => {
-               const report = await this.reportSalonModel.create(q)
-               return report
+                const report = await this.reportSalonModel.create(q)
+                return report
         }
 
-        getReviewsRating = async(_id:string)=>{
+        getReviewsRating = async (_id: string) => {
                 const id = mongoose.Types.ObjectId(_id)
                 var reviews = [
-                        {"$match":{
-                            "salon_id":id,
-                            }
+                        {
+                                "$match": {
+                                        "salon_id": id,
+                                }
                         },
-                
-                    { 
-                        "$group": { 
-                           
-                            "_id": "$salon_id", 
-                             
-                              "counts": {"$push": {"rating": "$rating", "count": "$counts"}},
-                               "totalItemcount": {"$sum": 1},          
-                               "totalRating": {"$sum": "$rating"},
-                            "5_star_ratings": {
-                                
-                                "$sum": {
-                                  
-                                    "$cond": [ { "$eq": [ "$rating", 5 ] }, 1, 0 ]
+
+                        {
+                                "$group": {
+
+                                        "_id": "$salon_id",
+
+                                        "counts": { "$push": { "rating": "$rating", "count": "$counts" } },
+                                        "totalItemcount": { "$sum": 1 },
+                                        "totalRating": { "$sum": "$rating" },
+                                        "5_star_ratings": {
+
+                                                "$sum": {
+
+                                                        "$cond": [{ "$eq": ["$rating", 5] }, 1, 0]
+                                                }
+                                        },
+                                        "4_star_ratings": {
+                                                "$sum": {
+                                                        "$cond": [{ "$eq": ["$rating", 4] }, 1, 0]
+                                                }
+                                        },
+                                        "3_star_ratings": {
+                                                "$sum": {
+                                                        "$cond": [{ "$eq": ["$rating", 3] }, 1, 0]
+                                                }
+                                        },
+                                        "2_star_ratings": {
+                                                "$sum": {
+                                                        "$cond": [{ "$eq": ["$rating", 2] }, 1, 0]
+                                                }
+                                        },
+                                        "1_star_ratings": {
+                                                "$sum": {
+                                                        "$cond": [{ "$eq": ["$rating", 1] }, 1, 0]
+                                                }
+                                        }
                                 }
-                            },
-                            "4_star_ratings": {
-                                "$sum": {
-                                    "$cond": [ { "$eq": [ "$rating", 4 ] }, 1, 0 ]
-                                }
-                            },
-                            "3_star_ratings": {
-                                "$sum": {
-                                    "$cond": [ { "$eq": [ "$rating", 3 ] }, 1, 0 ]
-                                }
-                            },
-                            "2_star_ratings": {
-                                "$sum": {
-                                    "$cond": [ { "$eq": [ "$rating", 2 ] }, 1, 0 ]
-                                }
-                            },
-                            "1_star_ratings": {
-                                "$sum": {
-                                    "$cond": [ { "$eq": [ "$rating", 1 ] }, 1, 0 ]
-                                }
-                            }           
-                        }  
-                    },
-                
+                        },
+
                 ]
 
-                    const rating = await this.reviewModel.aggregate(reviews)
+                const rating = await this.reviewModel.aggregate(reviews)
 
-                    return rating
+                return rating
         }
+        salonSlots = async (id: any, slotsDate: Date) => {
+                const salon = await  this.model.findById(id)
+                const starting_hours = salon.start_working_hours
+                // getting the day from the date
+                let day = moment(slotsDate).day() - 1
+                if(day < 0 ) day = 6
+                console.log(day)
+                if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
+                const selectedStartingHour = moment(starting_hours[day])
+                if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
+                const selectedEndHour = moment(salon.end_working_hours[day])
+                const slots = []
+                for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
+      
+                                const slot = moment(i).format('hh:mm a')
+                                slots.push(slot)
+                         
 
-
-
-
+                }
+                return slots
         
+            }
+
+
+
+
+
 
 
 }

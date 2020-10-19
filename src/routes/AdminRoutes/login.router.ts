@@ -7,7 +7,7 @@ import CONFIG from "../../config";
 import Booking from "../../models/booking.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Employee from "../../models/employees.model";
-import FeedbackVendor from "../../models/feedbackVendor.model";
+import Feedback from "../../models/feedback.model";
 import Otp from "../../models/otp.model";
 import ReportVendor from "../../models/reportVendor.model";
 import Salon from "../../models/salon.model";
@@ -20,7 +20,7 @@ const loginRouter = Router()
 const loginService = new LoginService(Admin)
 
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, FeedbackVendor, ReportVendor)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
 const otpService = new OtpService(Otp, userService, employeeService)
 const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '30 days', otpService)
 

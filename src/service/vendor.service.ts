@@ -19,7 +19,7 @@ import moment = require("moment");
 import { String } from "aws-sdk/clients/appstream";
 import encryptData from "../utils/password-hash";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
-import { FeedbackVendorI } from "../interfaces/feedbackVendor.interface";
+import { FeedbackI } from "../interfaces/feedback.interface";
 
 
 
@@ -174,7 +174,7 @@ export default class VendorService extends BaseService{
         const report = await this.reportVendorModel.create(data)
         return report
     }
-    feedback = async (data:FeedbackVendorI)=>{
+    feedback = async (data:FeedbackI)=>{
         console.log(data)
         const report = await this.feedbackVendorModel.create(data)
         return report

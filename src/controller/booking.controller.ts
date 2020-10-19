@@ -16,6 +16,9 @@ import { CartSI } from "../interfaces/cart.interface";
 import { ServiceSI } from "../interfaces/service.interface";
 import { map } from "bluebird";
 import RazorPayService from "../service/razorpay.service";
+import FeedbackService from "../service/feedback.service";
+import { FeedbackI } from "../interfaces/feedback.interface";
+import sendNotificationToDevice from "../utils/send-notification";
 
 
 export default class BookingController extends BaseController {
@@ -26,12 +29,14 @@ export default class BookingController extends BaseController {
     salonService: SalonService
     employeeAbsentismService: EmployeeAbsenteesmService
     cartService: CartService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService) {
+    feedbackService:FeedbackService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService) {
         super(service)
         this.service = service
         this.salonService = salonService
         this.employeeAbsentismService = employeeAbsentismService
         this.cartService = cartService
+        this.feedbackService=feedbackService
     }
 
 
@@ -63,6 +68,8 @@ export default class BookingController extends BaseController {
         const userId = req.userId
 
         const { payment_method, location, date_time, salon_id, options, address } = req.body
+        console.log("*******")
+        console.log(date_time)
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
         logger.info("info", booking)
         res.send(booking);
@@ -250,6 +257,13 @@ export default class BookingController extends BaseController {
             return
 
         }
+        var message = {
+            notification: {
+              title: '$FooCorp up 1.43% on the day',
+              body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
+            },
+          };
+        sendNotificationToDevice("dIHYFzDfSkRqmFz0fXgfQP:APA91bHY7Heuln_-h4Vx3bCgcXVjkqx5qejHqyL7Sc0cA6hI1hPTrdrZXSdLiIEYGhtzIeo41zKdItd1w65B1fnxsd1DlbFeRTvRepswOZz-hWB-c8wBL-i22Q24T-9OJ0ANkxQYzZIX",message)
         res.send({message:"Booking status changed",success:"true"})
 
     })
@@ -485,4 +499,12 @@ export default class BookingController extends BaseController {
         res.send(data)
     })
 
+    bookingFeedback = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO: check if the user had that booking
+        const bookingId = req.params.id
+        const data:FeedbackI =req.body
+        data.booking_id=bookingId
+        const feedback = await this.feedbackService.post(data)
+        res.send(feedback)
+    })
 }

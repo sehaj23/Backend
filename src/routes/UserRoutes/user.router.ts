@@ -7,10 +7,14 @@ import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
 import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
+import FeedbackService from "../../service/feedback.service";
+import Feedback from "../../models/feedback.model";
 
 const userRouter = Router()
+const feedbackService = new  FeedbackService(Feedback)
 const userService = new UserService(User,Booking)
-const userController= new UserController(userService)
+const userController= new UserController(userService,feedbackService)
+
 
 
 
@@ -26,5 +30,6 @@ userRouter.put("/profile-photo",UserverifyToken,userController.putProfilePic)
 userRouter.patch('/favourite',UserverifyToken,userController.addToFavourites)
 userRouter.get('/favourite',UserverifyToken,userController.getFavourites)
 userRouter.patch('/favourite/delete',UserverifyToken,userController.removeFavourites)
+userRouter.post("/feedback",UserverifyToken,userController.postFeedback)
 
 export default userRouter
