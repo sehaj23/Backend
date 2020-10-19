@@ -13,6 +13,7 @@ import { MigrationHubConfig } from "aws-sdk";
 import { Mongoose } from "mongoose";
 import ErrorResponse from "../utils/error-response";
 import { userJWTVerification } from "../middleware/User.jwt";
+import sendNotificationToDevice from "../utils/send-notification";
 
 export default class UserService extends BaseService {
     bookingModel: mongoose.Model<any, any>
@@ -123,6 +124,18 @@ export default class UserService extends BaseService {
 
          return user
 
+  }
+  sendNotification = async (fcm_token:string,message:any)=>{
+    var messagee = {
+        notification: {
+          title: '$FooCorp up 1.43% on the day',
+          body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
+        },
+      };
+      
+      
+    const notification = sendNotificationToDevice("egIYL296ckPUvpk6ztbbcQ:APA91bFP3yMZWfW8vM7VlmMbiNK1MZuwlyAUrh3F7c_lusOl3bOztWxRdVYaGjjSNf-6JK-IqcWSDAjzESB910zPGtKEAFqNfGhOdjpJGw3rK9T5Vhad8aI6tfqjpKrUXcsgwVK_cOgK",messagee)
+    return notification
   }
  
 
