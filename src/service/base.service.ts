@@ -32,7 +32,7 @@ export default class BaseService {
     }
 
     getId = async (id: string) => {
-         return await this.model.findOne({_id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events")  //.populate({
+         return await this.model.findOne({_id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons")  //.populate({
             
     //     }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
     }
@@ -60,5 +60,9 @@ export default class BaseService {
         const newEvent = await this.model.findByIdAndUpdate({_id},  { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
         return newEvent 
 }    
+
+    delete = async (id: string) => {
+        return this.model.deleteOne({_id: id})
+    }
 
 }
