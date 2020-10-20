@@ -2,13 +2,14 @@ import BaseController from "./base.controller";
 import DesignerService from "../service/designer.service";
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import { DesignersI } from "../interfaces/designer.interface";
+import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
 import logger from "../utils/logger";
 import ServiceI from "../interfaces/service.interface";
 import mongoose from "../database";
 import { EmployeeI } from "../interfaces/employee.interface";
 import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
+import { VendorSI } from "../interfaces/vendor.interface";
 
 export default class DesignerController extends BaseController {
 
@@ -19,14 +20,9 @@ export default class DesignerController extends BaseController {
     }
 
     postDesigner =controllerErrorHandler( async (req: Request, res: Response) => {
-        const d = req.body
-      
-        if(d.vendor_id.length==0){
+        const d:DesignersSI = req.body
                //@ts-ignore
-        d.vendor_id = req.vendorId
-        }
-       
-       
+        d.vendor_id= req.vendorId
         const designer =await this.service.postDesigner(d)
         res.status(201).send(designer)
     })

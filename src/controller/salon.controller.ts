@@ -494,8 +494,13 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         post.user_id = req.userId
         post.salon_id = _id
-
+       
         const postReview = await this.service.postReviews(post)
+        const getReviews = await this.service.getReviewsRating(_id)
+        const totalRating = getReviews[0].totalRating
+        const totalItemCount = getReviews[0].totalItemcount
+        const avgRating = totalRating/totalItemCount
+        const rating = await this.service.put(_id,{rating:avgRating})
         if (postReview === null) {
             logger.error(`Unable to post`)
             res.status(400)
@@ -627,6 +632,12 @@ export default class SalonController extends BaseController {
             return
         }
         const slotsDate = new Date(gotSlotsDate)
+        if(moment(slotsDate).isBefore(moment().subtract(1,'day'))){
+            const msg = "past booking not allowed"
+            logger.error(msg)
+            res.status(400).send({ success: false, message: msg });
+            return
+        }
         console.log(slotsDate)
       
         const slots = await this.service.salonSlots(id, slotsDate)
