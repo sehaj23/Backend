@@ -195,7 +195,7 @@ export default class SalonService extends BaseService {
                         console.log("da.category_name", da.category_name)
                         if (categoryFound === -1 || serviceFound === -1) {
                                 const service: ServiceI = {
-                                        name: gotService.service_name,
+                                        name: gotService?.service_name ?? da.category_name ?? "Some Service",
                                         price: 0,
                                         category: da.category_name,
                                         duration: 15,
@@ -498,7 +498,7 @@ export default class SalonService extends BaseService {
                 return reviews
         }
         checkpostReview = async (userId: string, salon_id: string) => {
-                const check = await this.bookingModel.find({ user_id: userId, salon_id: salon_id, status: "Completed" })
+                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id})
                 return check
         }
 
@@ -664,6 +664,62 @@ export default class SalonService extends BaseService {
                const report = await this.reportSalonModel.create(q)
                return report
         }
+
+        getReviewsRating = async(_id:string)=>{
+                const id = mongoose.Types.ObjectId(_id)
+                var reviews = [
+                        {"$match":{
+                            "salon_id":id,
+                            }
+                        },
+                
+                    { 
+                        "$group": { 
+                           
+                            "_id": "$salon_id", 
+                             
+                              "counts": {"$push": {"rating": "$rating", "count": "$counts"}},
+                               "totalItemcount": {"$sum": 1},          
+                               "totalRating": {"$sum": "$rating"},
+                            "5_star_ratings": {
+                                
+                                "$sum": {
+                                  
+                                    "$cond": [ { "$eq": [ "$rating", 5 ] }, 1, 0 ]
+                                }
+                            },
+                            "4_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 4 ] }, 1, 0 ]
+                                }
+                            },
+                            "3_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 3 ] }, 1, 0 ]
+                                }
+                            },
+                            "2_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 2 ] }, 1, 0 ]
+                                }
+                            },
+                            "1_star_ratings": {
+                                "$sum": {
+                                    "$cond": [ { "$eq": [ "$rating", 1 ] }, 1, 0 ]
+                                }
+                            }           
+                        }  
+                    },
+                
+                ]
+
+                    const rating = await this.reviewModel.aggregate(reviews)
+
+                    return rating
+        }
+
+
+
 
         
 

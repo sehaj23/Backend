@@ -1,6 +1,6 @@
 import BaseService from "./base.service";
 import { Request, Response } from "express";
-import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus, BookingPaymentType } from "../interfaces/booking.interface";
 import logger from "../utils/logger";
 import mongoose from "../database";
 
@@ -29,7 +29,7 @@ export default class BookingService extends BaseService {
         this.mongoCounterService = mongoCounterService
     }
 
-    bookAppointment = async (userId: string, payment_method: string, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
+    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
         try {
             const justDate = date_time.substring(0, 10)
             const justTime = date_time.substring(27, 35)
@@ -67,14 +67,16 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
+            const status: BookinStatus = (payment_method === 'COD') ? 'Online Payment Requested' : 'Requested'
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
-                payment_type: 'COD',
+                payment_type: payment_method,
                 location: location,
                 services,
                 address,
-                booking_numeric_id
+                booking_numeric_id,
+                status
             }
             const b = await this.model.create(booking)
             // delete the cart of the user
@@ -255,7 +257,7 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId: string, status: string) => {
+    updateStatusBookings = async (bookingId: string, status: BookinStatus) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
         if(booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
         booking.status = status as BookinStatus
@@ -269,8 +271,13 @@ export default class BookingService extends BaseService {
 
     }
 
+    confirmRescheduleSlot = async (bookingId:string,date_time:Date,user_id:string)=>{
+       
+        return this.model.findOneAndUpdate({_id:bookingId,user_id:user_id},{"services.$.rescheduled_service_time":date_time,status:"Rescheduled"},{new:true})
+    }
+
     getByUserId = async (userId: string) => {
-        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id")
+        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id",'name')
     }
 
     getbookings = async (q) => {
@@ -353,10 +360,10 @@ export default class BookingService extends BaseService {
 
     }
 
-    reschedulebooking = async (id: string, date_time: Array<Date>) => {
+    reschedulebooking = async (id: string, date_time: Array<Date>,current_time:Date) => {
        
         //@ts-ignore
-        const booking = await this.model.findByIdAndUpdate(id, {rescheduled_available_slots: date_time, status: "Rescheduled" }, { new: true })
+        const booking = await this.model.findByIdAndUpdate(id, {rescheduled_available_slots: date_time, status: "Rescheduled and Pending",rescheduled_request_datetime:current_time }, { new: true })
         console.log(booking)
         return booking
 
