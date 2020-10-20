@@ -638,7 +638,6 @@ export default class SalonController extends BaseController {
             res.status(400).send({ success: false, message: msg });
             return
         }
-        console.log(slotsDate)
       
         const slots = await this.service.salonSlots(id, slotsDate)
   
