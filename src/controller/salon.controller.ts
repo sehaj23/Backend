@@ -494,8 +494,13 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         post.user_id = req.userId
         post.salon_id = _id
-
+       
         const postReview = await this.service.postReviews(post)
+        const getReviews = await this.service.getReviewsRating(_id)
+        const totalRating = getReviews[0].totalRating
+        const totalItemCount = getReviews[0].totalItemcount
+        const avgRating = totalRating/totalItemCount
+        const rating = await this.service.put(_id,{rating:avgRating})
         if (postReview === null) {
             logger.error(`Unable to post`)
             res.status(400)
