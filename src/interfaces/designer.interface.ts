@@ -19,7 +19,7 @@ export interface DesignersI{
     end_working_hours?: Date[]
     photo_ids?: PhotoI[]
     approved?: boolean
-    vendor_id: string // the id of the vendor _id
+    vendor_id?: string // the id of the vendor _id
     commision_percentage?: number,
     commision_cap?: number
     commision_fixed_price?: number,
