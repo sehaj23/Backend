@@ -21,13 +21,8 @@ export default class DesignerController extends BaseController {
 
     postDesigner =controllerErrorHandler( async (req: Request, res: Response) => {
         const d:DesignersSI = req.body
-      
-       
                //@ts-ignore
         d.vendor_id= req.vendorId
-       
-       
-       
         const designer =await this.service.postDesigner(d)
         res.status(201).send(designer)
     })
