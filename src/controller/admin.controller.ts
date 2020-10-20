@@ -16,15 +16,12 @@ export default class AdminController extends BaseController{
 
     login = controllerErrorHandler(async(req: Request, res: Response) => {
         console.log(req.body)
-        const password = encryptData(req.body.password)
-       
-        const user = await this.service.login(req.body.username, password)
+        const user = await this.service.login(req.body.username, req.body.password)
         console.log(user)
         if(user === null){
             res.status(400).send({message: "Username and password does not match"})
             return
         }
         res.send(user)
-      //  throw new Error("working")
     })
 }

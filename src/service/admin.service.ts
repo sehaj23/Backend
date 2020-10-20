@@ -16,7 +16,8 @@ export default class AdminService extends BaseService{
 
     login = async (username: string, password: string) => {
         // this.model is coming from the base service class
-        console.log(this.modelName)
-        return this.model.findOne({username, password})
+        const passwordHash = crypto.createHash("md5").update(password).digest("hex")
+        
+        return this.model.findOne({username, password: passwordHash})
     }
 }
