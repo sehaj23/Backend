@@ -18,12 +18,12 @@ export default class ServiceController extends BaseController {
         const data = []
         const salonName = req.query.salon
         let salons
-        const sr = await SalonRedis.get('Salons')
-        if (sr !== null) salons = JSON.parse(sr)
-        else {
+        // const sr = await SalonRedis.get('Salons')
+        // if (sr !== null) salons = JSON.parse(sr)
+        // else {
           salons = await this.service.getAll()
-          SalonRedis.set('Salons', salons)
-        }
+          // SalonRedis.set('Salons', salons)
+        // }
         if (!salonName)
           for (let [key, value] of Object.entries(salons))
           //@ts-ignore

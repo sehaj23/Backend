@@ -561,7 +561,7 @@ export default class SalonService extends BaseService {
         }
         getSalonService = async (phrase: string) => {
 
-
+               
                 var result1 = await this.model.aggregate([
                         {
                                 $project: {
@@ -589,7 +589,7 @@ export default class SalonService extends BaseService {
                                 $match:
                                 {
                                         "services.name": {
-                                                $regex: `.*${phrase}.*`
+                                                $regex: `.*${phrase}.*`,$options:'i'
                                         }
                                 }
                         }
