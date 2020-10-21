@@ -505,4 +505,10 @@ export default class BookingController extends BaseController {
         const feedback = await this.feedbackService.post(data)
         res.send(feedback)
     })
+
+    getBookingsAdmin =  controllerErrorHandler(async (req: Request, res: Response) => {
+        const q = req.query
+        const booking = await this.service.getbookingsAdmin(q)
+        res.send(booking)  
+    })
 }
