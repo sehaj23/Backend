@@ -14,6 +14,7 @@ import { keys } from "../seeds/data/admin/admins";
 import { ReviewI } from "../interfaces/review.interface";
 import Salon from "../models/salon.model";
 import moment = require("moment");
+import OptionI from "../interfaces/options.interface";
 
 
 export default class SalonController extends BaseController {
@@ -133,7 +134,6 @@ export default class SalonController extends BaseController {
             filter["gender"] = req.query.gender
         }
         if (req.query.home) {
-            console.log(req.query)
             filter["at_home"] = Boolean(req.query.home)
         }
         //TODO: validator
@@ -145,7 +145,7 @@ export default class SalonController extends BaseController {
             return
         }
         const salonn = await this.service.getService(id, filter) as SalonSI
-        const salon = salonn.toObject()
+        const salon = salonn.toObject() as SalonI
         if (salon === null) {
             const errMsg = `no service found`
             logger.error(errMsg)
@@ -154,30 +154,28 @@ export default class SalonController extends BaseController {
             return
         }
         const services = salon.services
-        for (let i = 0; i < services.length; i++) {
-            const service = services[i]
+        const filterService = services.filter((service: ServiceI) => {
             const { options } = service
-            for (let j = 0; j < options.length; j++) {
-                let opt = options[j]
-                let optionPass = true // this is to check if the option satisfies the filter
+            const filterOptions = options.filter((opt: OptionI) => {
                 if (req.query.gender) {
                     if (opt.gender !== req.query.gender) {
-                        optionPass = false
+                        return false
                     }
                 }
                 if (req.query.home) {
                     if (opt.at_home !== Boolean(req.query.home)) {
-                        optionPass = false
+                        return false
                     }
                 }
-                if (optionPass === false) {
-                    if (salon.services[i].options.length === 1)
-                        salon.services.splice(i, 1)
-                    else
-                        salon.services[i].options.splice(j, 1)
-                }
+                return true
+            })
+            if(filterOptions.length > 0){
+                service.options = filterOptions
+                return true
             }
-        }
+            return false
+        })
+        salon.services = filterService
         res.send(salon)
     })
 

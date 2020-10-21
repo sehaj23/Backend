@@ -250,17 +250,9 @@ export default class SalonService extends BaseService {
 
         }
         getService = async (id: string, filter: any) => {
-
-                console.log(id)
-
                 const salon = await this.model.findOne({ _id: id }).select("services")
-                console.log(salon)
-
                 return salon
         }
-        // getService = async (id: string) => {
-        //         return this.model.findById({ _id: id }).select("services")
-        // }
 
         getServiceByServiceId = async (id: string) => this.model.findOne({ "services._id": id })
 

@@ -1,12 +1,7 @@
-const mon = require('mongoose')
-let db = 'zattire'
-if(process.env.NODE_ENV === "test")
-  db += "_test"
-// mon.connect("mongodb://127.0.0.1:27017/zattire").then(() => {
-//     console.log('Succc')
-// }).catch((e) => {
-//     console.log(`Err ${e.message}`);
-    
-// }).finally(() => {
-//     mon.disconnect()
-// })
+const a = [1, 2, 3, 4, 5]
+
+const b = a.filter(c =>{
+  if(c > 2) return true
+})
+
+console.log(b)
