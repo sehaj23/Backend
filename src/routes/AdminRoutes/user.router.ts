@@ -16,8 +16,9 @@ const userController= new UserController(userService,feedbackService)
 
 userRouter.post("/", verifyToken, userController.post)
 userRouter.get("/", verifyToken, userController.get)
-userRouter.get("/:id", verifyToken, userController.getId)
+userRouter.get("/info/:id", verifyToken, userController.getId)
 userRouter.put("/:id", verifyToken, userController.put)
+userRouter.get("/search",userController.searchUsersByEmail)
 userRouter.put("/:id/photo", verifyToken, userController.putPhoto)
 userRouter.get("/:id/photo", verifyToken, userController.getPhoto)
 

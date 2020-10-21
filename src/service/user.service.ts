@@ -137,6 +137,44 @@ export default class UserService extends BaseService {
     const notification = sendNotificationToDevice("egIYL296ckPUvpk6ztbbcQ:APA91bFP3yMZWfW8vM7VlmMbiNK1MZuwlyAUrh3F7c_lusOl3bOztWxRdVYaGjjSNf-6JK-IqcWSDAjzESB910zPGtKEAFqNfGhOdjpJGw3rK9T5Vhad8aI6tfqjpKrUXcsgwVK_cOgK",messagee)
     return notification
   }
+
+
+  searchUsersByEmail = async (q)=>{
+      
+    const pageNumber: number = parseInt(q.page_number || 1)
+    let pageLength: number = parseInt(q.page_length || 25)
+    pageLength = (pageLength > 100) ? 100 : pageLength
+    const skipCount = (pageNumber - 1) * pageLength
+    const keys = Object.keys(q)
+    const filters = {}
+    
+    for (const k of keys) {
+        switch (k) {
+            case "email":
+                filters["email"] = {
+                        $regex: `.*${q.email}.*`,$options:'i'
+                }
+                break
+                case "name":
+                    filters["name"] = {
+                            $regex: `.*${q.name}.*`,$options:'i'
+                    }
+                break
+                default:
+                    filters[k] = q[k]
+            }
+        }
+        console.log(filters)
+  const userDetailsReq =  this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt') 
+  const userPagesReq = this.model.count(filters)
+  //const userStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+
+
+  const [userDetails,userPages] = await Promise.all([userDetailsReq, userPagesReq ])
+  return ({ userDetails,userPages })
+
+
+}
  
 
 

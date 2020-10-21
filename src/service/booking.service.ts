@@ -534,7 +534,7 @@ export default class BookingService extends BaseService {
 
     getbookingsAdmin = async (q) => {
 
-        console.log(q)
+      
 
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
@@ -575,6 +575,12 @@ export default class BookingService extends BaseService {
                 case "location":
                     filters["location"] = q[k]
                     break
+                case "user_id":
+                   filters["user_id"]= q[k]
+                    break
+                case "salon_id":
+                    filters["salon_id"]=q[k]
+                    break
                 case "page_number":
                 case "page_length":
 
@@ -590,10 +596,11 @@ export default class BookingService extends BaseService {
             //      "$gte": dateFilter["start_date"],
             //      "$lt": dateFilter["end_date"]
             // // }
-
+            
 
         }
-        console.log(filters);
+        console.log(filters)
+        
 
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
@@ -606,5 +613,14 @@ export default class BookingService extends BaseService {
 
 
     }
+
+    // getUserbooking =async(q,id)=>{
+    //     const pageNumber: number = parseInt(q.page_number || 1)
+    //     let pageLength: number = parseInt(q.page_length || 25)
+    //     pageLength = (pageLength > 100) ? 100 : pageLength
+    //     const skipCount = (pageNumber - 1) * pageLength
+    //     const user = await this.model.find({user_id:id}).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+    //     const bookingPagesReq = this.model.count(filters)
+    // }
 
 }

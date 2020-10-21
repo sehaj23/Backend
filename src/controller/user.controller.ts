@@ -206,4 +206,11 @@ export default class UserController extends BaseController {
         res.send(notification)
     })
 
+    searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) =>{
+       const q = req.query
+        const user = await this.service.searchUsersByEmail(q)
+        res.send(user)
+
+    })
+
 }
