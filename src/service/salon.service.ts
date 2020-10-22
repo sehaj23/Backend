@@ -108,14 +108,14 @@ export default class SalonService extends BaseService {
                                                                         if (gotOpt.option_checked === false) {
                                                                                 found = true
                                                                                 service.options = service.options.splice(o, 1)
-                                                                        }else{
+                                                                        } else {
                                                                                 opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
                                                                                 if (opt.gender === "men") {
                                                                                         found = true
                                                                                         opt.duration = gotOpt.option_men_duration
                                                                                         opt.price = gotOpt.option_men_price
                                                                                         menFound = o
-                                                                                } else if(opt.gender === "women"){
+                                                                                } else if (opt.gender === "women") {
                                                                                         found = true
                                                                                         opt.duration = gotOpt.option_women_duration
                                                                                         opt.price = gotOpt.option_women_price
@@ -496,9 +496,11 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 10)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate({path:"user_id",populate : {
-                        path : 'profile_pic'
-                      }})
+                const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate({
+                        path: "user_id", populate: {
+                                path: 'profile_pic'
+                        }
+                })
                 const reviewsPage = this.reviewModel.find({ salon_id: _id }).count();
 
                 const [reviews, pageNo] = await Promise.all([reviewsAll, reviewsPage])
@@ -553,7 +555,7 @@ export default class SalonService extends BaseService {
         }
         getSalonService = async (phrase: string) => {
 
-               
+
                 var result1 = await this.model.aggregate([
                         {
                                 $project: {
@@ -581,7 +583,7 @@ export default class SalonService extends BaseService {
                                 $match:
                                 {
                                         "services.name": {
-                                                $regex: `.*${phrase}.*`,$options:'i'
+                                                $regex: `.*${phrase}.*`, $options: 'i'
                                         }
                                 }
                         }
@@ -733,30 +735,30 @@ export default class SalonService extends BaseService {
                 return rating
         }
         salonSlots = async (id: any, slotsDate: Date) => {
-                const salon = await  this.model.findById(id)
+                const salon = await this.model.findById(id)
                 const starting_hours = salon.start_working_hours
                 // getting the day from the date
                 let day = moment(slotsDate).day() - 1
-                if(day < 0 ) day = 6
-                
-                if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
+                if (day < 0) day = 6
+                console.log(day)
+                if (starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
                 const selectedStartingHour = moment(starting_hours[day])
-                if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
+                if (salon.end_working_hours.length < day) throw Error(`ending hours not found for day number ${day} `)
                 const selectedEndHour = moment(salon.end_working_hours[day])
+
                 const slots = []
-              
-                for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
-                                const slot = moment(i).format('hh:mm a')
-                                   if(moment().hours() < i.hours()){
+                for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
+                        const slot = moment(i).format('hh:mm a')
+                        if (moment().hours() < i.hours()) {
                                 slots.push(slot)
-                                
-                }}
+                        }
+                }
                 return slots
-        
-            }
-             minutesOfDay = function(m){
+
+        }
+        minutesOfDay = function (m) {
                 return m.minutes() + m.hours() * 60;
-              }
+        }
 
 
 

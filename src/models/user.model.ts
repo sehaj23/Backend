@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        index:true
     },
     password: {
         type: String,
@@ -90,6 +91,7 @@ const UserSchema = new mongoose.Schema({
         }]
     }
 })
+UserSchema.index({"$**": `text`});
 
 const User = mongoose.model<UserSI>("users", UserSchema)
 
