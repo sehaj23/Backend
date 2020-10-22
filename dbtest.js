@@ -1,7 +1,19 @@
-const a = [1, 2, 3, 4, 5]
+const a = {
+  s: [
+    {
+      "name": "Sanju"
+    },
+    {
+      "name": "Sanju 2"
+    },
+    
+  ]
+}
 
-const b = a.filter(c =>{
-  if(c > 2) return true
-})
+console.log(a)
 
-console.log(b)
+for(let s of a.s){
+  s.name = "Preet"
+}
+
+console.log(a)

@@ -271,8 +271,20 @@ export default class BookingService extends BaseService {
     }
 
     confirmRescheduleSlot = async (bookingId:string,date_time:Date,user_id:string)=>{
-       
-        return this.model.findOneAndUpdate({_id:bookingId,user_id:user_id},{"services.$.rescheduled_service_time":date_time,status:"Rescheduled"},{new:true})
+        const booking = await this.model.findOne({_id:bookingId,user_id:user_id}) as BookingSI
+        if(booking === null) throw new Error("Booking not found with given bookingId and userId")
+        const { services } = booking
+        let serviceTime: moment.Moment
+        for(let s of services){
+            if(!serviceTime){
+                serviceTime = moment(date_time)
+            }else{
+                serviceTime = serviceTime.add(s.duration, 'minutes')
+            }
+            s.service_time = serviceTime.toDate()
+        }
+        await booking.save()
+        return booking
     }
 
     getByUserId = async (userId: string) => {
