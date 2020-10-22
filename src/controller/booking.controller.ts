@@ -19,6 +19,9 @@ import RazorPayService from "../service/razorpay.service";
 import FeedbackService from "../service/feedback.service";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import sendNotificationToDevice from "../utils/send-notification";
+import EmployeeService from "../service/employee.service";
+import EmployeeSI from "../interfaces/employee.interface";
+import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
 
 
 export default class BookingController extends BaseController {
@@ -71,7 +74,70 @@ export default class BookingController extends BaseController {
     bookAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
+        console.log(req.body)
+        console.log("userId", userId)
         const { payment_method, location, date_time, salon_id, options, address } = req.body
+        let employeeIds: string[]
+        let nextDateTime: moment.Moment
+        for(let o of options){
+            const totalTime = o.quantity * o.duration
+            const convertedDateTime = moment(date_time)
+
+            let service_time: moment.Moment
+            if (nextDateTime === null || !nextDateTime) {
+                service_time = convertedDateTime
+                nextDateTime = convertedDateTime.add(totalTime, 'minutes')
+            } else {
+                service_time = nextDateTime
+                nextDateTime = nextDateTime.add(totalTime, 'minutes')
+            }
+            if(!o.employee_id || o.employee_id === null){
+                console.log(`Employee id is null for.. geting`)
+                if(!employeeIds || employeeIds?.length === 0){
+                    const salon = await this.salonService.getId(salon_id) as SalonSI
+                    if(salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
+                    employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
+                }
+                for(let i = 0; i < employeeIds.length; i++){
+                    const empId = employeeIds[i]
+                    const mongooseDateTime = service_time.toISOString()
+                    const empBookings = await this.service.get({"services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": mongooseDateTime})
+                    if(empBookings.length > 0) continue
+                    console.log("empBookings")
+                    console.log(empBookings)
+                    
+                    const empAbs = await this.employeeAbsentismService.get({"employee_id": mongoose.Types.ObjectId(empId), absenteeism_date: service_time.format(moment.HTML5_FMT.DATE)}) as EmployeeAbsenteeismSI[]
+                    if(empAbs.length > 0){
+                        console.log("empAbs")
+                        console.log(empAbs)
+                        for(let j = 0; j < empAbs.length;j++){
+                            const empAb = empAbs[j]
+                            let absent = false
+                            for(let empAbTime of empAb.absenteeism_times){
+                                console.log("empAbTime", empAbTime)
+                                console.log("dateTime.format('h:mm A')", service_time.format('h:mm A'))
+                                if(empAbTime === service_time.format('h:mm A')){
+                                    absent = true
+                                    break
+                                }
+                            }
+                            if(absent === false){
+                                o.employee_id = empId
+                                break
+                            }
+                        }
+                    }else{
+                        o.employee_id = empId
+                    }
+                    if(o.employee_id){
+                        break
+                    }
+                }
+            }
+            if(!o.employee_id || o.employee_id === null){
+                throw new ErrorResponse(`No employee found at this time for the service`)
+            }
+        }
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
         res.send(booking);
     })

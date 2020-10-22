@@ -135,6 +135,42 @@ export default class EmployeeService extends BaseService {
 
     }
 
+    allEmployeeSlotsBySalonId = async (salonId: string, slotsDate: Date) => {
+        const salon = await  this.salonModel.findOne({ _id: salonId }) as SalonSI
+        
+        const employeesAbsenteeism = await this.employeeAbsenteeismModel.find({ employee_id: { "$in": salon.employees }, absenteeism_date: slotsDate })
+        const starting_hours = salon.start_working_hours
+
+        // getting the day from the date
+        let day = moment(slotsDate).day() - 1
+        if(day < 0 ) day = 6
+        if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
+        const selectedStartingHour = moment(starting_hours[day])
+        if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
+        const selectedEndHour = moment(salon.end_working_hours[day])
+        const slots = []
+        for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
+            
+            const time = moment(i).format('hh:mm a')
+            const theSlot = {
+                store_date: time,
+                absent: false
+            }
+            if(employeesAbsenteeism !== null){
+                const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
+                for (let slot of employeeAbsentSlots) {
+                    slot = moment(slot).format('hh:mm a')
+                    if (slot === time) {
+                            theSlot.absent =  true
+                    }
+                }
+            }
+            slots.push(theSlot)
+        }
+        return slots
+
+    }
+
     // to add employee in empabs model
     employeeSelectSlot = async (data: any) => {
         const empAbsent = this.employeeAbsenteeismModel.create(data)

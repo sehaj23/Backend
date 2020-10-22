@@ -32,7 +32,7 @@ export default class BaseService {
     }
 
     getId = async (id: string) => {
-         return await this.model.findOne({_id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons")  //.populate({
+         return await this.model.findOne({_id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id")  //.populate({
             
     //     }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
     }

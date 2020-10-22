@@ -31,11 +31,7 @@ export default class BookingService extends BaseService {
 
     bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI) => {
         try {
-            const justDate = date_time.substring(0, 10)
-            const justTime = date_time.substring(11, 35)
-            logger.info(`justDate ${justDate}`)
-            logger.info(`justTime ${justTime}`)
-            let convertedDateTime: moment.Moment = moment(`${justDate} ${justTime}`, "YYYY-MM-DD hh:mm a").local()
+            let convertedDateTime: moment.Moment = moment(date_time)//.local()
             console.log("********")
             console.log(convertedDateTime)
 
@@ -64,7 +60,8 @@ export default class BookingService extends BaseService {
                     service_total_price: totalPrice,
                     zattire_commission,
                     vendor_commission,
-                    service_time
+                    service_time,
+                    employee_id: o.employee_id
                 }
                 return bookingService
             })
