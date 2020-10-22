@@ -749,9 +749,9 @@ export default class SalonService extends BaseService {
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
                         const slot = moment(i).format('hh:mm a')
-                        if (moment().hours() < i.hours()) {
+                       
                                 slots.push(slot)
-                        }
+                        
                 }
                 return slots
 
