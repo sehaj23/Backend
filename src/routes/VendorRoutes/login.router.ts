@@ -25,7 +25,7 @@ const loginRouter = Router()
 const loginService = new LoginService(Vendor)
 
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService)
 

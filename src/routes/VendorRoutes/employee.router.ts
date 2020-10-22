@@ -13,7 +13,7 @@ import User from "../../models/user.model";
 import OtpService from "../../service/otp.service";
 import UserService from "../../service/user.service";
 const employeeRouter = Router()
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const us = new UserService(User, Booking)
 const otpService = new OtpService(Otp, us, es)
 const ec  = new EmployeeController(es, otpService)

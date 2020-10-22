@@ -20,7 +20,7 @@ import UserService from '../../service/user.service'
 const loginRouter = Router()
 const loginService = new LoginService(User)
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const loginController = new LoginController(loginService, CONFIG.USER_JWT, '30 days', otpService)
 

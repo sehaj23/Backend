@@ -18,6 +18,7 @@ import ServiceI from "../interfaces/service.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import Photo from "../models/photo.model";
+import { BookingSI } from "../interfaces/booking.interface";
 
 
 
@@ -26,11 +27,13 @@ export default class EmployeeService extends BaseService {
     salonModel: mongoose.Model<any, any>
     feedbackVendorModel : mongoose.Model<any, any>
     reportVendorModel : mongoose.Model<any, any>
-    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, feedbackVendorModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>) {
+    bookingModel: mongoose.Model<any, any>
+    constructor(employeeModel: mongoose.Model<any, any>, employeeAbsenteeismModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, feedbackVendorModel : mongoose.Model<any, any>,reportVendorModel : mongoose.Model<any, any>, bookingModel: mongoose.Model<any, any>) {
         super(employeeModel)
         this.employeeAbsenteeismModel = employeeAbsenteeismModel
         this.salonModel = salonModel
         this.feedbackVendorModel=feedbackVendorModel
+        this.bookingModel = bookingModel
     }
 
     // ovveride getId to populate the services
@@ -102,6 +105,15 @@ export default class EmployeeService extends BaseService {
         const salonReq =  this.salonModel.findOne({ employees: [empId] })
         
         const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
+        const empBookings = await this.bookingModel.find({"services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": { "$gte": slotsDate }}) as BookingSI[]
+        let empBookingTimes: string[] = []
+        if(empBookings.length > 0){
+            for(let empB of empBookings){
+                for(let service of empB.services){
+                    empBookingTimes.push(moment(service.service_time).format('hh:mm a'))
+                }
+            }
+        }
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
         const starting_hours = salon.start_working_hours
 
@@ -128,6 +140,10 @@ export default class EmployeeService extends BaseService {
                             theSlot.absent =  true
                     }
                 }
+            }
+            // booking slot check
+            if(empBookingTimes.includes(time)){
+                theSlot.absent =  true
             }
             slots.push(theSlot)
         }

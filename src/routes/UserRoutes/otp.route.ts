@@ -18,7 +18,7 @@ import UserverifyToken from "../../middleware/User.jwt";
 
 const otpAppRouter = Router()
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
+const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const otpController = new OtpController(otpService)
 

@@ -21,14 +21,13 @@ import UserService from "../../service/user.service";
 const vendorRouter = Router()
 
 const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const vendorController = new VendorController(vs,es)
 
 const loginService = new LoginService(Vendor)
 
 const userService = new UserService(User, Booking)
-const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor)
-const otpService = new OtpService(Otp, userService, employeeService)
+const otpService = new OtpService(Otp, userService, es)
 const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService)
 
 vendorRouter.post("/",loginController.login);
