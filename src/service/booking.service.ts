@@ -283,6 +283,7 @@ export default class BookingService extends BaseService {
             }
             s.service_time = serviceTime.toDate()
         }
+        booking.status = 'Rescheduled'
         await booking.save()
         return booking
     }
