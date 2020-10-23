@@ -133,8 +133,10 @@ export default class SalonController extends BaseController {
         if (req.query.gender) {
             filter["gender"] = req.query.gender
         }
+        let atHome: boolean
         if (req.query.home) {
-            filter["at_home"] = Boolean(req.query.home)
+            atHome = (req.query.gender === "true")
+            filter["at_home"] = atHome
         }
         //TODO: validator
         if (!id) {
@@ -162,8 +164,8 @@ export default class SalonController extends BaseController {
                         return false
                     }
                 }
-                if (req.query.home) {
-                    if (opt.at_home !== Boolean(req.query.home)) {
+                if (req.query.home !== undefined) {
+                    if (opt.at_home !== atHome) {
                         return false
                     }
                 }
