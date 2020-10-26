@@ -71,9 +71,11 @@ export default class SalonService extends BaseService {
                 console.log("data", da)
                 const data = da.services as any[]
                 for (let di = 0; di < data.length; di++) {
+                        // this is getting the data
                         const gotService = data[di]
                         let categoryFound = -1
                         let serviceFound = -1
+
                         for (let i = 0; i < salon.services.length; i++) {
                                 const service = salon.services[i]
                                 console.log("service.category", service.category)
@@ -82,6 +84,7 @@ export default class SalonService extends BaseService {
                                         categoryFound = i
                                         console.log("gotService.service_name", gotService.service_name)
                                         console.log("service.name", service.name)
+                                        const newSercies = service
                                         if (gotService.service_name === service.name) {
                                                 serviceFound = i
                                                 if (gotService.service_checked === false) {
@@ -141,7 +144,7 @@ export default class SalonService extends BaseService {
                                                         // adding the missing gender
                                                         console.log("gotOpt.option_gender", gotOpt.option_gender)
                                                         console.log("menFound", menFound)
-                                                        if ((gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1) {
+                                                        if ((gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1 && gotOpt.option_checked) {
                                                                 const option: OptionI = {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_men_price,
@@ -150,7 +153,7 @@ export default class SalonService extends BaseService {
                                                                 }
                                                                 service.options.push(option)
                                                         }
-                                                        if ((gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") && womenFound === -1) {
+                                                        if ((gotOpt.option_gender === "Women" || gotOpt.option_gender === "Both") && womenFound === -1 && gotOpt.option_checked) {
                                                                 const option: OptionI = {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_women_price,

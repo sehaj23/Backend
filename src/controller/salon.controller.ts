@@ -135,7 +135,7 @@ export default class SalonController extends BaseController {
         }
         let atHome: boolean
         if (req.query.home) {
-            atHome = (req.query.gender === "true")
+            atHome = (req.query.home === "true")
             filter["at_home"] = atHome
         }
         //TODO: validator
