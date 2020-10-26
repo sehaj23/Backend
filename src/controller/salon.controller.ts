@@ -15,6 +15,7 @@ import { ReviewI } from "../interfaces/review.interface";
 import Salon from "../models/salon.model";
 import moment = require("moment");
 import OptionI from "../interfaces/options.interface";
+import ErrorResponse from "../utils/error-response";
 
 
 export default class SalonController extends BaseController {
@@ -147,14 +148,11 @@ export default class SalonController extends BaseController {
             return
         }
         const salonn = await this.service.getService(id, filter) as SalonSI
-        const salon = salonn.toObject() as SalonI
-        if (salon === null) {
-            const errMsg = `no service found`
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
+        if (salonn === null) {
+            throw new ErrorResponse("Salon not found.")
         }
+        const salon = salonn.toObject() as SalonI
+
         const services = salon.services
         const filterService = services.filter((service: ServiceI) => {
             const { options } = service
