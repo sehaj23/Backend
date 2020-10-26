@@ -160,7 +160,7 @@ export default class SalonController extends BaseController {
             const { options } = service
             const filterOptions = options.filter((opt: OptionI) => {
                 if (req.query.gender) {
-                    if (opt.gender !== req.query.gender && req.query.gender !== "both") {
+                    if (opt.gender !== req.query.gender && req.query.gender !== "both" && opt.gender !== "both") {
                         return false
                     }
                 }
