@@ -103,6 +103,8 @@ export default class SalonService extends BaseService {
                                                         let found = false
                                                         let menFound = -1
                                                         let womenFound = -1
+                                                        // this is an array to store the indexs of the elements to remove
+                                                        const removeOptsIndexes = []
                                                         for (let o = 0; o < service.options.length; o++) {
                                                                 const opt = service.options[o]
                                                                 console.log("opt.option_name", opt.option_name)
@@ -110,7 +112,8 @@ export default class SalonService extends BaseService {
                                                                 if (opt.option_name === gotOpt.option_name) {
                                                                         if (gotOpt.option_checked === false) {
                                                                                 found = true
-                                                                                service.options = service.options.splice(o, 1)
+                                                                                if(!removeOptsIndexes.includes(o))
+                                                                                        removeOptsIndexes.push(o)
                                                                         } else {
                                                                                 opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
                                                                                 if (opt.gender === "men") {
@@ -134,12 +137,20 @@ export default class SalonService extends BaseService {
                                                         console.log("womenFound", womenFound)
                                                         if (gotOpt.option_gender === "Women" && menFound > -1) {
                                                                 console.log("Removing men")
-                                                                service.options = service.options.splice(menFound, 1)
+                                                                if(!removeOptsIndexes.includes(menFound))
+                                                                        removeOptsIndexes.push(menFound)
                                                         }
                                                         if (gotOpt.option_gender === "Men" && womenFound > -1) {
                                                                 console.log("Removing women")
-                                                                service.options = service.options.splice(womenFound, 1)
+                                                                if(!removeOptsIndexes.includes(womenFound))
+                                                                        removeOptsIndexes.push(womenFound)
                                                         }
+
+                                                        // filtering the options
+                                                        service.options = service.options.filter((v: OptionI, i: number) => {
+                                                                if(removeOptsIndexes.includes(i)) return false
+                                                                return true
+                                                        })
 
                                                         // adding the missing gender
                                                         console.log("gotOpt.option_gender", gotOpt.option_gender)
@@ -149,7 +160,8 @@ export default class SalonService extends BaseService {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_men_price,
                                                                         gender: "men",
-                                                                        duration: gotOpt.option_men_duration
+                                                                        duration: gotOpt.option_men_duration,
+                                                                        at_home: gotOpt.option_service_location === "Home Only" ? true : false
                                                                 }
                                                                 service.options.push(option)
                                                         }
@@ -158,7 +170,8 @@ export default class SalonService extends BaseService {
                                                                         option_name: gotOpt.option_name,
                                                                         price: gotOpt.option_women_price,
                                                                         gender: "women",
-                                                                        duration: gotOpt.option_women_duration
+                                                                        duration: gotOpt.option_women_duration,
+                                                                        at_home: gotOpt.option_service_location === "Home Only" ? true : false
                                                                 }
                                                                 service.options.push(option)
                                                         }
