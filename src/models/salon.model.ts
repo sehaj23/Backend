@@ -46,7 +46,7 @@ const SalonSchema = new mongoose.Schema({
                 },
                 option_name: {
                     type: String,
-                    default: 'DIRECT',
+                    default: 'Default',
                     required: true,
                     index: true,
                 },
