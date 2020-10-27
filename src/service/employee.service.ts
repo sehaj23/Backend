@@ -14,7 +14,7 @@ import { PhotoI } from "../interfaces/photo.interface";
 
 import moment = require("moment");
 import SalonSI from "../interfaces/salon.interface";
-import ServiceI from "../interfaces/service.interface";
+import ServiceI, { ServiceSI } from "../interfaces/service.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import Photo from "../models/photo.model";
@@ -196,6 +196,7 @@ export default class EmployeeService extends BaseService {
     // add services by category names
     addServicesByCatgoryNames = async (salonId: string, employeeId: string, selectedCategoryNames: string[]) => {
         const employee = await this.getId(employeeId) as EmployeeSI
+        if(employee === null ) throw new Error(`Employee not found with this id`)
         const salon = await this.salonModel.findOne({_id: mongoose.Types.ObjectId(salonId) }) as SalonSI
         if(salon === null) throw new Error(`Salon not found with this id: ${salonId}`)
         const services = salon.services.filter((s: ServiceI) => selectedCategoryNames.includes(s.category))
@@ -205,6 +206,37 @@ export default class EmployeeService extends BaseService {
             employee.services.push(s._id)
         })
         console.log("employee.services", employee.services)
+        await employee.save()
+        return employee
+    }
+
+    updateServiceByServiceIds = async (salonId: string, employeeId: string, serviceIds: {service_id: string, selected: boolean}[]) => {
+        const employee = await this.model.findOne({_id: employeeId}) as EmployeeSI
+        if(employee === null ) throw new Error(`Employee not found with this id`)
+        const salon = await this.salonModel.findOne({_id: mongoose.Types.ObjectId(salonId) }) as SalonSI
+        if(salon === null) throw new Error(`Salon not found with this id: ${salonId}`)
+        const servicesToAdd: string[] = []
+        const serviceIndexToRemove: number[] = []
+        for(let i = 0; i < serviceIds.length; i++){
+            const gotService = serviceIds[i]
+            if((employee.services as string[]).includes(gotService.service_id)){
+                if(gotService.selected === false) serviceIndexToRemove.push(i)
+            }else{
+                if(gotService.selected === true)
+                    servicesToAdd.push(gotService.service_id)
+            }
+        }
+        // remove the services
+        for(let i of serviceIndexToRemove){
+            employee.services = employee.services.splice(i, 1)
+        }
+        // add the services
+        const salonServicesIds = (salon.services as ServiceSI[]).map((s: ServiceSI) => s._id.toString())
+        for(let serviceId of servicesToAdd){
+            if(salonServicesIds.includes(serviceId)){
+                (employee.services as string[]).push(serviceId)
+            }
+        }
         await employee.save()
         return employee
     }

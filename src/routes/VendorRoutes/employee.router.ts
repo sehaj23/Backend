@@ -26,5 +26,7 @@ employeeRouter.put("/edit/:id",VendorverifyToken,ec.put)
 employeeRouter.get("/:id",VendorverifyToken,ec.getByIdWithService)
 
 employeeRouter.patch("/add-service-by-category/:salonId/:employeeId",VendorverifyToken,ec.addServicesByCatgoryNames)
+employeeRouter.patch("/add-service-by-serviceids/:salonId/:employeeId",VendorverifyToken,ec.updateServiceByServiceIds)
+
 
 export default employeeRouter

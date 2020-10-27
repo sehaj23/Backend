@@ -154,6 +154,16 @@ export default class EmployeeController extends BaseController {
         res.send(employee)
     })
 
+    updateServiceByServiceIds = controllerErrorHandler(async (req: Request, res: Response) => {
+        const {salonId, employeeId} = req.params
+        const {selectedServiceIds} = req.body
+        console.log("employeeId", employeeId)
+        console.log("selectedCategoryNames", selectedServiceIds)
+        console.log("salonId", salonId)
+        const employee = await this.service.updateServiceByServiceIds(salonId, employeeId, selectedServiceIds)
+        res.send(employee)
+    })
+
     employeeDelete = controllerErrorHandler(async (req: Request, res: Response) => {
       //@ts-ignore
         const id = req.empId
