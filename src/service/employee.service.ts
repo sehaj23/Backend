@@ -102,7 +102,8 @@ export default class EmployeeService extends BaseService {
 
 
     employeeSlots = async (empId: any, slotsDate: Date) => {
-        const salonReq =  this.salonModel.findOne({ employees: [empId] })
+        const salonReq = this.salonModel.findOne({ employees: {$in:[empId] }})
+        
         
         const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
         const empBookings = await this.bookingModel.find({"services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": { "$gte": slotsDate }}) as BookingSI[]
@@ -115,6 +116,10 @@ export default class EmployeeService extends BaseService {
             }
         }
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
+        console.log(salon)
+        console.log(employeesAbsenteeism)
+        console.log(empBookings)
+        
         const starting_hours = salon.start_working_hours
 
         // getting the day from the date

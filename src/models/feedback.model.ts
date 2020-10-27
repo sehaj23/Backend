@@ -18,7 +18,7 @@ const FeedbackSchema = new mongoose.Schema({
     },
     booking_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
+        ref: "booking",
     },
     rating:{
         type:Number

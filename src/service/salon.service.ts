@@ -573,14 +573,7 @@ export default class SalonService extends BaseService {
 
 
                 var result1 = await this.model.aggregate([
-                        {
-                                $project: {
-                                        _id: 1,
-                                        services: 1,
-                                        profile_pic: 1,
-                                        name: 1
-                                }
-                        },
+                      
 
                         {
                                 $lookup:
@@ -591,18 +584,46 @@ export default class SalonService extends BaseService {
                                         as: "profile_pic",
                                 },
                         },
-                        // {
-                        //     $unwind: "$service_info"
-                        // },
+                        {
+                            $unwind: "$services"
+                        },
                         {
 
                                 $match:
                                 {
-                                        "services.name": {
+                                        "services.category": {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
-                                        }
+                                        },
+                                      //  "$$services.options.at_home":false
+                                        
+                                       
+
+                                        
                                 }
-                        }
+                               
+                        },
+                        {
+                                $project: {
+                                        _id: 1,
+                                        
+                                        profile_pic: 1,
+                                        name: 1,
+                                        rating:1,
+                                        services:1
+                                        
+                                        // 'filteredValue': {
+                                               
+                                                    
+                                        //         $filter: {
+                                        //         input: "$services.options",
+                                        //         as: "option",
+                                        //         cond: { $eq: [ '$$option.at_home', false ] }
+                                        //       }
+                                        
+                                        // }
+                                      
+                                }
+                        },
                 ])
                 return result1
 

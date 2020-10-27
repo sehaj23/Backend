@@ -7,4 +7,4 @@ export interface FeedbackI{
     title:string,
     description: string,    
 }
-export interface  FeedbackI extends mongoose.Document{}
+export interface  FeedbackSI extends FeedbackI, mongoose.Document{}
