@@ -11,7 +11,7 @@ const numCPUs = require('os').cpus().length;
 
 const PORT = process.env.PORT || 8082;
 db.connectt().then(() => {
-    if (cluster.isMaster && process.env.NODE_ENV === 'production') {
+    if (cluster.isMaster) {
         console.log(`Master ${process.pid} is running`);
 
         // Fork workers.
