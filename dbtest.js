@@ -1,19 +1,11 @@
-const a = {
-  s: [
-    {
-      "name": "Sanju"
-    },
-    {
-      "name": "Sanju 2"
-    },
-    
-  ]
-}
-
-console.log(a)
-
-for(let s of a.s){
-  s.name = "Preet"
-}
-
-console.log(a)
+var AWS = require("aws-sdk");
+require('dotenv').config()
+AWS.config.getCredentials(function(err) {
+  if (err) console.log(err.stack);
+  // credentials not loaded
+  else {
+    AWS.config.update({region: 'ap-south-1'})
+    console.log("Access key:", AWS.config.credentials.accessKeyId);
+    console.log("Region: ", AWS.config.region);
+  }
+});

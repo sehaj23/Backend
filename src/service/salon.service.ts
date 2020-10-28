@@ -385,20 +385,22 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 //TODO: send salon with rating 5
-                const salons = await this.model.find().populate("photo_ids").populate("profile_pic").skip(skipCount).limit(pageLength).sort([['rating', -1], ['createdAt', -1]])
+                const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                 // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                const salonPage = this.reviewModel.find().count();
+                const salonPage = this.reviewModel.aggregate([
+                        {"$count": "count"}
+                ])
 
                 const [salon, pageNo] = await Promise.all([salons, salonPage])
-                const totalPages = Math.ceil(pageNo / pageLength)
+                let totalPageNumber = 10
+                if(pageNo.length > 0){
+                        totalPageNumber = pageNo[0].count
+                }
+                const totalPages = Math.ceil(totalPageNumber / pageLength)
                 return { salon, totalPages, pageNumber }
-
-
-                //@ts-ignore
-                //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
-                return salons
-
         }
+
         //gives option with at_home=false
         getHomeServiceSalon = async (centerPoint: any, km: string) => {
                 var checkPoint = {}
