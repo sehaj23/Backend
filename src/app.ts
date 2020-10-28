@@ -1,39 +1,34 @@
-import * as express from "express";
-import * as bobyParser from "body-parser";
-import * as morgan from "morgan";
-import * as fs from "fs";
-import * as path from "path";
-import * as dotenv from "dotenv";
-import router from "./routes/AdminRoutes/index.routes";
-import Vendorrouter from "./routes/VendorRoutes/index.routes"
-import Userrouter from "./routes/UserRoutes/index.routes"
-import VendorApprouter from "./routes/VendorAppRoutes/index.routes"
 import * as aws from "aws-sdk";
+import * as compression from 'compression';
+import * as cors from "cors";
+import * as dotenv from "dotenv";
+import * as express from "express";
+import * as fs from "fs";
+import * as http from 'http';
+import * as https from 'https';
+import * as morgan from "morgan";
 import * as multer from "multer";
 import * as multerS3 from "multer-s3";
-import NewVendor from "./models/newVendor.model";
-import logger from "./utils/logger";
-import * as cors from "cors";
+import redisClient from './redis/redis';
+import router from "./routes/AdminRoutes/index.routes";
+import Userrouter from "./routes/UserRoutes/index.routes";
+import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
+import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
-import { AdminRedis } from "./redis/index.redis";
-import redisClient from './redis/redis'
-import Vendor from "./models/vendor.model";
-import encryptData from "./utils/password-hash";
-import { VendorI } from "./interfaces/vendor.interface";
-import OtpService from "./service/otp.service";
-import MongoCounterService from "./service/mongo-counter.service";
-import MongoCounter from "./models/mongo-counter.model";
-import { MongoCounterI } from "./interfaces/mongo-counter.interface";
 
 const app = express();
+export const httpApp = http.createServer(app);
+http.globalAgent.maxSockets = Infinity;
+https.globalAgent.maxSockets = Infinity;
+
+app.use(compression())
 app.use(cors({
   origin: ['https://vendor.zattire.com', 'http://localhost:3000'],
   credentials: true
 }));
 
-export const http = require('http').createServer(app);
 
-export const io: SocketIO.Server = require("socket.io")(http);
+export const io: SocketIO.Server = require("socket.io")(httpApp);
 
 startSocketIO(io)
 
@@ -86,7 +81,7 @@ const accessLogStream = fs.createWriteStream("access.log", { flags: "a" });
 // app.use(morgan('combined', { stream: accessLogStream }))
 app.use(
   morgan(
-    ":remote-addr - :method :url :status :res[content-length] - :response-time ms"
+    ":remote-addr - :method :url :status :res[content-length] - :response-time ms",
   )
 );
 
@@ -96,70 +91,23 @@ app.use("/api", router);
 app.use("/api/v", Vendorrouter)
 app.use("/api/u", Userrouter)
 app.use("/api/vendorapp",VendorApprouter)
-app.get(
-  "/app/get-vendor",
-  async (req: express.Request, res: express.Response) => {
-    try {
-      const nv = await NewVendor.find();
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-    }
-  }
-);
 
-app.get("/cv",
-  async (req: express.Request, res: express.Response) => {
-    try {
+// app.get("/r", async (req: express.Request, res: express.Response) => {
+//   const data = await UserRedis.set("user", "{hello: 'world'}")
+//   res.send(`Hey ${data}`)
+// })
 
-      const vendor: VendorI = {
-        name: "Preet",
-        email: "preet@gmail.com",
-        password: encryptData("preet123"),
-        contact_number: "1234567890",
-      };
-      const v = await Vendor.create(vendor)
-      console.log(v)
-      res.send(v)
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-    }
-  }
-);
+// app.get("/r/g", async (req: express.Request, res: express.Response) => {
+//   const data = await UserRedis.get("user")
+//   res.send(`Hey ${data}`)
+// })
+
+// app.get("/r/r", async (req: express.Request, res: express.Response) => {
+//   const data = await UserRedis.removeAll()
+//   res.send(`Hey ${data}`)
+// })
 
 
-const adminId = "5efa3d3af9212b04a31b5d33"
-// app.get("/r/s/:id", async (req: express.Request, res: express.Response) => {
-//   try{  
-//     const id = req.params.id || adminId
-//     const ar: string =  await AdminRedis.get(id, "dnasn")
-//     console.log(ar)
-//     if(ar !== null){
-//       return res.send(JSON.parse(ar))
-//     }
-//   }
-
-// );
-
-app.put(
-  "/update-vendor/:id",
-  async (req: express.Request, res: express.Response) => {
-    const _id = req.params.id;
-
-    try {
-      const nv = await NewVendor.update({ _id }, req.body);
-      res.send(nv);
-    } catch (e) {
-      logger.error(e.message);
-      res.status(403);
-      res.send({ error: e.message });
-    }
-  }
-);
 
 // TEMP: to clear redis
 app.get("/r/clr", async (req: express.Request, res: express.Response) => {
@@ -177,6 +125,8 @@ app.get("/", (req, res) => {
     Destination: { /* required */
       ToAddresses: [
         'preetsc27@gmail.com',
+        'kashish@zattire.com',
+        'pushaan@zattire.com'
         /* more items */
       ]
     },
@@ -321,7 +271,7 @@ app.get("/", (req, res) => {
          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color:transparent"><![endif]-->
          <div style="background-color:transparent;overflow:hidden">
          <div class="block-grid" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
-         <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;background-image:url('images/bgnl.png');background-position:center top;background-repeat:no-repeat">
+         <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/bgnl.png');background-position:center top;background-repeat:no-repeat">
          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="855" style="background-color:transparent;width:855px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num12" style="min-width: 320px; max-width: 855px; display: table-cell; vertical-align: top; width: 855px;">
@@ -405,7 +355,7 @@ app.get("/", (req, res) => {
          </tbody>
          </table>
          <div align="center" class="img-container center fixedwidth" style="padding-right: 0px;padding-left: 5px;">
-         <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 5px;" align="center"><![endif]--><img align="center" alt="Alternate text" border="0" class="center fixedwidth" src="images/nl10.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 855px; display: block;" title="Alternate text" width="855"/>
+         <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 5px;" align="center"><![endif]--><img align="center" alt="Alternate text" border="0" class="center fixedwidth" src="https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/nl10.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 855px; display: block;" title="Alternate text" width="855"/>
          <!--[if mso]></td></tr></table><![endif]-->
          </div>
          <table border="0" cellpadding="0" cellspacing="0" class="divider" role="presentation" style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;" valign="top" width="100%">
@@ -440,10 +390,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid three-up" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="213" style="background-color:transparent;width:213px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num3" style="display: table-cell; vertical-align: top; max-width: 320px; min-width: 213px; width: 213px;">
          <div style="width:100% !important;">
@@ -509,10 +459,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid three-up no-stack" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="213" style="background-color:transparent;width:213px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num3" style="display: table-cell; vertical-align: top; max-width: 320px; min-width: 213px; width: 213px;">
          <div style="width:100% !important;">
@@ -577,10 +527,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid three-up" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="213" style="background-color:transparent;width:213px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num3" style="display: table-cell; vertical-align: top; max-width: 320px; min-width: 213px; width: 213px;">
          <div style="width:100% !important;">
@@ -645,10 +595,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid three-up" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="213" style="background-color:transparent;width:213px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num3" style="display: table-cell; vertical-align: top; max-width: 320px; min-width: 213px; width: 213px;">
          <div style="width:100% !important;">
@@ -713,10 +663,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/2c0778ea-5d63-4f02-b646-bbd492f65bf4.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/2c0778ea-5d63-4f02-b646-bbd492f65bf4.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid three-up" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/2c0778ea-5d63-4f02-b646-bbd492f65bf4.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/8e1e67be-df46-4142-bab1-17ee11dd1160.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="213" style="background-color:transparent;width:213px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px;"><![endif]-->
          <div class="col num3" style="display: table-cell; vertical-align: top; max-width: 320px; min-width: 213px; width: 213px;">
          <div style="width:100% !important;">
@@ -781,10 +731,10 @@ app.get("/", (req, res) => {
          </div>
          </div>
          </div>
-         <div style="background-image:url('images/nl11.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
+         <div style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/nl11.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;overflow:hidden">
          <div class="block-grid" style="min-width: 320px; max-width: 855px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; Margin: 0 auto; width: 100%; background-color: transparent;">
          <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('images/nl11.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
+         <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-image:url('https://zattire-images.s3.ap-south-1.amazonaws.com/email-assets/nl11.png');background-position:center top;background-repeat:no-repeat;background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:855px"><tr class="layout-full-width" style="background-color:transparent"><![endif]-->
          <!--[if (mso)|(IE)]><td align="center" width="855" style="background-color:transparent;width:855px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]-->
          <div class="col num12" style="min-width: 320px; max-width: 855px; display: table-cell; vertical-align: top; width: 855px;">
          <div style="width:100% !important;">
@@ -895,11 +845,11 @@ app.get("/", (req, res) => {
     function(data) {
       console.log("Email sent")
       console.log(data.MessageId);
+      res.send(`Hey you at Zattire (P).. ${aws.config.region}`)
     }).catch(
       function(err) {
       console.error(err, err.stack);
     });
-  res.send(`Hey you at Zattire (P).. ${aws.config.region}`)
 })
 
 // this is for 404

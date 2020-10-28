@@ -1,15 +1,17 @@
-import { http } from "./app";
+import * as dotenv from "dotenv";
+import { httpApp } from "./app";
+import './aws';
 import * as db from "./database";
-import RazorPayService from "./service/razorpay.service";
 import firebase from "./utils/firebase";
-import './aws'
+
+dotenv.config()
 
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
 const PORT = process.env.PORT || 8082;
 db.connectt().then(() => {
-    if (cluster.isMaster) {
+    if (cluster.isMaster && process.env.NODE_ENV === 'production') {
         console.log(`Master ${process.pid} is running`);
 
         // Fork workers.
@@ -23,7 +25,7 @@ db.connectt().then(() => {
     } else {
         // Workers can share any TCP connection
         // In this case it is an HTTP server
-        const server = http.listen(PORT, async () => {
+        const server = httpApp.listen(PORT, async () => {
             const name = firebase.name
             console.log(`Server is running http://localhost:${PORT}`);
             console.log(`Firebase app name: ${name}`);

@@ -629,6 +629,7 @@ export default class SalonController extends BaseController {
             res.status(400).send({ success: false, message: msg });
             return
         }
+        //@ts-ignore
         const slotsDate = new Date(gotSlotsDate)
         if(moment(slotsDate).isBefore(moment().subtract(1,'day'))){
             const msg = "past booking not allowed"

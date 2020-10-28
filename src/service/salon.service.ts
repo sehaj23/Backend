@@ -1,24 +1,14 @@
-import { Router, Request, Response } from "express";
-import CONFIG from "../config";
-import logger from "../utils/logger";
-
-import EventDesignerI from "../interfaces/eventDesigner.model";
 import mongoose from "../database";
-import BaseService from "../service/base.service";
-import { DesignersI } from "../interfaces/designer.interface";
+import { EmployeeI } from "../interfaces/employee.interface";
+import OptionI from "../interfaces/options.interface";
+import { ReviewI } from "../interfaces/review.interface";
 import SalonSI, { SalonI } from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
-import { EmployeeI } from "../interfaces/employee.interface";
-import Offer from "../models/offer.model";
-import { vendorJWTVerification } from "../middleware/VendorJwt"
-import { PhotoI } from "../interfaces/photo.interface";
-import Photo from "../models/photo.model";
-import { Model } from "mongoose";
-import { OfferI } from "../interfaces/offer.interface";
+import { SalonRedis } from "../redis/index.redis";
+import BaseService from "../service/base.service";
 import { arePointsNear } from "../utils/location";
-import ReviewSI, { ReviewI } from "../interfaces/review.interface";
+
 import moment = require("moment");
-import OptionI from "../interfaces/options.interface";
 
 
 
@@ -112,7 +102,7 @@ export default class SalonService extends BaseService {
                                                                 if (opt.option_name === gotOpt.option_name) {
                                                                         if (gotOpt.option_checked === false) {
                                                                                 found = true
-                                                                                if(!removeOptsIndexes.includes(o))
+                                                                                if (!removeOptsIndexes.includes(o))
                                                                                         removeOptsIndexes.push(o)
                                                                         } else {
                                                                                 opt.at_home = gotOpt.option_service_location === "Home Only" ? true : false
@@ -137,18 +127,18 @@ export default class SalonService extends BaseService {
                                                         console.log("womenFound", womenFound)
                                                         if (gotOpt.option_gender === "Women" && menFound > -1) {
                                                                 console.log("Removing men")
-                                                                if(!removeOptsIndexes.includes(menFound))
+                                                                if (!removeOptsIndexes.includes(menFound))
                                                                         removeOptsIndexes.push(menFound)
                                                         }
                                                         if (gotOpt.option_gender === "Men" && womenFound > -1) {
                                                                 console.log("Removing women")
-                                                                if(!removeOptsIndexes.includes(womenFound))
+                                                                if (!removeOptsIndexes.includes(womenFound))
                                                                         removeOptsIndexes.push(womenFound)
                                                         }
 
                                                         // filtering the options
                                                         service.options = service.options.filter((v: OptionI, i: number) => {
-                                                                if(removeOptsIndexes.includes(i)) return false
+                                                                if (removeOptsIndexes.includes(i)) return false
                                                                 return true
                                                         })
 
@@ -384,21 +374,36 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                //TODO: send salon with rating 5
-                const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
-                // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
-                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                const salonPage = this.reviewModel.aggregate([
-                        {"$count": "count"}
-                ])
-
-                const [salon, pageNo] = await Promise.all([salons, salonPage])
-                let totalPageNumber = 10
-                if(pageNo.length > 0){
-                        totalPageNumber = pageNo[0].count
+                const filter = {
+                        pageNumber,
+                        pageLength,
+                        skipCount
                 }
-                const totalPages = Math.ceil(totalPageNumber / pageLength)
-                return { salon, totalPages, pageNumber }
+                const redisKey = "getSalon"
+                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+                let out
+                if (cahceGetSalon === null) {
+                        //TODO: send salon with rating 5
+                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                        const salonPage = this.reviewModel.aggregate([
+                                { "$count": "count" }
+                        ])
+
+                        const [salon, pageNo] = await Promise.all([salons, salonPage])
+                        let totalPageNumber = 10
+                        if (pageNo.length > 0) {
+                                totalPageNumber = pageNo[0].count
+                        }
+                        const totalPages = Math.ceil(totalPageNumber / pageLength)
+                        out = { salon, totalPages, pageNumber }
+                        SalonRedis.set(redisKey, out, filter)
+                }else{
+                        out = JSON.parse(cahceGetSalon)
+                }
+
+                return out
         }
 
         //gives option with at_home=false
@@ -767,9 +772,9 @@ export default class SalonService extends BaseService {
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
                         const slot = moment(i).format('hh:mm a')
-                       
-                                slots.push(slot)
-                        
+
+                        slots.push(slot)
+
                 }
                 return slots
 
