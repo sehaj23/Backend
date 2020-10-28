@@ -169,7 +169,7 @@ export default class SalonController extends BaseController {
                 }
                 return true
             })
-            if(filterOptions.length > 0){
+            if (filterOptions.length > 0) {
                 service.options = filterOptions
                 return true
             }
@@ -492,13 +492,13 @@ export default class SalonController extends BaseController {
         //@ts-ignore
         post.user_id = req.userId
         post.salon_id = _id
-       
+
         const postReview = await this.service.postReviews(post)
         const getReviews = await this.service.getReviewsRating(_id)
         const totalRating = getReviews[0].totalRating
         const totalItemCount = getReviews[0].totalItemcount
-        const avgRating = totalRating/totalItemCount
-        const rating = await this.service.put(_id,{rating:avgRating})
+        const avgRating = totalRating / totalItemCount
+        const rating = await this.service.put(_id, { rating: avgRating })
         if (postReview === null) {
             logger.error(`Unable to post`)
             res.status(400)
@@ -604,11 +604,18 @@ export default class SalonController extends BaseController {
 
     getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string
+        let gotSalon
+        let home: boolean
+        if (req.query.home) {
+            home = (req.query.home === "true")
+            // filter["at_home"] = atHome
+        }
 
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
 
         const result = await this.service.getSalonService(phrase)
+        
         res.send(result)
     })
 
@@ -618,10 +625,10 @@ export default class SalonController extends BaseController {
         res.send(rating)
 
     })
-    salonSlots =controllerErrorHandler ( async (req: Request, res: Response)=>{
+    salonSlots = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
-        let gotSlotsDate =   req.query.slots_date || moment.now()
-        
+        let gotSlotsDate = req.query.slots_date || moment.now()
+
         //TODO:validator
         if (!gotSlotsDate) {
             const msg = "Something went wrong"
@@ -631,16 +638,16 @@ export default class SalonController extends BaseController {
         }
         //@ts-ignore
         const slotsDate = new Date(gotSlotsDate)
-        if(moment(slotsDate).isBefore(moment().subtract(1,'day'))){
+        if (moment(slotsDate).isBefore(moment().subtract(1, 'day'))) {
             const msg = "past booking not allowed"
             logger.error(msg)
             res.status(400).send({ success: false, message: msg });
             return
         }
-      
+
         const slots = await this.service.salonSlots(id, slotsDate)
-  
-        if(slots==null){
+
+        if (slots == null) {
             logger.error(`No Slots Found`)
             res.status(400)
             res.send({ message: `No Slots Found` })
