@@ -2,6 +2,7 @@ import * as AWS from "aws-sdk";
 import * as fs from 'fs';
 import logger from "../logger";
 
+
 type EmailSentTo = 'salon' | 'user' | 'admin' | 'employee'
 type EmailType = 'booking requested' | 'booking confirmed' | 'signup'
 
@@ -68,7 +69,7 @@ export default class SendEmail {
 
     static emailConfirm = async (userEmail: string) => {
 
-        fs.readFile('./email-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile('src/utils/emails/email-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
@@ -130,7 +131,7 @@ export default class SendEmail {
         let startingMessage = "Email sent to"
         if (!success)
             startingMessage = "Error sending email to "
-        logger.info(`${startingMessage} :: ${sentTo} :: ${emailType} :: ${receiverEmail} :: ${message}`)
+        logger.info(`${startingMessage} :: ${sentTo} :: ${emailType} :: ${receiverEmail} :: ${message}`)   
     }
 
 }

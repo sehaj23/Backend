@@ -103,6 +103,8 @@ export default class LoginController extends BaseController {
       return
     }
     SendEmail.emailConfirm(createUser.email)
+   
+    console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
