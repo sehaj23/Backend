@@ -1,24 +1,20 @@
-import * as jwt from "jwt-then";
-import CONFIG from "../config";
-import EmployeeSI, { EmployeeI } from "../interfaces/employee.interface";
-import * as crypto from "crypto"
-import { Router, Request, Response } from "express";
-
-
-import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface"
-import logger from "../utils/logger"
-import mongoose from "../database"
-
-import BaseService from "./base.service";
+import mongoose from "../database";
+import { BookingSI } from "../interfaces/booking.interface";
+import EmployeeSI from "../interfaces/employee.interface";
+import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
+import { FeedbackI } from "../interfaces/feedback.interface";
 import { PhotoI } from "../interfaces/photo.interface";
-
-import moment = require("moment");
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import SalonSI from "../interfaces/salon.interface";
 import ServiceI, { ServiceSI } from "../interfaces/service.interface";
-import { FeedbackI } from "../interfaces/feedback.interface";
-import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import Photo from "../models/photo.model";
-import { BookingSI } from "../interfaces/booking.interface";
+import MyStringUtils from "../utils/my-string.utils";
+import BaseService from "./base.service";
+
+
+
+
+import moment = require("moment");
 
 
 
@@ -222,9 +218,11 @@ export default class EmployeeService extends BaseService {
         if(salon === null) throw new Error(`Salon not found with this id: ${salonId}`)
         const servicesToAdd: string[] = []
         const serviceIndexToRemove: number[] = []
+        //@ts-ignore
+        const empServicesString: string[] = employee.services.map((s: any) => MyStringUtils.getMongoId(s))
         for(let i = 0; i < serviceIds.length; i++){
             const gotService = serviceIds[i]
-            if((employee.services as string[]).includes(gotService.service_id)){
+            if(empServicesString.includes(gotService.service_id)){
                 if(gotService.selected === false) serviceIndexToRemove.push(i)
             }else{
                 if(gotService.selected === true)
