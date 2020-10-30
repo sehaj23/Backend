@@ -24,7 +24,7 @@ https.globalAgent.maxSockets = Infinity;
 
 app.use(compression())
 app.use(cors({
-  origin: ['https://vendor.zattire.com', 'http://localhost:3000'],
+  origin: ['https://vendor.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000'],
   credentials: true
 }));
 
