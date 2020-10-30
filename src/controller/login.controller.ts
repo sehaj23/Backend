@@ -8,14 +8,10 @@ import { UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
 import SendEmail from '../utils/emails/send-email'
-<<<<<<< HEAD
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
-=======
-import SendEmail from "../utils/emails/send-email"
->>>>>>> 085bafe (confirm email signup try)
 
 export default class LoginController extends BaseController {
   jwtKey: string
