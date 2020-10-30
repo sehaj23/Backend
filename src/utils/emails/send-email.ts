@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import logger from "../logger";
 
 type EmailSentTo = 'salon' | 'user' | 'admin' | 'employee'
-type EmailType = 'booking requested' | 'booking confirmed'
+type EmailType = 'booking requested' | 'booking confirmed' | 'signup'
 
 export default class SendEmail {
 
@@ -61,6 +61,65 @@ export default class SendEmail {
                 }).catch(
                     function (err) {
                         SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
+                    });
+        })
+
+    }
+
+    static emailConfirm = async (userEmail: string) => {
+
+        fs.readFile('./email-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+            if (err) {
+                SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
+                return
+            }
+
+            // TODO: string interpolation for the html content
+
+            const params = {
+                Destination: { /* required */
+                    ToAddresses: [
+                        'preetsc27@gmail.com',
+                        'kashish@zattire.com',
+                        'pushaan@zattire.com',
+                        'developers@zattire.com',
+                        userEmail
+                        /* more items */
+                    ]
+                },
+                Message: { /* required */
+                    Body: { /* required */
+                        Html: {
+                            Charset: "UTF-8",
+                            Data: data
+                        },
+                        Text: {
+                            Charset: "UTF-8",
+                            Data: "Hello!\n Welcome to Zattire. 33"
+                        }
+                    },
+                    Subject: {
+                        Charset: 'UTF-8',
+                        Data: 'Welcome to zattire'
+                    }
+                },
+                Source: 'preet@zattire.com', /* required */
+                ReplyToAddresses: [
+                    'preet@zattire.com',
+                    /* more items */
+                ],
+            };
+
+            // Create the promise and SES service object
+            var sendPromise = new AWS.SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
+
+            // Handle promise's fulfilled/rejected states
+            sendPromise.then(
+                function (data) {
+                    SendEmail.logEmailStatus(true, 'signup', 'user', userEmail, data.MessageId)
+                }).catch(
+                    function (err) {
+                        SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                     });
         })
 

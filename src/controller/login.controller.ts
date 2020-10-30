@@ -7,10 +7,14 @@ import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
+<<<<<<< HEAD
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
+=======
+import SendEmail from "../utils/emails/send-email"
+>>>>>>> 085bafe (confirm email signup try)
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -101,6 +105,7 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
+    SendEmail.emailConfirm(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
