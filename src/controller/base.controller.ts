@@ -1,7 +1,7 @@
-import BaseService from "../service/base.service";
 import { Request, Response } from "express";
-import logger from "../utils/logger";
 import { PhotoI } from "../interfaces/photo.interface";
+import BaseService from "../service/base.service";
+import logger from "../utils/logger";
 export default class BaseController {
 
     service: BaseService

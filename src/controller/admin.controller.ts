@@ -1,9 +1,7 @@
-import BaseController from "./base.controller";
-import AdminService from "../service/admin.service";
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import encryptData from "../utils/password-hash";
-import Admin from "../models/admin.model";
+import AdminService from "../service/admin.service";
+import BaseController from "./base.controller";
 
 
 export default class AdminController extends BaseController{

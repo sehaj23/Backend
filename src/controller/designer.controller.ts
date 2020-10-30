@@ -1,15 +1,10 @@
-import BaseController from "./base.controller";
-import DesignerService from "../service/designer.service";
 import { Request, Response } from "express";
-import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import { DesignersI, DesignersSI } from "../interfaces/designer.interface";
-import logger from "../utils/logger";
-import ServiceI from "../interfaces/service.interface";
-import mongoose from "../database";
-import { EmployeeI } from "../interfaces/employee.interface";
-import { EventMakeupArtistI } from "../interfaces/eventMakeupArtist.interface";
+import { DesignersSI } from "../interfaces/designer.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
-import { VendorSI } from "../interfaces/vendor.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import DesignerService from "../service/designer.service";
+import logger from "../utils/logger";
+import BaseController from "./base.controller";
 
 export default class DesignerController extends BaseController {
 

@@ -1,27 +1,22 @@
-import BaseController from "./base.controller";
-import BookingService from "../service/booking.service";
 import { Request, Response } from "express";
-import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import encryptData from "../utils/password-hash";
-import logger from "../utils/logger";
-import moment = require("moment");
 import mongoose from "../database";
-import SalonService from "../service/salon.service";
-import ErrorResponse from "../utils/error-response";
-import EmployeeAbsenteesmService from "../service/employee-absentism.service";
-import SalonSI from "../interfaces/salon.interface";
-import { BookingI, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
-import CartService from "../service/cart.service";
-import { CartSI } from "../interfaces/cart.interface";
-import { ServiceSI } from "../interfaces/service.interface";
-import { map } from "bluebird";
-import RazorPayService from "../service/razorpay.service";
-import FeedbackService from "../service/feedback.service";
-import { FeedbackI } from "../interfaces/feedback.interface";
-import sendNotificationToDevice from "../utils/send-notification";
-import EmployeeService from "../service/employee.service";
+import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
+import { FeedbackI } from "../interfaces/feedback.interface";
+import SalonSI from "../interfaces/salon.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import BookingService from "../service/booking.service";
+import CartService from "../service/cart.service";
+import EmployeeAbsenteesmService from "../service/employee-absentism.service";
+import FeedbackService from "../service/feedback.service";
+import RazorPayService from "../service/razorpay.service";
+import SalonService from "../service/salon.service";
+import ErrorResponse from "../utils/error-response";
+import logger from "../utils/logger";
+import sendNotificationToDevice from "../utils/send-notification";
+import BaseController from "./base.controller";
+import moment = require("moment");
 
 
 export default class BookingController extends BaseController {
@@ -576,5 +571,11 @@ export default class BookingController extends BaseController {
         const q = req.query
         const booking = await this.service.getbookingsAdmin(q)
         res.send(booking)  
+    })
+
+    bookAgain = controllerErrorHandler(async (req: Request, res: Response) => {
+        const {booking_id} = req.body
+        const cart = await this.service.bookAgain(booking_id)
+        res.send(cart)  
     })
 }

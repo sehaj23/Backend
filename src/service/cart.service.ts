@@ -1,7 +1,7 @@
-import BaseService from "./base.service";
 import mongoose from "../database";
-import CartI, { CartSI, CartOption } from "../interfaces/cart.interface";
+import CartI, { CartOption, CartSI } from "../interfaces/cart.interface";
 import SalonSI from "../interfaces/salon.interface";
+import BaseService from "./base.service";
 
 export default class CartService extends BaseService {
 
@@ -83,7 +83,7 @@ export default class CartService extends BaseService {
      * This is the function to delete the option from the cart
      */
 
-    deleteOptionFromCart = async (userId, optionId: string) => {
+    deleteOptionFromCart = async (userId: string, optionId: string) => {
         const cart = await this.model.findOne({ "options.option_id": optionId, "user_id": userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
         if (cart === null) throw new Error("Cart not found")
         const { options } = cart
@@ -189,7 +189,16 @@ export default class CartService extends BaseService {
         }
 
         return this.model.create(cart)
+    }
 
+    deleteCartByUserId = async (userId: string) => {
+        try{
+            const cart: CartSI = await this.getCartByUserId(userId)
+            await cart.remove()
+            return null
+        }catch(e){
+            throw e
+        }
     }
 
 }

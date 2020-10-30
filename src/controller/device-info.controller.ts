@@ -1,8 +1,8 @@
-import BaseController from './base.controller'
 import { Request, Response } from 'express'
+import CONFIG from '../config'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import DeviceInfoService from '../service/device-info.service'
-import CONFIG from '../config'
+import BaseController from './base.controller'
 
 export default class DeviceInfoController extends BaseController {
   constructor(service: DeviceInfoService) {

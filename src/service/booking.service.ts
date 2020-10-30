@@ -1,21 +1,16 @@
-import BaseService from "./base.service";
-import { Request, Response } from "express";
-import { BookingI, BookingServiceI, BookingAddressI, BookingSI, BookinStatus, BookingPaymentType } from "../interfaces/booking.interface";
-import logger from "../utils/logger";
-import mongoose from "../database";
-
-import { ServiceSI } from "../interfaces/service.interface";
-import Offer from "../models/offer.model";
-import { SocketRoomType, getVendorRoom } from "./socketio";
-import { io } from '../app';
-import sendNotificationToDevice from "../utils/send-notification";
-import moment = require("moment");
 import { String } from "aws-sdk/clients/acm";
 import { DateTime } from "aws-sdk/clients/devicefarm";
+import mongoose from "../database";
+import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { CartOption } from "../interfaces/cart.interface";
+import SalonSI from "../interfaces/salon.interface";
 import ErrorResponse from "../utils/error-response";
+import MyStringUtils from "../utils/my-string.utils";
+import BaseService from "./base.service";
 import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
-import SalonSI from "../interfaces/salon.interface";
+
+import moment = require("moment");
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -66,7 +61,7 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
-            const status: BookinStatus = (payment_method === 'COD') ?   'Requested':'Online Payment Requested'
+            const status: BookinStatus = (payment_method === 'COD') ? 'Requested' : 'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
@@ -257,8 +252,8 @@ export default class BookingService extends BaseService {
 
 
     updateStatusBookings = async (bookingId: string, status: BookinStatus) => {
-        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
-        if(booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
+        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
+        if (booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
         booking.status = status as BookinStatus
         await booking.save()
         return booking
@@ -270,15 +265,15 @@ export default class BookingService extends BaseService {
 
     }
 
-    confirmRescheduleSlot = async (bookingId:string,date_time:Date,user_id:string)=>{
-        const booking = await this.model.findOne({_id:bookingId,user_id:user_id}) as BookingSI
-        if(booking === null) throw new Error("Booking not found with given bookingId and userId")
+    confirmRescheduleSlot = async (bookingId: string, date_time: Date, user_id: string) => {
+        const booking = await this.model.findOne({ _id: bookingId, user_id: user_id }) as BookingSI
+        if (booking === null) throw new Error("Booking not found with given bookingId and userId")
         const { services } = booking
         let serviceTime: moment.Moment
-        for(let s of services){
-            if(!serviceTime){
+        for (let s of services) {
+            if (!serviceTime) {
                 serviceTime = moment(date_time)
-            }else{
+            } else {
                 serviceTime = serviceTime.add(s.duration, 'minutes')
             }
             s.service_time = serviceTime.toDate()
@@ -289,7 +284,7 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id",'name')
+        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id", 'name')
     }
 
     getbookings = async (q) => {
@@ -327,7 +322,7 @@ export default class BookingService extends BaseService {
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    if(moment(q[k]).isValid()){
+                    if (moment(q[k]).isValid()) {
                         dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     }
                     break
@@ -372,10 +367,10 @@ export default class BookingService extends BaseService {
 
     }
 
-    reschedulebooking = async (id: string, date_time: Array<Date>,current_time:Date) => {
-       
+    reschedulebooking = async (id: string, date_time: Array<Date>, current_time: Date) => {
+
         //@ts-ignore
-        const booking = await this.model.findByIdAndUpdate(id, {rescheduled_available_slots: date_time, status: "Rescheduled and Pending",rescheduled_request_datetime:current_time }, { new: true })
+        const booking = await this.model.findByIdAndUpdate(id, { rescheduled_available_slots: date_time, status: "Rescheduled and Pending", rescheduled_request_datetime: current_time }, { new: true })
         console.log(booking)
         return booking
 
@@ -510,10 +505,10 @@ export default class BookingService extends BaseService {
     }
 
     cancelBooking = async (userId: string, bookingId: string, reasonText: string) => {
-        const booking = await this.model.findOne({user_id: userId, _id: mongoose.Types.ObjectId(bookingId)}) as BookingSI
-        if(booking === null) throw new Error(`No booking found with this booking id ${bookingId} for the current user`)
+        const booking = await this.model.findOne({ user_id: userId, _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
+        if (booking === null) throw new Error(`No booking found with this booking id ${bookingId} for the current user`)
         booking.status = 'Customer Cancelled'
-        if(reasonText && reasonText !== ""){
+        if (reasonText && reasonText !== "") {
             booking.cancel_reason = reasonText
         }
         await booking.save()
@@ -521,7 +516,7 @@ export default class BookingService extends BaseService {
     }
 
     getFullBookingById = async (bookingId: string): Promise<BookingI> => {
-        const booking = await this.model.findOne({_id: mongoose.Types.ObjectId(bookingId)}).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events") as BookingSI
+        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events") as BookingSI
         const json: BookingI = booking.toJSON()
         const salons: SalonSI[] = await this.salonModel.find({ "services.options._id": json.services.map((s: BookingServiceI) => s.option_id) }).lean()
         console.log(`Salons ${salons.length}`)
@@ -544,7 +539,7 @@ export default class BookingService extends BaseService {
 
     getbookingsAdmin = async (q) => {
 
-      
+
 
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
@@ -571,14 +566,14 @@ export default class BookingService extends BaseService {
                     }
                     break
                 case "status":
-                    filters["status"] = {"$in": q[k]}
+                    filters["status"] = { "$in": q[k] }
                     console.log(q[k])
                     break;
                 case "start_date":
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
                     break
                 case "end_date":
-                    if(moment(q[k]).isValid()){
+                    if (moment(q[k]).isValid()) {
                         dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
                     }
                     break
@@ -586,10 +581,10 @@ export default class BookingService extends BaseService {
                     filters["location"] = q[k]
                     break
                 case "user_id":
-                   filters["user_id"]= q[k]
+                    filters["user_id"] = q[k]
                     break
                 case "salon_id":
-                    filters["salon_id"]=q[k]
+                    filters["salon_id"] = q[k]
                     break
                 case "page_number":
                 case "page_length":
@@ -606,11 +601,11 @@ export default class BookingService extends BaseService {
             //      "$gte": dateFilter["start_date"],
             //      "$lt": dateFilter["end_date"]
             // // }
-            
+
 
         }
         console.log(filters)
-        
+
 
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
@@ -624,13 +619,31 @@ export default class BookingService extends BaseService {
 
     }
 
-    // getUserbooking =async(q,id)=>{
-    //     const pageNumber: number = parseInt(q.page_number || 1)
-    //     let pageLength: number = parseInt(q.page_length || 25)
-    //     pageLength = (pageLength > 100) ? 100 : pageLength
-    //     const skipCount = (pageNumber - 1) * pageLength
-    //     const user = await this.model.find({user_id:id}).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
-    //     const bookingPagesReq = this.model.count(filters)
-    // }
+    bookAgain = async (bookingId: string) => {
+        try {
+            const booking = await this.getId(bookingId) as BookingSI
+            if (booking === null) throw Error(`Booking not found with this id`)
+            const userId = MyStringUtils.getMongoId(booking.user_id)
+            const salonId = MyStringUtils.getMongoId(booking.salon_id)
+            if (!userId) throw new Error(`User id not found in the booking`)
+            if (!salonId) throw new Error(`Salon id not found in the booking`)
 
+            try {
+                this.cartService.deleteCartByUserId(userId)
+            } catch (error) { }
+
+            const cartOptions: CartOption[] = []
+            for (let service of booking.services) {
+                const cartOption: CartOption = {
+                    option_id: service.option_id,
+                    quantity: service.quantity
+                }
+                cartOptions.push(cartOption)
+            }
+            const cart = await this.cartService.createCartWithMultipleOptions(userId, salonId, cartOptions)
+            return cart
+        } catch (error) {
+            throw error
+        }
+    }
 }

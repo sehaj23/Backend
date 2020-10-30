@@ -1,17 +1,15 @@
-import BaseController from "./base.controller";
-import OfferService from "../service/offer.service";
 import { Request, Response } from "express";
-import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import { OfferI } from "../interfaces/offer.interface";
-import logger from "../utils/logger";
-import EmployeeService from "../service/employee.service";
 import * as jwt from "jwt-then";
 import CONFIG from "../config";
 import { EmployeeAbsenteeismI } from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
-import { ReportVendorI } from "../interfaces/reportVendor.interface";
 import { PhotoI } from "../interfaces/photo.interface";
+import { ReportVendorI } from "../interfaces/reportVendor.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import EmployeeService from "../service/employee.service";
 import OtpService from "../service/otp.service";
+import logger from "../utils/logger";
+import BaseController from "./base.controller";
 
 
 export default class EmployeeController extends BaseController {

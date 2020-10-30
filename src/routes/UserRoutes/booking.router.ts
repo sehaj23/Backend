@@ -1,26 +1,26 @@
 import { Router } from "express"
-
-import Booking from "../../models/booking.model"
-import Salon from "../../models/salon.model"
 import BookingController from "../../controller/booking.controller"
-import SalonService from "../../service/salon.service"
-import Employee from "../../models/employees.model"
-import Vendor from "../../models/vendor.model"
-import Event from "../../models/event.model"
-import Offer from "../../models/offer.model"
-import Review from "../../models/review.model"
-import Brand from "../../models/brands.model"
-import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
-import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
-import BookingService from "../../service/booking.service"
 import UserverifyToken from "../../middleware/User.jwt"
-import CartService from "../../service/cart.service"
+import Booking from "../../models/booking.model"
+import Brand from "../../models/brands.model"
 import Cart from "../../models/cart.model"
-import ReportSalon from "../../models/reportSalon.model"
-import MongoCounter from "../../models/mongo-counter.model"
-import MongoCounterService from "../../service/mongo-counter.service"
-import FeedbackService from "../../service/feedback.service"
+import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
+import Employee from "../../models/employees.model"
+import Event from "../../models/event.model"
 import Feedback from "../../models/feedback.model"
+import MongoCounter from "../../models/mongo-counter.model"
+import Offer from "../../models/offer.model"
+import ReportSalon from "../../models/reportSalon.model"
+import Review from "../../models/review.model"
+import Salon from "../../models/salon.model"
+import Vendor from "../../models/vendor.model"
+import BookingService from "../../service/booking.service"
+import CartService from "../../service/cart.service"
+import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
+import FeedbackService from "../../service/feedback.service"
+import MongoCounterService from "../../service/mongo-counter.service"
+import SalonService from "../../service/salon.service"
+
 
 const cartService = new CartService(Cart, Salon)
 const feedbackService = new  FeedbackService(Feedback)
@@ -43,5 +43,6 @@ bookingRouter.post("/employees/:salonId",UserverifyToken, bc.getSalonEmployees)
 
 bookingRouter.patch("/cancel/:bookingId", UserverifyToken, bc.cancelBooking )
 bookingRouter.post("/feedback/:id",UserverifyToken,bc.bookingFeedback)
+bookingRouter.post("/book-again",UserverifyToken,bc.bookAgain)
 
 export default bookingRouter

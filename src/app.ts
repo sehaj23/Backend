@@ -3,7 +3,6 @@ import * as compression from 'compression';
 import * as cors from "cors";
 import * as dotenv from "dotenv";
 import * as express from "express";
-import * as fs from "fs";
 import * as http from 'http';
 import * as https from 'https';
 import * as morgan from "morgan";
@@ -16,6 +15,9 @@ import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
+import PrintRoutes from "./utils/print-routes";
+
+dotenv.config();
 
 const app = express();
 export const httpApp = http.createServer(app);
@@ -56,7 +58,7 @@ const upload = multer({
 }).array("upload", 1);
 
 
-// TODO : Change to AWS  
+//TODO: Change to AWS  
 app.post("/upload", function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
@@ -73,9 +75,6 @@ app.post("/upload", function (request, response, next) {
 });
 
 
-dotenv.config();
-
-const accessLogStream = fs.createWriteStream("access.log", { flags: "a" });
 
 
 // setup the logger
@@ -137,3 +136,7 @@ app.use(function (req, res, next) {
 
 
 export default app
+
+if(process.env.NODE_ENV === 'local'){
+  PrintRoutes()
+}

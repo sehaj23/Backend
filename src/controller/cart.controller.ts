@@ -1,8 +1,7 @@
-import BaseController from "./base.controller"
-import CartService from "../service/cart.service"
 import { Request, Response } from "express"
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware"
-import CartI from "../interfaces/cart.interface"
+import CartService from "../service/cart.service"
+import BaseController from "./base.controller"
 
 export default class CartController extends BaseController{
     
