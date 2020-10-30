@@ -387,11 +387,12 @@ export default class SalonService extends BaseService {
                         const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                        const salonPage = this.reviewModel.aggregate([
+                        const salonPage = this.model.aggregate([
                                 { "$count": "count" }
                         ])
 
                         const [salon, pageNo] = await Promise.all([salons, salonPage])
+                        console.log(pageNo)
                         let totalPageNumber = 10
                         if (pageNo.length > 0) {
                                 totalPageNumber = pageNo[0].count
@@ -411,7 +412,7 @@ export default class SalonService extends BaseService {
                 var checkPoint = {}
                 //TODO:ask preet how to get only at_home=true option
                 var salonLocation = new Array()
-                const salon = await this.model.find({ "services.options": { $elemMatch: { at_home: true } } })
+                const salon = await this.model.find({ "services.options.at_home":true })
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
