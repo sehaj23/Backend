@@ -23,6 +23,7 @@ export default class SendEmail {
                         'preetsc27@gmail.com',
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
+                        'developers@zattire.com',
                         salonEmail
                         /* more items */
                     ]

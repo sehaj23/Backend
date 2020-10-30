@@ -393,7 +393,7 @@ export default class SalonService extends BaseService {
 
                         const [salon, pageNo] = await Promise.all([salons, salonPage])
                         console.log(pageNo)
-                        let totalPageNumber = 10
+                        let totalPageNumber = 0
                         if (pageNo.length > 0) {
                                 totalPageNumber = pageNo[0].count
                         }
