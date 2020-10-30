@@ -7,6 +7,7 @@ import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
+import SendEmail from '../utils/emails/send-email'
 <<<<<<< HEAD
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
