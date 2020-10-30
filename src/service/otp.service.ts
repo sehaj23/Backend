@@ -1,12 +1,12 @@
-import { http } from "winston"
 import axios from "axios"
-import BaseService from "./base.service"
-import OtpSI, { OtpI } from "../interfaces/otp.interface"
 import mongoose from "../database"
-import UserService from "./user.service"
-import UserI, { UserSI } from "../interfaces/user.interface"
-import EmployeeService from "./employee.service"
 import EmployeeSI from "../interfaces/employee.interface"
+import OtpSI, { OtpI } from "../interfaces/otp.interface"
+import UserI, { UserSI } from "../interfaces/user.interface"
+import logger from "../utils/logger"
+import BaseService from "./base.service"
+import EmployeeService from "./employee.service"
+import UserService from "./user.service"
 
 export default class OtpService extends BaseService{
 
@@ -18,13 +18,36 @@ export default class OtpService extends BaseService{
         this.employeeService = employeeService
     }
 
-    protected async sendOtp(phone: string, text: string) {
-        const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
-        const res = await axios.get(url)
-        if(res.status === 200){
-            return res.data
+    /**
+     * @description This method to be used only while sending the notification
+     * @param phone phone number of the user
+     * @param text complete message you want to send
+     */
+    static async sendMessage(phone: string, text: string){
+        try {
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
+            const res = await axios.get(url)
+            if(res.status === 200){
+                logger.info(`Text message sent to :: ${phone} :: ${text}`)
+            }else{
+                logger.info(`Text message error sending to :: ${phone} :: ${text}`)
+            }
+        } catch (error) {
+            logger.info(`Text message error sending to :: ${phone} :: ${error.message}`)
         }
-        throw Error(`sendOtp status code: ${res.status} and message ${res.data}`)
+    }
+
+    protected async sendOtp(phone: string, text: string) {
+        try {
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
+            const res = await axios.get(url)
+            if(res.status === 200){
+                return res.data
+            }
+            throw Error(`sendOtp status code: ${res.status} and message ${res.data}`)
+        } catch (error) {
+            throw error
+        }
     }
 
     protected async verifyOtp(phone: string, otp: string): Promise<OtpSI> {
