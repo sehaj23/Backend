@@ -12,7 +12,7 @@ export default class MyStringUtils{
             out = data
         }else if(typeof data === 'object'){
             //@ts-ignore
-            out = booking?.user_id?._id
+            out = data?._id?.toString()
         }
         return out
     }

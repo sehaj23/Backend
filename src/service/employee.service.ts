@@ -231,7 +231,7 @@ export default class EmployeeService extends BaseService {
         }
         // remove the services
         for(let i of serviceIndexToRemove){
-            employee.services = employee.services.splice(i, 1)
+            employee.services.splice(i, 1)
         }
         // add the services
         const salonServicesIds = (salon.services as ServiceSI[]).map((s: ServiceSI) => s._id.toString())
