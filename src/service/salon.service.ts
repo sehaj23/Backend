@@ -431,7 +431,7 @@ export default class SalonService extends BaseService {
                                         {
                                                 $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
-                                                $maxDistance: 5000
+                                                $maxDistance: 10000
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
@@ -478,7 +478,7 @@ export default class SalonService extends BaseService {
                                         {
                                                 $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
-                                                $maxDistance: 5000
+                                                $maxDistance: 10000
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
