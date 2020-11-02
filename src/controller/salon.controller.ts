@@ -136,9 +136,13 @@ export default class SalonController extends BaseController {
         }
         let atHome: boolean
         if (req.query.home) {
-            atHome = (req.query.home === "true")
-            filter["at_home"] = atHome
+            
+            if(req.query.home === "true"){
+                atHome=true
+            }
+            
         }
+      
         //TODO: validator
         if (!id) {
             const errMsg = `id is missing from the params`
@@ -162,7 +166,7 @@ export default class SalonController extends BaseController {
                         return false
                     }
                 }
-                if (req.query.home !== undefined) {
+                if (atHome !== undefined) {
                     if (opt.at_home !== atHome) {
                         return false
                     }
