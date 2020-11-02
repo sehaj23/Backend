@@ -33,7 +33,7 @@ const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 
 vendorRouter.post("/",loginController.login);
 vendorRouter.post("/absent",VendorverifyToken,vendorController.employeeAbsent)
 vendorRouter.post("/absent/update",VendorverifyToken,vendorController.employeeAbsent)
-vendorRouter.get("/",VendorverifyToken ,vendorController.vendorInfo)
+vendorRouter.get("/info",VendorverifyToken ,vendorController.vendorInfo)
 vendorRouter.put("/", VendorverifyToken, vendorController.update)
 vendorRouter.patch("/update/",VendorverifyToken,vendorController.updatePass)
 vendorRouter.get("/employee-slots/:id",VendorverifyToken, vendorController.employeeSlots)

@@ -129,7 +129,7 @@ export default class VendorController extends BaseController {
         const slotsDate = new Date(gotSlotsDate.toString())
         
         const slots = await this.employeeService.employeeSlots(id, slotsDate)
-        res.send(slots)
+        
         if(slots==null){
             logger.error(`No Slots Found`)
             res.status(400)
