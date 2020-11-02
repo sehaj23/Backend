@@ -356,10 +356,10 @@ export default class SalonController extends BaseController {
             //@ts-ignore
             centerPoint.lng = req.query.longitude
         }
-        //  const sr: string = await SalonRedis.get(salonId)
-        //  if (sr !== null) return res.send(JSON.parse(sr))
+          const sr: string = await SalonRedis.get(salonId)
+         if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId, centerPoint)
-        // SalonRedis.set(salonId, salon)
+         SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
     })
 
@@ -380,19 +380,16 @@ export default class SalonController extends BaseController {
     getHomeServiceSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
         var centerPoint = {}
+        const q = req.query
         //TODO: store location of User
-        //@ts-ignore
-        centerPoint.lat = req.query.latitude
-        //@ts-ignore
-        centerPoint.lng = req.query.longitude
-        const km = req.query.km || 2
+       
         //    const sr = await SalonRedis.get('HomeSalons')
         //    if (sr !== null) { 
         //        salons = JSON.parse(sr)
         //     }
         //   else {
         console.log("not redis")
-        salons = await this.service.getHomeServiceSalon(centerPoint, km.toString())
+        salons = await this.service.getHomeServiceSalon(q)
         SalonRedis.set('HomeSalons', salons)
         //   }
         res.status(200).send(salons)
@@ -433,18 +430,8 @@ export default class SalonController extends BaseController {
     getSalonNearby = controllerErrorHandler(async (req: Request, res: Response) => {
         var centerPoint = {}
         //TODO: store location of User
-        //@ts-ignore
-        centerPoint.lat = req.query.latitude
-        //@ts-ignore
-        centerPoint.lng = req.query.longitude
-        const km = (req.query.km || 2).toString()
-        let salon
-        const sr = await SalonRedis.get('Salons')
-        if (sr !== null) salon = JSON.parse(sr)
-        else {
-            salon = await this.service.getSalonNearby(centerPoint, km)
-            SalonRedis.set('Salons', salon)
-        }
+        const q = req.query
+         const   salon = await this.service.getSalonNearby(q)
         res.status(200).send(salon)
     })
 

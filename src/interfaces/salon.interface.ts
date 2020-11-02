@@ -2,7 +2,13 @@ import ServiceI, { ServiceSI } from "./service.interface";
 import mongoose from "../database";
 import EmployeeSI, { EmployeeI } from "./employee.interface";
 
-
+export interface LocationI {
+    type: 'Point',
+    coordinates: {
+        latitude?: number
+        longitude?: number
+    }
+}
 export interface SalonI{
     name: string
     description?: string
@@ -24,8 +30,7 @@ export interface SalonI{
     commision_percentage?: number,
     commision_cap?: number
     commision_fixed_price?: number,
-    longitude?:number,
-    latitude?:number
+    coordinates:LocationI
 }
 
 export default interface SalonSI extends SalonI, mongoose.Document{}

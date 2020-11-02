@@ -350,13 +350,15 @@ export default class SalonService extends BaseService {
 
 
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
-                if (salon.longitude != null && salon.latitude != null) {
+
+                if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
 
                         //@ts-ignore
-                        checkPoint.lng = salon.longitude
+                        checkPoint.lng = salon.coordinates["coordinates"][1]
                         //@ts-ignore
-                        checkPoint.lat = salon.latitude
+                        checkPoint.lat = salon.coordinates["coordinates"][0]
                         var n = await arePointsNear(checkPoint, centerPoint, 1000)
+                        console.log(n)
                         if (n.bool) {
                                 console.log(n.difference)
                                 // @ts-ignore
@@ -400,7 +402,7 @@ export default class SalonService extends BaseService {
                         const totalPages = Math.ceil(totalPageNumber / pageLength)
                         out = { salon, totalPages, pageNumber }
                         SalonRedis.set(redisKey, out, filter)
-                }else{
+                } else {
                         out = JSON.parse(cahceGetSalon)
                 }
 
@@ -408,27 +410,35 @@ export default class SalonService extends BaseService {
         }
 
         //gives option with at_home=false
-        getHomeServiceSalon = async (centerPoint: any, km: string) => {
-                var checkPoint = {}
-                //TODO:ask preet how to get only at_home=true option
-                var salonLocation = new Array()
-                const salon = await this.model.find({ "services.options.at_home":true })
-                for (var a = 0; a < salon.length; a++) {
-                        if (salon[a].longitude != null && salon[a].latitude != null) {
-                                //@ts-ignore
-                                checkPoint.lng = salon[a].longitude
-                                //@ts-ignore
-                                checkPoint.lat = salon[a].latitude
-                                var n = await arePointsNear(checkPoint, centerPoint, km)
-                                if (n.bool) {
-                                        salonLocation.push(salon[a])
-                                }
-                        }
+        getHomeServiceSalon = async (q) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 8)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                const latitude = q.latitude || 28.7041
+                const longitude = q.longitude || 77.1025
+                const filter = {
+                        pageNumber,
+                        pageLength,
+                        skipCount
                 }
-                //@ts-ignore
-                //   for (let [key, value] of Object.entries(salons)) data.push(value.name)
-                return salonLocation
+                const redisKey = "getHomeSalon"
+                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+                if (cahceGetSalon === null) {
+                        const salons = await this.model.find({
+                                "services.options.at_home": true, coordinates: {
+                                        $near:
+                                        {
+                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
+                                                $minDistance: 0,
+                                                $maxDistance: 5000
+                                        }
+                                }
+                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
 
+                        return salons
+                }
+                return cahceGetSalon
         }
 
         // Sort salon : rating-wise
@@ -447,24 +457,35 @@ export default class SalonService extends BaseService {
 
 
         //get Salons nearby
-        getSalonNearby = async (centerPoint: any, km: string) => {
-                var checkPoint = {}
-                var salonLocation = new Array()
-
-                const salon = await this.model.find().populate("photo_ids").populate("profile_pic")
-                for (var a = 0; a < salon.length; a++) {
-                        if (salon[a].longitude != null && salon[a].latitude != null) {
-                                //@ts-ignore
-                                checkPoint.lng = salon[a].longitude
-                                //@ts-ignore
-                                checkPoint.lat = salon[a].latitude
-                                var n = await arePointsNear(checkPoint, centerPoint, km)
-                                if (n.bool) {
-                                        salonLocation.push(salon[a])
-                                }
-                        }
+        getSalonNearby = async (q) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 8)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                const filter = {
+                        pageNumber,
+                        pageLength,
+                        skipCount
                 }
-                return salonLocation
+                const redisKey = "getSalonNearby"
+                const latitude = q.latitude || 28.7041
+                const longitude = q.longitude || 77.1025
+                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+                if (cahceGetSalon === null) {
+                        const salons = await this.model.find({
+                                coordinates: {
+                                        $near:
+                                        {
+                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
+                                                $minDistance: 0,
+                                                $maxDistance: 5000
+                                        }
+                                }
+                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
+
+                        return salons
+                }
+                return cahceGetSalon
 
         }
         //get salon distancewise
@@ -581,7 +602,7 @@ export default class SalonService extends BaseService {
 
 
                 var result1 = await this.model.aggregate([
-                      
+
 
                         {
                                 $lookup:
@@ -593,7 +614,7 @@ export default class SalonService extends BaseService {
                                 },
                         },
                         {
-                            $unwind: "$services"
+                                $unwind: "$services"
                         },
                         {
 
@@ -602,34 +623,34 @@ export default class SalonService extends BaseService {
                                         "services.category": {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
                                         },
-                                      //  "$$services.options.at_home":false
-                                        
-                                       
+                                        //  "$$services.options.at_home":false
 
-                                        
+
+
+
                                 }
-                               
+
                         },
                         {
                                 $project: {
                                         _id: 1,
-                                        
+
                                         profile_pic: 1,
                                         name: 1,
-                                        rating:1,
-                                        services:1
-                                        
+                                        rating: 1,
+                                        services: 1
+
                                         // 'filteredValue': {
-                                               
-                                                    
+
+
                                         //         $filter: {
                                         //         input: "$services.options",
                                         //         as: "option",
                                         //         cond: { $eq: [ '$$option.at_home', false ] }
                                         //       }
-                                        
+
                                         // }
-                                      
+
                                 }
                         },
                 ])
