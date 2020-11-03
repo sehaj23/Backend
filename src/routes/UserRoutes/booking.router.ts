@@ -11,15 +11,19 @@ import Feedback from "../../models/feedback.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import Offer from "../../models/offer.model"
 import ReportSalon from "../../models/reportSalon.model"
+import ReportVendor from "../../models/reportVendor.model"
 import Review from "../../models/review.model"
 import Salon from "../../models/salon.model"
+import User from "../../models/user.model"
 import Vendor from "../../models/vendor.model"
 import BookingService from "../../service/booking.service"
 import CartService from "../../service/cart.service"
 import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
+import EmployeeService from "../../service/employee.service"
 import FeedbackService from "../../service/feedback.service"
 import MongoCounterService from "../../service/mongo-counter.service"
 import SalonService from "../../service/salon.service"
+import UserService from "../../service/user.service"
 
 
 const cartService = new CartService(Cart, Salon)
@@ -27,8 +31,10 @@ const feedbackService = new  FeedbackService(Feedback)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
+const userService = new UserService(User,Booking)
+const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,es)
 const bookingRouter = Router()
 
 // get available employees by date & time

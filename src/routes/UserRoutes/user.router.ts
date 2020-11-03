@@ -31,6 +31,6 @@ userRouter.patch('/favourite',UserverifyToken,userController.addToFavourites)
 userRouter.get('/favourite',UserverifyToken,userController.getFavourites)
 userRouter.patch('/favourite/delete',UserverifyToken,userController.removeFavourites)
 userRouter.post("/feedback",UserverifyToken,userController.postFeedback)
-userRouter.post("/sendNotification",UserverifyToken,userController.sendNotifcation)
+userRouter.post("/sendNotification",userController.sendNotifcation)
 
 export default userRouter

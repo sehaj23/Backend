@@ -201,8 +201,14 @@ export default class UserController extends BaseController {
 
     })
     sendNotifcation= controllerErrorHandler(async (req: Request, res: Response) =>{
-        
-        const notification =  await this.service.sendNotification("asdsad","sadsad")
+        const fcm_token= req.body.fcm_token
+       const message ={
+        "notification": {
+          "title": "$FooCorp up 1.43% on the day",
+          "body": "$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day."
+        }
+       }
+        const notification =  await this.service.sendNotification(fcm_token,message)
         res.send(notification)
     })
 

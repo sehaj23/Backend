@@ -17,6 +17,9 @@ import logger from "../utils/logger";
 import sendNotificationToDevice from "../utils/send-notification";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import Notify from "../service/notify.service";
+import UserService from "../service/user.service";
+import EmployeeService from "../service/employee.service";
 
 
 export default class BookingController extends BaseController {
@@ -27,14 +30,18 @@ export default class BookingController extends BaseController {
     salonService: SalonService
     employeeAbsentismService: EmployeeAbsenteesmService
     cartService: CartService
+    userService:UserService
     feedbackService:FeedbackService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService) {
+    employeeService:EmployeeService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService,userService:UserService,employeeService:EmployeeService) {
         super(service)
         this.service = service
         this.salonService = salonService
         this.employeeAbsentismService = employeeAbsentismService
         this.cartService = cartService
         this.feedbackService=feedbackService
+        this.userService=userService
+        this.employeeService=employeeService
     }
 
 
@@ -134,6 +141,11 @@ export default class BookingController extends BaseController {
             }
         }
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
+    //     const user = await this.userService.getId(userId)
+    //     const salon = await this.salonService.getId(salon_id)
+    //     const employee = await this.employeeService.getByIds(options.employee_id)
+    //    const notify = Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id,booking.services[0].service_time)
+    //    console.log(notify)
         res.send(booking);
     })
 
@@ -312,6 +324,14 @@ export default class BookingController extends BaseController {
 
         }
         const booking = await this.service.updateStatusBookings(bookingid, status)
+        const user = await this.userService.getId(booking.user_id.toString())
+        const salon = await this.salonService.getId(booking.salon_id.toString())
+        const employee =  await this.employeeService.getId(booking.services[0].employee_id.toString())
+        console.log(employee.fcm_token)
+        console.log(salon.email)
+        console.log(user.phone)
+        
+       
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
@@ -320,6 +340,11 @@ export default class BookingController extends BaseController {
             return
 
         }
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm:ss a'); 
+        if(status==="Confirmed"){
+            const notify = Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+            console.log(notify)
+            }
         var message = {
             notification: {
               title: '$FooCorp up 1.43% on the day',

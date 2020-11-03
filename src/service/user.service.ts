@@ -134,7 +134,7 @@ export default class UserService extends BaseService {
       };
       
       
-    const notification = sendNotificationToDevice("egIYL296ckPUvpk6ztbbcQ:APA91bFP3yMZWfW8vM7VlmMbiNK1MZuwlyAUrh3F7c_lusOl3bOztWxRdVYaGjjSNf-6JK-IqcWSDAjzESB910zPGtKEAFqNfGhOdjpJGw3rK9T5Vhad8aI6tfqjpKrUXcsgwVK_cOgK",messagee)
+    const notification = sendNotificationToDevice(fcm_token,message)
     return notification
   }
 
