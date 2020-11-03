@@ -10,12 +10,11 @@ export default class SendEmail {
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string) => {
 
-        fs.readFile('./booking-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile('src/utils/emails/booking-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return
             }
-
             // TODO: string interpolation for the html content
 
             const params = {

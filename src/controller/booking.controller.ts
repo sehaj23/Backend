@@ -324,9 +324,11 @@ export default class BookingController extends BaseController {
 
         }
         const booking = await this.service.updateStatusBookings(bookingid, status)
-        const user = await this.userService.getId(booking.user_id.toString())
-        const salon = await this.salonService.getId(booking.salon_id.toString())
-        const employee =  await this.employeeService.getId(booking.services[0].employee_id.toString())
+        const userData =  this.userService.getId(booking.user_id.toString())
+        const salonData =  this.salonService.getId(booking.salon_id.toString())
+        const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
+        const [employee,salon,user]= await  Promise.all([userData,salonData,employeeData])
+
         console.log(employee.fcm_token)
         console.log(salon.email)
         console.log(user.phone)

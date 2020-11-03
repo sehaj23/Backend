@@ -7,9 +7,9 @@ export default class Notify {
 
 
     static bookingConfirm = (userPhone: string, userEmail: string, userFCM: string, salonPhone: string, salonEmail: string, salonName: string, employeePhone: string, employeeFCMs: string[], bookingId: string, bookingIdNumeric: string, dateTime: string) => {
-      //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
+        SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
-        sendNotificationToDevice(userFCM, { notification: {title:"Booking Confirmed",body: `Your booking for ${dateTime} has been accepted by ${salonName}`}})
+        sendNotificationToDevice(userFCM, { notification: {title:"Booking Confirmed",body: `Your booking for ${dateTime} has been accepted by ${salonName}`},data:{booking_id:bookingId,status:"Confirmed"}})
         //TODO: change the text of the uszer text 
         const userText = `Your booking for ${dateTime} has been accepted by ${salonName}, CHEERS`
         OtpService.sendMessage(userPhone, userText)
