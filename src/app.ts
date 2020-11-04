@@ -37,18 +37,13 @@ startSocketIO(io)
 
 
 
-const spacesEndpoint = new aws.Endpoint("nyc3.digitaloceanspaces.com");
-const s3 = new aws.S3({
-  //@ts-ignore
-  endpoint: spacesEndpoint,
-  accessKeyId: "DQC6AT6WECGTVTPBMEPW",
-  secretAccessKey: "1aG2MQPG1CBJS01q/y6pjLwRVNgzPwfkNkvWa3XCrp8",
-});
+// const spacesEndpoint = new aws.Endpoint("nyc3.digitaloceanspaces.com");
+const s3 = new aws.S3();
 
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "zattire",
+    bucket: "zattire-images/all-images",
     acl: "public-read",
     key: function (request, file, cb) {
       console.log(file);
@@ -58,14 +53,12 @@ const upload = multer({
 }).array("upload", 1);
 
 
-//TODO: Change to AWS  
 app.post("/upload", function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
       console.log(error);
       return response.send(`/error/${error}`);
     }
-    console.log("File uploaded successfully.");
     const location = request.files[0].location
     response.send({
       location,
