@@ -20,6 +20,7 @@ import moment = require("moment");
 import Notify from "../service/notify.service";
 import UserService from "../service/user.service";
 import EmployeeService from "../service/employee.service";
+import VendorService from "../service/vendor.service";
 
 
 export default class BookingController extends BaseController {
@@ -33,7 +34,8 @@ export default class BookingController extends BaseController {
     userService:UserService
     feedbackService:FeedbackService
     employeeService:EmployeeService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService,userService:UserService,employeeService:EmployeeService) {
+    vendorService:VendorService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService,userService:UserService,employeeService:EmployeeService,vendorService:VendorService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -42,6 +44,7 @@ export default class BookingController extends BaseController {
         this.feedbackService=feedbackService
         this.userService=userService
         this.employeeService=employeeService
+        this.vendorService=vendorService
     }
 
 
@@ -141,11 +144,16 @@ export default class BookingController extends BaseController {
             }
         }
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
-    //     const user = await this.userService.getId(userId)
-    //     const salon = await this.salonService.getId(salon_id)
-    //     const employee = await this.employeeService.getByIds(options.employee_id)
-    //    const notify = Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id,booking.services[0].service_time)
-    //    console.log(notify)
+        
+        const salonReq =  this.salonService.getId(salon_id)
+        const employeeReq =  this.employeeService.getId(options[0].employee_id)
+        
+        const [salon,employee]= await Promise.all([salonReq,employeeReq])
+        const vendor = await this.vendorService.getId(salon.vendor_id)
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
+
+       const notify = Notify.bookingRequest(vendor.contact_number,employee.fcm_token,booking.id,employee.name,bookingTime,vendor.fcm_token,salon.email,salon.name,booking.booking_numeric_id.toString())
+       console.log(notify)
         res.send(booking);
     })
 
@@ -342,25 +350,25 @@ export default class BookingController extends BaseController {
             return
 
         }
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm:ss a'); 
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
         if(status==="Confirmed"){
+            console.log("booking confirmed sending notification to user")
             const notify = Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
             console.log(notify)
             }
-        var message = {
-            notification: {
-              title: '$FooCorp up 1.43% on the day',
-              body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
-            },
-          };
-        sendNotificationToDevice("dIHYFzDfSkRqmFz0fXgfQP:APA91bHY7Heuln_-h4Vx3bCgcXVjkqx5qejHqyL7Sc0cA6hI1hPTrdrZXSdLiIEYGhtzIeo41zKdItd1w65B1fnxsd1DlbFeRTvRepswOZz-hWB-c8wBL-i22Q24T-9OJ0ANkxQYzZIX",message)
+        if(status==="Start"){
+            const notify = Notify.serviceStart(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        }
+        if(status==="Done"){
+            const notify = Notify.serviceEnd(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        }
         res.send({message:"Booking status changed",success:"true"})
 
     })
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
-        const date_time = req.body.rescheduled_service_time
+        const date_time = req.body.date_time
         //@ts-ignore
         const userId = req.userId
         var rescheduleditime =  moment(date_time).toDate()
@@ -373,6 +381,15 @@ export default class BookingController extends BaseController {
             return
 
         }
+        const salonReq =  this.salonService.getId(booking.salon_id.toString())
+        const employeeReq =  this.employeeService.getId(booking.services[0].employee_id)
+        
+        const [salon,employee]= await Promise.all([salonReq,employeeReq])
+        const vendor = await this.vendorService.getId(salon.vendor_id)
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
+
+       const notify = Notify.rescheduledBooking(vendor.contact_number,employee.fcm_token,booking.id,employee.name,bookingTime,vendor.fcm_token,salon.email,salon.name,booking.booking_numeric_id.toString())
+       console.log(notify)
         res.send({message:"Booking Confirmed",success:true})
 
     })
@@ -446,16 +463,11 @@ export default class BookingController extends BaseController {
         const id = req.params.id
         const datetime = req.body.date_time
         const currentTime = moment().toDate()
-      
-    
-
        // const rescheduleDate = moment(date_time).toDate()
         
         datetime.map(function (o){
            return moment(o).toDate()
-        })
-        
-       
+        })   
         if (!id) {
             const errMsg = "Error Booking not found"
             logger.error(errMsg)
@@ -472,6 +484,15 @@ export default class BookingController extends BaseController {
             return
 
         }
+        
+        const userData =  this.userService.getId(booking.user_id.toString())
+        const salonData =  this.salonService.getId(booking.salon_id.toString())
+        const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
+        const [employee,salon,user]= await  Promise.all([userData,salonData,employeeData])
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
+        const notify = Notify.rescheduledPending(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        console.log(notify)
+            
         res.status(200).send(booking)
 
     })

@@ -88,6 +88,12 @@ const SalonSchema = new mongoose.Schema({
     speciality: {
         type: [{ type: String }]
     },
+    gst:{
+        type: String,
+    },
+    pan:{
+        type: String,
+    },
     rating: {
         type: Number,
         default: 0,

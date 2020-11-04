@@ -89,7 +89,7 @@ export default class VendorController extends BaseController {
 
     update =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.vendoId
+        const id = req.vendorId
         const d = req.body
         const vendor = await this.service.update(id,d)
         if(vendor==null){

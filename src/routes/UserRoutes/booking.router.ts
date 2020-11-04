@@ -24,6 +24,7 @@ import FeedbackService from "../../service/feedback.service"
 import MongoCounterService from "../../service/mongo-counter.service"
 import SalonService from "../../service/salon.service"
 import UserService from "../../service/user.service"
+import VendorService from "../../service/vendor.service"
 
 
 const cartService = new CartService(Cart, Salon)
@@ -32,9 +33,10 @@ const mongoCounterService = new MongoCounterService(MongoCounter)
 const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const userService = new UserService(User,Booking)
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
+const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,es)
+const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService)
 const bookingRouter = Router()
 
 // get available employees by date & time

@@ -23,7 +23,7 @@ export default class OtpService extends BaseService{
      * @param phone phone number of the user
      * @param text complete message you want to send
      */
-    static async sendMessage(phone: string, text: string){
+    static async sendMessage(phone: string|string[], text: string){
         try {
             const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
             const res = await axios.get(url)

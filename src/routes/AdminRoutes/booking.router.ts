@@ -27,6 +27,7 @@ import User from "../../models/user.model";
 import EmployeeService from "../../service/employee.service";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import ReportVendor from "../../models/reportVendor.model";
+import VendorService from "../../service/vendor.service";
 
 const bookingRouter = Router()
 const cartService = new CartService(Cart, Salon)
@@ -34,11 +35,12 @@ const mongoCounterService = new MongoCounterService(MongoCounter)
 const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
 const feedbackService = new  FeedbackService(Feedback)
 const userService = new UserService(User,Booking)
-const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
+const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand,ReportSalon)
 const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsenteeism)
+const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 
-const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,es)
+const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService)
 
 
 bookingRouter.post("/", verifyToken, bookingController.post)
