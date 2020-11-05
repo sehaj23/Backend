@@ -186,5 +186,12 @@ export default class LoginController extends BaseController {
     })
   })
 
+  forgotPasswordEmail =controllerErrorHandler(async (req: Request, res: Response) => {
+    const {email, otp} = req.body
+    const user = await this.service.getOne({email}) as UserSI
+    if(user === null) throw new ErrorResponse(`User not found with phone ${email}`)
+    await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+  })
+
 
 }

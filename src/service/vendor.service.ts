@@ -74,6 +74,13 @@ export default class VendorService extends BaseService{
             return vendor
        
     }
+    updateFCM = async (id:string,fcm_token:any) => {
+
+        const _id = mongoose.Types.ObjectId(id)
+        const vendor = await this.model.findByIdAndUpdate(_id, {$addToSet:{fcm_token:fcm_token}}, { new: true })
+        return vendor
+   
+}
         updatePass = async (id:string,password:string,newpassword:String) => {
   
             //@ts-ignore

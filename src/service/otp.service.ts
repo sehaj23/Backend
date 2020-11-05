@@ -60,6 +60,16 @@ export default class OtpService extends BaseService{
         await otpD.save()
         return otpD
     }
+    protected async emailverifyOtp(email: string, otp: string): Promise<OtpSI> {
+        const otpD = await this.model.findOne({email, verified: false}).sort({ "createdAt": -1 }) as OtpSI
+        if(otpD === null) throw new Error(`Phone does not match`)
+        if(otpD.otp !== otp){
+            throw new Error("Otp does not match")
+        }
+        otpD.verified = true
+        await otpD.save()
+        return otpD
+    }
 
     public async sendEmployeeOtp(phone: string): Promise<OtpSI>{
         const emp = await this.employeeService.getOne({phone}) as EmployeeSI
@@ -97,6 +107,12 @@ export default class OtpService extends BaseService{
         await user.save()
         return {otpD, user}
     }
+    public async emailVerifyUserOtp(email: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
+        const otpD = await this.emailverifyOtp(email, otp)
+        const user = await this.userService.getId(userId) as UserSI
+        await user.save()
+        return {otpD, user}
+    }
 
     public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI>{
         const user = await this.userService.getOne({phone})
@@ -129,6 +145,18 @@ export default class OtpService extends BaseService{
 
     protected getRandomInt(max: number, min: number): number {
         return Math.floor(Math.random() * Math.floor(max) + min);
+    }
+
+    public async sendUserOtpEmail(email: string): Promise<OtpSI>{
+        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const text: string = `Your otp is ${otpNumber}`
+        const otp: OtpI = {
+            email: email,
+            otp: otpNumber,
+            user_type: 'User',
+        }
+        const otpD = await this.post(otp)
+        return otpD
     }
 
 }

@@ -6,7 +6,9 @@ import OtpSI from "../interfaces/otp.interface";
 const OtpSchema = new mongoose.Schema({
     phone:{
         type: String,
-        required:true
+    },
+    email:{
+        type:String,
     },
     otp:{
         type: String,

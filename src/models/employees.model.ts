@@ -14,7 +14,7 @@ const EmployeeSchema = new mongoose.Schema({
         ref: "photos"
     },
     fcm_token: {
-        type: String
+        type: [String]
     },
     location: {
         type: String,

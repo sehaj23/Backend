@@ -19,11 +19,12 @@ export default class Notify {
         //if required
     }
 
-    static bookingRequest = async (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string,salonEmail:string,salonName:string,bookingIdNumeric:string) => {
+    static bookingRequest = async (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string[],salonEmail:string,salonName:string,bookingIdNumeric:string) => {
       //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
+        sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Request",body: `${employeeName} has received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested"}})
         sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking Request",body: `You have received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested"}})
-         sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Request",body: `${employeeName} has received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested"}})
+         
         //TODO: change the text of the uszer text 
         const vendorText = `Received a new booking for ${dateTime}`
         OtpService.sendMessage(vendorPhone, vendorText)
@@ -35,11 +36,12 @@ export default class Notify {
     static rescheduledPending = async (userPhone: string, userEmail: string, userFCM: string, salonPhone: string, salonEmail: string, salonName: string, employeePhone: string, employeeFCMs: string[], bookingId: string, bookingIdNumeric: string, dateTime: string) => {
       //  SendEmail.bookingConfirm(userEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
-  
-        sendNotificationToDevice(userFCM, { notification: {title:"Booking Rescheduled",body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`},data:{booking_id:bookingId,status:"Rescheduled and Pending"}})
+       
+      sendNotificationToDevice(userFCM, { notification: {title:"Booking Rescheduled",body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`},data:{booking_id:bookingId,status:"Rescheduled and Pending"}})
         //TODO: change the text of the uszer text 
         const userText = `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`
         OtpService.sendMessage(userPhone, userText)
+      
          //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
         //if required
     }
