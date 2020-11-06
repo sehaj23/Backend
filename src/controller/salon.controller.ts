@@ -1,21 +1,19 @@
-import BaseController from "./base.controller";
-import SalonService from "../service/salon.service";
 import { Request, Response } from "express";
-import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import SalonSI, { SalonI } from "../interfaces/salon.interface";
-import logger from "../utils/logger";
-import ServiceI from "../interfaces/service.interface";
 import { EmployeeI } from "../interfaces/employee.interface";
-import { PhotoI } from "../interfaces/photo.interface";
 import EventDesignerI from "../interfaces/eventDesigner.model";
 import { OfferI } from "../interfaces/offer.interface";
-import { SalonRedis } from "../redis/index.redis";
-import { keys } from "../seeds/data/admin/admins";
-import { ReviewI } from "../interfaces/review.interface";
-import Salon from "../models/salon.model";
-import moment = require("moment");
 import OptionI from "../interfaces/options.interface";
+import { PhotoI } from "../interfaces/photo.interface";
+import { ReviewI } from "../interfaces/review.interface";
+import SalonSI, { SalonI } from "../interfaces/salon.interface";
+import ServiceI from "../interfaces/service.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import { SalonRedis } from "../redis/index.redis";
+import SalonService from "../service/salon.service";
 import ErrorResponse from "../utils/error-response";
+import logger from "../utils/logger";
+import BaseController from "./base.controller";
+import moment = require("moment");
 
 
 export default class SalonController extends BaseController {

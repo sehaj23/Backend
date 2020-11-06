@@ -1,12 +1,35 @@
 import * as AWS from "aws-sdk";
 import * as fs from 'fs';
 import logger from "../logger";
-
+import Mail = require("nodemailer/lib/mailer");
+import MailComposer = require("nodemailer/lib/mail-composer");
 
 type EmailSentTo = 'salon' | 'user' | 'admin' | 'employee'
-type EmailType = 'booking requested' | 'booking confirmed' | 'signup'
+type EmailType = 'booking requested' | 'booking confirmed' | 'signup' | 'booking completed'
 
 export default class SendEmail {
+
+    /**
+     * @description send email with invoice to customer and vendor
+     */
+    static bookingComplete = async () => {
+        fs.readFile(`${__dirname}/vendor-invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+            console.log(data)
+        })
+        const mailOptions: Mail.Options ={
+            from: 'source@example.com',
+            replyTo: 'source@example.com',
+            to: 'bob@example.com',
+            subject: 'Sample SES message with attachment',
+            text: 'Hey folks, this is a test message from SES with an attachment.',
+            attachments: [
+              {
+                path: '/tmp/file.docx'
+              },
+            ],
+          }
+        const mail = new MailComposer(mailOptions);
+    }
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string) => {
 

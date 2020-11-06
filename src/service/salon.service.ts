@@ -580,9 +580,9 @@ export default class SalonService extends BaseService {
         }
         // Search by salon
         getSearchResult = async (phrase: string) => {
-
+                console.log(phrase)
                 const data = await this.model.find(
-                        { $text: { $search: phrase } },
+                        { $text: { $search: phrase, $caseSensitive: false } },
                         { score: { $meta: 'textScore' } }
                 ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
                 return data
@@ -749,6 +749,22 @@ export default class SalonService extends BaseService {
 
         getReviewsRating = async (_id: string) => {
                 const id = mongoose.Types.ObjectId(_id)
+                /**
+                 * [
+    {
+        '$match': {
+            'salon_id': ObjectId('5f1a9055e5b96f894112e5f8')
+        }
+    }, {
+        '$group': {
+            '_id': '$rating', 
+            'count': {
+                '$sum': 1
+            }
+        }
+    }
+]
+                 */
                 var reviews = [
                         {
                                 "$match": {
