@@ -651,7 +651,7 @@ export default class SendEmail {
                 return
             }
             // TODO: string interpolation for the html content
-
+                console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
