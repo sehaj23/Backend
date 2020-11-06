@@ -4,7 +4,7 @@ import SalonSI from "../interfaces/salon.interface";
 const SalonSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
@@ -31,12 +31,12 @@ const SalonSchema = new mongoose.Schema({
         type: [{
             category: {
                 type: String,
-                required: true
+                required: true,
+                
             },
             name: {
                 type: String,
                 required: true,
-               
             },
             options: [{
                 at_home:{
@@ -152,8 +152,8 @@ const SalonSchema = new mongoose.Schema({
     timestamps: true
 })
 
-SalonSchema.index({coordinates: '2dsphere','services.name':'text',name:'text',  });
-
+SalonSchema.index({coordinates: '2dsphere'});
+SalonSchema.index({'name': 'text', 'services.name': 'text'});
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 

@@ -1,9 +1,5 @@
 import * as dotenv from "dotenv";
 import * as mongoose from "mongoose";
-import { Mockgoose } from "mockgoose"
-import Env from "./env";
-import User from "./models/user.model";
-import UserI from "./interfaces/user.interface";
 
 dotenv.config();
 
@@ -21,11 +17,11 @@ const password: string = process.env.DB_PASS || "zattire_dev_password";
 
 
 let uri: string 
-// if(process.env.DB_URI){
-//   uri = `${process.env.DB_URI}`
-// }else{
-// }
+if(process.env.DB_URI){
+  uri = `${process.env.DB_URI}`
+}else{
   uri  = `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`
+}
 
 
 export const connectt = () => {

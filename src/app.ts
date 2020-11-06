@@ -30,16 +30,10 @@ app.use(cors({
   credentials: true
 }));
 
-
 export const io: SocketIO.Server = require("socket.io")(httpApp);
-
 startSocketIO(io)
 
-
-
-// const spacesEndpoint = new aws.Endpoint("nyc3.digitaloceanspaces.com");
 const s3 = new aws.S3();
-
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -51,8 +45,6 @@ const upload = multer({
     },
   }),
 }).array("upload", 1);
-
-
 app.post("/upload", function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
@@ -67,11 +59,7 @@ app.post("/upload", function (request, response, next) {
   });
 });
 
-
-
-
 // setup the logger
-// app.use(morgan('combined', { stream: accessLogStream }))
 app.use(
   morgan(
     //@ts-ignore
