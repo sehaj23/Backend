@@ -214,7 +214,7 @@ export default class UserController extends BaseController {
     })
 
     sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
-     const email =  await SendEmail.bookingConfirm("developers@zattire.com", "check","123", "123", "123")
+     const email =  await SendEmail.emailConfirm("developers@zattire.com")
 
      
         res.send(email)
