@@ -9,6 +9,7 @@ import RevenueService from "../service/revenue.service";
 import ReviewSI from "../interfaces/review.interface";
 import ErrorResponse from "../utils/error-response";
 import { FeedbackI } from "../interfaces/feedback.interface";
+import SendEmail from "../utils/emails/send-email";
 
 
 export default class UserController extends BaseController {
@@ -210,6 +211,13 @@ export default class UserController extends BaseController {
        }
         const notification =  await this.service.sendNotification(fcm_token,message)
         res.send(notification)
+    })
+
+    sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
+     const email =  await SendEmail.bookingConfirm("developers@zattire.com", "check","123", "123", "123")
+
+     
+        res.send(email)
     })
 
     searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) =>{
