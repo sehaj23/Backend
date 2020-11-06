@@ -12,6 +12,7 @@ import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
+import User from '../models/user.model'
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -186,11 +187,23 @@ export default class LoginController extends BaseController {
     })
   })
 
-  forgotPasswordEmail =controllerErrorHandler(async (req: Request, res: Response) => {
+  forgotPasswordVerifyEmail =controllerErrorHandler(async (req: Request, res: Response) => {
     const {email, otp} = req.body
     const user = await this.service.getOne({email}) as UserSI
     if(user === null) throw new ErrorResponse(`User not found with phone ${email}`)
     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+    res.send({success:true,message:"Otp verfied"})
+
+  })
+  forgotPasswordSendEmail =controllerErrorHandler(async (req: Request, res: Response) => {
+    const {email} = req.body
+    const user = await this.service.getOne({email}) as UserSI
+    if(!user) res.status(400).send({sucess:false,message:"User not found with phone ${email}"})
+   const number =  await this.otpService.sendUserOtpEmail(email)
+   console.log(number)
+    SendEmail.forgotPasswordUser(email,number.otp)
+    res.send({success:true,message:"Email Sent"})
+
   })
 
 

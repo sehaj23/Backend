@@ -54,7 +54,9 @@ loginRouter.post(
 
 loginRouter.get("/pass/:password", loginController.getEncryptedPass)
 
-loginRouter.post('/forgot-email',loginController.forgotPasswordEmail)
+loginRouter.post('/forgot-password-send',loginController.forgotPasswordSendEmail)
+
+loginRouter.post('/forgot-password-verify',loginController.forgotPasswordVerifyEmail)
 
 //@ts-ignore
 loginRouter.post(

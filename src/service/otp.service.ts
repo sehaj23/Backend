@@ -62,7 +62,7 @@ export default class OtpService extends BaseService{
     }
     protected async emailverifyOtp(email: string, otp: string): Promise<OtpSI> {
         const otpD = await this.model.findOne({email, verified: false}).sort({ "createdAt": -1 }) as OtpSI
-        if(otpD === null) throw new Error(`Phone does not match`)
+        if(otpD === null) throw new Error(`email does not match`)
         if(otpD.otp !== otp){
             throw new Error("Otp does not match")
         }
@@ -110,6 +110,7 @@ export default class OtpService extends BaseService{
     public async emailVerifyUserOtp(email: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
         const otpD = await this.emailverifyOtp(email, otp)
         const user = await this.userService.getId(userId) as UserSI
+        
         await user.save()
         return {otpD, user}
     }
