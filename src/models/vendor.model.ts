@@ -51,7 +51,7 @@ const VendorSchema = new mongoose.Schema({
         default: false
     },
     fcm_token: {
-        type: String
+        type: [String]
     },
     notification: {
         type: Boolean,

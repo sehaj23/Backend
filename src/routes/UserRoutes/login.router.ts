@@ -54,6 +54,8 @@ loginRouter.post(
 
 loginRouter.get("/pass/:password", loginController.getEncryptedPass)
 
+loginRouter.post('/forgot-email',loginController.forgotPasswordEmail)
+
 //@ts-ignore
 loginRouter.post(
   '/create',

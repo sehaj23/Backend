@@ -335,11 +335,11 @@ export default class BookingController extends BaseController {
         const userData =  this.userService.getId(booking.user_id.toString())
         const salonData =  this.salonService.getId(booking.salon_id.toString())
         const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
-        const [employee,salon,user]= await  Promise.all([userData,salonData,employeeData])
+        const [user,salon,employee]= await  Promise.all([userData,salonData,employeeData])
 
         console.log(employee.fcm_token)
         console.log(salon.email)
-        console.log(user.phone)
+        console.log(user)
         
        
         if (!booking) {
@@ -353,7 +353,7 @@ export default class BookingController extends BaseController {
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
         if(status==="Confirmed"){
             console.log("booking confirmed sending notification to user")
-            const notify = Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+            const notify =Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
             console.log(notify)
             }
         if(status==="Start"){
@@ -488,9 +488,9 @@ export default class BookingController extends BaseController {
         const userData =  this.userService.getId(booking.user_id.toString())
         const salonData =  this.salonService.getId(booking.salon_id.toString())
         const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
-        const [employee,salon,user]= await  Promise.all([userData,salonData,employeeData])
+        const [user,salon,employee]= await  Promise.all([userData,salonData,employeeData])
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
-        const notify = Notify.rescheduledPending(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        const notify =   Notify.rescheduledPending(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
         console.log(notify)
             
         res.status(200).send(booking)

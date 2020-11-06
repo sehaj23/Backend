@@ -3,8 +3,9 @@ import mongoose from "../database";
 export type OtpUserType = 'Vendor' | 'User'
 
 export interface OtpI{
-    phone: string
+    phone?: string
     otp?: string
+    email?:string
     verified?: boolean
     user_type: OtpUserType
 }
