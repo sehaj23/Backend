@@ -192,7 +192,14 @@ export default class LoginController extends BaseController {
     const user = await this.service.getOne({email}) as UserSI
     if(user === null) throw new ErrorResponse(`User not found with phone ${email}`)
     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
-    res.send({success:true,message:"Otp verfied"})
+    user.password = ''
+    const token = await jwt.sign(user.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    return res.status(200).send({
+      token,
+    })
+    
 
   })
   forgotPasswordSendEmail =controllerErrorHandler(async (req: Request, res: Response) => {
@@ -205,6 +212,7 @@ export default class LoginController extends BaseController {
     res.send({success:true,message:"Email Sent"})
 
   })
+
 
 
 }

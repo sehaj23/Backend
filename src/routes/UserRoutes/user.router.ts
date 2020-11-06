@@ -33,5 +33,6 @@ userRouter.patch('/favourite/delete',UserverifyToken,userController.removeFavour
 userRouter.post("/feedback",UserverifyToken,userController.postFeedback)
 userRouter.post("/sendNotification",userController.sendNotifcation)
 userRouter.post("/sendEmail",userController.sendEmail)
+userRouter.patch("/update-forgot-password",UserverifyToken,userController.updateForgotPassword)
 
 export default userRouter

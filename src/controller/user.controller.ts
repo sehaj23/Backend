@@ -75,6 +75,7 @@ export default class UserController extends BaseController {
         }
         res.send(update)
     })
+
     pastBooking = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
@@ -215,8 +216,6 @@ export default class UserController extends BaseController {
 
     sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
      const email =  await SendEmail.emailConfirm("developers@zattire.com")
-
-     
         res.send(email)
     })
 
@@ -226,5 +225,16 @@ export default class UserController extends BaseController {
         res.send(user)
 
     })
+
+    updateForgotPassword =controllerErrorHandler(async (req: Request, res: Response) => {
+        const {email,password} = req.body
+        //@ts-ignore
+        const id = req.userId
+        const user =  await this.service.updateNewPass(id,email,password)
+        if(!user) res.status(400).send({sucess:false,message:`password not updated for ${email}`})
+        res.send({success:true,message:"Password Updated"})
+       
+    
+      })
 
 }

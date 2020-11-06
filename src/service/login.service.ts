@@ -3,6 +3,7 @@ import mongoose from '../database'
 import BaseService from '../service/base.service'
 import OtpService from './otp.service'
 import UserService from './user.service'
+import encryptData from '../utils/password-hash'
 
 export default class LoginService extends BaseService {
   // Signup
@@ -26,5 +27,7 @@ export default class LoginService extends BaseService {
   getbyUID = async (uid: string,email:string) => {
     return await this.model.findOne({uid:uid,email:email })
   }
+
+
 
 }

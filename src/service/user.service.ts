@@ -47,6 +47,8 @@ export default class UserService extends BaseService {
         return null
     }
 
+
+
     pastBooking = async(id:string)=>{
         const booking = await this.bookingModel.find({user_id:id}).populate("employee_id")
         return booking
@@ -174,6 +176,11 @@ export default class UserService extends BaseService {
   return ({ userDetails,userPages })
 
 
+}
+updateNewPass = async (id:string,email: string, password: string) => {
+    const passwordHash = encryptData(password)
+    return await this.model.findOneAndUpdate({_id:id,email:email},{password:passwordHash},{new:true})   
+   
 }
  
 
