@@ -114,6 +114,19 @@ export default class VendorController extends BaseController {
         }
         res.send(vendor)
     })
+    deleteFcm =controllerErrorHandler( async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const fcm = req.body.fcm_token
+        const vendor = await this.service.deleteFCM(id,fcm)
+        if(vendor==null){
+            logger.error(`Unable to fetch info. Please Login again`)
+            res.status(400)
+            res.send({ message: `Unable to fetch info. Please Login again` })
+            return
+        }
+        res.send(vendor)
+    })
 
     updatePass =controllerErrorHandler( async (req: Request, res: Response) => {
 

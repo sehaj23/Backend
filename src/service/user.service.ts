@@ -47,6 +47,17 @@ export default class UserService extends BaseService {
         return null
     }
 
+    updateFCM = async (id:string,fcm_token:any) => {
+
+        const _id = mongoose.Types.ObjectId(id)
+        const user = await this.model.findByIdAndUpdate(_id, {$addToSet:{fcm_token:fcm_token}}, { new: true })
+        return user
+    }
+    deleteFCM = async (id:string,fcm_token:any) => {
+        const _id = mongoose.Types.ObjectId(id)
+        const user = await this.model.findByIdAndUpdate(_id, {$pull:{fcm_token:[fcm_token]}}, { new: true })
+        return user
+    }
 
 
     pastBooking = async(id:string)=>{

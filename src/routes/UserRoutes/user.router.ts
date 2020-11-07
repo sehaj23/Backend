@@ -20,6 +20,8 @@ const userController= new UserController(userService,feedbackService)
 
 userRouter.get("/info",UserverifyToken,userController.getUser)
 userRouter.patch("/update",UserverifyToken,userController.update)
+userRouter.put("/fcm-token",UserverifyToken,userController.updateFCM)
+userRouter.delete("/fcm-token",UserverifyToken,userController.deleteFcm)
 userRouter.patch("/password",UserverifyToken,userController.updatePassword)
 userRouter.get("/bookings",UserverifyToken,userController.pastBooking)
 userRouter.get("/address",UserverifyToken,userController.getAddress)

@@ -41,7 +41,7 @@ export default class UserController extends BaseController {
 
         const updates = Object.keys(req.body)
         const d = req.body
-        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","fcm_token","notification"]
+        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","notification"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
         console.log(isvalid)
         if (!isvalid) {
@@ -59,6 +59,34 @@ export default class UserController extends BaseController {
         }
         res.send({ message: "details updated", success: "true" })
 
+    })
+
+    updateFCM =controllerErrorHandler( async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const fcm = req.body.fcm_token
+        const user = await this.service.updateFCM(id,fcm)
+        if(user==null){
+            logger.error(`Unable to fetch info. Please Login again`)
+            res.status(400)
+            res.send({ message: `Unable to fetch info. Please Login again` })
+            return
+        }
+        res.send(user)
+    })
+
+    deleteFcm =controllerErrorHandler( async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const fcm = req.body.fcm_token
+        const user = await this.service.deleteFCM(id,fcm)
+        if(user==null){
+            logger.error(`Unable to fetch info. Please Login again`)
+            res.status(400)
+            res.send({ message: `Unable to fetch info. Please Login again` })
+            return
+        }
+        res.send(user)
     })
 
     updatePassword = controllerErrorHandler(async (req: Request, res: Response) => {
