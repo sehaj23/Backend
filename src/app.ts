@@ -14,6 +14,7 @@ import Userrouter from "./routes/UserRoutes/index.routes";
 import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
+import SendEmail from "./utils/emails/send-email";
 import logger from "./utils/logger";
 import PrintRoutes from "./utils/print-routes";
 
@@ -75,22 +76,6 @@ app.use("/api/v", Vendorrouter)
 app.use("/api/u", Userrouter)
 app.use("/api/vendorapp",VendorApprouter)
 
-// app.get("/r", async (req: express.Request, res: express.Response) => {
-//   const data = await UserRedis.set("user", "{hello: 'world'}")
-//   res.send(`Hey ${data}`)
-// })
-
-// app.get("/r/g", async (req: express.Request, res: express.Response) => {
-//   const data = await UserRedis.get("user")
-//   res.send(`Hey ${data}`)
-// })
-
-// app.get("/r/r", async (req: express.Request, res: express.Response) => {
-//   const data = await UserRedis.removeAll()
-//   res.send(`Hey ${data}`)
-// })
-
-
 
 // TEMP: to clear redis
 app.get("/r/clr", async (req: express.Request, res: express.Response) => {
@@ -100,6 +85,11 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
   } catch (e) {
     res.status(400).send(e)
   }
+})
+
+app.get("/check-email", async (req: express.Request, res: express.Response) => {
+  SendEmail.emailConfirm()
+  res.send({"message": "Email sent"})
 })
 
 

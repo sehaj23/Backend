@@ -33,7 +33,7 @@ export default class SendEmail {
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string) => {
 
-        fs.readFile('src/utils/emails/booking-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/booking-confirm.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return
@@ -91,7 +91,7 @@ export default class SendEmail {
 
     static emailConfirm = async (userEmail: string) => {
 
-        fs.readFile('src/utils/emails/email-confirm.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/email-confirm.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
