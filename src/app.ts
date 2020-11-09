@@ -14,7 +14,6 @@ import Userrouter from "./routes/UserRoutes/index.routes";
 import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
-import SendEmail from "./utils/emails/send-email";
 import logger from "./utils/logger";
 import PrintRoutes from "./utils/print-routes";
 
@@ -86,12 +85,6 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
     res.status(400).send(e)
   }
 })
-
-app.get("/check-email", async (req: express.Request, res: express.Response) => {
-  SendEmail.emailConfirm()
-  res.send({"message": "Email sent"})
-})
-
 
 app.get("/", (req, res) => {
   res.send(`Welcome to Zattire's ${process.env.NODE_ENV} servers.`)  
