@@ -627,12 +627,12 @@ export default class SalonController extends BaseController {
         }
         //@ts-ignore
         const slotsDate = new Date(gotSlotsDate)
-        if (moment(slotsDate).isBefore(moment().subtract(1, 'day'))) {
-            const msg = "past booking not allowed"
-            logger.error(msg)
-            res.status(400).send({ success: false, message: msg });
-            return
-        }
+        // if (moment(slotsDate).isBefore(moment().subtract(1, 'day'))) {
+        //     const msg = "past booking not allowed"
+        //     logger.error(msg)
+        //     res.status(400).send({ success: false, message: msg });
+        //     return
+        // }
 
         const slots = await this.service.salonSlots(id, slotsDate)
 
