@@ -13,7 +13,7 @@ export default class CartService extends BaseService {
 
     bookCartByUserId: (userId: string) => Promise<CartSI> = async (userId: string) => {
         const cart = await this.getCartByUserId(userId)
-        cart.booked = true
+        cart.status= 'Booked'
         await cart.save()
         return cart
     }
@@ -135,6 +135,12 @@ export default class CartService extends BaseService {
         if(cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
         return cart
     }
+    getLastCartByUserId = async (userId: string) => {
+        const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
+        cart.status='Abandoned'
+        cart.save()
+        return cart
+    }
 
     /**
      * Getting the cart by user id
@@ -148,7 +154,7 @@ export default class CartService extends BaseService {
         console.log(cart)
         if (cart.length > 0) {
             for (let cc of cart) {
-                if(cc.booked === true) return []
+                if(cc.status === 'Booked') return []
                 for (let c of cc.options) {
                     const { name, price } = await this.getPriceAndNameByOptionId(c.option_id)
                     c.option_name = name
@@ -160,7 +166,9 @@ export default class CartService extends BaseService {
     }
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
-
+      
+        await this.getLastCartByUserId(userId)
+        
         const optionPrice = await this.getPriceByOptionId(optionId)
 
         const cart: CartI = {
@@ -174,7 +182,8 @@ export default class CartService extends BaseService {
     }
 
     createCartWithMultipleOptions = async (userId: string, salonId: string, options: CartOption[]) => {
-
+        
+        await this.getLastCartByUserId(userId)
         let total = 0
         for(let opt of options){
             const optionPrice = await this.getPriceByOptionId(opt.option_id)

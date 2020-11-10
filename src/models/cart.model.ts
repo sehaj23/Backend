@@ -27,9 +27,10 @@ const CartSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },
-    booked: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        default: 'In use',
+        enum:['In use','Booked','Abandoned']
     }
 }, {
     timestamps: true
