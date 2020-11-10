@@ -5,14 +5,15 @@
   "main": "app.js",
   "scripts": {
     "start": "node dist/server.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run copy:emails",
     "start:dev": "nodemon --watch src -x ts-node src/server.ts",
     "start:t": "set NODE_ENV=test && nodemon -x ts-node src/server.ts",
     "test": "set NODE_ENV=test && jest --no-cache --runInBand ",
     "testU": "set NODE_ENV=test && jest /src/__tests__/UserTest/salonInfo.test.ts --no-cache --runInBand --watch --detectOpenHandles",
     "vcheck": "tsc -v",
     "seed:dev": "seed -u 'mongodb://127.0.0.1:27017/zattire' ./src/seeds/data",
-    "tscc": "tsc -v"
+    "tscc": "tsc -v",
+    "copy:emails": "cp -r src/utils/emails/*.html dist/utils/emails"
   },
   "jest": {
     "testEnvironment": "node",
