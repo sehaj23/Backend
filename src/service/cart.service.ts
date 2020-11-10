@@ -135,12 +135,12 @@ export default class CartService extends BaseService {
         if(cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
         return cart
     }
-    getLastCartByUserId = async (userId: string) => {
-        const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
-        cart.status='Abandoned'
-        cart.save()
-        return cart
-    }
+    // getLastCartByUserId = async (userId: string) => {
+    //     const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
+    //     cart.status='Abandoned'
+    //    await  cart.save()
+       
+    // }
 
     /**
      * Getting the cart by user id
@@ -167,7 +167,7 @@ export default class CartService extends BaseService {
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
       
-        await this.getLastCartByUserId(userId)
+       // await this.getLastCartByUserId(userId)
         
         const optionPrice = await this.getPriceByOptionId(optionId)
 
@@ -182,8 +182,8 @@ export default class CartService extends BaseService {
     }
 
     createCartWithMultipleOptions = async (userId: string, salonId: string, options: CartOption[]) => {
-        
-        await this.getLastCartByUserId(userId)
+
+     //   await this.getLastCartByUserId(userId)
         let total = 0
         for(let opt of options){
             const optionPrice = await this.getPriceByOptionId(opt.option_id)
