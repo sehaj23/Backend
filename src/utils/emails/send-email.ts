@@ -645,7 +645,7 @@ export default class SendEmail {
 
     static forgotPasswordUser = async (userEmail: string, otp:string) => {
 
-        fs.readFile('src/utils/emails/forgot-password-user.html', 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/forgot-password-user.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
                 return
