@@ -37,6 +37,8 @@ export default class SendEmail {
             if (err) {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return
+            }else{
+
             }
             // TODO: string interpolation for the html content
 
@@ -651,7 +653,7 @@ export default class SendEmail {
                 return
             }else{
                 var writeOTP = data.replace('<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">OTP</span>', `<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">${otp}</span>`);
-                fs.writeFile(`${__dirname}/forgot-password-user.html`,'utf8', function (err){
+                fs.writeFile(`${__dirname}/forgot-password-user.html`,'utf8',writeOTP, function (err){
 
                 })
             }
