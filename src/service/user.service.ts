@@ -1,5 +1,6 @@
 import mongoose from "../database";
 import { UserSI } from "../interfaces/user.interface";
+import { UserRedis } from "../redis/index.redis";
 import encryptData from "../utils/password-hash";
 import sendNotificationToDevice from "../utils/send-notification";
 import BaseService from "./base.service";
@@ -98,12 +99,8 @@ export default class UserService extends BaseService {
 
 
     addToFavourites = async (id: string, salon_id: string) => {
+        UserRedis.remove(id, {type: "favourites"})
         const salonid = mongoose.Types.ObjectId(salon_id)
-        console.log("salon id", salonid)
-        console.log("user", id)
-        // const user = await this.model.findOne({_id:id})
-
-        //  const user = await this.model.findById({_id:id}) 
         //@ts-ignore 
         const user = await this.model.update({ _id: id }, { $push: { favourites: [salonid] } }, { new: true })
 
@@ -111,20 +108,22 @@ export default class UserService extends BaseService {
 
     }
     getFavourites = async (id: string,) => {
-
-        const user = await this.model.findOne({ _id: id }).select("favourites").populate({
-            path: "favourites", select: {
-                name: "name", rating: "rating", location: "location", profile_pic: "profile_pic"
-            }, populate: {
-                path: 'profile_pic'
-            }
-        })
-
-        return user
-
+        const redisUser = await UserRedis.get(id, {type: "favourites"})
+        if(redisUser === null){
+            const user = await this.model.findOne({ _id: id }).select("favourites").populate({
+                path: "favourites", select: {
+                    name: "name", rating: "rating", location: "location", profile_pic: "profile_pic"
+                }, populate: {
+                    path: 'profile_pic'
+                }
+            })
+            UserRedis.set(id, JSON.stringify(user), {type: "favourites"})
+            return user
+        }
+        return JSON.parse(redisUser)  
     }
     removeFavourites = async (id: string, salon_id: string) => {
-        console.log(salon_id)
+        UserRedis.remove(id, {type: "favourites"})
         //@ts-ignore
         const user = await this.model.findByIdAndUpdate({ _id: id }, { $pull: { favourites: salon_id } }, { new: true })
         console.log(user)
