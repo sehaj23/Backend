@@ -1,6 +1,7 @@
 
 import mongoose from "../database";
-import CartI, { CartSI } from "../interfaces/cart.interface";
+import { CartSI } from "../interfaces/cart.interface";
+import { CartRedis } from "../redis/index.redis";
 
 
 const CartSchema = new mongoose.Schema({
@@ -35,7 +36,27 @@ const CartSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+CartSchema.index({user_id: 1});
+const emptyCartCache = (cartId: string) => {
+    CartRedis.remove(cartId)
+}
+CartSchema.pre("save", function(){
+    //@ts-ignore
+    const {user_id} = this
+    if(user_id){
+        const userIdToUse = user_id?._id ?? user_id   
+        emptyCartCache(userIdToUse)
+    }
+})
 
+CartSchema.pre("remove", function(){
+    //@ts-ignore
+    const {user_id} = this
+    if(user_id){
+        const userIdToUse = user_id?._id ?? user_id   
+        emptyCartCache(userIdToUse)
+    }
+})
 
 const Cart = mongoose.model<CartSI>("carts", CartSchema)
 

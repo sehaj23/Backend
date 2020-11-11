@@ -1,6 +1,7 @@
 import mongoose from "../database";
 import CartI, { CartOption, CartSI } from "../interfaces/cart.interface";
 import SalonSI from "../interfaces/salon.interface";
+import { CartRedis } from "../redis/index.redis";
 import BaseService from "./base.service";
 
 export default class CartService extends BaseService {
@@ -130,7 +131,7 @@ export default class CartService extends BaseService {
         return cart
     }
 
-    getCartByUserId = async (userId: string) => {
+    protected getCartByUserId = async (userId: string) => {
         const cart = await this.model.findOne({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
         if(cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
         return cart
@@ -154,19 +155,23 @@ export default class CartService extends BaseService {
         // if(!last){ 
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
-        const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
-        console.log(cart)
-        if (cart.length > 0) {
-            for (let cc of cart) {
-                if(cc.status === 'Booked') return []
-                for (let c of cc.options) {
-                    const { name, price } = await this.getPriceAndNameByOptionId(c.option_id)
-                    c.option_name = name
-                    c.price = price
+        const redisCart = await CartRedis.get(userId)
+        if(redisCart === null){
+            const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
+            if (cart.length > 0) {
+                for (let cc of cart) {
+                    if(cc.status === 'Booked') return []
+                    for (let c of cc.options) {
+                        const { name, price } = await this.getPriceAndNameByOptionId(c.option_id)
+                        c.option_name = name
+                        c.price = price
+                    }
                 }
             }
+            CartRedis.set(userId, JSON.stringify(cart))
+            return cart
         }
-        return cart
+        return JSON.parse(redisCart)
     }
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
