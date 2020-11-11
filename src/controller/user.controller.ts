@@ -243,8 +243,8 @@ export default class UserController extends BaseController {
     })
 
     sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
-     const email =  await SendEmail.emailConfirm("developers@zattire.com","123")
-        res.send(email)
+     const email =  await SendEmail.emailConfirm("developers@zattire.com","123","sehaj")
+    res.send(email)
     })
 
     searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) =>{
@@ -270,7 +270,7 @@ export default class UserController extends BaseController {
         const user = await this.service.getOne({email}) as UserSI
         if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
        const number =  await this.otpService.sendUserOtpEmail(email)
-        SendEmail.emailConfirm(email,number.otp)
+        SendEmail.emailConfirm(email,number.otp,user.name)
         res.send({success:true,message:"Email Sent"})
     
       })

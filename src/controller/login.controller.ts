@@ -104,7 +104,7 @@ export default class LoginController extends BaseController {
       return
     }
     const number =  await this.otpService.sendUserOtpEmail(createUser.email)
-    SendEmail.emailConfirm(createUser.email,number.otp)
+    SendEmail.emailConfirm(createUser.email,number.otp,createUser.name)
    
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
