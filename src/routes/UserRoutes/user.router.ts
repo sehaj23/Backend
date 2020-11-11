@@ -46,6 +46,7 @@ userRouter.post("/confirm-email",UserverifyToken,userController.emailConfirm)
 userRouter.post("/confirm-email-verify",UserverifyToken,userController.emailVerify)
 userRouter.post("/sendNotification",userController.sendNotifcation)
 userRouter.post("/sendEmail",userController.sendEmail)
+userRouter.get("/check-email-verfied",UserverifyToken,userController.checkEmailVerfied)
 userRouter.patch("/update-forgot-password",UserverifyToken,userController.updateForgotPassword)
 
 export default userRouter

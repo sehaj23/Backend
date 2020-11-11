@@ -270,7 +270,7 @@ export default class UserController extends BaseController {
         const user = await this.service.getOne({email}) as UserSI
         if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
        const number =  await this.otpService.sendUserOtpEmail(email)
-        SendEmail.forgotPasswordUser(email,number.otp)
+        SendEmail.emailConfirm(email,number.otp)
         res.send({success:true,message:"Email Sent"})
     
       })
@@ -281,6 +281,20 @@ export default class UserController extends BaseController {
      if(user === null) throw new ErrorResponse(`User not found with ${email}`)
      await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
         
+      })
+
+      checkEmailVerfied = controllerErrorHandler(async (req: Request, res: Response) => {
+          //@ts-ignore
+          const id = req.userId
+        const user =  await this.service.getId(id)
+        if(user.email == null){
+            return res.status(404).send({message:"Email Not Found",success:false})
+        }else if(user.approved ===false){
+            return res.status(401).send({message:"Email Not verified",success:false})
+        }else{
+            return res.status(200).send({message:"Email  verified",success:true})
+        }
+
       })
 
 }
