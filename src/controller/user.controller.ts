@@ -1,15 +1,11 @@
-import BaseController from "./base.controller";
-import UserService from "../service/user.service";
 import { Request, Response } from "express";
-import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import FeedbackService from "../service/feedback.service"
-import logger from "../utils/logger";
-import Review from "../models/review.model";
-import RevenueService from "../service/revenue.service";
-import ReviewSI from "../interfaces/review.interface";
-import ErrorResponse from "../utils/error-response";
 import { FeedbackI } from "../interfaces/feedback.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import FeedbackService from "../service/feedback.service";
+import UserService from "../service/user.service";
 import SendEmail from "../utils/emails/send-email";
+import logger from "../utils/logger";
+import BaseController from "./base.controller";
 
 
 export default class UserController extends BaseController {
@@ -205,7 +201,6 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
 
-        console.log(id)
         const user = await this.service.getFavourites(id)
         if (user === null) {
             logger.error(`No Favourites`)
