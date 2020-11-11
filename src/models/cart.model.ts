@@ -37,8 +37,8 @@ const CartSchema = new mongoose.Schema({
     timestamps: true
 })
 CartSchema.index({user_id: 1});
-const emptyCartCache = (cartId: string) => {
-    CartRedis.remove(cartId)
+const emptyCartCache = (userId: string) => {
+    CartRedis.remove(userId)
 }
 CartSchema.pre("save", function(){
     //@ts-ignore
