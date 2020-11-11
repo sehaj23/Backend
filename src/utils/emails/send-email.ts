@@ -651,6 +651,11 @@ export default class SendEmail {
             if (err) {
                 SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
                 return
+            }else{
+                const writeOTP =  data.replace(`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">OTP</span>`,`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">${otp}</span>`)
+                fs.writeFile(`${__dirname}/forgot-password-user.html`, writeOTP, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                 });
             }
             // TODO: string interpolation for the html content
                 console.log("sending emailll")
