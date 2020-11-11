@@ -163,7 +163,7 @@ export default class SendEmail {
                 const writeOTP =  data.replace(`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>OTP</strong></span>`,`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>${otp}</strong></span>`)
                 const writeName = data.replace(`<span style="font-size: 20px;"><em><strong>Hi [User name],</strong></em></span>`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
                 console.log(writeOTP)
-                fs.writeFile(`${__dirname}/confirm-email-new.html`, writeOTP, 'utf8', function (err) {
+                fs.writeFile(`${__dirname}/confirm-email-new.html`, {writeOTP,writeName}, 'utf8', function (err) {
                     if (err) return console.log(err);
                     console.log("replaced")
                  });
