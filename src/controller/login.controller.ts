@@ -103,7 +103,8 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    SendEmail.emailConfirm(createUser.email)
+    const number =  await this.otpService.sendUserOtpEmail(createUser.email)
+    SendEmail.emailConfirm(createUser.email,number.otp)
    
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {

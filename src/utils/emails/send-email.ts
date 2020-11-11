@@ -38,7 +38,10 @@ export default class SendEmail {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return
             }else{
-
+                // const Name =  data.replace(`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">OTP</span>`,`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">${otp}</span>`)
+                // fs.writeFile(`${__dirname}/booking-confirm.html`, writeOTP, 'utf8', function (err) {
+                //     if (err) return console.log(err);
+                //  });
             }
             // TODO: string interpolation for the html content
 
@@ -91,12 +94,17 @@ export default class SendEmail {
 
     }
 
-    static emailConfirm = async (userEmail: string) => {
+    static emailConfirm = async (userEmail:string,otp:string) => {
 
-        fs.readFile(`${__dirname}/email-confirm.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/confirm-email-new`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
+            }else{
+                const writeOTP =  data.replace(`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>OTP</strong></span>`,`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>${otp}</strong></span>`)
+                fs.writeFile(`${__dirname}/forgot-password-user.html`, writeOTP, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                 });
             }
 
             // TODO: string interpolation for the html content

@@ -9,11 +9,20 @@ import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
 import FeedbackService from "../../service/feedback.service";
 import Feedback from "../../models/feedback.model";
+import EmployeeService from "../../service/employee.service";
+import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
+import Employee from "../../models/employees.model";
+import Otp from "../../models/otp.model";
+import ReportVendor from "../../models/reportVendor.model";
+import Salon from "../../models/salon.model";
+import OtpService from "../../service/otp.service";
 
 const userRouter = Router()
 const feedbackService = new  FeedbackService(Feedback)
 const userService = new UserService(User,Booking)
-const userController= new UserController(userService,feedbackService)
+const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
+const otpService = new OtpService(Otp, userService, employeeService)
+const userController= new UserController(userService,feedbackService,otpService)
 
 
 
@@ -33,6 +42,8 @@ userRouter.patch('/favourite',UserverifyToken,userController.addToFavourites)
 userRouter.get('/favourite',UserverifyToken,userController.getFavourites)
 userRouter.patch('/favourite/delete',UserverifyToken,userController.removeFavourites)
 userRouter.post("/feedback",UserverifyToken,userController.postFeedback)
+userRouter.post("/confirm-email",UserverifyToken,userController.emailConfirm)
+userRouter.post("/confirm-email-verify",UserverifyToken,userController.emailVerify)
 userRouter.post("/sendNotification",userController.sendNotifcation)
 userRouter.post("/sendEmail",userController.sendEmail)
 userRouter.patch("/update-forgot-password",UserverifyToken,userController.updateForgotPassword)

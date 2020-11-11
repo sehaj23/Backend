@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import { FeedbackI } from "../interfaces/feedback.interface";
+import { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import FeedbackService from "../service/feedback.service";
+import OtpService from "../service/otp.service";
 import UserService from "../service/user.service";
 import SendEmail from "../utils/emails/send-email";
+import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 
@@ -11,10 +14,12 @@ import BaseController from "./base.controller";
 export default class UserController extends BaseController {
     service: UserService
     feedbackService:FeedbackService
-    constructor(service: UserService,feedbackService:FeedbackService) {
+    otpService:OtpService
+    constructor(service: UserService,feedbackService:FeedbackService,otpService:OtpService) {
         super(service)
         this.service = service
         this.feedbackService=feedbackService
+        this.otpService=otpService
     }
 
     getUser = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -238,7 +243,7 @@ export default class UserController extends BaseController {
     })
 
     sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
-     const email =  await SendEmail.emailConfirm("developers@zattire.com")
+     const email =  await SendEmail.emailConfirm("developers@zattire.com","123")
         res.send(email)
     })
 
@@ -258,6 +263,24 @@ export default class UserController extends BaseController {
         res.send({success:true,message:"Password Updated"})
        
     
+      })
+
+      emailConfirm =controllerErrorHandler(async (req: Request, res: Response) => {
+        const {email} = req.body
+        const user = await this.service.getOne({email}) as UserSI
+        if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
+       const number =  await this.otpService.sendUserOtpEmail(email)
+        SendEmail.forgotPasswordUser(email,number.otp)
+        res.send({success:true,message:"Email Sent"})
+    
+      })
+      
+      emailVerify = controllerErrorHandler(async (req: Request, res: Response) => {
+      const {email, otp} = req.body
+    const user = await this.service.getOne({email}) as UserSI
+     if(user === null) throw new ErrorResponse(`User not found with ${email}`)
+     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+        
       })
 
 }
