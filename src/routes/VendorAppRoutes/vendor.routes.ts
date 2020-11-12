@@ -36,6 +36,7 @@ vendorRouter.post("/absent/update",VendorverifyToken,vendorController.employeeAb
 vendorRouter.get("/info",VendorverifyToken ,vendorController.vendorInfo)
 vendorRouter.put("/", VendorverifyToken, vendorController.update)
 vendorRouter.put("/fcm", VendorverifyToken, vendorController.updateFCM)
+vendorRouter.patch("/fcm", VendorverifyToken, vendorController.deleteFcm)
 vendorRouter.patch("/update/",VendorverifyToken,vendorController.updatePass)
 vendorRouter.get("/employee-slots/:id",VendorverifyToken, vendorController.employeeSlots)
 vendorRouter.get("/slots/:id",VendorverifyToken,vendorController.slots)

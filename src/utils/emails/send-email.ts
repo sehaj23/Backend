@@ -161,7 +161,9 @@ export default class SendEmail {
                 return
             }else{
                 const writeOTP =  data.replace(`/<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>*</strong></span>/g`,`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>${otp}</strong></span>`)
-                const writeName = data.replace(`<span style="font-size: 20px;"><em><strong>Hi [User name],</strong></em></span>`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
+                const writeName = data.replace(`/<span style="font-size: 20px;"><em><strong>*</strong></em></span>/g`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
+                console.log(data)
+                console.log(otp)
                 fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
                     if (err) return console.log(err);
                     console.log("replaced")
@@ -177,6 +179,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
+                        'inbox-test@beefree.io',
                         userEmail
                         /* more items */
                     ]
