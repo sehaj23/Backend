@@ -179,7 +179,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
-                        'inbox-test@beefree.io',
+                      
                         userEmail
                         /* more items */
                     ]
