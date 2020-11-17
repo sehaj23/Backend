@@ -156,14 +156,15 @@ export default class LoginController extends BaseController {
   })
   signupWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
     const { phone, otp } = req.body
-    const getUser = await this.otpService.signupUserWithPhoneVerifyOtp(phone, otp)
-    getUser.password = ''
-    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
-      expiresIn: this.jwtValidity,
-    })
-    return res.status(200).send({
-      token,
-    })
+    const verifyOTP = await this.otpService.signupUserWithPhoneVerifyOtp(phone, otp)
+    // getUser.password = ''
+    // const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    //   expiresIn: this.jwtValidity,
+    // })
+    // return res.status(200).send({
+    //   token,
+    // })
+    return res.send(200).send({message:"otp verfied",success:true})
   })
 
   loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {

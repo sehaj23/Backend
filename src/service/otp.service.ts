@@ -132,12 +132,12 @@ export default class OtpService extends BaseService{
     }
 
     public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI>{
-        await this.verifyOtp(phone, otp)
-        const user: UserI = {
-            phone
-        }
-        const userSI = await this.userService.post(user) as UserSI
-        return userSI
+      const verifyOtp =   await this.verifyOtp(phone, otp)
+        // const user: UserI = {
+        //     phone
+        // }
+     //   const userSI = await this.userService.post(user) as UserSI
+        return verifyOtp
     }
 
     public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{
