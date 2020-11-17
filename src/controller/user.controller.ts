@@ -294,7 +294,6 @@ export default class UserController extends BaseController {
         }else{
             return res.status(200).send({message:"Email  verified",success:true})
         }
-
       })
 
 }

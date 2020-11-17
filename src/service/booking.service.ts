@@ -198,13 +198,12 @@ export default class BookingService extends BaseService {
      * @description This is the service to get the employees fof the salon on given date 
      */
     getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
-    //     const dateTimeD =new Date(dateTime)
-    //    console.log(dateTimeD)
+         const dateTimeD =moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
       
         let busyEmployeesIds = [];
         let busy = [];
         // @ts-ignore
-          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:new Date(dateTime)}}, salon_id: salonId });
+          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:dateTimeD}}, salon_id: salonId });
         const salonDbReq = this.salonModel.findById(salonId).select("employees").populate("employees").exec();
         const [salon,bookings] = await Promise.all([salonDbReq,bookingsDbReq])
         console.log("1")
