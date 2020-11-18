@@ -202,9 +202,13 @@ export default class BookingService extends BaseService {
       
         let busyEmployeesIds = [];
         let busy = [];
+        console.log(dateTimeD)
         // @ts-ignore
-          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:dateTimeD}}, salon_id: salonId,status:"Confirmed" }).sort({ "createdAt": -1 });
-        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate("employees").exec();
+          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:dateTimeD}}, salon_id: salonId}).sort({ "createdAt": -1 });
+        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({ path : 'employees',
+        populate : {
+          path : 'photo'
+        }}).exec();
         const [salon,bookings] = await Promise.all([salonDbReq,bookingsDbReq])
         console.log("1")
            if (bookings !== null){
