@@ -198,16 +198,32 @@ export default class BookingService extends BaseService {
      * @description This is the service to get the employees fof the salon on given date 
      */
     getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
-        const dateTimeD = new Date(dateTime);
-        const busyEmployeesIds = [];
+         const dateTimeD =moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
+      
+        let busyEmployeesIds = [];
+        let busy = [];
+        console.log(dateTimeD)
         // @ts-ignore
-        //  const bookingsDbReq =  Booking.findOne({ services: { service_time: dateTimeD }, salon_id: salonId });
-        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate("employees").exec();
-        const [salon] = await Promise.all([salonDbReq])
-        //   if (bookings !== null) busyEmployeesIds.concat(bookings.services.map(s => s.employee_id))
-        for (const bemp of busyEmployeesIds) {
+          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:dateTimeD}}, salon_id: salonId}).sort({ "createdAt": -1 });
+        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({ path : 'employees',
+        populate : {
+          path : 'photo'
+        }}).exec();
+        const [salon,bookings] = await Promise.all([salonDbReq,bookingsDbReq])
+        console.log("1")
+           if (bookings !== null){
+            console.log("2")
+            console.log(bookings)  
+            const book =  bookings.services.map(s => s.employee_id)
+            busy =  busyEmployeesIds.concat(book)
+            }
+            console.log("3")
+        for (const bemp of busy) {
+            console.log(bemp)
             //@ts-ignore
-            const i = salon.employees.findIndex((e) => e._id === bemp);
+            const i = salon.employees.findIndex((e) => {
+              return JSON.stringify(e._id) == JSON.stringify(bemp)
+            });
             if (i !== -1) salon.employees.splice(i, 1);
         }
         return salon
@@ -237,17 +253,10 @@ export default class BookingService extends BaseService {
 
         const bookings = await this.model.find({ smakeup_artist_id: makeupArtistId, status: "Requested" }).populate("makeup_artists").populate("designers").populate("salons").populate("user_id").exec()
         return bookings
-
-
-
     }
     getPendingDesignerBookings = async (designerId: string) => {
-
-
-
         const bookings = await this.model.find({ designer_id: designerId, status: "Requested" }).populate("user_id").exec()
         return bookings
-
     }
 
 
@@ -297,7 +306,6 @@ export default class BookingService extends BaseService {
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
         console.log(skipCount)
-
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
@@ -363,18 +371,13 @@ export default class BookingService extends BaseService {
     bookingByID = async (id: string) => {
         const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         return booking
-
-
     }
 
     reschedulebooking = async (id: string, date_time: Array<Date>, current_time: Date) => {
-
         //@ts-ignore
         const booking = await this.model.findByIdAndUpdate(id, { rescheduled_available_slots: date_time, status: "Rescheduled and Pending", rescheduled_request_datetime: current_time }, { new: true })
         console.log(booking)
         return booking
-
-
     }
     getAllSalonBookings = async (salonId: string) => {
         const bookings = await this.model.find({ salon_id: salonId }).populate("user_id").exec()

@@ -287,14 +287,13 @@ export default class UserController extends BaseController {
           //@ts-ignore
           const id = req.userId
         const user =  await this.service.getId(id)
-        if(user.email == null){
+        if(user.email == null || user.email == ""){
             return res.status(404).send({message:"Email Not Found",success:false})
         }else if(user.approved ===false){
             return res.status(401).send({message:"Email Not verified",success:false})
         }else{
             return res.status(200).send({message:"Email  verified",success:true})
         }
-
       })
 
 }

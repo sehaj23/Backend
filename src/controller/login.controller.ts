@@ -117,10 +117,10 @@ export default class LoginController extends BaseController {
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid, email } = req.body
-
+    
     const getUser = await this.service.getbyUID(uid, email)
     if (getUser === null) {
-
+      user.approved=true
       const createUser = await this.service.create(user)
       if (createUser == null) {
         const errMsg = `unable to create User`;
@@ -156,14 +156,15 @@ export default class LoginController extends BaseController {
   })
   signupWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
     const { phone, otp } = req.body
-    const getUser = await this.otpService.signupUserWithPhoneVerifyOtp(phone, otp)
-    getUser.password = ''
-    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
-      expiresIn: this.jwtValidity,
-    })
-    return res.status(200).send({
-      token,
-    })
+    const verifyOTP = await this.otpService.signupUserWithPhoneVerifyOtp(phone, otp)
+    // getUser.password = ''
+    // const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    //   expiresIn: this.jwtValidity,
+    // })
+    // return res.status(200).send({
+    //   token,
+    // })
+    return res.status(200).send({message:"otp verfied",success:true})
   })
 
   loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {

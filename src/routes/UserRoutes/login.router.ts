@@ -37,7 +37,7 @@ loginRouter.post(
   loginController.signupWithOtpSendOtp
 )
 
-loginRouter.post(
+loginRouter.post( 
   '/otp-signup-verify',
   loginController.signupWithOtpVerifyOtp
 )

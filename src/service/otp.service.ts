@@ -74,7 +74,7 @@ export default class OtpService extends BaseService{
     public async sendEmployeeOtp(phone: string): Promise<OtpSI>{
         const emp = await this.employeeService.getOne({phone}) as EmployeeSI
         if(emp === null) throw new Error(`No employee found with this phone number`);
-        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your login otp is ${otpNumber}`
         const otp: OtpI = {
             phone: phone,
@@ -87,7 +87,7 @@ export default class OtpService extends BaseService{
     }
 
     public async sendUserOtp(phone: string): Promise<OtpSI>{
-        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {
             phone: phone,
@@ -119,7 +119,7 @@ export default class OtpService extends BaseService{
     public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI>{
         const user = await this.userService.getOne({phone})
         if(user !== null) throw new Error(`User already registered with this email id`)
-        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {
             phone: phone,
@@ -132,12 +132,12 @@ export default class OtpService extends BaseService{
     }
 
     public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI>{
-        await this.verifyOtp(phone, otp)
-        const user: UserI = {
-            phone
-        }
-        const userSI = await this.userService.post(user) as UserSI
-        return userSI
+      const verifyOtp =   await this.verifyOtp(phone, otp)
+        // const user: UserI = {
+        //     phone
+        // }
+     //   const userSI = await this.userService.post(user) as UserSI
+        return verifyOtp
     }
 
     public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{
@@ -145,12 +145,12 @@ export default class OtpService extends BaseService{
         return otpD
     }
 
-    protected getRandomInt(max: number, min: number): number {
-        return Math.floor(Math.random() * Math.floor(max) + min);
+    protected getRandomInt(): number {
+        return Math.floor(1000 + Math.random() * 9000);
     }
 
     public async sendUserOtpEmail(email: string): Promise<OtpSI>{
-        const otpNumber: string = this.getRandomInt(9999, 999).toString()
+        const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {
             email: email,
