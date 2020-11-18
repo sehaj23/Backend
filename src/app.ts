@@ -87,7 +87,7 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
 })
 
 app.get("/", (req, res) => {
-  res.send(`Welcome to Zattire's ${process.env.NODE_ENV} servers.`)  
+  res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} servers.`)  
 })
 
 // this is for 404

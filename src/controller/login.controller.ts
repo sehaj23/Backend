@@ -164,7 +164,7 @@ export default class LoginController extends BaseController {
     // return res.status(200).send({
     //   token,
     // })
-    return res.send(200).send({message:"otp verfied",success:true})
+    return res.status(200).send({message:"otp verfied",success:true})
   })
 
   loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {
