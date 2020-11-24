@@ -164,10 +164,10 @@ export default class SendEmail {
                 const writeName = data.replace(`/<span style="font-size: 20px;"><em><strong>*</strong></em></span>/g`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
                 console.log(data)
                 console.log(otp)
-                fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
-                    if (err) return console.log(err);
-                    console.log("replaced")
-                 });
+                // fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
+                //     if (err) return console.log(err);
+                //     console.log("replaced")
+                //  });
             }
 
             // TODO: string interpolation for the html content
@@ -236,11 +236,6 @@ export default class SendEmail {
             if (err) {
                 SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
                 return
-            }else{
-                const writeOTP =  data.replace(`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">OTP</span>`,`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">${otp}</span>`)
-                fs.writeFile(`${__dirname}/forgot-password-user.html`, writeOTP, 'utf8', function (err) {
-                    if (err) return console.log(err);
-                 });
             }
             // TODO: string interpolation for the html content
                 console.log("sending emailll")
@@ -292,5 +287,64 @@ export default class SendEmail {
         })
 
     }
+
+    static forgotPasswordNewUser = async (userEmail: string, otp:string) => {
+
+        fs.readFile(`${__dirname}/forgot-password-user.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+            if (err) {
+                SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
+                return
+            }
+            // TODO: string interpolation for the html content
+                console.log("sending emailll")
+            const params = {
+                Destination: { /* required */
+                    ToAddresses: [
+                        'preetsc27@gmail.com',
+                        'kashish@zattire.com',
+                        'pushaan@zattire.com',
+                        'developers@zattire.com',
+                        userEmail
+                        /* more items */
+                    ]
+                },
+                Message: { /* required */
+                    Body: { /* required */
+                        Html: {
+                            Charset: "UTF-8",
+                            Data: data,
+                        },
+                        Text: {
+                            Charset: "UTF-8",
+                            Data: "Hello!\n Welcome to Zattire. 33"
+                        }
+                    },
+                    Subject: {
+                        Charset: 'UTF-8',
+                        Data: 'Welcome to zattire'
+                    }
+                },
+                Source: 'preet@zattire.com', /* required */
+                ReplyToAddresses: [
+                    'preet@zattire.com',
+                    /* more items */
+                ],
+            };
+
+            // Create the promise and SES service object
+            var sendPromise = new AWS.SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
+
+            // Handle promise's fulfilled/rejected states
+            sendPromise.then(
+                function (data) {
+                    SendEmail.logEmailStatus(true, 'forgot password', 'user', userEmail, data.MessageId)
+                }).catch(
+                    function (err) {
+                        SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
+                    });
+        })
+
+    }
+
 
 }

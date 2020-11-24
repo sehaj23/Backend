@@ -10,7 +10,7 @@ export default class Notify {
         SendEmail.bookingConfirm(userEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
 
-      sendNotificationToDevice(userFCM, { notification: {title:"Booking Confirmed",body: `Your booking for ${dateTime} has been accepted by ${salonName}`},data:{booking_id:bookingId,status:"Confirmed"}})
+      sendNotificationToDevice(userFCM, { notification: {title:"Booking Confirmed",body: `Your booking for ${dateTime} has been accepted by ${salonName}`},data:{booking_id:bookingId,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
        
         //TODO: change the text of the uszer text 
         const userText = `Your booking for ${dateTime} has been accepted by ${salonName}, CHEERS`
@@ -22,11 +22,12 @@ export default class Notify {
     static bookingRequest = async (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string[],salonEmail:string,salonName:string,bookingIdNumeric:string) => {
       //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
-        sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Request",body: `${employeeName} has received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested"}})
-        sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking Request",body: `You have received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested"}})
-         
+        sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Request",body: `${employeeName} has received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+        sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking Request",body: `You have received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+         //check
         //TODO: change the text of the uszer text 
         const vendorText = `Received a new booking for ${dateTime}`
+        console.log("sending message")
         OtpService.sendMessage(vendorPhone, vendorText)
        
         //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
@@ -37,7 +38,7 @@ export default class Notify {
       //  SendEmail.bookingConfirm(userEmail, salonName, bookingId, bookingIdNumeric, dateTime)
         // TODO: Add notification data and the route
        
-      sendNotificationToDevice(userFCM, { notification: {title:"Booking Rescheduled",body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`},data:{booking_id:bookingId,status:"Rescheduled and Pending"}})
+      sendNotificationToDevice(userFCM, { notification: {title:"Booking Rescheduled",body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`},data:{booking_id:bookingId,status:"Rescheduled and Pending",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
         //TODO: change the text of the uszer text 
         const userText = `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`
         OtpService.sendMessage(userPhone, userText)
@@ -45,6 +46,9 @@ export default class Notify {
          //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
         //if required
     }
+
+ 
+
 
     static rescheduledBooking = (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string,salonEmail:string,salonName:string,bookingIdNumeric:string) => {
         //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
