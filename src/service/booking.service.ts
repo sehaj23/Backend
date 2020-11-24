@@ -197,7 +197,7 @@ export default class BookingService extends BaseService {
      * 
      * @description This is the service to get the employees fof the salon on given date 
      */
-    getSalonEmployees = async (salonId: string, dateTime: DateTime) => {
+    getSalonEmployees = async (salonId: string,dateTime) => {
          const dateTimeD =moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
       
         let busyEmployeesIds = [];

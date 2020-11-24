@@ -173,7 +173,8 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
-        const salon = await this.service.getSalonEmployees(req.params.salonId,req.query.dateTime )
+        const date_time = req.query.dateTime 
+        const salon = await this.service.getSalonEmployees(req.params.salonId,date_time)
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
