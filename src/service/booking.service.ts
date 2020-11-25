@@ -197,29 +197,42 @@ export default class BookingService extends BaseService {
      * 
      * @description This is the service to get the employees fof the salon on given date 
      */
-    getSalonEmployees = async (salonId: string,dateTime) => {
-         const dateTimeD =moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
-      
+    getSalonEmployees = async (salonId: string, dateTime) => {
+        const dateTimeD = moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
+
         let busyEmployeesIds = [];
         let busy = [];
+        let book = []
+
         console.log(dateTimeD)
         // @ts-ignore
-          const bookingsDbReq =  this.model.findOne({ services: {$elemMatch:{ service_time:dateTimeD}}, salon_id: salonId}).sort({ "createdAt": -1 });
-        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({ path : 'employees',
-        populate : {
-          path : 'photo'
-        }}).exec();
-        const [salon,bookings] = await Promise.all([salonDbReq,bookingsDbReq])
-           if (bookings !== null){
-            const book =  bookings.services.map(s => s.employee_id)
-            busy =  busyEmployeesIds.concat(book)
+        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time: dateTimeD } }, salon_id: salonId }).sort({ "createdAt": -1 });
+        const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({
+            path: 'employees',
+            populate: {
+                path: 'photo'
             }
-            console.log("3")
+        }).exec();
+        const [salon, bookings] = await Promise.all([salonDbReq, bookingsDbReq])
+        console.log("*****")
+        console.log(bookings)
+        if (bookings !== null) {
+            for (let i = 0; i < bookings.length; i++) {
+                const booking = bookings[i]
+                booking.services.map(s => {
+                    book.push(s.employee_id)
+                    s.employee_id
+                })
+            }
+
+            busy = busyEmployeesIds.concat(book)
+        }
+
         for (const bemp of busy) {
-          
+
             //@ts-ignore
             const i = salon.employees.findIndex((e) => {
-              return JSON.stringify(e._id) == JSON.stringify(bemp)
+                return JSON.stringify(e._id) == JSON.stringify(bemp)
             });
             if (i !== -1) salon.employees.splice(i, 1);
         }
@@ -356,11 +369,11 @@ export default class BookingService extends BaseService {
 
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
-       // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+        // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
 
-        const [bookingDetails,  bookingPages] = await Promise.all([bookingDetailsReq,  bookingPagesReq])
-        return ({ bookingDetails,  bookingPages })
+        const [bookingDetails, bookingPages] = await Promise.all([bookingDetailsReq, bookingPagesReq])
+        return ({ bookingDetails, bookingPages })
 
 
 
@@ -442,7 +455,7 @@ export default class BookingService extends BaseService {
 
 
         dateFilter["start_date"] = moment().format("YYYY-MM-DD")
-        dateFilter["end_date"] = moment().add(28 ,"days").format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
 
 
         for (const k of keys) {
