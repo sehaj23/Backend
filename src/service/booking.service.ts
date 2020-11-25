@@ -210,16 +210,13 @@ export default class BookingService extends BaseService {
           path : 'photo'
         }}).exec();
         const [salon,bookings] = await Promise.all([salonDbReq,bookingsDbReq])
-        console.log("1")
            if (bookings !== null){
-            console.log("2")
-            console.log(bookings)  
             const book =  bookings.services.map(s => s.employee_id)
             busy =  busyEmployeesIds.concat(book)
             }
             console.log("3")
         for (const bemp of busy) {
-            console.log(bemp)
+          
             //@ts-ignore
             const i = salon.employees.findIndex((e) => {
               return JSON.stringify(e._id) == JSON.stringify(bemp)
