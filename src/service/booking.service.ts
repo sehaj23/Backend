@@ -206,7 +206,7 @@ export default class BookingService extends BaseService {
 
         console.log(dateTimeD)
         // @ts-ignore
-        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time: dateTimeD } }, salon_id: salonId,status:{$in:["Confirmed","Requested","Start"]} }).sort({ "createdAt": -1 });
+        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time: dateTimeD } }, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
         const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({
             path: 'employees',
             populate: {
