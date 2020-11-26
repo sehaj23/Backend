@@ -198,15 +198,19 @@ export default class BookingService extends BaseService {
      * @description This is the service to get the employees fof the salon on given date 
      */
     getSalonEmployees = async (salonId: string, dateTime) => {
-        const dateTimeD = moment(dateTime).format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00").toString()
+        const dateTimeAdd = moment(dateTime).add(25,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
+        const dateTimeSub = moment(dateTime).subtract(25,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
+        console.log("*****")
+        console.log(dateTimeAdd)
+        console.log(dateTimeSub)
 
         let busyEmployeesIds = [];
         let busy = [];
         let book = []
 
-        console.log(dateTimeD)
+       
         // @ts-ignore
-        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time: dateTimeD } }, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
+        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time:{ $gte:dateTimeSub,$lt:dateTimeAdd} } }, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
         const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({
             path: 'employees',
             populate: {
