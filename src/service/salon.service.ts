@@ -822,7 +822,9 @@ export default class SalonService extends BaseService {
                 // getting the day from the date
                 let day = moment(slotsDate).day() - 1
                 if (day < 0) day = 6
+                console.log("******")
                 console.log(day)
+                console.log(moment().day()-1)
                 if (starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
                 const selectedStartingHour = moment(starting_hours[day])
                 if (salon.end_working_hours.length < day) throw Error(`ending hours not found for day number ${day} `)
@@ -830,10 +832,18 @@ export default class SalonService extends BaseService {
 
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
-                        const slot = moment(i).format('hh:mm a')
-
+                        console.log(i.hours())
+                        if(moment().day()-1 == day){
+                        if(i.hours() > moment().hours()){
+                        const slot = moment(i.add(1,'hour')).format('hh:mm a')
+                        
                         slots.push(slot)
-
+                        }}else{
+                                const slot = moment(i).format('hh:mm a')
+                        
+                                slots.push(slot)   
+                        
+                }
                 }
                 return slots
 
