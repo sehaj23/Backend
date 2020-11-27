@@ -27,14 +27,12 @@ export default class BaseService {
     /**
      * This is to find by multipleIds
      */
-    getByIds = async (ids:string[]) => {
+    getByIds = async (ids: string[]) => {
         return this.model.find(ids).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
     }
 
     getId = async (id: string) => {
-         return await this.model.findOne({_id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({path:"employees",populate: { path: 'photo' }}).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id")  //.populate({
-            
-    //     }).populate('events').populate("salons").populate("designers").populate("makeup_artists").populate("photo_ids").exec()
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id")  //.populate({
     }
 
     put = async (_id: string, data: any) => {
@@ -49,20 +47,24 @@ export default class BaseService {
     }
 
     getPhoto = async (_id: string) => {
-     
+
         return await Photo.findById(_id)
     }
 
-    putProfilePic = async (photoData:PhotoI,_id:string) => {
+    putProfilePic = async (photoData: PhotoI, _id: string) => {
         // saving photos 
         const photo = await Photo.create(photoData)
         // adding it to event
-        const newEvent = await this.model.findByIdAndUpdate({_id},  { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
-        return newEvent 
-}    
+        const newEvent = await this.model.findByIdAndUpdate({ _id }, { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+        return newEvent
+    }
 
     delete = async (id: string) => {
-        return this.model.deleteOne({_id: id})
+        return this.model.deleteOne({ _id: id })
+    }
+
+    countDocumnet = async (filter: any) => {
+        return this.model.countDocuments(filter)
     }
 
 }

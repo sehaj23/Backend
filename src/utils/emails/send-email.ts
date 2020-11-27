@@ -164,10 +164,10 @@ export default class SendEmail {
                 const writeName = data.replace(`/<span style="font-size: 20px;"><em><strong>*</strong></em></span>/g`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
                 console.log(data)
                 console.log(otp)
-                fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
-                    if (err) return console.log(err);
-                    console.log("replaced")
-                 });
+                // fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
+                //     if (err) return console.log(err);
+                //     console.log("replaced")
+                //  });
             }
 
             // TODO: string interpolation for the html content

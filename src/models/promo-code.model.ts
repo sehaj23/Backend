@@ -44,7 +44,7 @@ const PromoCodeSchema = new mongoose.Schema({
         min: 1,
         required: true
     },
-    amount_type: {
+    disctount_type: {
         type: String,
         enum: ['Flat Price', 'Discount Percentage'],
         required: true
@@ -57,10 +57,11 @@ const PromoCodeSchema = new mongoose.Schema({
     },
     discount_cap:{
         type: Number,
+        required: true
     },
     payment_mode: {
         type: String,
-        enum: ['COD', 'Online'],
+        enum: ['COD', 'Online', 'Both'],
         required: true
     },
     max_usage:{

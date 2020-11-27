@@ -1,21 +1,20 @@
 import { Router } from "express";
-
-import UserService from "../../service/user.service";
-
-import CONFIG from "../../config";
-import User from "../../models/user.model";
 import UserController from "../../controller/user.controller";
 import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
-import FeedbackService from "../../service/feedback.service";
-import Feedback from "../../models/feedback.model";
-import EmployeeService from "../../service/employee.service";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Employee from "../../models/employees.model";
+import Feedback from "../../models/feedback.model";
 import Otp from "../../models/otp.model";
 import ReportVendor from "../../models/reportVendor.model";
 import Salon from "../../models/salon.model";
+import User from "../../models/user.model";
+import EmployeeService from "../../service/employee.service";
+import FeedbackService from "../../service/feedback.service";
 import OtpService from "../../service/otp.service";
+import UserService from "../../service/user.service";
+
+
 
 const userRouter = Router()
 const feedbackService = new  FeedbackService(Feedback)
@@ -23,8 +22,6 @@ const userService = new UserService(User,Booking)
 const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const userController= new UserController(userService,feedbackService,otpService)
-
-
 
 
 userRouter.get("/info",UserverifyToken,userController.getUser)

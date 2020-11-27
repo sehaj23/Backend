@@ -5,8 +5,8 @@ import { OfferI } from "./offer.interface";
 export default interface OptionI{
     _id?: mongoose.Schema.Types.ObjectId
     option_name:String,
-    price:Number,
-    duration:Number,
+    price:number,
+    duration:number,
     gender:String,
     photo?: mongoose.Schema.Types.ObjectId | String
     offers?: OfferI[]
