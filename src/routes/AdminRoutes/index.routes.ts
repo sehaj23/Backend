@@ -1,14 +1,15 @@
 import { Router } from "express";
 import adminRouter from "./admin.router";
+import bookingRouter from "./booking.router";
 import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
 import loginRouter from "./login.router";
-import vendorRouter from "./vendor.router";
- import makeupArtistRouter from "./makeupArtist.route";
-import userRouter from "./user.router";
-import bookingRouter from "./booking.router"
-import salonRouter from "./salon.router";
+import makeupArtistRouter from "./makeupArtist.route";
 import offerRouter from "./offer.router";
+import promoCodeRouter from "./promo-code.router";
+import salonRouter from "./salon.router";
+import userRouter from "./user.router";
+import vendorRouter from "./vendor.router";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/user", userRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
+router.use("/promo-code", promoCodeRouter)
 
 export default router
