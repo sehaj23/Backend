@@ -1,14 +1,15 @@
 import { Router } from "express"
-import loginRouter from "./login.router"
+import bookingRouter from './booking.router'
+import cartRouter from "./cart.router"
 import deviceInfoRouter from "./device-info.router"
+import loginRouter from "./login.router"
+import otpAppRouter from "./otp.route"
+import promoCodeRouter from "./promo-code.router"
+import reportAppRouter from "./report-app.route"
 import salonInfoRouter from "./salon.router"
 import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
-import bookingRouter from './booking.router'
 import userRouter from "./user.router"
-import cartRouter from "./cart.router"
-import reportAppRouter from "./report-app.route"
-import otpAppRouter from "./otp.route"
 
 const Userrouter = Router()
 
@@ -22,5 +23,6 @@ Userrouter.use("/user", userRouter)
 Userrouter.use("/cart", cartRouter)
 Userrouter.use("/report-app", reportAppRouter)
 Userrouter.use("/otp", otpAppRouter)
+Userrouter.use("/promo-code", promoCodeRouter)
 
 export default Userrouter

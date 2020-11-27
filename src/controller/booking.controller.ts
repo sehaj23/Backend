@@ -9,18 +9,17 @@ import controllerErrorHandler from "../middleware/controller-error-handler.middl
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
 import EmployeeAbsenteesmService from "../service/employee-absentism.service";
+import EmployeeService from "../service/employee.service";
 import FeedbackService from "../service/feedback.service";
+import Notify from "../service/notify.service";
 import RazorPayService from "../service/razorpay.service";
 import SalonService from "../service/salon.service";
+import UserService from "../service/user.service";
+import VendorService from "../service/vendor.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
-import sendNotificationToDevice from "../utils/send-notification";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import Notify from "../service/notify.service";
-import UserService from "../service/user.service";
-import EmployeeService from "../service/employee.service";
-import VendorService from "../service/vendor.service";
 
 
 export default class BookingController extends BaseController {
@@ -173,8 +172,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
-        const date_time = req.query.dateTime 
-        const salon = await this.service.getSalonEmployees(req.params.salonId,date_time)
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()) )
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);

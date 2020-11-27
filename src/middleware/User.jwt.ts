@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import * as jwt from "jwt-then"
+import { NextFunction, Request, Response } from "express";
+import * as jwt from "jwt-then";
 import CONFIG from "../config";
 import logger from "../utils/logger";
 
@@ -25,7 +25,9 @@ export const userJWTVerification = async (token: string) => {
 }
 
 const UserverifyToken = async (req: Request, res: Response, next: NextFunction) =>  {
-  if(process.env.NODE_ENV === 'test') {
+  if(process.env.NODE_ENV === 'test-api') {
+    //@ts-ignore
+    req.userId = process.env.USER_ID 
     next()
     return
   }

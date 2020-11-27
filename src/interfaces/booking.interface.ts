@@ -4,7 +4,7 @@ import ReviewSI from "./review.interface";
 
 type Provider = 'MUA' | 'Salon' | 'Designer'
 export type BookinStatus = 'Online Payment Failed' |  'Online Payment Requested' | 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed' | 'Rescheduled Canceled' |  'Rescheduled'
-export type BookingPaymentType = 'COD' | 'Online'
+export type BookingPaymentType = 'COD' | 'Online' | 'Both'
 type BookingLoaction = 'Customer Place' | 'Vendor Place'
 
 export interface BookingServiceI{
