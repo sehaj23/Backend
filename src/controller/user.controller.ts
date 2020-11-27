@@ -274,12 +274,22 @@ export default class UserController extends BaseController {
         res.send({success:true,message:"Email Sent"})
     
       })
+      emailConfirmAfterSignup =controllerErrorHandler(async (req: Request, res: Response) => {
+        const {email} = req.body
+        const user = await this.service.getOne({email}) as UserSI
+       // if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
+       const number =  await this.otpService.sendUserOtpEmail(email)
+        SendEmail.emailConfirm(email,number.otp,user.name)
+        res.send({success:true,message:"Email Sent"})
+    
+      })
       
       emailVerify = controllerErrorHandler(async (req: Request, res: Response) => {
       const {email, otp} = req.body
     const user = await this.service.getOne({email}) as UserSI
      if(user === null) throw new ErrorResponse(`User not found with ${email}`)
-     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+     const otpd =  await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+     res.status(200).send(otpd)
         
       })
 
@@ -287,10 +297,12 @@ export default class UserController extends BaseController {
           //@ts-ignore
           const id = req.userId
         const user =  await this.service.getId(id)
+        console.log("******")
+        console.log(user)
         if(user.email == null || user.email == ""){
             return res.status(404).send({message:"Email Not Found",success:false})
         }else if(user.approved ===false){
-            return res.status(401).send({message:"Email Not verified",success:false})
+            return res.status(401).send({message:"Email Not verified",success:false,email:user.email})
         }else{
             return res.status(200).send({message:"Email  verified",success:true})
         }
