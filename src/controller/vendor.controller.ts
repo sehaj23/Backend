@@ -116,7 +116,7 @@ export default class VendorController extends BaseController {
     })
     deleteFcm =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.vendorId
+        const id = req.userId
         const fcm = req.body.fcm_token
         const vendor = await this.service.deleteFCM(id,fcm)
         if(vendor==null){
