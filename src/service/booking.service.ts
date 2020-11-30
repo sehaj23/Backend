@@ -48,6 +48,7 @@ export default class BookingService extends BaseService {
 
                 const bookingService: BookingServiceI = {
                     option_id: o.option_id,
+                    gender:o.gender,
                     service_name: o.name,
                     service_real_price: o.price,
                     quantity: o.quantity,
