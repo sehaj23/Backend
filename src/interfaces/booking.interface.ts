@@ -20,7 +20,6 @@ export interface BookingServiceI{
     zattire_commission: number,
     vendor_commission: number,
     service_time: Date,
-    gender:string
     rescheduled_service_time?: Date
 }
 
