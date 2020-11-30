@@ -36,6 +36,11 @@ const BookingSchema = new mongoose.Schema({
                 type: String,
                 required:true
             },
+            gender: {
+                type: String,
+                enum: ["men", "women", "both"],
+                required: true
+            },
             employee_id:{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "employees"
