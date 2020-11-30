@@ -308,4 +308,8 @@ export default class UserController extends BaseController {
         }
       })
 
+      appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
+        res.status(200).send({version:"1.0.0",sucess:true})
+      })
+
 }
