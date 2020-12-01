@@ -84,7 +84,6 @@ export default class BookingController extends BaseController {
         let employeeIds: string[]
         let nextDateTime: moment.Moment
         for(let o of options){
-            console.log(o.gender)
             const totalTime = o.quantity * o.duration
             const convertedDateTime = moment(date_time)
 
