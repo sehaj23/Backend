@@ -20,6 +20,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import { getNameOfDeclaration } from "typescript";
 
 
 export default class BookingController extends BaseController {
@@ -82,8 +83,11 @@ export default class BookingController extends BaseController {
         console.log("userId", userId)
         const { payment_method, location, date_time, salon_id, options, address } = req.body
         let employeeIds: string[]
+        let gender
         let nextDateTime: moment.Moment
         for(let o of options){
+            
+            console.log(o._id)
             const totalTime = o.quantity * o.duration
             const convertedDateTime = moment(date_time)
 
@@ -99,6 +103,23 @@ export default class BookingController extends BaseController {
                 console.log(`Employee id is null for.. geting`)
                 if(!employeeIds || employeeIds?.length === 0){
                     const salon = await this.salonService.getId(salon_id) as SalonSI
+                    for(let salonService of salon.services){
+                        
+                       const salonOptionIndex = salonService.options.indexOf(o.option_id)
+                       
+                       console.log(salonService.options)
+                       console.log(o.option_id)
+                       console.log("salonOptionIndex")
+                       console.log(salonOptionIndex)
+                       if(salonOptionIndex > -1){
+                            gender = salonService.options[salonOptionIndex]
+                            console.log("gender")
+                            console.log(gender)
+
+                           break
+                       }
+
+                    }
                     if(salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
@@ -142,7 +163,7 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address,gender)
         
         const salonReq =  this.salonService.getId(salon_id)
         const employeeReq =  this.employeeService.getId(options[0].employee_id)

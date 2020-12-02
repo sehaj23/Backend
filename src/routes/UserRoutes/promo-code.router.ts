@@ -1,5 +1,6 @@
 import { Router } from "express";
 import PromoCodeController from "../../controller/promo-code.controller";
+import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
 import Brand from "../../models/brands.model";
 import Cart from "../../models/cart.model";
@@ -27,6 +28,6 @@ const promoCodeController = new PromoCodeController(promoCodeService, promoUserS
 //TODO: validate the data before sending it the to DB 
 promoCodeRouter.post("/", promoCodeController.post)
 promoCodeRouter.get("/", promoCodeController.get)
-promoCodeRouter.post("/discountApplicable", promoCodeController.discountApplicable)
+promoCodeRouter.post("/discountApplicable",UserverifyToken, promoCodeController.discountApplicable)
 
 export default promoCodeRouter

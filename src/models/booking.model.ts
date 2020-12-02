@@ -68,6 +68,10 @@ const BookingSchema = new mongoose.Schema({
             service_time: {
                 type: Date,  
             },
+            gender:{
+                type: String,
+                enum: ["men", "women", "both"],
+            },
             rescheduled_service_time: {
                 type: Date,  
             },
