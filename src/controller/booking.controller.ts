@@ -31,20 +31,20 @@ export default class BookingController extends BaseController {
     salonService: SalonService
     employeeAbsentismService: EmployeeAbsenteesmService
     cartService: CartService
-    userService:UserService
-    feedbackService:FeedbackService
-    employeeService:EmployeeService
-    vendorService:VendorService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService,feedbackService:FeedbackService,userService:UserService,employeeService:EmployeeService,vendorService:VendorService) {
+    userService: UserService
+    feedbackService: FeedbackService
+    employeeService: EmployeeService
+    vendorService: VendorService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService) {
         super(service)
         this.service = service
         this.salonService = salonService
         this.employeeAbsentismService = employeeAbsentismService
         this.cartService = cartService
-        this.feedbackService=feedbackService
-        this.userService=userService
-        this.employeeService=employeeService
-        this.vendorService=vendorService
+        this.feedbackService = feedbackService
+        this.userService = userService
+        this.employeeService = employeeService
+        this.vendorService = vendorService
     }
 
 
@@ -55,22 +55,22 @@ export default class BookingController extends BaseController {
     })
 
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
-        const {id} = req.params
+        const { id } = req.params
         const booking = await this.service.getId(id) as BookingSI
-        if(booking === null) throw new ErrorResponse("No booking found with this id")
-        if(booking.razorpay_order_id && booking.razorpay_order_id !== null){
-            res.send({order_id: booking.razorpay_order_id})
+        if (booking === null) throw new ErrorResponse("No booking found with this id")
+        if (booking.razorpay_order_id && booking.razorpay_order_id !== null) {
+            res.send({ order_id: booking.razorpay_order_id })
             return
         }
         const rp = new RazorPayService()
         const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
-        const totalAmountWithTax = Math.round( (totalAmount +  (totalAmount * 0.18) ) * 100) / 100
+        const totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
         logger.info(`totalAmount ${totalAmountWithTax}`)
         const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
         const order_id = order['id']
         logger.info(`order_id ${order_id}`)
         console.log(order)
-        res.send({order_id})
+        res.send({ order_id })
     })
 
     /**
@@ -85,9 +85,9 @@ export default class BookingController extends BaseController {
         let employeeIds: string[]
         let gender
         let nextDateTime: moment.Moment
-        for(let o of options){
-            
-            console.log(o._id)
+        for (let o of options) {
+
+
             const totalTime = o.quantity * o.duration
             const convertedDateTime = moment(date_time)
 
@@ -99,81 +99,77 @@ export default class BookingController extends BaseController {
                 service_time = nextDateTime
                 nextDateTime = nextDateTime.add(totalTime, 'minutes')
             }
-            if(!o.employee_id || o.employee_id === null){
-                console.log(`Employee id is null for.. geting`)
-                if(!employeeIds || employeeIds?.length === 0){
-                    const salon = await this.salonService.getId(salon_id) as SalonSI
-                    for(let salonService of salon.services){
-                        
-                       const salonOptionIndex = salonService.options.indexOf(o.option_id)
-                       
-                       console.log(salonService.options)
-                       console.log(o.option_id)
-                       console.log("salonOptionIndex")
-                       console.log(salonOptionIndex)
-                       if(salonOptionIndex > -1){
-                            gender = salonService.options[salonOptionIndex]
-                            console.log("gender")
-                            console.log(gender)
+            if (!o.employee_id || o.employee_id === null) {
 
-                           break
-                       }
+                if (!employeeIds || employeeIds?.length === 0) {
+                    const salon = await this.salonService.getId(salon_id) as SalonSI
+                    for (let salonService of salon.services) {
+
+                        const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
+
+
+                        if (salonOptionIndex > -1) {
+                            gender = salonService.options[salonOptionIndex].gender
+
+
+                            break
+                        }
 
                     }
-                    if(salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
+                    if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
-                for(let i = 0; i < employeeIds.length; i++){
+                for (let i = 0; i < employeeIds.length; i++) {
                     const empId = employeeIds[i]
                     const mongooseDateTime = service_time.toISOString()
-                    const empBookings = await this.service.get({"services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": mongooseDateTime})
-                    if(empBookings.length > 0) continue
+                    const empBookings = await this.service.get({ "services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": mongooseDateTime })
+                    if (empBookings.length > 0) continue
                     console.log("empBookings")
                     console.log(empBookings)
-                    
-                    const empAbs = await this.employeeAbsentismService.get({"employee_id": mongoose.Types.ObjectId(empId), absenteeism_date: service_time.format(moment.HTML5_FMT.DATE)}) as EmployeeAbsenteeismSI[]
-                    if(empAbs.length > 0){
+
+                    const empAbs = await this.employeeAbsentismService.get({ "employee_id": mongoose.Types.ObjectId(empId), absenteeism_date: service_time.format(moment.HTML5_FMT.DATE) }) as EmployeeAbsenteeismSI[]
+                    if (empAbs.length > 0) {
                         console.log("empAbs")
                         console.log(empAbs)
-                        for(let j = 0; j < empAbs.length;j++){
+                        for (let j = 0; j < empAbs.length; j++) {
                             const empAb = empAbs[j]
                             let absent = false
-                            for(let empAbTime of empAb.absenteeism_times){
+                            for (let empAbTime of empAb.absenteeism_times) {
                                 console.log("empAbTime", empAbTime)
                                 console.log("dateTime.format('h:mm A')", service_time.format('h:mm A'))
-                                if(empAbTime === service_time.format('h:mm A')){
+                                if (empAbTime === service_time.format('h:mm A')) {
                                     absent = true
                                     break
                                 }
                             }
-                            if(absent === false){
+                            if (absent === false) {
                                 o.employee_id = empId
                                 break
                             }
                         }
-                    }else{
+                    } else {
                         o.employee_id = empId
                     }
-                    if(o.employee_id){
+                    if (o.employee_id) {
                         break
                     }
                 }
             }
-            if(!o.employee_id || o.employee_id === null){
+            if (!o.employee_id || o.employee_id === null) {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address,gender)
-        
-        const salonReq =  this.salonService.getId(salon_id)
-        const employeeReq =  this.employeeService.getId(options[0].employee_id)
-        
-        const [salon,employee]= await Promise.all([salonReq,employeeReq])
-        const vendor = await this.vendorService.getId(salon.vendor_id)
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender)
 
-       const notify = Notify.bookingRequest(vendor.contact_number,employee.fcm_token,booking.id,employee.name,bookingTime,vendor.fcm_token,salon.email,salon.name,booking.booking_numeric_id.toString())
-       console.log(notify)
+        const salonReq = this.salonService.getId(salon_id)
+        const employeeReq = this.employeeService.getId(options[0].employee_id)
+
+        const [salon, employee] = await Promise.all([salonReq, employeeReq])
+        const vendor = await this.vendorService.getId(salon.vendor_id)
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+
+        const notify = Notify.bookingRequest(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
+        console.log(notify)
         res.send(booking);
     })
 
@@ -193,7 +189,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
-        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()) )
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()))
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
@@ -352,16 +348,16 @@ export default class BookingController extends BaseController {
 
         }
         const booking = await this.service.updateStatusBookings(bookingid, status)
-        const userData =  this.userService.getId(booking.user_id.toString())
-        const salonData =  this.salonService.getId(booking.salon_id.toString())
-        const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
-        const [user,salon,employee]= await  Promise.all([userData,salonData,employeeData])
+        const userData = this.userService.getId(booking.user_id.toString())
+        const salonData = this.salonService.getId(booking.salon_id.toString())
+        const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
+        const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
 
         console.log(employee.fcm_token)
         console.log(salon.email)
         console.log(user)
-        
-       
+
+
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
@@ -370,19 +366,19 @@ export default class BookingController extends BaseController {
             return
 
         }
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
-        if(status==="Confirmed"){
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+        if (status === "Confirmed") {
             console.log("booking confirmed sending notification to user")
-            const notify =Notify.bookingConfirm(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+            const notify = Notify.bookingConfirm(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
             console.log(notify)
-            }
-        if(status==="Start"){
-            const notify = Notify.serviceStart(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
         }
-        if(status==="Done"){
-            const notify = Notify.serviceEnd(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        if (status === "Start") {
+            const notify = Notify.serviceStart(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         }
-        res.send({message:"Booking status changed",success:"true"})
+        if (status === "Done") {
+            const notify = Notify.serviceEnd(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
+        }
+        res.send({ message: "Booking status changed", success: "true" })
 
     })
 
@@ -391,26 +387,26 @@ export default class BookingController extends BaseController {
         const date_time = req.body.date_time
         //@ts-ignore
         const userId = req.userId
-        var rescheduleditime =  moment(date_time).toDate()
-        const booking = await this.service.confirmRescheduleSlot(bookingId,rescheduleditime,userId)
+        var rescheduleditime = moment(date_time).toDate()
+        const booking = await this.service.confirmRescheduleSlot(bookingId, rescheduleditime, userId)
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
-            res.send({ message: errMsg,success:false })
+            res.send({ message: errMsg, success: false })
             return
 
         }
-        const salonReq =  this.salonService.getId(booking.salon_id.toString())
-        const employeeReq =  this.employeeService.getId(booking.services[0].employee_id)
-        
-        const [salon,employee]= await Promise.all([salonReq,employeeReq])
-        const vendor = await this.vendorService.getId(salon.vendor_id)
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
+        const salonReq = this.salonService.getId(booking.salon_id.toString())
+        const employeeReq = this.employeeService.getId(booking.services[0].employee_id)
 
-       const notify = Notify.rescheduledBooking(vendor.contact_number,employee.fcm_token,booking.id,employee.name,bookingTime,vendor.fcm_token,salon.email,salon.name,booking.booking_numeric_id.toString())
-       console.log(notify)
-        res.send({message:"Booking Confirmed",success:true})
+        const [salon, employee] = await Promise.all([salonReq, employeeReq])
+        const vendor = await this.vendorService.getId(salon.vendor_id)
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+
+        const notify = Notify.rescheduledBooking(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
+        console.log(notify)
+        res.send({ message: "Booking Confirmed", success: true })
 
     })
     assigneEmployeeBookings = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -467,35 +463,6 @@ export default class BookingController extends BaseController {
     getbookingbyId = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const booking = await this.service.bookingByID(id)
-         if (booking === null) {
-            const errMsg = "unable to update boooking"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-
-        }
-        res.status(200).send(booking)
-        
-
-    })
-    reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
-        const id = req.params.id
-        const datetime = req.body.date_time
-        const currentTime = moment().toDate()
-       // const rescheduleDate = moment(date_time).toDate()
-        
-        datetime.map(function (o){
-           return moment(o).toDate()
-        })   
-        if (!id) {
-            const errMsg = "Error Booking not found"
-            logger.error(errMsg)
-            res.status(400)
-            res.send({ message: errMsg })
-            return
-        }
-        const booking = await this.service.reschedulebooking(id, datetime,currentTime)
         if (booking === null) {
             const errMsg = "unable to update boooking"
             logger.error(errMsg)
@@ -504,15 +471,44 @@ export default class BookingController extends BaseController {
             return
 
         }
-        
-        const userData =  this.userService.getId(booking.user_id.toString())
-        const salonData =  this.salonService.getId(booking.salon_id.toString())
-        const employeeData =   this.employeeService.getId(booking.services[0].employee_id.toString())
-        const [user,salon,employee]= await  Promise.all([userData,salonData,employeeData])
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a'); 
-        const notify =   Notify.rescheduledPending(user.phone,user.email,user.fcm_token,salon.contact_number,salon.email,salon.name,employee.phone,employee.fcm_token,booking.id,booking.booking_numeric_id.toString(),bookingTime)
+        res.status(200).send(booking)
+
+
+    })
+    reschedulebooking = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const datetime = req.body.date_time
+        const currentTime = moment().toDate()
+        // const rescheduleDate = moment(date_time).toDate()
+
+        datetime.map(function (o) {
+            return moment(o).toDate()
+        })
+        if (!id) {
+            const errMsg = "Error Booking not found"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        const booking = await this.service.reschedulebooking(id, datetime, currentTime)
+        if (booking === null) {
+            const errMsg = "unable to update boooking"
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+
+        }
+
+        const userData = this.userService.getId(booking.user_id.toString())
+        const salonData = this.salonService.getId(booking.salon_id.toString())
+        const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
+        const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         console.log(notify)
-            
+
         res.status(200).send(booking)
 
     })
@@ -584,7 +580,7 @@ export default class BookingController extends BaseController {
 
         const slots = await this.service.rescheduleSlots(id, date)
 
-       
+
         if (!slots) {
             const errMsg = 'No slots Found'
             logger.error(errMsg)
@@ -615,8 +611,8 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const userId = req.userId
         const bookingId = req.params.bookingId
-        const {reason} = req.body
-        const data = await  this.service.cancelBooking(userId, bookingId, reason)
+        const { reason } = req.body
+        const data = await this.service.cancelBooking(userId, bookingId, reason)
         res.send(data)
     })
 
@@ -629,21 +625,21 @@ export default class BookingController extends BaseController {
     bookingFeedback = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO: check if the user had that booking
         const bookingId = req.params.id
-        const data:FeedbackI =req.body
-        data.booking_id=bookingId
+        const data: FeedbackI = req.body
+        data.booking_id = bookingId
         const feedback = await this.feedbackService.post(data)
         res.send(feedback)
     })
 
-    getBookingsAdmin =  controllerErrorHandler(async (req: Request, res: Response) => {
+    getBookingsAdmin = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
         const booking = await this.service.getbookingsAdmin(q)
-        res.send(booking)  
+        res.send(booking)
     })
 
     bookAgain = controllerErrorHandler(async (req: Request, res: Response) => {
-        const {booking_id} = req.body
+        const { booking_id } = req.body
         const cart = await this.service.bookAgain(booking_id)
-        res.send(cart)  
+        res.send(cart)
     })
 }

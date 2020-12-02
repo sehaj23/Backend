@@ -118,7 +118,8 @@ export default class OtpService extends BaseService{
 
     public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI>{
         const user = await this.userService.getOne({phone})
-        if(user !== null) throw new Error(`User already registered with this email id`)
+        console.log("user",user)
+        if(user !== null) throw new Error(`User already registered with this phone number`)
         const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your otp is ${otpNumber}`
         const otp: OtpI = {

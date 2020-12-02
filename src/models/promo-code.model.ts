@@ -66,7 +66,7 @@ const PromoCodeSchema = new mongoose.Schema({
     },
     max_usage:{
         type: Number,
-        default: 0
+        default: 1
     },
     usage_time_difference:{
         type: Number,

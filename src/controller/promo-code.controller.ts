@@ -76,7 +76,7 @@ export default class PromoCodeController extends BaseController {
                             const {flat_price} = promoCode
                             // calculating the discount which we can give
                             let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
-                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? discountApplicable - (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
                             const discount : PromoDiscountResult= {
                                 option_id: cartOpt.option_id,
                                 before_discount_price: salonOption.price,
@@ -84,12 +84,13 @@ export default class PromoCodeController extends BaseController {
                                 after_discount_price: salonOption.price - discountApplicable,
                                 category_name: salonService.category
                             }
+                            totalDiscountGiven+=discountApplicable
                             result.push(discount)
                         }else{
                             const {discount_percentage} = promoCode
                             const discountInNumber = parseInt((salonOption.price * (discount_percentage/100)).toString())
                             let discountApplicable = (salonOption.price < discountInNumber) ? salonOption.price : discountInNumber
-                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? discountApplicable - (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ?  (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
                             const discount : PromoDiscountResult= {
                                 option_id: cartOpt.option_id,
                                 before_discount_price: salonOption.price,
@@ -97,9 +98,11 @@ export default class PromoCodeController extends BaseController {
                                 after_discount_price: salonOption.price - discountApplicable,
                                 category_name: salonService.category
                             }
+                            totalDiscountGiven+=discountApplicable
                             result.push(discount)
                         }
                         cart.options.splice(i, 1)
+                    
                     } else {
                         i++
                     }
