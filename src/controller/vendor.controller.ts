@@ -116,7 +116,7 @@ export default class VendorController extends BaseController {
     })
     deleteFcm =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.userId
+        const id = req.vendorId
         const fcm = req.body.fcm_token
         const vendor = await this.service.deleteFCM(id,fcm)
         if(vendor==null){
@@ -280,6 +280,10 @@ export default class VendorController extends BaseController {
             return
         }
         res.send({message:"Notification status update",success:true})
+      })
+
+      appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
+        res.status(200).send({ios:"1.0.4",android:"1.0.1",success:true})
       })
 
   

@@ -71,7 +71,7 @@ export default class VendorService extends BaseService {
     deleteFCM = async (id: string, fcm_token: any) => {
         const _id = mongoose.Types.ObjectId(id)
         //@ts-ignore
-        const user = await this.model.findByIdAndUpdate(_id, { $pull: { fcm_token: [fcm_token] } }, { new: true })
+        const user = await this.model.findByIdAndUpdate(_id, { $pull: { fcm_token:fcm_token } }, { new: true })
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {
