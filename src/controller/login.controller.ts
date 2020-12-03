@@ -210,7 +210,7 @@ export default class LoginController extends BaseController {
     if(!user) res.status(400).send({sucess:false,message:"User not found with phone ${email}"})
    const number =  await this.otpService.sendUserOtpEmail(email)
    console.log(number)
-    SendEmail.forgotPasswordNewUser(email,number.otp)
+    SendEmail.forgotPasswordUser(email,number.otp)
     res.send({success:true,message:"Email Sent"})
 
   })
