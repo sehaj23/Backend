@@ -81,7 +81,7 @@ export default class BookingController extends BaseController {
         const userId = req.userId
         console.log(req.body)
         console.log("userId", userId)
-        const { payment_method, location, date_time, salon_id, options, address } = req.body
+        const { payment_method, location, date_time, salon_id, options, address, promo_code } = req.body
         let employeeIds: string[]
         let gender
         let nextDateTime: moment.Moment
@@ -159,7 +159,7 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code)
 
         const salonReq = this.salonService.getId(salon_id)
         const employeeReq = this.employeeService.getId(options[0].employee_id)

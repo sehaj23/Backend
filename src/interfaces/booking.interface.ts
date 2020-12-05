@@ -40,6 +40,7 @@ export interface BookingI{
     payment_type: BookingPaymentType
     location: BookingLoaction
     reviews?: ReviewSI[],
+    promo_code:string,
     address:BookingAddressI
     booking_numeric_id: number
     cancel_reason?: string

@@ -24,7 +24,7 @@ export default class BookingService extends BaseService {
         this.mongoCounterService = mongoCounterService
     }
 
-    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,gender:string) => {
+    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,gender:string,promo_code:string) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
             console.log("********")
@@ -65,6 +65,7 @@ export default class BookingService extends BaseService {
             const status: BookinStatus = (payment_method === 'COD') ? 'Requested' : 'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
+                promo_code:promo_code,
                 salon_id: salon_id,
                 payment_type: payment_method,
                 location: location,

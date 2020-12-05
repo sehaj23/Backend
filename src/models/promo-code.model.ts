@@ -44,7 +44,7 @@ const PromoCodeSchema = new mongoose.Schema({
         min: 1,
         required: true
     },
-    disctount_type: {
+    discount_type: {
         type: String,
         enum: ['Flat Price', 'Discount Percentage'],
         required: true

@@ -112,4 +112,10 @@ export default class PromoCodeController extends BaseController {
         res.send(result)
     })
 
+    getByName =  controllerErrorHandler(async (req: Request, res: Response) => {
+        const promo_code = req.body.promo_code
+        const promo = await this.service.getByName(promo_code)
+        res.status(200).send(promo)
+    })
+
 }

@@ -66,5 +66,9 @@ export default class BaseService {
     countDocumnet = async (filter: any) => {
         return this.model.countDocuments(filter)
     }
+    getByName =  async (promo_code:string) => {
+        const promo = await this.model.findOne({promo_code}).select({payment_mode:1,description:1,promo_code:1,_id:1})
+        return promo
+    }
 
 }

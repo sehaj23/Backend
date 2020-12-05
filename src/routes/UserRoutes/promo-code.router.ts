@@ -29,5 +29,7 @@ const promoCodeController = new PromoCodeController(promoCodeService, promoUserS
 promoCodeRouter.post("/", promoCodeController.post)
 promoCodeRouter.get("/", promoCodeController.get)
 promoCodeRouter.post("/discountApplicable",UserverifyToken, promoCodeController.discountApplicable)
+promoCodeRouter.post("/name",promoCodeController.getByName)
+
 
 export default promoCodeRouter
