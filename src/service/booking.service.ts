@@ -394,8 +394,69 @@ export default class BookingService extends BaseService {
         console.log(booking)
         return booking
     }
-    getAllSalonBookings = async (salonId: string) => {
-        const bookings = await this.model.find({ salon_id: salonId }).populate("user_id").exec()
+    getAllSalonBookings = async (salonId: string,q:any) => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        console.log(pageLength)
+        console.log(skipCount)
+        const keys = Object.keys(q)
+        const filters = {
+            salon_id: salonId
+        }
+        const dateFilter = {}
+        dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
+        for (const k of keys) {
+            switch (k) {
+                case "service_id":
+                    filters["services.service_id"] = {
+                        "$in": q[k].split(",")
+                    }
+                    break
+                case "employee_id":
+                    filters["services.employee_id"] = {
+                        "$in": q[k].split(",")
+                    }
+                    break
+                case "status":
+                    filters["status"] = q[k]
+                    break;
+                case "start_date":
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                    break
+                case "end_date":
+                    if (moment(q[k]).isValid()) {
+                        dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    }
+                    break
+                case "location":
+                    filters["location"] = q[k]
+                    break
+                case "page_number":
+                case "page_length":
+
+                    break
+                default:
+                    filters[k] = q[k]
+            }
+            filters["services.service_time"] = {
+                "$gte": dateFilter["start_date"],
+                "$lt": dateFilter["end_date"]
+            }
+          
+            //  filters["createdAt"] = {
+            //      "$gte": dateFilter["start_date"],
+            //      "$lt": dateFilter["end_date"]
+            // // }
+
+
+        }
+        console.log(salonId)
+        console.log("**")
+        console.log(filters);
+        const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({"createdAt":-1}).exec()
         return bookings
 
     }

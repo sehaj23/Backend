@@ -534,6 +534,7 @@ export default class BookingController extends BaseController {
     })
     getAllSalonBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const salonId = req.params.id
+        const q = req.query
         if (!salonId) {
             const errMsg = 'Salon Id not found'
             logger.error(errMsg)
@@ -541,7 +542,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const bookings = await this.service.getAllSalonBookings(salonId)
+        const bookings = await this.service.getAllSalonBookings(salonId,q)
         if (!bookings) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
