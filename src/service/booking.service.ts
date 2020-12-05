@@ -453,9 +453,6 @@ export default class BookingService extends BaseService {
 
 
         }
-        console.log(salonId)
-        console.log("**")
-        console.log(filters);
         const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({"createdAt":-1}).exec()
         return bookings
 
