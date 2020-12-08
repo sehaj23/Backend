@@ -298,7 +298,7 @@ export default class UserController extends BaseController {
           const id = req.userId
         const user =  await this.service.getId(id)
         if(user.approved==false){
-          return  res.status(400).send({success:false,message:"User not verified"})
+          return  res.status(400).send({success:false,message:"User not verified",email:user.email})
         }
         return  res.status(200).send({success:true,message:"User  verified"})
 
