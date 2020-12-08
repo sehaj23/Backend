@@ -297,15 +297,11 @@ export default class UserController extends BaseController {
           //@ts-ignore
           const id = req.userId
         const user =  await this.service.getId(id)
-        console.log("******")
-        console.log(user)
-        if(user.email == null || user.email == ""){
-            return res.status(404).send({message:"Email Not Found",success:false})
-        }else if(user.approved ===false){
-            return res.status(401).send({message:"Email Not verified",success:false,email:user.email})
-        }else{
-            return res.status(200).send({message:"Email  verified",success:true})
+        if(user.approved==false){
+          return  res.status(400).send({success:false,message:"User not verified"})
         }
+        return  res.status(200).send({success:true,message:"User  verified"})
+
       })
 
       appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {

@@ -2,7 +2,8 @@ import mongoose from "../database";
 
 export interface CartOption{
     option_id: string
-    quantity: number
+    quantity: number,
+    service_name?:string
 }
 export type cartStatus = 'In use'|'Booked'|'Abandoned'
 

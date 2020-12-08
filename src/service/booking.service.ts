@@ -451,7 +451,6 @@ export default class BookingService extends BaseService {
             //      "$lt": dateFilter["end_date"]
             // // }
 
-
         }
         const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({"createdAt":-1}).exec()
         return bookings
