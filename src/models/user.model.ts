@@ -54,6 +54,9 @@ const UserSchema = new mongoose.Schema({
     fcm_token: {
         type: [String]
     },
+    delete_request:{
+        type:Date
+    },
     notification: {
         type: Boolean,
         default:true

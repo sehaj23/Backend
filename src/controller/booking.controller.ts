@@ -84,6 +84,8 @@ export default class BookingController extends BaseController {
         const { payment_method, location, date_time, salon_id, options, address, promo_code } = req.body
         let employeeIds: string[]
         let gender
+        let status
+        const date =  "2020-12-09T20:32:51.249+00:00"
         let nextDateTime: moment.Moment
         for (let o of options) {
 
@@ -110,13 +112,30 @@ export default class BookingController extends BaseController {
 
                         if (salonOptionIndex > -1) {
                             gender = salonService.options[salonOptionIndex].gender
-
-
                             break
                         }
 
                     }
                     if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
+                    let day = moment(date_time).day() - 1
+                    if (day < 0) day = 6
+                    console.log("******")
+                    console.log(day)
+                    console.log(moment().day()-1)
+                    const starting_hours = salon.start_working_hours
+                    const ending_hours = salon.end_working_hours
+                    const selectedStartingHour = moment(starting_hours[day]).get("hours")
+                    const selectedEndingHour = moment(ending_hours[day]).get("hours")
+                    console.log("hours")
+                    console.log(selectedStartingHour)
+                    console.log(selectedEndingHour)
+                    console.log(moment().get("hours"))
+                    if(moment().get("hours") > (selectedStartingHour) && moment().hours() < (selectedEndingHour)){
+                        console.log("time changed due to salon offline")
+                        status="Confirmed"
+                    }else{
+                        status="Requested"
+                    }
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
@@ -159,7 +178,7 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code,status)
 
         const salonReq = this.salonService.getId(salon_id)
         const employeeReq = this.employeeService.getId(options[0].employee_id)

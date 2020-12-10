@@ -26,7 +26,7 @@ const promoCodeController = new PromoCodeController(promoCodeService, promoUserS
 
 //TODO: validate the data before sending it the to DB 
 promoCodeRouter.post("/", promoCodeController.post)
-promoCodeRouter.post("/", promoCodeController.get)
+promoCodeRouter.get("/", promoCodeController.get)
 promoCodeRouter.post("/discountApplicable", promoCodeController.discountApplicable)
 
 export default promoCodeRouter

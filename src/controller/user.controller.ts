@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import moment = require("moment");
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
@@ -306,6 +307,17 @@ export default class UserController extends BaseController {
 
       appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
         res.status(200).send({ios:"1.1.2",android:"1.0.0",success:true})
+      })
+
+      deleteRequest =  controllerErrorHandler(async (req: Request, res: Response) => {
+          //@ts-ignore
+        const id = req.userId
+        const dataTime = moment()
+        const deleteRequest = await this.service.update(id,{delete_request:dataTime})
+        if(deleteRequest==null){
+            return  res.status(400).send({success:false,message:"Something went Wrong"})
+        }
+        return  res.status(200).send({success:true,message:"Delete Request Sent"})
       })
 
 }
