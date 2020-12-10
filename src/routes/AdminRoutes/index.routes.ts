@@ -10,6 +10,7 @@ import promoCodeRouter from "./promo-code.router";
 import salonRouter from "./salon.router";
 import userRouter from "./user.router";
 import vendorRouter from "./vendor.router";
+import zattireServiceRouter from "./zattire-services.router"
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
 router.use("/promo-code", promoCodeRouter)
+router.use("/zattire-services",zattireServiceRouter)
 
 export default router

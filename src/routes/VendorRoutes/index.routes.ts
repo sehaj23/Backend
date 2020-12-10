@@ -12,7 +12,7 @@ import userRouter from "./user.router";
 import vendorRouter from "./vendor.router";
 import bookingRouter from "./booking.router";
 import employeeRouter from "./employee.router";
-
+import zattireServiceRouter from "../AdminRoutes/zattire-services.router";
 
 const Vendorrouter = Router();
 
@@ -29,6 +29,7 @@ Vendorrouter.use("/dashboard", dashboardRouter)
 Vendorrouter.use("/user",userRouter)
 Vendorrouter.use("/vendor",vendorRouter)
 Vendorrouter.use("/employee", employeeRouter)
+Vendorrouter.use("/zattire-services",zattireServiceRouter)
 
 
 export default Vendorrouter

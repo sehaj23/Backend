@@ -85,7 +85,7 @@ export default class BookingController extends BaseController {
         let employeeIds: string[]
         let gender
         let status
-        const date =  "2020-12-09T20:32:51.249+00:00"
+      
         let nextDateTime: moment.Moment
         for (let o of options) {
 
@@ -130,7 +130,7 @@ export default class BookingController extends BaseController {
                     console.log(selectedStartingHour)
                     console.log(selectedEndingHour)
                     console.log(moment().get("hours"))
-                    if(moment().get("hours") > (selectedStartingHour) && moment().hours() < (selectedEndingHour)){
+                    if(moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)){
                         console.log("time changed due to salon offline")
                         status="Confirmed"
                     }else{
