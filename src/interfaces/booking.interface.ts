@@ -11,6 +11,7 @@ export interface BookingServiceI{
     option_id: string,
     employee_id: string,
     service_name: string,
+    option_name: string,
     service_real_price: number,
     duration:number,
     quantity: number,
