@@ -49,6 +49,9 @@ const BookingSchema = new mongoose.Schema({
             option_name: {
                 type: String,
             },
+            category_name: {
+                type: String,
+            },
             service_real_price: {
                 type: Number,
             },

@@ -86,6 +86,7 @@ export default class BookingController extends BaseController {
         let gender
         let status
         let service_name
+        let category_name
       
         let nextDateTime: moment.Moment
         for (let o of options) {
@@ -113,6 +114,7 @@ export default class BookingController extends BaseController {
 
                         if (salonOptionIndex > -1) {
                             service_name = salonService.name
+                            category_name=salonService.category
                             gender = salonService.options[salonOptionIndex].gender
                             break
                         }
@@ -180,7 +182,7 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code,status, service_name)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code,status, service_name,category_name)
 
         const salonReq = this.salonService.getId(salon_id)
         const employeeReq = this.employeeService.getId(options[0].employee_id)
