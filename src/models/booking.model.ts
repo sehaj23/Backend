@@ -55,15 +55,14 @@ const BookingSchema = new mongoose.Schema({
             service_real_price: {
                 type: Number,
             },
-            service_discount: {
+            service_discount: {  // discount amount
                 type: Number,
             },
-            service_discount_code: {
+            service_discount_code: { //promo code
                 type: String,
             },
-            service_total_price: {
-                type: Number,
-                
+            service_total_price: { //update price  real price - discount
+                type: Number,   
             },
             quantity: {
                 type: Number,

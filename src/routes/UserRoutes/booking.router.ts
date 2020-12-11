@@ -10,6 +10,7 @@ import Event from "../../models/event.model"
 import Feedback from "../../models/feedback.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import Offer from "../../models/offer.model"
+import PromoCode from "../../models/promo-code.model"
 import ReportSalon from "../../models/reportSalon.model"
 import ReportVendor from "../../models/reportVendor.model"
 import Review from "../../models/review.model"
@@ -22,6 +23,7 @@ import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
 import EmployeeService from "../../service/employee.service"
 import FeedbackService from "../../service/feedback.service"
 import MongoCounterService from "../../service/mongo-counter.service"
+import PromoUserService from "../../service/promo-user.service"
 import SalonService from "../../service/salon.service"
 import UserService from "../../service/user.service"
 import VendorService from "../../service/vendor.service"
@@ -36,7 +38,10 @@ const userService = new UserService(User,Booking)
 const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
 const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService)
+const promoUserService = new PromoUserService(PromoCode)
+
+
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService )
 const bookingRouter = Router()
 
 // get available employees by date & time

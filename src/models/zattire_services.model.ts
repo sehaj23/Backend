@@ -32,6 +32,9 @@ const ZattireServiceSchema = new mongoose.Schema({
                     option_gender:{
                         type:String
                     },
+                    hsn_code:{
+                        type:String
+                    },
                     option_men_active:{
                         type:Boolean
                     },

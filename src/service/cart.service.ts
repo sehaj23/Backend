@@ -25,14 +25,15 @@ export default class CartService extends BaseService {
         return salon
     }
 
-    getPriceByOptionId: (optionId: string) => Promise<{price:number,service_name:string}> = async (optionId: string) => {
+    getPriceByOptionId: (optionId: string) => Promise<{price:number,service_name:string,option_name,category_name:string}> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
             for (let option of service.options) {
-                if (option._id.toString() === optionId)
-                return {price:option.price.valueOf(),service_name:service.name}
+                if (option._id.toString() === optionId){
+                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category}
             }
+        }
         }
         throw new Error("Option not found")
     }
@@ -46,6 +47,7 @@ export default class CartService extends BaseService {
                     name: option.option_name.valueOf(),
                     price: option.price.valueOf(),
                     service_name:service.name.valueOf()
+            
                 }
             }
         }
@@ -74,7 +76,11 @@ export default class CartService extends BaseService {
             cart.options.push({
                 option_id,
                 quantity: 1,
-                service_name:optionPrice.service_name
+                service_name:optionPrice.service_name,
+                category_name:optionPrice.category_name,
+                option_name:optionPrice.option_name
+
+                
             })
         }
         // getting the price of the by option id
@@ -189,7 +195,7 @@ export default class CartService extends BaseService {
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
-            options: [{ option_id: optionId, quantity: 1 ,service_name:optionPrice.service_name}],
+            options: [{ option_id: optionId, quantity: 1 ,service_name:optionPrice.service_name,option_name:optionPrice.option_name,category_name:optionPrice.category_name}],
             total: optionPrice.price
         }
 
@@ -209,6 +215,7 @@ export default class CartService extends BaseService {
             user_id: userId,
             salon_id: salonId,
             options: options,
+            
             total
         }
 

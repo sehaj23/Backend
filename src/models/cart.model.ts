@@ -15,6 +15,12 @@ const CartSchema = new mongoose.Schema({
             },
             service_name:{
                 type:String
+            },
+            option_name:{
+                type:String
+            },
+            category_name:{
+                type:String
             }
         }
     ],

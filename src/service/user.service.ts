@@ -44,10 +44,10 @@ export default class UserService extends BaseService {
         const user = await this.model.findByIdAndUpdate(_id, { $addToSet: { fcm_token: fcm_token } }, { new: true })
         return user
     }
-    deleteFCM = async (id: string, fcm_token: any) => {
+    deleteFCM = async (id: string, fcmToken: any) => {
         const _id = mongoose.Types.ObjectId(id)
         //@ts-ignore
-        const user = await this.model.findByIdAndUpdate(_id, { $pull: { fcm_token: fcm_token } }, { new: true })
+        const user = await this.model.findByIdAndUpdate(_id, { $pull: { fcm_token: fcmToken } }, { new: true })
         return user
     }
 

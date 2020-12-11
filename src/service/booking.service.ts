@@ -713,7 +713,10 @@ export default class BookingService extends BaseService {
             for (let service of booking.services) {
                 const cartOption: CartOption = {
                     option_id: service.option_id,
-                    quantity: service.quantity
+                    quantity: service.quantity,
+                    service_name:service.service_name,
+                    option_name:service.option_name,
+                    category_name:service.category_name
                 }
                 cartOptions.push(cartOption)
             }
