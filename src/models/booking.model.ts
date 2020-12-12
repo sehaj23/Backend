@@ -30,9 +30,6 @@ const BookingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'salons',
     },
-    promo_code:{
-        type:String,
-    },
     services: {
         type: [{
             option_id: {

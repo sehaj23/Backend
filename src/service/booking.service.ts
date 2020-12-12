@@ -11,6 +11,7 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
+import { PromoDiscountResult } from "../interfaces/promo-code.interface";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -45,7 +46,7 @@ export default class BookingService extends BaseService {
                     service_time = nextDateTime.toDate()
                     nextDateTime = nextDateTime.add(totalTime, 'minutes')
                 }
-
+                
                 const bookingService: BookingServiceI = {
                     category_name:category_name,
                     option_name:o.name,
@@ -56,6 +57,8 @@ export default class BookingService extends BaseService {
                     quantity: o.quantity,
                     duration: o.duration,
                     service_total_price: totalPrice,
+                    // service_discount:,
+                    service_discount_code:promo_code,
                     zattire_commission,
                     vendor_commission,
                     service_time,
@@ -67,7 +70,7 @@ export default class BookingService extends BaseService {
             const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
-                promo_code:promo_code,
+               
                 salon_id: salon_id,
                 payment_type: payment_method,
                 location: location,

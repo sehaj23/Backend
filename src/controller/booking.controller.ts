@@ -93,6 +93,8 @@ export default class BookingController extends BaseController {
         let status
         let service_name
         let category_name
+        const result: PromoDiscountResult[] = []
+        
 
         if (promo_code !== null){
             console.log(promo_code)
@@ -130,7 +132,7 @@ export default class BookingController extends BaseController {
         }
 
 
-        const result: PromoDiscountResult[] = []
+        
         let totalDiscountGiven = 0
         if (promoCode.categories && promoCode.categories.length > 0) {
             //@ts-ignore
