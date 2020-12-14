@@ -6,6 +6,7 @@ type Provider = 'MUA' | 'Salon' | 'Designer'
 export type BookinStatus = 'Online Payment Failed' |  'Online Payment Requested' | 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed' | 'Rescheduled Canceled' |  'Rescheduled'
 export type BookingPaymentType = 'COD' | 'Online' | 'Both'
 type BookingLoaction = 'Customer Place' | 'Vendor Place'
+type BookingGender = 'men' | 'women' | 'both'
 
 export interface BookingServiceI{
     option_id: string,
@@ -22,7 +23,7 @@ export interface BookingServiceI{
     zattire_commission: number,
     vendor_commission: number,
     service_time: Date,
-    gender:string,
+    gender:BookingGender,
     rescheduled_service_time?: Date
 }
 
