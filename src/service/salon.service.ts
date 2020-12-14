@@ -559,7 +559,7 @@ export default class SalonService extends BaseService {
                 return reviews
         }
         checkpostReview = async (userId: string, salon_id: string) => {
-                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id })
+                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id,status:"Completed" })
                 return check
         }
 
