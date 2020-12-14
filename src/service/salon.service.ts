@@ -625,16 +625,12 @@ export default class SalonService extends BaseService {
                                         },
                                         //  "$$services.options.at_home":false
 
-
-
-
                                 }
 
                         },
                         {
                                 $project: {
                                         _id: 1,
-
                                         profile_pic: 1,
                                         name: 1,
                                         rating: 1,
@@ -835,11 +831,11 @@ export default class SalonService extends BaseService {
                         console.log(i.hours())
                         if(moment().day()-1 == day){
                         if(i.hours() > moment().hours()){
-                        const slot = moment(i.add(1,'hour')).format('hh:mm a')
+                        const slot = moment(i.add(1,'hour')).local().format('hh:mm a')
                         
                         slots.push(slot)
                         }}else{
-                                const slot = moment(i).format('hh:mm a')
+                                const slot = moment(i).local().format('hh:mm a')
                         
                                 slots.push(slot)   
                         
