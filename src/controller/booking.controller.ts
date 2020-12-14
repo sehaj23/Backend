@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
 import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
+import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
+import { PromoUserSI } from "../interfaces/promo-user.inderface";
 import SalonSI from "../interfaces/salon.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
@@ -12,6 +15,7 @@ import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 import EmployeeService from "../service/employee.service";
 import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
+import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
 import SalonService from "../service/salon.service";
 import UserService from "../service/user.service";
@@ -20,11 +24,6 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import { getNameOfDeclaration } from "typescript";
-import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
-import { PromoUserSI } from "../interfaces/promo-user.inderface";
-import { CartSI } from "../interfaces/cart.interface";
-import PromoUserService from "../service/promo-user.service";
 
 
 export default class BookingController extends BaseController {
@@ -39,8 +38,8 @@ export default class BookingController extends BaseController {
     feedbackService: FeedbackService
     employeeService: EmployeeService
     vendorService: VendorService
-    promoUserService:PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService,promoUserService:PromoUserService) {
+    promoUserService: PromoUserService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -87,104 +86,106 @@ export default class BookingController extends BaseController {
         const userId = req.userId
         console.log(req.body)
         console.log("userId", userId)
-        const { payment_method, location, date_time, salon_id, options, address, promo_code,cart_id } = req.body
+        const { payment_method, location, date_time, salon_id, options, address, promo_code, cart_id } = req.body
         let employeeIds: string[]
         let gender
         let status
         let service_name
         let category_name
         const result: PromoDiscountResult[] = []
-        
 
-        if (promo_code !== null){
+        //@ts-ignore
+        const salon = await this.salonService.getId(salon_id) as SalonSI
+
+
+        if (promo_code !== null) {
             console.log(promo_code)
-            
-        const promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
+
+            const promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
             console.log(promoCode)
-        
-        if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
-        const currentDateTime = moment(Date.now())
-        // time check
-        console.log("expiryy")
-        console.log(promoCode.expiry_date_time)
-        if(!currentDateTime.isBefore(promoCode.expiry_date_time)) throw new Error(`Promo code is expired`)
-        if(promoCode.time_type === 'Custom'){
+
+            if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
+            const currentDateTime = moment(Date.now())
+            // time check
+            console.log("expiryy")
+            console.log(promoCode.expiry_date_time)
+            if (!currentDateTime.isBefore(promoCode.expiry_date_time)) throw new Error(`Promo code is expired`)
+            if (promoCode.time_type === 'Custom') {
+
+                const currentDay = currentDateTime.day()
+                const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                if (!promoCode.custom_time_days.includes(currentDay)) throw new Error(`This promo code is not valid on ${DAYS[currentDay]}`)
+                if (!currentDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
+            }
+            if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
+                if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
+            }
+            const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id.toString(), user_id: userId }) as PromoUserSI[]
+            // if  max_usage is -1 it means unlimited times
+            if ((promoCode.max_usage !== -1) && promoCode.max_usage <= promoUserCount?.length) throw new Error(`You have exceeded the max usage: ${promoCode.max_usage}`)
+            // check for the salon
+            const cart = await this.cartService.getId(cart_id) as CartSI
+            if (cart === null) throw new Error(`Not able find cart with this id`)
+            // minimum bill check
+            if (cart.total < promoCode.minimum_bill) throw new Error(`You cannot apply this coupon code. Minimum bill should be ${promoCode.minimum_bill}`)
+            if (promoCode.salon_ids && promoCode.salon_ids?.length > 0) {
+                //@ts-ignore
+                if (!promoCode.salon_ids.includes(cart.salon_id._id)) throw new Error(`This coupon code is not applied on this salon`)
+            }
+
+
+
+            let totalDiscountGiven = 0
             
-            const currentDay = currentDateTime.day()
-            const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-            if(!promoCode.custom_time_days.includes(currentDay))throw new Error(`This promo code is not valid on ${DAYS[currentDay]}`)
-            if(!currentDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
-        }
-        if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
-            if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
-        }
-        const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id.toString(), user_id: userId }) as PromoUserSI[]
-        // if  max_usage is -1 it means unlimited times
-        if ((promoCode.max_usage !== -1) && promoCode.max_usage <= promoUserCount?.length) throw new Error(`You have exceeded the max usage: ${promoCode.max_usage}`)
-        // check for the salon
-        const cart = await this.cartService.getId(cart_id) as CartSI
-        if (cart === null) throw new Error(`Not able find cart with this id`)
-        // minimum bill check
-        if(cart.total < promoCode.minimum_bill)throw new Error(`You cannot apply this coupon code. Minimum bill should be ${promoCode.minimum_bill}`)
-        if (promoCode.salon_ids && promoCode.salon_ids?.length > 0) {
-            //@ts-ignore
-            if (!promoCode.salon_ids.includes(cart.salon_id._id)) throw new Error(`This coupon code is not applied on this salon`)
-        }
-
-
-        
-        let totalDiscountGiven = 0
-        if (promoCode.categories && promoCode.categories.length > 0) {
-            //@ts-ignore
-            const salon = await this.salonService.getId(cart.salon_id._id) as SalonSI
-            if (salon === null) throw new Error(`Salon not found from the cart`)
-            for (let salonService of salon.services) {
-                const salonOptionIds = salonService.options.map(o => o._id.toString())
-                let i = 0
-                while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
-                    const cartOpt = cart.options[i]
-                    const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id) 
-                    if (salonOptionIndex > -1 && (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category))) {
-                        const salonOption = salonService.options[salonOptionIndex]
-                        if(promoCode.disctount_type === 'Flat Price'){
-                            const {flat_price} = promoCode
-                            // calculating the discount which we can give
-                            let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
-                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
-                            const discount : PromoDiscountResult= {
-                                option_id: cartOpt.option_id,
-                                before_discount_price: salonOption.price,
-                                discount: discountApplicable,
-                                after_discount_price: salonOption.price - discountApplicable,
-                                category_name: salonService.category
+            if (promoCode.categories && promoCode.categories.length > 0) {
+                if (salon === null) throw new Error(`Salon not found from the cart`)
+                for (let salonService of salon.services) {
+                    const salonOptionIds = salonService.options.map(o => o._id.toString())
+                    let i = 0
+                    while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
+                        const cartOpt = cart.options[i]
+                        const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id)
+                        if (salonOptionIndex > -1 && (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category))) {
+                            const salonOption = salonService.options[salonOptionIndex]
+                            if (promoCode.disctount_type === 'Flat Price') {
+                                const { flat_price } = promoCode
+                                // calculating the discount which we can give
+                                let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
+                                discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                                const discount: PromoDiscountResult = {
+                                    option_id: cartOpt.option_id,
+                                    before_discount_price: salonOption.price,
+                                    discount: discountApplicable,
+                                    after_discount_price: salonOption.price - discountApplicable,
+                                    category_name: salonService.category
+                                }
+                                totalDiscountGiven += discountApplicable
+                                result.push(discount)
+                            } else {
+                                const { discount_percentage } = promoCode
+                                const discountInNumber = parseInt((salonOption.price * (discount_percentage / 100)).toString())
+                                let discountApplicable = (salonOption.price < discountInNumber) ? salonOption.price : discountInNumber
+                                discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                                const discount: PromoDiscountResult = {
+                                    option_id: cartOpt.option_id,
+                                    before_discount_price: salonOption.price,
+                                    discount: discountApplicable,
+                                    after_discount_price: salonOption.price - discountApplicable,
+                                    category_name: salonService.category
+                                }
+                                totalDiscountGiven += discountApplicable
+                                result.push(discount)
                             }
-                            totalDiscountGiven+=discountApplicable
-                            result.push(discount)
-                        }else{
-                            const {discount_percentage} = promoCode
-                            const discountInNumber = parseInt((salonOption.price * (discount_percentage/100)).toString())
-                            let discountApplicable = (salonOption.price < discountInNumber) ? salonOption.price : discountInNumber
-                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ?  (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
-                            const discount : PromoDiscountResult= {
-                                option_id: cartOpt.option_id,
-                                before_discount_price: salonOption.price,
-                                discount: discountApplicable,
-                                after_discount_price: salonOption.price - discountApplicable,
-                                category_name: salonService.category
-                            }
-                            totalDiscountGiven+=discountApplicable
-                            result.push(discount)
+                            cart.options.splice(i, 1)
+
+                        } else {
+                            i++
                         }
-                        cart.options.splice(i, 1)
-                    
-                    } else {
-                        i++
                     }
                 }
             }
         }
-    }
-      
+
         let nextDateTime: moment.Moment
         for (let o of options) {
 
@@ -203,13 +204,12 @@ export default class BookingController extends BaseController {
             if (!o.employee_id || o.employee_id === null) {
 
                 if (!employeeIds || employeeIds?.length === 0) {
-                    const salon = await this.salonService.getId(salon_id) as SalonSI
                     for (let salonService of salon.services) {
                         const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
                         if (salonOptionIndex > -1) {
-                            service_name = salonService.name
-                            category_name=salonService.category
-                            gender = salonService.options[salonOptionIndex].gender
+                            o.service_name = salonService.name
+                            o.category_name = salonService.category
+                            o.gender = salonService.options[salonOptionIndex].gender
                             break
                         }
 
@@ -219,7 +219,7 @@ export default class BookingController extends BaseController {
                     if (day < 0) day = 6
                     console.log("******")
                     console.log(day)
-                    console.log(moment().day()-1)
+                    console.log(moment().day() - 1)
                     const starting_hours = salon.start_working_hours
                     const ending_hours = salon.end_working_hours
                     const selectedStartingHour = moment(starting_hours[day]).get("hours")
@@ -228,11 +228,11 @@ export default class BookingController extends BaseController {
                     console.log(selectedStartingHour)
                     console.log(selectedEndingHour)
                     console.log(moment().get("hours"))
-                    if(moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)){
+                    if (moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)) {
                         console.log("time changed due to salon offline")
-                        status="Confirmed"
-                    }else{
-                        status="Requested"
+                        status = "Confirmed"
+                    } else {
+                        status = "Requested"
                     }
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
@@ -276,12 +276,11 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, gender,promo_code,status, service_name,category_name)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
 
-        const salonReq = this.salonService.getId(salon_id)
         const employeeReq = this.employeeService.getId(options[0].employee_id)
 
-        const [salon, employee] = await Promise.all([salonReq, employeeReq])
+        const [employee] = await Promise.all([employeeReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
 
@@ -659,7 +658,7 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg })
             return
         }
-        const bookings = await this.service.getAllSalonBookings(salonId,q)
+        const bookings = await this.service.getAllSalonBookings(salonId, q)
         if (!bookings) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)

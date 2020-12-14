@@ -1,5 +1,4 @@
 import { String } from "aws-sdk/clients/acm";
-import { DateTime } from "aws-sdk/clients/devicefarm";
 import mongoose from "../database";
 import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
@@ -11,7 +10,6 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
-import { PromoDiscountResult } from "../interfaces/promo-code.interface";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -25,7 +23,7 @@ export default class BookingService extends BaseService {
         this.mongoCounterService = mongoCounterService
     }
 
-    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,gender:string,promo_code:string,actualStatus:BookinStatus, service_name:string,category_name:string) => {
+    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,promo_code:string,actualStatus:BookinStatus) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
             console.log("********")
@@ -48,11 +46,11 @@ export default class BookingService extends BaseService {
                 }
                 
                 const bookingService: BookingServiceI = {
-                    category_name:category_name,
+                    category_name: o.category_name,
                     option_name:o.name,
                     option_id: o.option_id,
-                    service_name: service_name,
-                    gender:gender,
+                    service_name: o.service_name,
+                    gender:o.gender,
                     service_real_price: o.price,
                     quantity: o.quantity,
                     duration: o.duration,
