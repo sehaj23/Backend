@@ -97,11 +97,13 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const salon = await this.salonService.getId(salon_id) as SalonSI
 
+        let totalDiscountGiven = 0
+        let promoCode: PromoCodeSI
 
         if (promo_code !== null) {
             console.log(promo_code)
 
-            const promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
+            promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
             console.log(promoCode)
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
@@ -135,7 +137,6 @@ export default class BookingController extends BaseController {
 
 
 
-            let totalDiscountGiven = 0
             
             if (promoCode.categories && promoCode.categories.length > 0) {
                 if (salon === null) throw new Error(`Salon not found from the cart`)
@@ -283,7 +284,10 @@ export default class BookingController extends BaseController {
         const [employee] = await Promise.all([employeeReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-
+        // if promocode applied then add to database that user used the promocode
+        if(totalDiscountGiven > 0 && promoCode){
+            await this.promoUserService.post({promo_code_id: promoCode._id.toString(), user_id: userId})
+        }
         const notify = Notify.bookingRequest(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
         console.log(notify)
         res.send(booking);
