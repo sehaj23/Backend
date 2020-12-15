@@ -625,34 +625,43 @@ export default class SalonService extends BaseService {
                                         },
                                         //  "$$services.options.at_home":false
 
-
-
-
                                 }
 
                         },
-                        {
-                                $project: {
-                                        _id: 1,
+                         {
+                                 $group:{
+                                        "_id": "$_id",
+                                        name:{$first:"$name"},
+                                        profile_pic:{$first:"$profile_pic"},
+                                        rating:{$first:"$rating"},
+                                        service: { $addToSet: "$services" },
+                                       
+                                      
+                                      
+                                       
+                                 }
+                         },
+                        // {
+                        //         $project: {
+                        //                 _id: 1,
+                        //                 profile_pic: 1,
+                        //                 name: 1,
+                        //                 rating: 1,
+                        //                 service: 1
 
-                                        profile_pic: 1,
-                                        name: 1,
-                                        rating: 1,
-                                        services: 1
-
-                                        // 'filteredValue': {
+                        //                 // 'filteredValue': {
 
 
-                                        //         $filter: {
-                                        //         input: "$services.options",
-                                        //         as: "option",
-                                        //         cond: { $eq: [ '$$option.at_home', false ] }
-                                        //       }
+                        //                 //         $filter: {
+                        //                 //         input: "$services.options",
+                        //                 //         as: "option",
+                        //                 //         cond: { $eq: [ '$$option.at_home', false ] }
+                        //                 //       }
 
-                                        // }
+                        //                 // }
 
-                                }
-                        },
+                        //         }
+                        // },
                 ])
                 return result1
 
@@ -835,11 +844,11 @@ export default class SalonService extends BaseService {
                         console.log(i.hours())
                         if(moment().day()-1 == day){
                         if(i.hours() > moment().hours()){
-                        const slot = moment(i.add(1,'hour')).format('hh:mm a')
+                        const slot = moment(i.add(1,'hour')).utcOffset("+05:30").format('hh:mm a')
                         
                         slots.push(slot)
                         }}else{
-                                const slot = moment(i).format('hh:mm a')
+                                const slot = moment(i).utcOffset("+05:30").format('hh:mm a')
                         
                                 slots.push(slot)   
                         

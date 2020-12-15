@@ -155,7 +155,7 @@ export default class SendEmail {
 
     static emailConfirm = async (userEmail:string,otp:string,userName:string) => {
 
-        fs.readFile(`${__dirname}/confirm-email-new.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/emailVerify.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
