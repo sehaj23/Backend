@@ -26,10 +26,10 @@ const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeController = new PromoCodeController(promoCodeService, promoUserService, cartService, salonService)
 
 //TODO: validate the data before sending it the to DB 
-promoCodeRouter.post("/", promoCodeController.post)
-promoCodeRouter.get("/", promoCodeController.get)
+
 promoCodeRouter.post("/discountApplicable",UserverifyToken, promoCodeController.discountApplicable)
-promoCodeRouter.post("/name",promoCodeController.getByName)
+promoCodeRouter.post("/name", UserverifyToken,  promoCodeController.getByName)
+promoCodeRouter.get("/", UserverifyToken,  promoCodeController.promoCodeByUserId)
 
 
 export default promoCodeRouter
