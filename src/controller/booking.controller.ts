@@ -137,7 +137,7 @@ export default class BookingController extends BaseController {
 
 
 
-            
+
             if (promoCode.categories && promoCode.categories.length > 0) {
                 if (salon === null) throw new Error(`Salon not found from the cart`)
                 for (let salonService of salon.services) {
@@ -189,7 +189,16 @@ export default class BookingController extends BaseController {
 
         let nextDateTime: moment.Moment
         for (let o of options) {
+            for (let salonService of salon.services) {
+                const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
+                if (salonOptionIndex > -1) {
+                    o.service_name = salonService.name
+                    o.category_name = salonService.category
+                    o.gender = salonService.options[salonOptionIndex].gender
+                    break
+                }
 
+            }
 
             const totalTime = o.quantity * o.duration
             const convertedDateTime = moment(date_time)
@@ -205,16 +214,7 @@ export default class BookingController extends BaseController {
             if (!o.employee_id || o.employee_id === null) {
 
                 if (!employeeIds || employeeIds?.length === 0) {
-                    for (let salonService of salon.services) {
-                        const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
-                        if (salonOptionIndex > -1) {
-                            o.service_name = salonService.name
-                            o.category_name = salonService.category
-                            o.gender = salonService.options[salonOptionIndex].gender
-                            break
-                        }
 
-                    }
                     if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
                     let day = moment(date_time).day() - 1
                     if (day < 0) day = 6
@@ -277,6 +277,8 @@ export default class BookingController extends BaseController {
                 throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
+        console.log("optionsss")
+        console.log(options)
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
@@ -285,8 +287,8 @@ export default class BookingController extends BaseController {
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         // if promocode applied then add to database that user used the promocode
-        if(totalDiscountGiven > 0 && promoCode){
-            await this.promoUserService.post({promo_code_id: promoCode._id.toString(), user_id: userId})
+        if (totalDiscountGiven > 0 && promoCode) {
+            await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
         const notify = Notify.bookingRequest(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
         console.log(notify)
