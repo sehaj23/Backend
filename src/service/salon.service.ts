@@ -628,27 +628,40 @@ export default class SalonService extends BaseService {
                                 }
 
                         },
-                        {
-                                $project: {
-                                        _id: 1,
-                                        profile_pic: 1,
-                                        name: 1,
-                                        rating: 1,
-                                        services: 1
+                         {
+                                 $group:{
+                                        "_id": "$_id",
+                                        name:{$first:"$name"},
+                                        profile_pic:{$first:"$profile_pic"},
+                                        rating:{$first:"$rating"},
+                                        service: { $addToSet: "$services" },
+                                       
+                                      
+                                      
+                                       
+                                 }
+                         },
+                        // {
+                        //         $project: {
+                        //                 _id: 1,
+                        //                 profile_pic: 1,
+                        //                 name: 1,
+                        //                 rating: 1,
+                        //                 service: 1
 
-                                        // 'filteredValue': {
+                        //                 // 'filteredValue': {
 
 
-                                        //         $filter: {
-                                        //         input: "$services.options",
-                                        //         as: "option",
-                                        //         cond: { $eq: [ '$$option.at_home', false ] }
-                                        //       }
+                        //                 //         $filter: {
+                        //                 //         input: "$services.options",
+                        //                 //         as: "option",
+                        //                 //         cond: { $eq: [ '$$option.at_home', false ] }
+                        //                 //       }
 
-                                        // }
+                        //                 // }
 
-                                }
-                        },
+                        //         }
+                        // },
                 ])
                 return result1
 
