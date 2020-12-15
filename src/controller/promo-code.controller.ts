@@ -123,8 +123,8 @@ export default class PromoCodeController extends BaseController {
         //@ts-ignore
         const userId = req.userId
 
-        const {cart_id} = req.body
-        const cart = await this.cartService.getId(cart_id) as CartSI
+        const cart = await this.cartService.getCartByUserIdLean(userId, true)
+        
         //@ts-ignore
         const salonId = cart.salon_id._id.toString()
         const optionIds = cart.options.map((o: CartOption) => o.option_id)
