@@ -54,6 +54,18 @@ export default class CartService extends BaseService {
         throw new Error("Option not found")
     }
 
+    getCategoriesByOptionIds: (optionIds: string[]) => Promise<string[]> = async (optionIds: string[]) => {
+        const categories = []
+        const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionIds[0]) }) as SalonSI
+        if (salon === null || !salon) throw new Error("Salon not found")
+        for (let service of salon.services) {
+            for (let option of service.options) {
+                if (optionIds.includes(option._id.toString())) categories.push(service.category)
+            }
+        }
+        return categories
+    }
+
     /**
      * This is to add an option id to an exsisting cart
      */

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import PromoCodeController from "../../controller/promo-code.controller";
+import verifyToken from "../../middleware/jwt";
 import Booking from "../../models/booking.model";
 import Brand from "../../models/brands.model";
 import Cart from "../../models/cart.model";
@@ -25,8 +26,8 @@ const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeController = new PromoCodeController(promoCodeService, promoUserService, cartService, salonService)
 
 //TODO: validate the data before sending it the to DB 
-promoCodeRouter.post("/", promoCodeController.post)
-promoCodeRouter.get("/", promoCodeController.get)
-promoCodeRouter.post("/discountApplicable", promoCodeController.discountApplicable)
+promoCodeRouter.post("/", verifyToken, promoCodeController.post)
+promoCodeRouter.get("/", verifyToken, promoCodeController.get)
+promoCodeRouter.post("/discountApplicable", verifyToken, promoCodeController.discountApplicable)
 
 export default promoCodeRouter

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CartSI } from '../interfaces/cart.interface';
+import { CartOption, CartSI } from '../interfaces/cart.interface';
 import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
 import { PromoUserSI } from '../interfaces/promo-user.inderface';
 import SalonSI from '../interfaces/salon.interface';
@@ -17,6 +17,7 @@ export default class PromoCodeController extends BaseController {
     promoUserService: PromoUserService
     cartService: CartService
     salonService: SalonService
+    service: PromoCodeService
     constructor(service: PromoCodeService, promoUserService: PromoUserService, cartService: CartService, salonService: SalonService) {
         super(service)
         this.promoUserService = promoUserService
@@ -116,6 +117,20 @@ export default class PromoCodeController extends BaseController {
         const promo_code = req.body.promo_code
         const promo = await this.service.getByName(promo_code)
         res.status(200).send(promo)
+    })
+
+    promoCodeByUserId = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+
+        const cart = await this.cartService.getCartByUserIdLean(userId, true)
+        
+        //@ts-ignore
+        const salonId = cart[0].salon_id._id.toString()
+        const optionIds = cart[0].options.map((o: CartOption) => o.option_id)
+        const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
+        const promoCodes = await this.service.promoCodesByUserId(userId, [salonId], categories)
+        res.send(promoCodes)
     })
 
 }
