@@ -126,8 +126,8 @@ export default class PromoCodeController extends BaseController {
         const cart = await this.cartService.getCartByUserIdLean(userId, true)
         
         //@ts-ignore
-        const salonId = cart.salon_id._id.toString()
-        const optionIds = cart.options.map((o: CartOption) => o.option_id)
+        const salonId = cart[0].salon_id._id.toString()
+        const optionIds = cart[0].options.map((o: CartOption) => o.option_id)
         const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
         const promoCodes = await this.service.promoCodesByUserId(userId, [salonId], categories)
         res.send(promoCodes)
