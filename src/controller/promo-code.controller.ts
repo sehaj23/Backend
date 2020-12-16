@@ -140,7 +140,7 @@ export default class PromoCodeController extends BaseController {
             while(i < promoCodesArr.length){
                 const promoCode = promoCodesArr[i]
                 const promoCodesUsedIndex = promoCodesUsedCountArr.map(p => p._id.toString()).indexOf(promoCode._id.toString())
-                if(promoCode.max_usage <= promoCodesUsedCountArr[promoCodesUsedIndex].count){
+                if(promoCodesUsedIndex > -1 && promoCode.max_usage <= promoCodesUsedCountArr[promoCodesUsedIndex]?.count){
                     promoCodesArr.splice(i, 1)
                 }else{
                     i++
