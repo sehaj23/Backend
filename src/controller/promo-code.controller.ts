@@ -8,6 +8,7 @@ import CartService from '../service/cart.service';
 import PromoCodeService from "../service/promo-code.service";
 import PromoUserService from "../service/promo-user.service";
 import SalonService from '../service/salon.service';
+import ErrorResponse from '../utils/error-response';
 //import Error from '../utils/error-response';
 import BaseController from "./base.controller";
 import moment = require('moment');
@@ -123,14 +124,30 @@ export default class PromoCodeController extends BaseController {
         //@ts-ignore
         const userId = req.userId
 
-        const cart = await this.cartService.getCartByUserIdLean(userId, true)
-        
+        let cart = await this.cartService.getCartByUserIdLean(userId, true)
+        cart = JSON.parse(cart)
+        if(cart.length === 0) throw new ErrorResponse({ message: "To get coupon codes we need an active cart." })
         //@ts-ignore
-        const salonId = cart[0].salon_id._id.toString()
+        const salonId = cart[0].salon_id.toString()
         const optionIds = cart[0].options.map((o: CartOption) => o.option_id)
         const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
-        const promoCodes = await this.service.promoCodesByUserId(userId, [salonId], categories)
-        res.send(promoCodes)
+        const promoCodesArr = await this.service.promoCodesByUserId(userId, [salonId], categories) as PromoCodeSI[]
+        // checking if the promo code is used before if yes how many times
+        if(promoCodesArr.length > 0){
+            const promoCodeIds = promoCodesArr.map(p => p._id.toString())
+            const promoCodesUsedCountArr = await this.promoUserService.countByUserIdAndPromoCodeIds(userId, promoCodeIds)
+            let i = 0;
+            while(i < promoCodesArr.length){
+                const promoCode = promoCodesArr[i]
+                const promoCodesUsedIndex = promoCodesUsedCountArr.map(p => p._id.toString()).indexOf(promoCode._id.toString())
+                if(promoCode.max_usage <= promoCodesUsedCountArr[promoCodesUsedIndex].count){
+                    promoCodesArr.splice(i, 1)
+                }else{
+                    i++
+                }
+            }
+        }
+        res.send(promoCodesArr)
     })
 
 }
