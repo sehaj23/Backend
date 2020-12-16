@@ -37,6 +37,10 @@ export interface PromoCodeI{
      */
     user_ids: string[]
     /**
+     * start date time of the promo code
+     */
+    start_date_time: Date
+    /**
      * expiry of the promo code
      */
     expiry_date_time: Date

@@ -21,6 +21,9 @@ const PromoCodeSchema = new mongoose.Schema({
     user_ids: {
         type: [String]
     },
+    start_date_time: {
+        type: Date,
+    },
     expiry_date_time: {
         type: Date,
         required: true
