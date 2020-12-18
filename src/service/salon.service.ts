@@ -423,22 +423,22 @@ export default class SalonService extends BaseService {
                         skipCount
                 }
                 const redisKey = "getHomeSalon"
-                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
-                if (cahceGetSalon === null) {
+               // const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+               // if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
+                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
                                                 $minDistance: 0,
-                                                $maxDistance: 10000
+                                                $maxDistance: 1000000
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
 
                         return salons
-                }
-                return cahceGetSalon
+              //  }
+               // return cahceGetSalon
         }
 
         // Sort salon : rating-wise
@@ -470,22 +470,22 @@ export default class SalonService extends BaseService {
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
-                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
-                if (cahceGetSalon === null) {
+                // const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+                // if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
+                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
                                                 $minDistance: 0,
-                                                $maxDistance: 10000
+                                                $maxDistance: 100000
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
 
                         return salons
-                }
-                return cahceGetSalon
+                // }
+                // return cahceGetSalon
 
         }
         //get salon distancewise

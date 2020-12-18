@@ -26,7 +26,7 @@ salonInfoRouter.get(
 )
 // get names of recommended all salons
 salonInfoRouter.get('/names', salonController.getRecomendSalon)
-//get nearby salon range 2km
+//get nearby salon range 30km
 salonInfoRouter.get('/location', salonController.getSalonNearby)
 //sort by distance
 salonInfoRouter.get('/distance', salonController.getSalonDistance)
