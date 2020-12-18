@@ -385,15 +385,15 @@ export default class SalonController extends BaseController {
         const q = req.query
         //TODO: store location of User
        
-        //    const sr = await SalonRedis.get('HomeSalons')
+           const sr = await SalonRedis.get('HomeSalons')
         //    if (sr !== null) { 
         //        salons = JSON.parse(sr)
         //     }
         //   else {
-        console.log("not redis")
+        // console.log("not redis")
         salons = await this.service.getHomeServiceSalon(q)
         SalonRedis.set('HomeSalons', salons)
-        //   }
+     //      }
         res.status(200).send(salons)
 
     })
