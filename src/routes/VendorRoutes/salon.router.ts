@@ -1,21 +1,24 @@
 import { Router } from "express";
-import VendorverifyToken, { vendorJWTVerification } from "../../middleware/VendorJwt";
-import SalonService from "../../service/salon.service";
-import Salon from "../../models/salon.model";
 import SalonController from "../../controller/salon.controller";
-import Employee from "../../models/employees.model";
-import Vendor from "../../models/vendor.model";
-import Event from "../../models/event.model"
-import Offer from "../../models/offer.model";
-import Review from '../../models/review.model'
-import Booking from '../../models/booking.model'
+import VendorverifyToken from "../../middleware/VendorJwt";
+import Booking from '../../models/booking.model';
 import Brand from "../../models/brands.model";
-import ReportSalon from "../../models/reportSalon.model"
+import Employee from "../../models/employees.model";
+import Event from "../../models/event.model";
+import Offer from "../../models/offer.model";
+import ReportSalon from "../../models/reportSalon.model";
+import Review from '../../models/review.model';
+import Salon from "../../models/salon.model";
+import UserSearch from "../../models/user-search.model";
+import Vendor from "../../models/vendor.model";
+import SalonService from "../../service/salon.service";
+import UserSearchService from "../../service/user-search.service";
 
 const salonRouter = Router()
 
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
-const salonController = new SalonController(salonService)
+const userSearchService = new UserSearchService(UserSearch)
+const salonController = new SalonController(salonService, userSearchService)
 //const ss = new SalonService()
 
 salonRouter.post("/", VendorverifyToken, salonController.postSalon)

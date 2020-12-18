@@ -1,20 +1,23 @@
-import { Router } from 'express'
-import { salonInfoChecks } from '../../validators/salon-validator'
-import mySchemaValidator from '../../middleware/my-schema-validator'
-import SalonService from "../../service/salon.service";
-import Salon from "../../models/salon.model";
+import { Router } from 'express';
 import SalonController from "../../controller/salon.controller";
+import mySchemaValidator from '../../middleware/my-schema-validator';
+import UserverifyToken from '../../middleware/User.jwt';
+import Booking from '../../models/booking.model';
+import Brand from '../../models/brands.model';
 import Employee from "../../models/employees.model";
-import Vendor from "../../models/vendor.model";
-import Event from "../../models/event.model"
+import Event from "../../models/event.model";
 import Offer from "../../models/offer.model";
-import Review from '../../models/review.model'
-import UserverifyToken from '../../middleware/User.jwt'
-import Booking from '../../models/booking.model'
-import ReportSalon from "../../models/reportSalon.model"
-import Brand from '../../models/brands.model'
+import ReportSalon from "../../models/reportSalon.model";
+import Review from '../../models/review.model';
+import Salon from "../../models/salon.model";
+import UserSearch from '../../models/user-search.model';
+import Vendor from "../../models/vendor.model";
+import SalonService from "../../service/salon.service";
+import UserSearchService from '../../service/user-search.service';
+import { salonInfoChecks } from '../../validators/salon-validator';
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
-const salonController = new SalonController(salonService)
+const userSearchService = new UserSearchService(UserSearch)
+const salonController = new SalonController(salonService, userSearchService)
 
 const salonInfoRouter = Router()
 // get salon info by id
