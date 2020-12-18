@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PhotoI } from "../interfaces/photo.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BaseService from "../service/base.service";
 import logger from "../utils/logger";
 export default class BaseController {
@@ -19,6 +20,11 @@ export default class BaseController {
             res.send({ message: `${e.message}` })
         }
     }
+
+    getWithPagination = controllerErrorHandler(async (req: Request, res: Response) => {
+        const resource = await this.service.getWithPagination(req.query)
+        res.send(resource)
+    })
 
     get = async (req: Request, res: Response) => {
         try {

@@ -20,6 +20,26 @@ export default class BaseService {
         return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")
     }
 
+    getWithPagination = async (q: any): Promise<any> => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        
+        const resourceQuery = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+        const resourceCountQuery = this.model.aggregate([
+            { "$count": "count" }
+        ])
+
+        const [resource, pageNo] = await Promise.all([resourceQuery, resourceCountQuery])
+        let totalPageNumber = 0
+        if (pageNo.length > 0) {
+            totalPageNumber = pageNo[0].count
+        }
+        const totalPages = Math.ceil(totalPageNumber / pageLength)
+        return { resource, totalPages, pageNumber, pageLength }
+    }
+
     getOne = async (filters = {}): Promise<any> => {
         return await this.model.findOne(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")
     }
@@ -66,8 +86,8 @@ export default class BaseService {
     countDocumnet = async (filter: any) => {
         return this.model.countDocuments(filter)
     }
-    getByName =  async (promo_code:string) => {
-        const promo = await this.model.findOne({promo_code}).select({payment_mode:1,description:1,promo_code:1,_id:1})
+    getByName = async (promo_code: string) => {
+        const promo = await this.model.findOne({ promo_code }).select({ payment_mode: 1, description: 1, promo_code: 1, _id: 1 })
         return promo
     }
 

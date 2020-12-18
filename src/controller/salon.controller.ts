@@ -7,9 +7,11 @@ import { PhotoI } from "../interfaces/photo.interface";
 import { ReviewI } from "../interfaces/review.interface";
 import SalonSI, { SalonI } from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
+import UserSearchI from "../interfaces/user-search.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import { SalonRedis } from "../redis/index.redis";
 import SalonService from "../service/salon.service";
+import UserSearchService from "../service/user-search.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
@@ -19,9 +21,11 @@ import moment = require("moment");
 export default class SalonController extends BaseController {
 
     service: SalonService
-    constructor(service: SalonService) {
+    userSearchService: UserSearchService
+    constructor(service: SalonService, userSearchService: UserSearchService) {
         super(service)
         this.service = service
+        this.userSearchService = userSearchService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -418,6 +422,11 @@ export default class SalonController extends BaseController {
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
         const salon = await this.service.getSearchResult(phrase)
+        const userSearch: UserSearchI = {
+            term: phrase,
+            result: salon
+        }
+        await this.userSearchService.post(userSearch)
         res.status(200).send(salon)
     })
     // getSearchservice= controllerErrorHandler(async (req: Request, res: Response) => {
@@ -593,18 +602,20 @@ export default class SalonController extends BaseController {
 
     getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string
-        let gotSalon
         let home: boolean
         if (req.query.home) {
             home = (req.query.home === "true")
-            // filter["at_home"] = atHome
         }
 
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
 
         const result = await this.service.getSalonService(phrase)
-        
+        const userSearch: UserSearchI = {
+            term: phrase,
+            result: result
+        }
+        await this.userSearchService.post(userSearch)
         res.send(result)
     })
 
