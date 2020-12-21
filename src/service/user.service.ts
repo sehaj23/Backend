@@ -19,7 +19,7 @@ export default class UserService extends BaseService {
             UserRedis.set(id, JSON.stringify(user), {type: "info"})
             return user
         }
-        return redisUser
+        return JSON.parse(redisUser)
     }
 
     getUser = async (userId) => {
