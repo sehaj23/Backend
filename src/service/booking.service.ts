@@ -27,8 +27,6 @@ export default class BookingService extends BaseService {
     bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,promo_code:string,actualStatus:BookinStatus) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
-            console.log("********")
-            console.log(convertedDateTime)
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {

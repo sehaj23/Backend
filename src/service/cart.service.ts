@@ -179,7 +179,6 @@ export default class CartService extends BaseService {
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
         const redisCart = await CartRedis.get(userId)
-        console.log("redisCart", redisCart)
         if(redisCart === null){
             const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
             if (cart.length > 0) {

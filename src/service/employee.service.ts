@@ -262,8 +262,6 @@ export default class EmployeeService extends BaseService {
     }
 
     employeeService = async(id:string)=>{
-        console.log("******");
-        console.log(id)
         const _id=mongoose.Types.ObjectId(id)
         const service = await this.model.aggregate()
         .match({_id: _id})

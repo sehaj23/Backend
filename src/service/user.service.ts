@@ -136,10 +136,7 @@ export default class UserService extends BaseService {
         UserRedis.remove(id, {type: "favourites"})
         //@ts-ignore
         const user = await this.model.findByIdAndUpdate({ _id: id }, { $pull: { favourites: salon_id } }, { new: true })
-        console.log(user)
-
         return user
-
     }
     sendNotification = async (fcm_token: string, message: any) => {
         var messagee = {

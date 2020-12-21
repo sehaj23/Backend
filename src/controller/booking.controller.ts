@@ -148,7 +148,7 @@ export default class BookingController extends BaseController {
                         const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id)
                         if (salonOptionIndex > -1 && (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category))) {
                             const salonOption = salonService.options[salonOptionIndex]
-                            if (promoCode.disctount_type === 'Flat Price') {
+                            if (promoCode.discount_type === 'Flat Price') {
                                 const { flat_price } = promoCode
                                 // calculating the discount which we can give
                                 let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
@@ -218,17 +218,10 @@ export default class BookingController extends BaseController {
                     if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
                     let day = moment(date_time).day() - 1
                     if (day < 0) day = 6
-                    console.log("******")
-                    console.log(day)
-                    console.log(moment().day() - 1)
                     const starting_hours = salon.start_working_hours
                     const ending_hours = salon.end_working_hours
                     const selectedStartingHour = moment(starting_hours[day]).get("hours")
                     const selectedEndingHour = moment(ending_hours[day]).get("hours")
-                    console.log("hours")
-                    console.log(selectedStartingHour)
-                    console.log(selectedEndingHour)
-                    console.log(moment().get("hours"))
                     if (moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)) {
                         console.log("time changed due to salon offline")
                         status = "Confirmed"
