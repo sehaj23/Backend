@@ -192,7 +192,7 @@ export default class CartService extends BaseService {
                     }
                 }
             }
-            CartRedis.set(userId, JSON.stringify(cart))
+            CartRedis.set(userId, cart)
             return cart
         }
         return JSON.parse(redisCart)

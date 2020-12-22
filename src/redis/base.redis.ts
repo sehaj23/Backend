@@ -10,6 +10,12 @@ export default class BaseRedis {
         this.modelName = modelName
     }
 
+    /**
+     * 
+     * @param key the main key like salonId
+     * @param data the data from database
+     * @param options like lat, long, male/female
+     */
     set(key: string, data: any, options: Object = {}) {
         const finalKey = `${this.modelName}_${key}_${this.extrackKeys(options)}`
         return redisClient.set(finalKey, JSON.stringify(data))

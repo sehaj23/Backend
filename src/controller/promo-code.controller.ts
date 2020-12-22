@@ -99,7 +99,6 @@ export default class PromoCodeController extends BaseController {
         const userId = req.userId
 
         let cart = await this.cartService.getCartByUserIdLean(userId, true)
-        cart = JSON.parse(cart)
         if(cart.length === 0) throw new ErrorResponse({ message: "To get coupon codes we need an active cart." })
         //@ts-ignore
         const salonId = cart[0].salon_id.toString()

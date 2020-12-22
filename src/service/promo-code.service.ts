@@ -18,8 +18,8 @@ export default class PromoCodeService extends BaseService {
                 ],
                 "expiry_date_time": { "$gte": Date.now() },
                 "active": true
-            }).lean()
-            PromoCodeRedis.set(promoCode, JSON.stringify(promo), {userId, salonIds, categories})
+            })
+            PromoCodeRedis.set(promoCode, promo, {userId, salonIds, categories})
             return promo
         }
         return JSON.parse(promoCodeRedis)
