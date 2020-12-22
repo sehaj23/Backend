@@ -1,3 +1,4 @@
+import mongoose from "../database";
 import ServiceI from "../interfaces/service.interface";
 import { ServicesI } from "../interfaces/zattire-service.interface";
 import BaseService from "./base.service";
@@ -42,5 +43,12 @@ export default class ZattireService extends BaseService {
             }
         ])
         return search
+    }
+    getById = async (id: string) => {
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) })
+    }
+
+    getByService = async (id: string) => {
+        return this.model.findOne({"services._id":id})
     }
 }
