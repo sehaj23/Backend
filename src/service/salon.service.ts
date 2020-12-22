@@ -831,9 +831,6 @@ export default class SalonService extends BaseService {
                 // getting the day from the date
                 let day = moment(slotsDate).day() - 1
                 if (day < 0) day = 6
-                console.log("******")
-                console.log(day)
-                console.log(moment().day()-1)
                 if (starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
                 const selectedStartingHour = moment(starting_hours[day])
                 if (salon.end_working_hours.length < day) throw Error(`ending hours not found for day number ${day} `)

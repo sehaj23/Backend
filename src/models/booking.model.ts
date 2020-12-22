@@ -1,14 +1,6 @@
 import mongoose from "../database";
-import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
-import SalonService from "../service/salon.service";
-import Brand from "./brands.model";
-import Employee from "./employees.model";
-import Offer from "./offer.model";
-import ReportSalon from "./reportSalon.model";
-import Review from "./review.model";
-import Salon from "./salon.model";
-import Vendor from "./vendor.model";
-import Event from './event.model'
+import { BookingSI } from "../interfaces/booking.interface";
+import { BookingRedis } from "../redis/index.redis";
 
 
 
@@ -138,6 +130,27 @@ const BookingSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
+})
+
+const emptyCartCache = (userId: string, options: Object = {}) => {
+    BookingRedis.remove(userId, options)
+}
+BookingSchema.pre("save", function(){
+    //@ts-ignore
+    const {user_id} = this
+    if(user_id){
+        const userIdToUse = user_id?._id ?? user_id   
+        emptyCartCache(userIdToUse, {type: "getByUserId"})
+    }
+})
+
+BookingSchema.pre("remove", function(){
+    //@ts-ignore
+    const {user_id} = this
+    if(user_id){
+        const userIdToUse = user_id?._id ?? user_id   
+        emptyCartCache(userIdToUse, {type: "getByUserId"})
+    }
 })
 
 const Booking = mongoose.model<BookingSI>("booking", BookingSchema)

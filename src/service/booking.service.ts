@@ -3,6 +3,7 @@ import mongoose from "../database";
 import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import SalonSI from "../interfaces/salon.interface";
+import { BookingRedis } from "../redis/index.redis";
 import ErrorResponse from "../utils/error-response";
 import MyStringUtils from "../utils/my-string.utils";
 import BaseService from "./base.service";
@@ -26,8 +27,6 @@ export default class BookingService extends BaseService {
     bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,promo_code:string,actualStatus:BookinStatus) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
-            console.log("********")
-            console.log(convertedDateTime)
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
@@ -312,7 +311,13 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        return this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id", 'name')
+        const bookingRedis = await BookingRedis.get(userId, {type: "getByUserId"})
+        if(bookingRedis === null){
+            const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id", 'name').lean()
+            BookingRedis.set(userId, JSON.stringify(booking), {type: "getByUserId"})
+            return booking
+        }
+        return JSON.parse(bookingRedis)
     }
 
     getbookings = async (q) => {

@@ -62,7 +62,7 @@ export interface PromoCodeI{
      */
     custom_time_end_time: string
     minimum_bill: number
-    disctount_type: PromoCodeDiscountType
+    discount_type: PromoCodeDiscountType
     flat_price: number
     discount_percentage: number
     discount_cap: number
