@@ -25,4 +25,22 @@ export default class ZattireService extends BaseService {
 
 
     }
+
+    searchServicebyName = async (phrase:string)=>{
+        const search = await this.model.aggregate([
+          {  
+
+                $match:
+                {
+                        "services.service_name": {
+                                $regex: `.*${phrase}.*`, $options: 'i'
+                        },
+              
+
+                }
+
+            }
+        ])
+        return search
+    }
 }

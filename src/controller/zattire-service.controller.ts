@@ -50,4 +50,13 @@ editServiceFromCategory =  controllerErrorHandler(async (req: Request, res: Resp
   }
   res.status(200).send({success:true,message:"updated"})
 })
+ 
+searchByServiceName = controllerErrorHandler(async (req: Request, res: Response) => {
+  const phrase = req.query.phrase
+  const search = await this.service.searchServicebyName(phrase.toString())
+  res.status(200).send(search)
+
+
+})
+
 }
