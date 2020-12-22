@@ -12,6 +12,8 @@ zattireServiceRouter.get("/",verifyToken,zattireServiceController.get)
 zattireServiceRouter.get("/:id",verifyToken,zattireServiceController.getId)
 zattireServiceRouter.put("/:id",verifyToken,zattireServiceController.put)
 zattireServiceRouter.put("/service/:id",verifyToken,zattireServiceController.addService)
+zattireServiceRouter.delete("/service/:cid/:sid",verifyToken,zattireServiceController.deleteServiceFromCategory)
+zattireServiceRouter.patch("/service/:cid/:sid",verifyToken,zattireServiceController.editServiceFromCategory)
 
 
 

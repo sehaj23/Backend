@@ -13,5 +13,16 @@ export default class ZattireService extends BaseService {
         return addService
 }
 
+    deleteServiceFromCategory = async(category_id:any,service_id:any)=>{
+        //@ts-ignore
+        const removeService = await this.model.findOneAndUpdate({_id:category_id,"services._id":service_id},{$pull:{services:{_id:service_id}}},{new:true})
+        return removeService
 
+}
+    editServiceFromCategory = async(category_id:any,service_id:any,data:any)=>{
+        const editService = await this.model.findOneAndUpdate({_id:category_id,"services._id":service_id},{$set:{"services.$":  data }},{new:true})
+        return editService
+
+
+    }
 }
