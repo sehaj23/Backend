@@ -16,6 +16,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import { ServicesI } from "../interfaces/zattire-service.interface";
 
 
 export default class SalonController extends BaseController {
@@ -657,6 +658,9 @@ export default class SalonController extends BaseController {
         res.send(slots)
 
     })
+
+
+
 
 
 }
