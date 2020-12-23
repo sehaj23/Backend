@@ -31,8 +31,11 @@ export default class BookingService extends BaseService {
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
                 const totalPrice = o.quantity * o.price
-                const zattire_commission = totalPrice * 0.25
+                let zattire_commission = totalPrice * 0.25
                 const vendor_commission = totalPrice - zattire_commission
+                if(o.discount_given && o.discount_given !== 0){
+                    zattire_commission -= o.discount_given
+                }
 
                 const totalTime = o.quantity * o.duration
                 let service_time: Date
@@ -54,7 +57,7 @@ export default class BookingService extends BaseService {
                     quantity: o.quantity,
                     duration: o.duration,
                     service_total_price: totalPrice,
-                    // service_discount:,
+                    service_discount: o.discount_given,
                     service_discount_code:promo_code,
                     zattire_commission,
                     vendor_commission,
