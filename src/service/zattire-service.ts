@@ -9,8 +9,9 @@ export default class ZattireService extends BaseService {
 
 
     addServiceToCategory = async(id:any,service_name:ServicesI)=>{
+
         //@ts-ignore
-        const addService = await this.model.findByIdAndUpdate(id,{$push:{services:service_name}},{new:true})
+        const addService = await this.model.findByIdAndUpdate(id,{$push:{"services":service_name}})
         return addService
 }
 
@@ -49,6 +50,7 @@ export default class ZattireService extends BaseService {
     }
 
     getByService = async (id: string) => {
-        return this.model.findOne({"services._id":id})
+        return this.model.findOne({"services._id":id}).select("services")
+
     }
 }
