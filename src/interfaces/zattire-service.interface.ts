@@ -12,6 +12,7 @@ export interface  ZattireServiceI{
 export interface ServicesI{
     service_checked:Boolean,
     service_name:string,
+    hsn_code:string,
     service_loaction:string,
     options:OptionI[]
 }

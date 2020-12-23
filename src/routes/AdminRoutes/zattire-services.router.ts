@@ -8,9 +8,15 @@ const zattireServiceRouter =  Router()
 const zs = new ZattireService(zattireServiceModel)
 const zattireServiceController = new ZattireServiceController(zs)
 zattireServiceRouter.post("/",verifyToken,zattireServiceController.post)
-zattireServiceRouter.get("/",verifyToken,zattireServiceController.get)
-zattireServiceRouter.get("/:id",verifyToken,zattireServiceController.getId)
+zattireServiceRouter.get("/",verifyToken,zattireServiceController.getWithPagination)
+zattireServiceRouter.get("/info/:id",verifyToken,zattireServiceController.getById)
 zattireServiceRouter.put("/:id",verifyToken,zattireServiceController.put)
+zattireServiceRouter.put("/service/:id",verifyToken,zattireServiceController.addService)
+zattireServiceRouter.delete("/service/:cid/:sid",verifyToken,zattireServiceController.deleteServiceFromCategory)
+zattireServiceRouter.patch("/service/:cid/:sid",verifyToken,zattireServiceController.editServiceFromCategory)
+zattireServiceRouter.get("/search",verifyToken,zattireServiceController.searchByServiceName)
+zattireServiceRouter.get("/service/:id",verifyToken,zattireServiceController.getbyServiceID)
+
 
 
 
