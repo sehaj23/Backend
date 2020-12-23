@@ -186,15 +186,17 @@ export default class BookingController extends BaseController {
                 }
             }
         }
-
+        const discountOptionIds = result.map(r => r.option_id)
         let nextDateTime: moment.Moment
         for (let o of options) {
             for (let salonService of salon.services) {
                 const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
+                const discountIndex = discountOptionIds.indexOf(o.option_id)
                 if (salonOptionIndex > -1) {
                     o.service_name = salonService.name
                     o.category_name = salonService.category
                     o.gender = salonService.options[salonOptionIndex].gender
+                    if(discountIndex > -1) o.discount_given = result[discountIndex].discount
                     break
                 }
 

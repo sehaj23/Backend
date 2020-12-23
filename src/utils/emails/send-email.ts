@@ -1,5 +1,6 @@
 import * as AWS from "aws-sdk";
 import * as fs from 'fs';
+import '../../prototypes/string.prototypes';
 import logger from "../logger";
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
@@ -159,18 +160,9 @@ export default class SendEmail {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
-            }else{
-                const writeOTP =  data.replace(`/<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>*</strong></span>/g`,`<span data-mce-style="font-size: 17px; line-height: 34px;" style="font-size: 17px; line-height: 34px;"><strong>${otp}</strong></span>`)
-                const writeName = data.replace(`/<span style="font-size: 20px;"><em><strong>*</strong></em></span>/g`,`<span style="font-size: 20px;"><em><strong>Hi ${userName},</strong></em></span>`)
-                console.log(data)
-                console.log(otp)
-                // fs.writeFile(`${__dirname}/confirm-email-new.html`, [writeOTP,writeName], 'utf8', function (err) {
-                //     if (err) return console.log(err);
-                //     console.log("replaced")
-                //  });
             }
-
-            // TODO: string interpolation for the html content
+            data = data.replaceAll("[Customer Name]", userName)
+            data = data.replaceAll("[OTP]", otp)
 
             const params = {
                 Destination: { /* required */
