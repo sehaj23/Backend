@@ -9,9 +9,9 @@ export default class ZattireService extends BaseService {
 
 
     addServiceToCategory = async(id:any,service_name:ServicesI)=>{
-
+        console.log(service_name)
         //@ts-ignore
-        const addService = await this.model.findByIdAndUpdate(id,{$push:{"services":service_name}})
+        const addService = await this.model.findOneAndUpdate({_id:id},{$push:{"services":service_name}})
         return addService
 }
 

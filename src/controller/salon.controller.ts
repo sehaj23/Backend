@@ -352,6 +352,26 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
+        const filter = {}
+            //TODO: validator
+            if (!salonId) {
+                const errMsg = `id is missing from the params`
+                logger.error(errMsg)
+                res.status(400)
+                res.send({ message: errMsg })
+                return
+            }
+            if (req.query.gender) {
+                filter["gender"] = req.query.gender
+            }
+            let atHome: boolean
+            if (req.query.home) {
+                
+                if(req.query.home === "true"){
+                    atHome=true
+                }
+                
+            }
 
 
         var centerPoint = {}
@@ -366,6 +386,29 @@ export default class SalonController extends BaseController {
           const sr: string = await SalonRedis.get(salonId)
          if (sr !== null) return res.send(JSON.parse(sr))
         const salon = await this.service.getSalonInfo(salonId, centerPoint)
+        const services = salon.services
+        const filterService = services.filter((service: ServiceI) => {
+            const { options } = service
+            const filterOptions = options.filter((opt: OptionI) => {
+                if (req.query.gender) {
+                    if (opt.gender !== req.query.gender && req.query.gender !== "both" && opt.gender !== "both") {
+                        return false
+                    }
+                }
+                if (atHome !== undefined) {
+                    if (opt.at_home !== atHome) {
+                        return false
+                    }
+                }
+                return true
+            })
+            if (filterOptions.length > 0) {
+                service.options = filterOptions
+                return true
+            }
+            return false
+        })
+        salon.services = filterService
          SalonRedis.set(salonId, salon)
         res.status(200).send(salon)
     })

@@ -57,7 +57,15 @@ export default class UserService extends BaseService {
     deleteFCM = async (id: string, fcmToken: any) => {
         const _id = mongoose.Types.ObjectId(id)
         //@ts-ignore
-        const user = await this.model.findByIdAndUpdate(_id, { $pull: { fcm_token: fcmToken } }, { new: true })
+        const user = await this.model.findOne(_id ) as UserSI
+        const fcmTokenIndex = user.fcm_token.indexOf(fcmToken)
+        if(fcmTokenIndex >-1){
+            user.fcm_token.splice(fcmTokenIndex,1)
+            await user.save()    
+        }else{
+            throw new Error("Fcm token not found")
+        }
+        
         return user
     }
 

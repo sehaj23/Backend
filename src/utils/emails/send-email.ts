@@ -230,7 +230,7 @@ export default class SendEmail {
                 return
             }
            
-            data = data.replaceAll("[OTP]", otp)
+            data = data.replaceAll("[[OTP]]", otp)
             // TODO: string interpolation for the html content
                 console.log("sending emailll")
             const params = {
