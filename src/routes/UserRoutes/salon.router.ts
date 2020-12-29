@@ -11,13 +11,16 @@ import ReportSalon from "../../models/reportSalon.model";
 import Review from '../../models/review.model';
 import Salon from "../../models/salon.model";
 import UserSearch from '../../models/user-search.model';
+import User from '../../models/user.model';
 import Vendor from "../../models/vendor.model";
 import SalonService from "../../service/salon.service";
 import UserSearchService from '../../service/user-search.service';
+import UserService from '../../service/user.service';
 import { salonInfoChecks } from '../../validators/salon-validator';
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
-const salonController = new SalonController(salonService, userSearchService)
+const userService = new UserService(User,Booking)
+const salonController = new SalonController(salonService, userSearchService,userService)
 
 const salonInfoRouter = Router()
 // get salon info by id

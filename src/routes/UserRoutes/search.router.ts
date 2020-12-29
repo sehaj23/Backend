@@ -9,13 +9,16 @@ import ReportSalon from "../../models/reportSalon.model"
 import Review from '../../models/review.model'
 import Salon from "../../models/salon.model"
 import UserSearch from "../../models/user-search.model"
+import User from "../../models/user.model"
 import Vendor from "../../models/vendor.model"
 import SalonService from "../../service/salon.service"
 import UserSearchService from "../../service/user-search.service"
+import UserService from "../../service/user.service"
 const searchRouter = Router()
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
 const userSearch = new UserSearchService(UserSearch)
-const salonController = new SalonController(salonService, userSearch)
+const userService = new UserService(User,Booking)
+const salonController = new SalonController(salonService, userSearch,userService)
 searchRouter.get("/", salonController.getSearchResult)
 searchRouter.get("/salon",salonController.searchFilter)
 searchRouter.get("/service",salonController.getSearchservice)
