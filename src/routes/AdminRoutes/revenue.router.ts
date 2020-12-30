@@ -10,6 +10,5 @@ const revenueService = new RevenueService(Booking)
 const revenueController = new RevenueController(revenueService)
 
 revenueRouter.get("/", verifyToken,  revenueController.adminTotalRevenue)
-revenueRouter.get("/salons", verifyToken, revenueController.adminRevenueBySalon)
 
 export default revenueRouter
