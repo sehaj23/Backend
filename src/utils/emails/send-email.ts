@@ -229,6 +229,8 @@ export default class SendEmail {
                 SendEmail.logEmailStatus(false, 'forgot password', 'user', userEmail, err.message)
                 return
             }
+           
+            data = data.replaceAll("[[OTP]]", otp)
             // TODO: string interpolation for the html content
                 console.log("sending emailll")
             const params = {

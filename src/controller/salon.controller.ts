@@ -17,16 +17,19 @@ import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
 import { ServicesI } from "../interfaces/zattire-service.interface";
+import UserService from "../service/user.service";
 
 
 export default class SalonController extends BaseController {
 
     service: SalonService
     userSearchService: UserSearchService
-    constructor(service: SalonService, userSearchService: UserSearchService) {
+    userService:UserService
+    constructor(service: SalonService, userSearchService: UserSearchService, userService:UserService) {
         super(service)
         this.service = service
         this.userSearchService = userSearchService
+        this.userService=userService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -139,13 +142,13 @@ export default class SalonController extends BaseController {
         }
         let atHome: boolean
         if (req.query.home) {
-            
-            if(req.query.home === "true"){
-                atHome=true
+
+            if (req.query.home === "true") {
+                atHome = true
             }
-            
+
         }
-      
+
         //TODO: validator
         if (!id) {
             const errMsg = `id is missing from the params`
@@ -352,8 +355,33 @@ export default class SalonController extends BaseController {
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
+        const filter = {}
+        const q = req.query
+         //@ts-ignore
+         const id = req.userId
+         let userReq
 
-
+               //TODO: validator
+        if (!salonId) {
+            const errMsg = `id is missing from the params`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        if (req.query.gender) {
+            filter["gender"] = req.query.gender
+        }
+        let atHome: boolean
+        if (req.query.home) {
+            if (req.query.home === "true") {
+                atHome = true
+               
+            }
+            filter["home"]=req.query.home
+        }
+        filter["page_number"]=req.query.page_number
+        filter["page_length"]=req.query.page_length
         var centerPoint = {}
         //TODO: store location of User
         if (req.query.latitude && req.query.longitude) {
@@ -363,11 +391,40 @@ export default class SalonController extends BaseController {
             //@ts-ignore
             centerPoint.lng = req.query.longitude
         }
-          const sr: string = await SalonRedis.get(salonId)
-         if (sr !== null) return res.send(JSON.parse(sr))
-        const salon = await this.service.getSalonInfo(salonId, centerPoint)
-         SalonRedis.set(salonId, salon)
-        res.status(200).send(salon)
+        const sr: string = await SalonRedis.get(salonId,filter)
+        if (sr !== null) return res.send(JSON.parse(sr))
+        const salonReq =  this.service.getSalonInfo(salonId, centerPoint)
+        const reviewsReq =  this.service.getSalonReviews(salonId, q)
+       
+        if(id){
+         userReq = this.userService.getFavourites(id)
+        }
+        const [salon,reviews,user] = await Promise.all([salonReq,reviewsReq,userReq])
+        const services = salon.services
+        const filterService = services.filter((service: ServiceI) => {
+            const { options } = service
+            const filterOptions = options.filter((opt: OptionI) => {
+                if (req.query.gender) {
+                    if (opt.gender !== req.query.gender && req.query.gender !== "both" && opt.gender !== "both") {
+                        return false
+                    }
+                }
+                if (atHome !== undefined) {
+                    if (opt.at_home !== atHome) {
+                        return false
+                    }
+                }
+                return true
+            })
+            if (filterOptions.length > 0) {
+                service.options = filterOptions
+                return true
+            }
+            return false
+        })
+        salon.services = filterService
+        SalonRedis.set(salonId, {salon,reviews,user},filter)
+        res.status(200).send({salon,reviews})
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -386,19 +443,9 @@ export default class SalonController extends BaseController {
     })
     getHomeServiceSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
-        var centerPoint = {}
         const q = req.query
         //TODO: store location of User
-       
-           const sr = await SalonRedis.get('HomeSalons')
-        //    if (sr !== null) { 
-        //        salons = JSON.parse(sr)
-        //     }
-        //   else {
-        // console.log("not redis")
         salons = await this.service.getHomeServiceSalon(q)
-        SalonRedis.set('HomeSalons', salons)
-     //      }
         res.status(200).send(salons)
 
     })
@@ -443,7 +490,7 @@ export default class SalonController extends BaseController {
         var centerPoint = {}
         //TODO: store location of User
         const q = req.query
-         const   salon = await this.service.getSalonNearby(q)
+        const salon = await this.service.getSalonNearby(q)
         res.status(200).send(salon)
     })
 

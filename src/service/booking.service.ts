@@ -384,7 +384,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({'services.service_time':1}).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({'createdAt':-1}).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 

@@ -74,7 +74,8 @@ export default class LoginController extends BaseController {
           expiresIn: this.jwtValidity,
         })
         return res.status(200).send({
-          token,
+         token:token,
+         gender:user.gender
         })
       }
 
@@ -118,7 +119,7 @@ export default class LoginController extends BaseController {
     const user = req.body
     const { uid, email } = req.body
     
-    const getUser = await this.service.getbyUID(uid, email)
+    const getUser = await this.service.getbyUID(uid, email) as UserSI
     if (getUser === null) {
       user.approved=true
       const createUser = await this.service.create(user)
@@ -135,7 +136,7 @@ export default class LoginController extends BaseController {
         expiresIn: this.jwtValidity,
       })
       return res.status(200).send({
-        token,
+       token:token,gender:getUser.gender
       })
     }
     getUser.password = ''
@@ -185,7 +186,7 @@ export default class LoginController extends BaseController {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
-      token,
+      token:token,gender:user.gender
     })
   })
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import BaseController from './base.controller'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import ZattireService from '../service/zattire-service'
-import { ServicesI } from '../interfaces/zattire-service.interface'
+import { ServicesI, ZattireServiceI } from '../interfaces/zattire-service.interface'
 
 
 export default class ZattireServiceController extends BaseController {
@@ -26,7 +26,7 @@ export default class ZattireServiceController extends BaseController {
     if (!addServices) {
       return res.status(400).send({ success: false, message: "error updating" })
     }
-    res.status(200).send({ success: true, message: "Added" })
+    res.status(200).send(addServices)
   })
 
   deleteServiceFromCategory = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -74,15 +74,27 @@ export default class ZattireServiceController extends BaseController {
 
   getbyServiceID = controllerErrorHandler(async (req: Request, res: Response) => {
     const id = req.params.id
-    const service = await this.service.getByService(id)
-    if (service === null) {
+    const foundService = []
+    const zattireServices = await this.service.getByService(id) as ZattireServiceI
+
+    if (zattireServices === null) {
       const msg = `No data found with this id `
       res.status(400)
       res.send(msg)
       return
     }
-    console.log(service)
-    res.send(service)
+   
+    
+    for(var i in zattireServices.services){
+      let service:ServicesI 
+      service  = zattireServices.services[i]
+     //@ts-ignore
+      if(service._id== id){
+        foundService.push(service)
+        break
+      }
+    }
+    res.send(foundService)
 
 
   })
