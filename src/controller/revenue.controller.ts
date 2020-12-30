@@ -19,7 +19,7 @@ export default class RevenueController extends BaseController {
         const {start_date, end_date} = req.query
         if(!start_date || !end_date) throw new ErrorResponse({message: "start_date and end_date is required"})
         const totalDataReq = this.service.adminTotalRevenue(new Date(start_date as string), new Date(end_date as string))
-        const salonDataReq = this.service.adminTotalRevenue(new Date(start_date as string), new Date(end_date as string))
+        const salonDataReq = this.service.adminRevenueBySalon(new Date(start_date as string), new Date(end_date as string))
         const [totalData, salonData] = await Promise.all([totalDataReq, salonDataReq])
         res.send({totalData, salonData})
     })
