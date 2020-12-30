@@ -14,18 +14,14 @@ export default class RevenueController extends BaseController {
         this.service = service
     }
 
-    adminRevenueBySalon = controllerErrorHandler( async (req: Request, res: Response) => {
-        const {start_date, end_date} = req.query
-        if(!start_date || !end_date) throw new ErrorResponse({message: "start_date and end_date is required"})
-        const data = await this.service.adminRevenueBySalon(new Date(start_date as string), new Date(end_date as string))
-        res.send(data)
-    })
 
     adminTotalRevenue = controllerErrorHandler( async (req: Request, res: Response) => {
         const {start_date, end_date} = req.query
         if(!start_date || !end_date) throw new ErrorResponse({message: "start_date and end_date is required"})
-        const data = await this.service.adminTotalRevenue(new Date(start_date as string), new Date(end_date as string))
-        res.send(data)
+        const totalDataReq = this.service.adminTotalRevenue(new Date(start_date as string), new Date(end_date as string))
+        const salonDataReq = this.service.adminTotalRevenue(new Date(start_date as string), new Date(end_date as string))
+        const [totalData, salonData] = await Promise.all([totalDataReq, salonDataReq])
+        res.send({totalData, salonData})
     })
 
     revenue = controllerErrorHandler( async (req: Request, res: Response) => {
