@@ -14,5 +14,5 @@ var job = new CronJob('* * 1 * * *', function() {
         }
     })
     console.log(carts)
-}, null, true, 'India/Kolkata');
+}, null, true);
 job.start();
