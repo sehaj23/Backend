@@ -9,6 +9,27 @@ const revenueRouter = Router()
 const revenueService = new RevenueService(Booking)
 const revenueController = new RevenueController(revenueService)
 
-revenueRouter.get("/", verifyToken,  revenueController.adminTotalRevenue)
+/**
+ * @swagger
+ * tags:
+ *  name: AdminRevenue
+ *  description: Revenue shown to the admin
+ * /api/revenue:
+ *  get:
+ *      tags: [AdminRevenue]
+ *      parameters:
+ *          - name: start_date
+ *            in: query
+ *            required: true
+ *            type: string
+ *          - name: end_date
+ *            in: query
+ *            required: true
+ *            type: string
+ *      responses:
+ *          default:
+ *              description: Total Revenue and salon wise revenue
+ */
+revenueRouter.get("/", verifyToken, revenueController.adminTotalRevenue)
 
 export default revenueRouter

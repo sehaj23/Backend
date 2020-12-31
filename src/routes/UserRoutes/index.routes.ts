@@ -6,6 +6,7 @@ import loginRouter from "./login.router"
 import otpAppRouter from "./otp.route"
 import promoCodeRouter from "./promo-code.router"
 import reportAppRouter from "./report-app.route"
+import salonSearchRouter from "./salon-search.router"
 import salonInfoRouter from "./salon.router"
 import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
@@ -24,5 +25,6 @@ Userrouter.use("/cart", cartRouter)
 Userrouter.use("/report-app", reportAppRouter)
 Userrouter.use("/otp", otpAppRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
+Userrouter.use("/salon-search", salonSearchRouter)
 
 export default Userrouter

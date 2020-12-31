@@ -21,15 +21,16 @@ import SalonService from "../../service/salon.service";
 const promoCodeRouter = Router()
 const promoCodeService = new PromoCodeService(PromoCode)
 const cartService = new CartService(Cart, Salon)
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
 const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeController = new PromoCodeController(promoCodeService, promoUserService, cartService, salonService)
 
 //TODO: validate the data before sending it the to DB 
 
-promoCodeRouter.post("/discountApplicable",UserverifyToken, promoCodeController.discountApplicable)
-promoCodeRouter.post("/name", UserverifyToken,  promoCodeController.getByName)
-promoCodeRouter.get("/", UserverifyToken,  promoCodeController.promoCodeByUserId)
+
+promoCodeRouter.post("/discountApplicable", UserverifyToken, promoCodeController.discountApplicable)
+promoCodeRouter.post("/name", UserverifyToken, promoCodeController.getByName)
+promoCodeRouter.get("/", UserverifyToken, promoCodeController.promoCodeByUserId)
 
 
 export default promoCodeRouter

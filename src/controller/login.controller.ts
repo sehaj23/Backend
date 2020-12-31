@@ -12,7 +12,6 @@ import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
-import User from '../models/user.model'
 
 export default class LoginController extends BaseController {
   jwtKey: string
@@ -74,8 +73,8 @@ export default class LoginController extends BaseController {
           expiresIn: this.jwtValidity,
         })
         return res.status(200).send({
-         token:token,
-         gender:user.gender
+          token: token,
+          gender: user.gender
         })
       }
 
@@ -92,6 +91,7 @@ export default class LoginController extends BaseController {
 
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
+    console.log(user)
     var password = encryptData(user.password)
 
     user.password = password
@@ -104,9 +104,9 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    const number =  await this.otpService.sendUserOtpEmail(createUser.email)
-    SendEmail.emailConfirm(createUser.email,number.otp,createUser.name)
-   
+    const number = await this.otpService.sendUserOtpEmail(createUser.email)
+    SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
@@ -118,10 +118,10 @@ export default class LoginController extends BaseController {
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid, email } = req.body
-    
+
     const getUser = await this.service.getbyUID(uid, email) as UserSI
     if (getUser === null) {
-      user.approved=true
+      user.approved = true
       const createUser = await this.service.create(user)
       if (createUser == null) {
         const errMsg = `unable to create User`;
@@ -136,7 +136,7 @@ export default class LoginController extends BaseController {
         expiresIn: this.jwtValidity,
       })
       return res.status(200).send({
-       token:token,gender:getUser.gender
+        token: token, gender: getUser.gender
       })
     }
     getUser.password = ''
@@ -165,35 +165,35 @@ export default class LoginController extends BaseController {
     // return res.status(200).send({
     //   token,
     // })
-    return res.status(200).send({message:"otp verfied",success:true})
+    return res.status(200).send({ message: "otp verfied", success: true })
   })
 
   loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {
-    const {phone} = req.body
-    const user = await this.service.getOne({phone}) as UserSI
-    if(user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    const { phone } = req.body
+    const user = await this.service.getOne({ phone }) as UserSI
+    if (user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
     await this.otpService.sendUserOtp(phone)
-    res.send({message: "Otp sent"})
+    res.send({ message: "Otp sent" })
   })
 
   loginWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
-    const {phone, otp} = req.body
-    const user = await this.service.getOne({phone}) as UserSI
-    if(user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    const { phone, otp } = req.body
+    const user = await this.service.getOne({ phone }) as UserSI
+    if (user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
     await this.otpService.verifyUserOtp(phone, otp, user._id.toString())
     user.password = ''
     const token = await jwt.sign(user.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
-      token:token,gender:user.gender
+      token: token, gender: user.gender
     })
   })
 
-  forgotPasswordVerifyEmail =controllerErrorHandler(async (req: Request, res: Response) => {
-    const {email, otp} = req.body
-    const user = await this.service.getOne({email}) as UserSI
-    if(user === null) throw new ErrorResponse(`User not found with phone ${email}`)
+  forgotPasswordVerifyEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    const { email, otp } = req.body
+    const user = await this.service.getOne({ email }) as UserSI
+    if (user === null) throw new ErrorResponse(`User not found with phone ${email}`)
     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
     user.password = ''
     const token = await jwt.sign(user.toJSON(), this.jwtKey, {
@@ -202,17 +202,17 @@ export default class LoginController extends BaseController {
     return res.status(200).send({
       token,
     })
-    
+
 
   })
-  forgotPasswordSendEmail =controllerErrorHandler(async (req: Request, res: Response) => {
-    const {email} = req.body
-    const user = await this.service.getOne({email}) as UserSI
-    if(!user) res.status(400).send({sucess:false,message:"User not found with phone ${email}"})
-   const number =  await this.otpService.sendUserOtpEmail(email)
-   console.log(number)
-    SendEmail.forgotPasswordUser(email,number.otp)
-    res.send({success:true,message:"Email Sent"})
+  forgotPasswordSendEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    const { email } = req.body
+    const user = await this.service.getOne({ email }) as UserSI
+    if (!user) res.status(400).send({ sucess: false, message: "User not found with phone ${email}" })
+    const number = await this.otpService.sendUserOtpEmail(email)
+    console.log(number)
+    SendEmail.forgotPasswordUser(email, number.otp)
+    res.send({ success: true, message: "Email Sent" })
 
   })
 

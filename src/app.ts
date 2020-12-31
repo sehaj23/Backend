@@ -16,18 +16,47 @@ import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
-import PrintRoutes from "./utils/print-routes";
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 dotenv.config();
 
+
 const app = express();
+const options = {
+  swaggerDefinition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Zattire APIs',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    },
+    security: [{
+      bearerAuth: []
+    }],
+  },
+  apis: ['./src/routes/**/*.ts'],
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: true
+}));
 export const httpApp = http.createServer(app);
 http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
 
 app.use(compression())
 app.use(cors({
-  origin: ['https://vendor.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com','https://dev2-vendor.zattire.com'],
+  origin: ['https://vendor.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com'],
   credentials: true
 }));
 
@@ -65,7 +94,7 @@ app.use(
   morgan(
     //@ts-ignore
     ":remote-addr - :method :url :status - :response-time ms",
-    {stream: logger.stream}
+    { stream: logger.stream }
   )
 );
 
@@ -74,7 +103,7 @@ app.use(express.json());
 app.use("/api", router);
 app.use("/api/v", Vendorrouter)
 app.use("/api/u", Userrouter)
-app.use("/api/vendorapp",VendorApprouter)
+app.use("/api/vendorapp", VendorApprouter)
 
 
 // TEMP: to clear redis
@@ -88,7 +117,7 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
 })
 
 app.get("/", (req, res) => {
-  res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} servers.`)  
+  res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} servers.`)
 })
 
 // this is for 404
@@ -102,6 +131,6 @@ app.use(function (req, res, next) {
 
 export default app
 
-if(process.env.NODE_ENV === 'local'){
-  PrintRoutes()
+if (process.env.NODE_ENV === 'local') {
+  //PrintRoutes()
 }
