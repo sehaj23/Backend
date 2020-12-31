@@ -30,6 +30,14 @@ const options = {
       title: 'Zattire APIs',
       version: '1.0.0',
     },
+    servers: [
+      {
+        url: "http://localhost:8082"
+      },
+      {
+        url: "https://devbackend.zattire.com/"
+      }
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
