@@ -33,6 +33,7 @@ const openVerifyToken = async (req: Request, res: Response, next: NextFunction) 
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if(!token){
       next()
+      return
     }
    
     try {

@@ -672,11 +672,11 @@ export default class SalonController extends BaseController {
         const q = req.query
         //@ts-ignore
         const _id = req.userId
-        //const reviewsReq =  this.service.getSalonReviews(id, q)
+        const reviewsReq =  this.service.getSalonReviews(id, q)
         const ratingReq =  this.service.getReviewsRating(id)
-      //  const userReq =  this.userService.getId(_id)
-        const [rating]= await Promise.all([ratingReq])
-        res.send({rating})
+        const userReq =  this.userService.getId(_id)
+        const [rating,reviews,user]= await Promise.all([ratingReq,reviewsReq,userReq])
+        res.send({rating,user,reviews,})
 
     })
     salonSlots = controllerErrorHandler(async (req: Request, res: Response) => {
