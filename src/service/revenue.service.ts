@@ -109,7 +109,8 @@ export default class RevenueService extends BaseService {
                     "vendor_commission": 1,
                     "zattire_commission": 1,
                     "service_discount": 1,
-                    'salon.name': 1
+                    'salon.name': 1,
+                    'salon._id': 1
                 }
             }
         ])
