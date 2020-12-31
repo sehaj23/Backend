@@ -359,7 +359,7 @@ export default class SalonController extends BaseController {
         const q = req.query
          //@ts-ignore
          const id = req.userId
-         let userReq
+         
 
                //TODO: validator
         if (!salonId) {
@@ -396,9 +396,9 @@ export default class SalonController extends BaseController {
         const salonReq =  this.service.getSalonInfo(salonId, centerPoint)
         const reviewsReq =  this.service.getSalonReviews(salonId, q)
        
-        if(id){
-         userReq = this.userService.getFavourites(id)
-        }
+        
+       const  userReq = this.userService.getFavourites(id)
+        
         const [salon,reviews,user] = await Promise.all([salonReq,reviewsReq,userReq])
         const services = salon.services
         const filterService = services.filter((service: ServiceI) => {
@@ -669,8 +669,14 @@ export default class SalonController extends BaseController {
 
     getRatings = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
-        const rating = await this.service.getReviewsRating(id)
-        res.send(rating)
+        const q = req.query
+        //@ts-ignore
+        const _id = req.userId
+        const reviewsReq =  this.service.getSalonReviews(id, q)
+        const ratingReq =  this.service.getReviewsRating(id)
+        const userReq =  this.userService.getId(_id)
+        const [rating,reviews,user]= await Promise.all([ratingReq,reviewsReq,userReq])
+        res.send({rating,user,reviews,})
 
     })
     salonSlots = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -704,6 +710,11 @@ export default class SalonController extends BaseController {
         }
         res.send(slots)
 
+    })
+
+    getNameandId = controllerErrorHandler(async (req: Request, res: Response) => {
+        const salon = await this.service.getNameandId()
+        res.status(200).send(salon)
     })
 
 

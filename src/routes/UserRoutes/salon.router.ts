@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import SalonController from "../../controller/salon.controller";
 import mySchemaValidator from '../../middleware/my-schema-validator';
+import openVerifyToken from '../../middleware/openJWT';
 import UserverifyToken from '../../middleware/User.jwt';
 import Booking from '../../models/booking.model';
 import Brand from '../../models/brands.model';
@@ -31,7 +32,7 @@ salonInfoRouter.get(
   salonController.getSalonInfo
 )
 // get names of recommended all salons
-salonInfoRouter.get('/names', salonController.getRecomendSalon)
+salonInfoRouter.get('/names',salonController.getRecomendSalon)
 //get nearby salon range 30km
 salonInfoRouter.get('/location', salonController.getSalonNearby)
 //sort by distance
@@ -45,7 +46,7 @@ salonInfoRouter.get('/category/:id',salonController.getSalonCategories)
 //get services use query
 salonInfoRouter.get('/services/:id',salonController.getService)
 //post Reviews
-salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
+salonInfoRouter.post('/reviews/:id',salonController.postSalonReviews)
 // get Reviews
 salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
 // check if user can Post Reviews
