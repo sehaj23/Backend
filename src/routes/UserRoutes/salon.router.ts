@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import SalonController from "../../controller/salon.controller";
 import mySchemaValidator from '../../middleware/my-schema-validator';
+import openVerifyToken from '../../middleware/openJWT';
 import UserverifyToken from '../../middleware/User.jwt';
 import Booking from '../../models/booking.model';
 import Brand from '../../models/brands.model';
@@ -27,27 +28,27 @@ const salonInfoRouter = Router()
 //@ts-ignore
 salonInfoRouter.get(
   '/info/:id',
-  [salonInfoChecks, mySchemaValidator],
+  [salonInfoChecks, mySchemaValidator],openVerifyToken,
   salonController.getSalonInfo
 )
 // get names of recommended all salons
-salonInfoRouter.get('/names', salonController.getRecomendSalon)
+salonInfoRouter.get('/names', openVerifyToken,salonController.getRecomendSalon)
 //get nearby salon range 30km
-salonInfoRouter.get('/location', salonController.getSalonNearby)
+salonInfoRouter.get('/location',openVerifyToken, salonController.getSalonNearby)
 //sort by distance
-salonInfoRouter.get('/distance', salonController.getSalonDistance)
+salonInfoRouter.get('/distance',openVerifyToken, salonController.getSalonDistance)
 //sort rating-wise
 //salonInfoRouter.get('/sort', salonController.getSalonsRw)
 //get home service salons
-salonInfoRouter.get('/homesalons',salonController.getHomeServiceSalon)
+salonInfoRouter.get('/homesalons',openVerifyToken,salonController.getHomeServiceSalon)
 //get categories
-salonInfoRouter.get('/category/:id',salonController.getSalonCategories)
+salonInfoRouter.get('/category/:id',openVerifyToken,salonController.getSalonCategories)
 //get services use query
-salonInfoRouter.get('/services/:id',salonController.getService)
+salonInfoRouter.get('/services/:id',openVerifyToken,salonController.getService)
 //post Reviews
 salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
 // get Reviews
-salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
+salonInfoRouter.get('/reviews/:id',openVerifyToken,salonController.getSalonReviews)
 // check if user can Post Reviews
 salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPostReviews)
 // get brands
@@ -57,7 +58,7 @@ salonInfoRouter.get('/brand/:id',salonController.getBrandbyId)
 
 salonInfoRouter.post("/report/",UserverifyToken, salonController.reportSalon)
 
-salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
+salonInfoRouter.get("/reviews/ratings/:id",openVerifyToken,salonController.getRatings)
 
 salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 

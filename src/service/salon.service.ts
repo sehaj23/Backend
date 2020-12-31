@@ -858,6 +858,11 @@ export default class SalonService extends BaseService {
                 return m.minutes() + m.hours() * 60;
         }
 
+        getNameandId = async()=>{
+         const salon = await this.model.find({}).select("_id").select("name")
+         return salon
+        }
+
        
 
 
