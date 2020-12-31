@@ -28,27 +28,27 @@ const salonInfoRouter = Router()
 //@ts-ignore
 salonInfoRouter.get(
   '/info/:id',
-  [salonInfoChecks, mySchemaValidator],openVerifyToken,
+  [salonInfoChecks, mySchemaValidator],
   salonController.getSalonInfo
 )
 // get names of recommended all salons
-salonInfoRouter.get('/names', openVerifyToken,salonController.getRecomendSalon)
+salonInfoRouter.get('/names',salonController.getRecomendSalon)
 //get nearby salon range 30km
-salonInfoRouter.get('/location',openVerifyToken, salonController.getSalonNearby)
+salonInfoRouter.get('/location', salonController.getSalonNearby)
 //sort by distance
-salonInfoRouter.get('/distance',openVerifyToken, salonController.getSalonDistance)
+salonInfoRouter.get('/distance', salonController.getSalonDistance)
 //sort rating-wise
 //salonInfoRouter.get('/sort', salonController.getSalonsRw)
 //get home service salons
-salonInfoRouter.get('/homesalons',openVerifyToken,salonController.getHomeServiceSalon)
+salonInfoRouter.get('/homesalons',salonController.getHomeServiceSalon)
 //get categories
-salonInfoRouter.get('/category/:id',openVerifyToken,salonController.getSalonCategories)
+salonInfoRouter.get('/category/:id',salonController.getSalonCategories)
 //get services use query
-salonInfoRouter.get('/services/:id',openVerifyToken,salonController.getService)
+salonInfoRouter.get('/services/:id',salonController.getService)
 //post Reviews
-salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
+salonInfoRouter.post('/reviews/:id',salonController.postSalonReviews)
 // get Reviews
-salonInfoRouter.get('/reviews/:id',openVerifyToken,salonController.getSalonReviews)
+salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
 // check if user can Post Reviews
 salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPostReviews)
 // get brands

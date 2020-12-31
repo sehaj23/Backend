@@ -8,6 +8,7 @@ import * as https from 'https';
 import * as morgan from "morgan";
 import * as multer from "multer";
 import * as multerS3 from "multer-s3";
+import './cron-jobs/index.cron-job';
 import redisClient from './redis/redis';
 import router from "./routes/AdminRoutes/index.routes";
 import Userrouter from "./routes/UserRoutes/index.routes";

@@ -13,6 +13,193 @@ export default class RevenueService extends BaseService {
 
     }
 
+    adminRevenueBySalon = async (startDate: Date, endDate: Date) => {
+        return this.model.aggregate([
+            {
+                '$match': {
+                    'services.service_time': {
+                        '$lt': endDate
+                    },
+                    //@ts-ignore
+                    'services.service_time': {
+                        '$gte': startDate
+                    }
+                }
+            }, {
+                '$group': {
+                    '_id': '$salon_id',
+                    'service_real_price': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_real_price',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'service_total_price': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_total_price',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'vendor_commission': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.vendor_commission',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'zattire_commission': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.zattire_commission',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'service_discount': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_discount',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }, {
+                '$lookup': {
+                    'from': 'salons',
+                    'localField': '_id',
+                    'foreignField': '_id',
+                    'as': 'salon'
+                }
+            },
+            {
+                '$project': {
+                    "service_real_price": 1,
+                    "service_total_price": 1,
+                    "vendor_commission": 1,
+                    "zattire_commission": 1,
+                    "service_discount": 1,
+                    'salon.name': 1
+                }
+            }
+        ])
+    }
+
+    adminTotalRevenue = async (startDate: Date, endDate: Date) => {
+        return await this.model.aggregate([
+            {
+                '$match': {
+                    'services.service_time': {
+                        '$lt': endDate
+                    },
+                    //@ts-ignore
+                    'services.service_time': {
+                        '$gte': startDate
+                    }
+                }
+            }, {
+                '$group': {
+                    '_id': null,
+                    'service_real_price': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_real_price',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'service_total_price': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_total_price',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'vendor_commission': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.vendor_commission',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'zattire_commission': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.zattire_commission',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    'service_discount': {
+                        '$sum': {
+                            '$reduce': {
+                                'input': '$services.service_discount',
+                                'initialValue': 0,
+                                'in': {
+                                    '$sum': [
+                                        '$$value', '$$this'
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ])
+    }
+
     revenue = async (q: any) => {
 
 
