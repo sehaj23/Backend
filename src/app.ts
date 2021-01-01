@@ -23,6 +23,7 @@ dotenv.config();
 
 
 const app = express();
+const apiPath = (process.env.NODE_ENV === 'development') ? './dist/routes/**/*.js' : './src/routes/**/*.ts'
 const options = {
   swaggerDefinition: {
     openapi: '3.0.1',
@@ -51,7 +52,7 @@ const options = {
       bearerAuth: []
     }],
   },
-  apis: [`./src/routes/**/*.${(process.env.NODE_ENV === 'development') ? 'js' : 'ts'}`],
+  apis:[apiPath],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
