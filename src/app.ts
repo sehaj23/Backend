@@ -17,7 +17,7 @@ import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
 const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+import swaggerJsdoc = require('swagger-jsdoc');
 const basicAuth = require('express-basic-auth')
 
 dotenv.config();
@@ -25,7 +25,7 @@ dotenv.config();
 
 const app = express();
 if (process.env.NODE_ENV !== 'production') {
-
+  const apiPath = (process.env.NODE_ENV === 'development') ? './dist/routes/**/*.js' : './src/routes/**/*.ts'
   const options = {
     swaggerDefinition: {
       openapi: '3.0.1',
@@ -48,13 +48,16 @@ if (process.env.NODE_ENV !== 'production') {
             scheme: 'bearer',
             bearerFormat: 'JWT',
           }
-        }
+        },
       },
       security: [{
         bearerAuth: []
       }],
     },
-    apis: [`./src/routes/**/*.${(process.env.NODE_ENV === 'development') ? 'js' : 'ts'}`],
+    swaggerOptions: {
+      displayRequestDuration: true,
+    },
+    apis: [apiPath],
   };
 
   const swaggerSpec = swaggerJsdoc(options);
@@ -62,7 +65,10 @@ if (process.env.NODE_ENV !== 'production') {
     users: { 'coder': 'HumbelCoders_@!' },
     challenge: true,
   }), swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true
+    explorer: true,
+    swaggerOptions: {
+      displayRequestDuration: true,
+    },
   }));
 }
 
