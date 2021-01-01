@@ -18,46 +18,54 @@ import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const basicAuth = require('express-basic-auth')
 
 dotenv.config();
 
 
 const app = express();
-const options = {
-  swaggerDefinition: {
-    openapi: '3.0.1',
-    info: {
-      title: 'Zattire APIs',
-      version: '1.0.0',
-    },
-    servers: [
-      {
-        url: "http://localhost:8082"
-      },
-      {
-        url: "https://devbackend.zattire.com/"
-      }
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        }
-      }
-    },
-    security: [{
-      bearerAuth: []
-    }],
-  },
-  apis: [`./src/routes/**/*.${(process.env.NODE_ENV === 'development') ? 'js' : 'ts'}`],
-};
+if (process.env.NODE_ENV !== 'production') {
 
-const swaggerSpec = swaggerJsdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  explorer: true
-}));
+  const options = {
+    swaggerDefinition: {
+      openapi: '3.0.1',
+      info: {
+        title: 'Zattire APIs',
+        version: '1.0.0',
+      },
+      servers: [
+        {
+          url: "http://localhost:8082"
+        },
+        {
+          url: "https://devbackend.zattire.com/"
+        }
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          }
+        }
+      },
+      security: [{
+        bearerAuth: []
+      }],
+    },
+    apis: [`./src/routes/**/*.${(process.env.NODE_ENV === 'development') ? 'js' : 'ts'}`],
+  };
+
+  const swaggerSpec = swaggerJsdoc(options);
+  app.use('/api-docs', basicAuth({
+    users: { 'coder': 'HumbelCoders_@!' },
+    challenge: true,
+  }), swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    explorer: true
+  }));
+}
+
 export const httpApp = http.createServer(app);
 http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
