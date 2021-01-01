@@ -1,6 +1,7 @@
 
 import * as moment from "moment";
 import mongoose from "../database";
+import { BookinStatus } from "../interfaces/booking.interface";
 import BaseService from "./base.service";
 
 
@@ -13,17 +14,19 @@ export default class RevenueService extends BaseService {
 
     }
 
-    adminRevenueBySalon = async (startDate: Date, endDate: Date) => {
+    adminRevenueBySalon = async (startDate: Date, endDate: Date, salonIdCondition: object, status: BookinStatus = 'Completed') => {
         return this.model.aggregate([
             {
                 '$match': {
+                    'status': status,
                     'services.service_time': {
                         '$lt': endDate
                     },
                     //@ts-ignore
                     'services.service_time': {
                         '$gte': startDate
-                    }
+                    },
+                    ...salonIdCondition
                 }
             }, {
                 '$group': {
@@ -116,21 +119,100 @@ export default class RevenueService extends BaseService {
         ])
     }
 
-    adminTotalRevenue = async (startDate: Date, endDate: Date) => {
+    adminTotalRevenue = async (startDate: Date, endDate: Date, salonIdCondition: object, status: BookinStatus = 'Completed') => {
         return await this.model.aggregate([
             {
                 '$match': {
+                    'status': status,
                     'services.service_time': {
                         '$lt': endDate
                     },
                     //@ts-ignore
                     'services.service_time': {
                         '$gte': startDate
+                    },
+                    ...salonIdCondition
+                }
+            },
+            {
+                '$project': {
+                    'services': 1,
+                    'bills_receivable': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$payment_type', 'COD'
+                                ]
+                            }, {
+                                '$sum': {
+                                    '$reduce': {
+                                        'input': '$services.zattire_commission',
+                                        'initialValue': 0,
+                                        'in': {
+                                            '$sum': [
+                                                '$$value', '$$this'
+                                            ]
+                                        }
+                                    }
+                                }
+                            }, 0
+                        ]
+                    },
+                    'bills_payable': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$payment_type', 'Online'
+                                ]
+                            }, {
+                                '$sum': {
+                                    '$reduce': {
+                                        'input': '$services.vendor_commission',
+                                        'initialValue': 0,
+                                        'in': {
+                                            '$sum': [
+                                                '$$value', '$$this'
+                                            ]
+                                        }
+                                    }
+                                }
+                            }, 0
+                        ]
+                    },
+                    'cod': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$payment_type', 'COD'
+                                ]
+                            }, 1, 0
+                        ]
+                    },
+                    'online': {
+                        '$cond': [
+                            {
+                                '$eq': [
+                                    '$payment_type', 'Online'
+                                ]
+                            }, 1, 0
+                        ]
                     }
                 }
             }, {
                 '$group': {
                     '_id': null,
+                    'cod_count': {
+                        '$sum': '$cod'
+                    },
+                    'online_count': {
+                        '$sum': '$online'
+                    },
+                    'bills_receivable': {
+                        '$sum': '$bills_receivable'
+                    },
+                    'bills_payable': {
+                        '$sum': '$bills_payable'
+                    },
                     'service_real_price': {
                         '$sum': {
                             '$reduce': {

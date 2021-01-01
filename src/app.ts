@@ -51,7 +51,7 @@ const options = {
       bearerAuth: []
     }],
   },
-  apis: ['./src/routes/**/*.ts', './dist/routes/**/*.js'],
+  apis: [`./src/routes/**/*.${(process.env.NODE_ENV === 'development') ? 'js' : 'ts'}`],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

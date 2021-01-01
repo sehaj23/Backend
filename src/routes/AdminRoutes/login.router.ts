@@ -44,9 +44,11 @@ loginRouter.post("/create", loginController.create)
  *                      properties:
  *                          username:
  *                              type: string
+ *                              default: preet
  *                              required: true
  *                          password:
  *                              type: string
+ *                              default: preet123
  *                              required: true
  *      responses:
  *          default:
