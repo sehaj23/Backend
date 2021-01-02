@@ -16,6 +16,9 @@ const EmployeeSchema = new mongoose.Schema({
     fcm_token: {
         type: [String]
     },
+    gender: {
+        type: String,
+    },
     location: {
         type: String,
         enum: ['Customer Place' , 'Vendor Place', 'Both'],
