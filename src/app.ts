@@ -17,48 +17,61 @@ import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
 const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+import swaggerJsdoc = require('swagger-jsdoc');
+const basicAuth = require('express-basic-auth')
 
 dotenv.config();
 
 
 const app = express();
-const apiPath = (process.env.NODE_ENV === 'development') ? './dist/routes/**/*.js' : './src/routes/**/*.ts'
-const options = {
-  swaggerDefinition: {
-    openapi: '3.0.1',
-    info: {
-      title: 'Zattire APIs',
-      version: '1.0.0',
-    },
-    servers: [
-      {
-        url: "http://localhost:8082"
+if (process.env.NODE_ENV !== 'production') {
+  const apiPath = (process.env.NODE_ENV === 'development') ? './dist/routes/**/*.js' : './src/routes/**/*.ts'
+  const options = {
+    swaggerDefinition: {
+      openapi: '3.0.1',
+      info: {
+        title: 'Zattire APIs',
+        version: '1.0.0',
       },
-      {
-        url: "https://devbackend.zattire.com/"
-      }
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
+      servers: [
+        {
+          url: "http://localhost:8082"
+        },
+        {
+          url: "https://devbackend.zattire.com/"
         }
-      }
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          }
+        },
+      },
+      security: [{
+        bearerAuth: []
+      }],
     },
-    security: [{
-      bearerAuth: []
-    }],
-  },
-  apis:[apiPath],
-};
+    swaggerOptions: {
+      displayRequestDuration: true,
+    },
+    apis: [apiPath],
+  };
 
-const swaggerSpec = swaggerJsdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  explorer: true
-}));
+  const swaggerSpec = swaggerJsdoc(options);
+  app.use('/api-docs', basicAuth({
+    users: { 'coder': 'HumbelCoders_@!' },
+    challenge: true,
+  }), swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    swaggerOptions: {
+      displayRequestDuration: true,
+    },
+  }));
+}
+
 export const httpApp = http.createServer(app);
 http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
