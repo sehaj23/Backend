@@ -3,6 +3,7 @@ import moment = require("moment");
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import { UserRedis } from "../redis/index.redis";
 import FeedbackService from "../service/feedback.service";
 import OtpService from "../service/otp.service";
 import UserService from "../service/user.service";
@@ -27,6 +28,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         console.log(id)
+        const redisUser = await UserRedis.remove(id, {type: "info"})
         const user = await this.service.getId(id)
         if (user === null) {
             logger.error(`Unable to fetch user details`)
@@ -40,18 +42,7 @@ export default class UserController extends BaseController {
     update = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore   
         const id = req.userId
-
-        const updates = Object.keys(req.body)
         const d = req.body
-        const allowedupates = ["email", "name", "age", "gender", "color_complextion", "address", "phone", "profile_pic","notification"]
-        const isvalid = updates.every((update) => allowedupates.includes(update))
-        console.log(isvalid)
-        if (!isvalid) {
-            const errMsg = `Sorry ${updates} cannot be updated!`
-            logger.error(errMsg)
-            res.send({ message: errMsg })
-            return
-        }
         const user = await this.service.update(id, d)
         if (user === null) {
             logger.error(`Unable to update details`)

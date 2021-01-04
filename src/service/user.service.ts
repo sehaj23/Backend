@@ -13,7 +13,7 @@ export default class UserService extends BaseService {
     }
 
     getId = async (id: string) => {
-        const redisUser = await UserRedis.get(id, {type: "info"})
+       const redisUser = await UserRedis.get(id, {type: "info"})
         if(redisUser === null){
             const user = await this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").lean()
             UserRedis.set(id, JSON.stringify(user), {type: "info"})
@@ -31,7 +31,7 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
-        const user = await this.model.findByIdAndUpdate(_id, d, { new: true })
+        const user = await this.model.findOneAndUpdate({_id:_id}, d, { new: true })
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {

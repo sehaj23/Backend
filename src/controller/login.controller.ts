@@ -144,7 +144,7 @@ export default class LoginController extends BaseController {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
-      token,
+      token:token,gender: getUser.gender
     })
 
 
