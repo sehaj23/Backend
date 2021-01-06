@@ -135,8 +135,8 @@ export default class LoginController extends BaseController {
       const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
         expiresIn: this.jwtValidity,
       })
-      return res.status(200).send({
-        token: token, gender: getUser.gender
+      return res.status(201).send({
+        token: token
       })
     }
     getUser.password = ''

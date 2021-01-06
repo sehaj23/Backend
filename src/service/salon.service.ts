@@ -350,22 +350,22 @@ export default class SalonService extends BaseService {
 
 
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
-                if(salon.coordinates != null){
-                if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
+                if (salon.coordinates != null) {
+                        if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
 
-                        //@ts-ignore
-                        checkPoint.lng = salon.coordinates["coordinates"][1]
-                        //@ts-ignore
-                        checkPoint.lat = salon.coordinates["coordinates"][0]
-                        var n = await arePointsNear(checkPoint, centerPoint, 1000)
-                        console.log(n)
-                        if (n.bool) {
-                                console.log(n.difference)
-                                // @ts-ignore
-                                salon.distance = n.difference.toFixed()
+                                //@ts-ignore
+                                checkPoint.lng = salon.coordinates["coordinates"][1]
+                                //@ts-ignore
+                                checkPoint.lat = salon.coordinates["coordinates"][0]
+                                var n = await arePointsNear(checkPoint, centerPoint, 1000)
+                                console.log(n)
+                                if (n.bool) {
+                                        console.log(n.difference)
+                                        // @ts-ignore
+                                        salon.distance = n.difference.toFixed()
+                                }
                         }
                 }
-        }
                 return salon
 
         }
@@ -470,8 +470,8 @@ export default class SalonService extends BaseService {
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
-                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
-                 if (cahceGetSalon === null) {
+                const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+                if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 coordinates: {
                                         $near:
@@ -484,8 +484,8 @@ export default class SalonService extends BaseService {
                         }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
 
                         return salons
-                 }
-                 return cahceGetSalon
+                }
+                return cahceGetSalon
 
         }
         //get salon distancewise
@@ -559,7 +559,7 @@ export default class SalonService extends BaseService {
                 return reviews
         }
         checkpostReview = async (userId: string, salon_id: string) => {
-                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id,status:"Completed" })
+                const check = await this.bookingModel.findOne({ user_id: userId, salon_id: salon_id, status: "Completed" })
                 return check
         }
 
@@ -628,19 +628,19 @@ export default class SalonService extends BaseService {
                                 }
 
                         },
-                         {
-                                 $group:{
+                        {
+                                $group: {
                                         "_id": "$_id",
-                                        name:{$first:"$name"},
-                                        profile_pic:{$first:"$profile_pic"},
-                                        rating:{$first:"$rating"},
+                                        name: { $first: "$name" },
+                                        profile_pic: { $first: "$profile_pic" },
+                                        rating: { $first: "$rating" },
                                         service: { $addToSet: "$services" },
-                                       
-                                      
-                                      
-                                       
-                                 }
-                         },
+
+
+
+
+                                }
+                        },
                         // {
                         //         $project: {
                         //                 _id: 1,
@@ -826,6 +826,13 @@ export default class SalonService extends BaseService {
                 return rating
         }
         salonSlots = async (id: any, slotsDate: Date) => {
+                //  const redisKey = "slots"
+                // const cahceGetSalon = await SalonRedis.get(redisKey, {id,slotsDate})
+                // console.log("****")
+                // console.log(cahceGetSalon)
+                // if(cahceGetSalon!=null){
+                //       return cahceGetSalon  
+                // }
                 const salon = await this.model.findById(id)
                 const starting_hours = salon.start_working_hours
                 // getting the day from the date
@@ -835,22 +842,20 @@ export default class SalonService extends BaseService {
                 const selectedStartingHour = moment(starting_hours[day])
                 if (salon.end_working_hours.length < day) throw Error(`ending hours not found for day number ${day} `)
                 const selectedEndHour = moment(salon.end_working_hours[day])
-
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
-                       console.log(moment().format("DD/MM/YYYY"))
-                        if(moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")){
-                        if(i.hours() > moment().hours()){
-                        const slot = moment(i.add(1,'hour')).utcOffset("+05:30").format('hh:mm a')
-                        
-                        slots.push(slot)
-                        }}else{
+                        if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
+                                if (i.hours() > moment().hours()) {
+                                        const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
+                                        slots.push(slot)
+                                }
+                        } else {
                                 const slot = moment(i).utcOffset("+05:30").format('hh:mm a')
-                        
-                                slots.push(slot)   
-                        
+                                slots.push(slot)
+                                //            SalonRedis.set(redisKey, slots,{id,slotsDate}) 
+                        }
                 }
-                }
+
                 return slots
 
         }
@@ -858,12 +863,12 @@ export default class SalonService extends BaseService {
                 return m.minutes() + m.hours() * 60;
         }
 
-        getNameandId = async()=>{
-         const salon = await this.model.find({}).select("_id").select("name")
-         return salon
+        getNameandId = async () => {
+                const salon = await this.model.find({}).select("_id").select("name")
+                return salon
         }
 
-       
+
 
 
 
