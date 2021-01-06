@@ -854,29 +854,18 @@ export default class SalonService extends BaseService {
                 const selectedEndHour = moment(salon.end_working_hours[day])
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
-<<<<<<< HEAD
-                        if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
-                                if (i.hours() > moment().hours()) {
-                                        const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
-=======
                         console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (i.hours() > moment().hours()) {
                                         const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
 
->>>>>>> 32739f703c4ae9763f1e07f79d00bc42819e4c20
                                         slots.push(slot)
                                 }
                         } else {
                                 const slot = moment(i).utcOffset("+05:30").format('hh:mm a')
-<<<<<<< HEAD
-                                slots.push(slot)
-                                //            SalonRedis.set(redisKey, slots,{id,slotsDate}) 
-=======
 
                                 slots.push(slot)
 
->>>>>>> 32739f703c4ae9763f1e07f79d00bc42819e4c20
                         }
                 }
 
