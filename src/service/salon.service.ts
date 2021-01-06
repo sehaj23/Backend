@@ -78,9 +78,11 @@ export default class SalonService extends BaseService {
                                         if (gotService.service_name === service.name) {
                                                 serviceFound = i
                                                 if (gotService.service_checked === false) {
+                                                        console.log('*****************');
                                                         console.log(`Deleting the service at ${i} ${service.name}`)
+                                                        console.log('*****************');
                                                         console.log(salon.services[i])
-                                                        salon.services = salon.services.splice(i, 0)
+                                                        salon.services.splice(i, 1)
                                                         break
                                                 }
                                                 // if service is checked
@@ -138,7 +140,15 @@ export default class SalonService extends BaseService {
 
                                                         // filtering the options
                                                         service.options = service.options.filter((v: OptionI, i: number) => {
-                                                                if (removeOptsIndexes.includes(i)) return false
+                                                                if (removeOptsIndexes.includes(i)) {
+                                                                        console.log(`****************`)
+                                                                        console.log(`Removing option at index ${i} ${v.option_name} ${v.gender}`)
+                                                                        console.log(`****************`)
+                                                                        return false
+                                                                }
+                                                                console.log(`****************`)
+                                                                console.log(`Adding option at index ${i} ${v.option_name} ${v.gender}`)
+                                                                console.log(`****************`)
                                                                 return true
                                                         })
 
@@ -844,15 +854,29 @@ export default class SalonService extends BaseService {
                 const selectedEndHour = moment(salon.end_working_hours[day])
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
+<<<<<<< HEAD
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (i.hours() > moment().hours()) {
                                         const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
+=======
+                        console.log(moment().format("DD/MM/YYYY"))
+                        if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
+                                if (i.hours() > moment().hours()) {
+                                        const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
+
+>>>>>>> 32739f703c4ae9763f1e07f79d00bc42819e4c20
                                         slots.push(slot)
                                 }
                         } else {
                                 const slot = moment(i).utcOffset("+05:30").format('hh:mm a')
+<<<<<<< HEAD
                                 slots.push(slot)
                                 //            SalonRedis.set(redisKey, slots,{id,slotsDate}) 
+=======
+
+                                slots.push(slot)
+
+>>>>>>> 32739f703c4ae9763f1e07f79d00bc42819e4c20
                         }
                 }
 
