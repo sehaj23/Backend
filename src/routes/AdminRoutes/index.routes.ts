@@ -1,17 +1,24 @@
 import { Router } from "express";
+import bookingRouter from "../UserRoutes/booking.router";
+import loginRouter from "../UserRoutes/login.router";
+import promoCodeRouter from "../UserRoutes/promo-code.router";
+import salonRouter from "../UserRoutes/salon.router";
+import userRouter from "../UserRoutes/user.router";
+import revenueRouter from "../VendorAppRoutes/revenue.routes";
+import vendorRouter from "../VendorAppRoutes/vendor.routes";
+import designerRouter from "../VendorRoutes/designer.router";
+import makeupArtistRouter from "../VendorRoutes/makeupartist.router";
+import offerRouter from "../VendorRoutes/offer.router";
 import adminRouter from "./admin.router";
-import bookingRouter from "./booking.router";
-import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
-import loginRouter from "./login.router";
-import makeupArtistRouter from "./makeupArtist.route";
-import offerRouter from "./offer.router";
-import promoCodeRouter from "./promo-code.router";
-import revenueRouter from "./revenue.router";
-import salonRouter from "./salon.router";
-import userRouter from "./user.router";
-import vendorRouter from "./vendor.router";
 import zattireServiceRouter from "./zattire-services.router";
+
+/**
+ * @swagger
+ * tags:
+ *  name: Admin
+ *  description: This is to login as Admin and get the token
+ */
 
 const router = Router();
 
@@ -27,6 +34,6 @@ router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
 router.use("/revenue", revenueRouter)
 router.use("/promo-code", promoCodeRouter)
-router.use("/zattire-services",zattireServiceRouter)
+router.use("/zattire-services", zattireServiceRouter)
 
 export default router
