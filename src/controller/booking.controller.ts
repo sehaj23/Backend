@@ -24,6 +24,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import { UserSI } from "../interfaces/user.interface";
 
 
 export default class BookingController extends BaseController {
@@ -465,7 +466,7 @@ export default class BookingController extends BaseController {
 
         }
         const booking = await this.service.updateStatusBookings(bookingid, status)
-        const userData = this.userService.getId(booking.user_id.toString())
+        const userData = await this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -486,6 +487,7 @@ export default class BookingController extends BaseController {
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         if (status === "Confirmed") {
             console.log("booking confirmed sending notification to user")
+            console.log("user fcm",user.fcm_token)
             const notify = Notify.bookingConfirm(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
             console.log(notify)
         }

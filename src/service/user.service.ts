@@ -16,7 +16,7 @@ export default class UserService extends BaseService {
        const redisUser = await UserRedis.get(id, {type: "info"})
         if(redisUser === null){
             const user = await this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").lean()
-            UserRedis.set(id, JSON.stringify(user), {type: "info"})
+            UserRedis.set(id, user, {type: "info"})
             return user
         }
         return JSON.parse(redisUser)
