@@ -51,6 +51,6 @@ loginRouter.post("/create", loginController.create)
  *          default:
  *              description: Admin Login Response
  */
-loginRouter.post("/", loginController.login)
+loginRouter.post("/", loginController.loginAdmin)
 
 export default loginRouter
