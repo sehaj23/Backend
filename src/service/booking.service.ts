@@ -736,4 +736,15 @@ export default class BookingService extends BaseService {
             throw error
         }
     }
+
+    getDetailsOfSalon=async () => {
+
+        const query = {
+            "match":{
+                status:"Completed"
+            }
+        }
+        const info = await this.model.aggregate([query])
+     
+    }
 }

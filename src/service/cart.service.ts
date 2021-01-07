@@ -236,6 +236,7 @@ export default class CartService extends BaseService {
 
     deleteCartByUserId = async (userId: string) => {
         try{
+            const redisCart = await CartRedis.remove(userId)
             const cart: CartSI = await this.getCartByUserId(userId)
             await cart.remove()
             return null

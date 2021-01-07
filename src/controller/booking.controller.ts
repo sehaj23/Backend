@@ -760,4 +760,5 @@ export default class BookingController extends BaseController {
         const cart = await this.service.bookAgain(booking_id)
         res.send(cart)
     })
+
 }
