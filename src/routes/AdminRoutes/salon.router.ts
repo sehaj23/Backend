@@ -17,11 +17,22 @@ import UserSearchService from "../../service/user-search.service";
 import UserService from "../../service/user.service";
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
-const userService = new UserService(User,Booking)
-const salonController = new SalonController(salonService, userSearchService,userService)
+const userService = new UserService(User, Booking)
+const salonController = new SalonController(salonService, userSearchService, userService)
 salonRouter.get("/", verifyToken, salonController.get)
+/**
+ * @swagger
+ * /api/salon/names:
+ *  get:
+ *      summary: Get the list of names and _ids of salon
+ *      tags: [Admin]
+ *      description: To get the names and _id of all the salons
+ *      responses:
+ *          default:
+ *              description: Salon names and _ids
+ */
 salonRouter.get("/names", verifyToken, salonController.getNameandId)
 salonRouter.get("/:id", verifyToken, salonController.getId)
 salonRouter.post("/", verifyToken, salonController.postSalon)
@@ -36,8 +47,8 @@ salonRouter.put("/:id/photo", verifyToken, salonController.putPhoto)
 salonRouter.get("/:id/photo", verifyToken, salonController.getPhoto)
 salonRouter.get("/:id/offer", verifyToken, salonController.getOffer)
 salonRouter.get("/:id/service", verifyToken, salonController.getService)
-salonRouter.post("/:id/offer/:sid",verifyToken,salonController.createOffer)
-salonRouter.post("/brand",verifyToken,salonController.addBrand)
+salonRouter.post("/:id/offer/:sid", verifyToken, salonController.createOffer)
+salonRouter.post("/brand", verifyToken, salonController.addBrand)
 
 // designerRouter.get("/event/get", verifyToken, DesignerService.getDesignerEvent)
 

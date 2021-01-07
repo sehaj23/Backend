@@ -26,12 +26,9 @@ const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, 
 loginRouter.post("/create", loginController.create)
 /**
  * @swagger
- * tags:
- *  name: AdminLogin
- *  description: This is to login as Admin and get the token
  * /api/login:
  *  post:
- *      tags: [AdminLogin]
+ *      tags: [Admin]
  *      consumes:
  *          - application/json
  *      requestBody:
@@ -54,6 +51,6 @@ loginRouter.post("/create", loginController.create)
  *          default:
  *              description: Admin Login Response
  */
-loginRouter.post("/", loginController.login)
+loginRouter.post("/", loginController.loginAdmin)
 
 export default loginRouter

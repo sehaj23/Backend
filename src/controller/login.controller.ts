@@ -41,6 +41,17 @@ export default class LoginController extends BaseController {
     res.send({ token })
   })
 
+  loginAdmin = controllerErrorHandler(async (req: Request, res: Response) => {
+    let { username, password } = req.body
+    password = encryptData(password)
+    const admin = await this.service.loginAdmin(username, password)
+    if (admin === null) throw new ErrorResponse({ message: "Username password does not match" })
+    const token = await jwt.sign(admin.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    res.send({ token })
+  })
+
   login = controllerErrorHandler(async (req: Request, res: Response) => {
     try {
       const email = req.body.email
@@ -144,7 +155,7 @@ export default class LoginController extends BaseController {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
-      token:token,gender: getUser.gender
+      token: token, gender: getUser.gender
     })
 
 

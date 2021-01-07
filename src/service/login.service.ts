@@ -1,9 +1,5 @@
 
-import mongoose from '../database'
 import BaseService from '../service/base.service'
-import OtpService from './otp.service'
-import UserService from './user.service'
-import encryptData from '../utils/password-hash'
 
 export default class LoginService extends BaseService {
   // Signup
@@ -11,6 +7,12 @@ export default class LoginService extends BaseService {
     const gotAdmin = await this.model.create(user)
     gotAdmin.password = ''
     return gotAdmin
+  }
+
+  loginAdmin = async (username: string, password: string) => {
+    // this.model is coming from the base service class
+    console.log(this.modelName)
+    return await this.model.findOne({ username, password })
   }
 
   // Login
@@ -24,8 +26,8 @@ export default class LoginService extends BaseService {
     return await this.model.findOne({ email })
   }
 
-  getbyUID = async (uid: string,email:string) => {
-    return await this.model.findOne({uid:uid,email:email })
+  getbyUID = async (uid: string, email: string) => {
+    return await this.model.findOne({ uid: uid, email: email })
   }
 
 

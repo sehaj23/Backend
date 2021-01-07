@@ -11,12 +11,8 @@ const revenueController = new RevenueController(revenueService)
 
 /**
  * @swagger
- * tags:
- *  name: AdminRevenue
- *  description: Revenue shown to the admin
- * /api/revenue:
  *  get:
- *      tags: [AdminRevenue]
+ *      tags: [Admin]
  *      parameters:
  *          - name: start_date
  *            in: query

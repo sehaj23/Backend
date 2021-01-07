@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import BaseController from './base.controller'
+import { ServicesI, ZattireServiceI } from '../interfaces/zattire-service.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import ZattireService from '../service/zattire-service'
-import { ServicesI, ZattireServiceI } from '../interfaces/zattire-service.interface'
+import BaseController from './base.controller'
 
 
 export default class ZattireServiceController extends BaseController {
@@ -10,8 +10,12 @@ export default class ZattireServiceController extends BaseController {
   constructor(service: ZattireService) {
     super(service)
     this.service = service
-
   }
+
+  getCategories = controllerErrorHandler(async (req: Request, res: Response) => {
+    const categories = await this.service.getCategories()
+    res.send(categories)
+  })
 
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const option = req.body.options
@@ -83,13 +87,13 @@ export default class ZattireServiceController extends BaseController {
       res.send(msg)
       return
     }
-   
-    
-    for(var i in zattireServices.services){
-      let service:ServicesI 
-      service  = zattireServices.services[i]
-     //@ts-ignore
-      if(service._id== id){
+
+
+    for (var i in zattireServices.services) {
+      let service: ServicesI
+      service = zattireServices.services[i]
+      //@ts-ignore
+      if (service._id == id) {
         foundService.push(service)
         break
       }
