@@ -5,7 +5,7 @@ import { CartRedis } from "../redis/index.redis";
 
 
 const CartSchema = new mongoose.Schema({
-    options:[
+    options: [
         {
             option_id: {
                 type: String
@@ -13,14 +13,14 @@ const CartSchema = new mongoose.Schema({
             quantity: {
                 type: Number
             },
-            service_name:{
-                type:String
+            service_name: {
+                type: String
             },
-            option_name:{
-                type:String
+            option_name: {
+                type: String
             },
-            category_name:{
-                type:String
+            category_name: {
+                type: String
             }
         }
     ],
@@ -40,32 +40,42 @@ const CartSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'In use',
-        enum:['In use','Booked','Abandoned']
+        enum: ['In use', 'Booked', 'Abandoned']
     }
 }, {
     timestamps: true
 })
-CartSchema.index({user_id: 1});
+CartSchema.index({ user_id: 1 });
 const emptyCartCache = (userId: string) => {
     CartRedis.remove(userId)
 }
-CartSchema.pre("save", function(){
+CartSchema.pre("save", function () {
     //@ts-ignore
-    const {user_id} = this
-    if(user_id){
-        const userIdToUse = user_id?._id ?? user_id   
+    const { user_id } = this
+    if (user_id) {
+        const userIdToUse = user_id?._id ?? user_id
         emptyCartCache(userIdToUse)
     }
 })
 
-CartSchema.pre("remove", function(){
+CartSchema.pre("remove", function () {
     //@ts-ignore
-    const {user_id} = this
-    if(user_id){
-        const userIdToUse = user_id?._id ?? user_id   
+    const { user_id } = this
+    if (user_id) {
+        const userIdToUse = user_id?._id ?? user_id
         emptyCartCache(userIdToUse)
     }
 })
+
+CartSchema.pre("deleteOne", function () {
+    //@ts-ignore
+    const { user_id } = this
+    if (user_id) {
+        const userIdToUse = user_id?._id ?? user_id
+        emptyCartCache(userIdToUse)
+    }
+})
+
 
 const Cart = mongoose.model<CartSI>("carts", CartSchema)
 
