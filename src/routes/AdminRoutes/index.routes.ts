@@ -1,6 +1,5 @@
 import { Router } from "express";
 import bookingRouter from "../UserRoutes/booking.router";
-import loginRouter from "../UserRoutes/login.router";
 import promoCodeRouter from "../UserRoutes/promo-code.router";
 import salonRouter from "../UserRoutes/salon.router";
 import userRouter from "../UserRoutes/user.router";
@@ -11,6 +10,7 @@ import makeupArtistRouter from "../VendorRoutes/makeupartist.router";
 import offerRouter from "../VendorRoutes/offer.router";
 import adminRouter from "./admin.router";
 import eventRouter from "./event.router";
+import loginRouter from "./login.router";
 import zattireServiceRouter from "./zattire-services.router";
 
 /**
