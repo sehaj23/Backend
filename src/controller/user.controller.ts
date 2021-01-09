@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import moment = require("moment");
+import CONFIG from "../config";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
+import * as jwt from 'jwt-then'
 import { UserRedis } from "../redis/index.redis";
 import FeedbackService from "../service/feedback.service";
 import OtpService from "../service/otp.service";
@@ -252,7 +254,10 @@ export default class UserController extends BaseController {
         const id = req.userId
         const user =  await this.service.updateNewPass(id,email,password)
         if(!user) res.status(400).send({sucess:false,message:`password not updated for ${email}`})
-        res.send({success:true,message:"Password Updated"})
+        const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
+            expiresIn: '30 days',
+          })
+        res.send({success:true,message:"Password Updated",token})
        
     
       })

@@ -292,7 +292,7 @@ export default class BookingController extends BaseController {
     })
 
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {
-
+        const services =  req.body.services
         if (!req.params.salonId) {
             const errMsg = `Salon Id not found`;
             logger.error(errMsg);
@@ -307,7 +307,10 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
-        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()))
+        const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()),employee) as SalonSI
+       
+      
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
@@ -317,6 +320,12 @@ export default class BookingController extends BaseController {
         res.send(salon);
 
     })
+
+getEmployeebyService= controllerErrorHandler(async (req: Request, res: Response) => {
+    const services =  req.body.services
+    const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
+    res.send(employee)
+})
 
     getSalonBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         if (!req.params.id) {

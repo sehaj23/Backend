@@ -11,6 +11,7 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
+import EmployeeSI from "../interfaces/employee.interface";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -204,7 +205,7 @@ export default class BookingService extends BaseService {
      * 
      * @description This is the service to get the employees fof the salon on given date 
      */
-    getSalonEmployees = async (salonId: string, dateTime) => {
+    getSalonEmployees = async (salonId: string, dateTime,employe:EmployeeSI[]) => {
         const dateTimeAdd = moment(dateTime).add(15,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
         const dateTimeSub = moment(dateTime).subtract(15,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
         console.log("*****")
@@ -217,7 +218,7 @@ export default class BookingService extends BaseService {
 
        
         // @ts-ignore
-        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time:{ $gte:dateTimeSub,$lt:dateTimeAdd} } }, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
+        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time:{ $gte:dateTimeSub,$lt:dateTimeAdd} }}, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
  
         const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({
             path: 'employees',
@@ -247,6 +248,17 @@ export default class BookingService extends BaseService {
             });
             if (i !== -1) salon.employees.splice(i, 1);
         }
+        for (const bem of salon.employees) {
+            
+            //@ts-ignore
+            const i = employe.findIndex((e) => {
+                return JSON.stringify(e._id) != JSON.stringify(bem._id)
+            });
+            if (i != -1) salon.employees.splice(i, 1);
+        }
+       
+          
+        
         return salon
     };
 

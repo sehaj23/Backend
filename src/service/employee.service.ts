@@ -15,6 +15,7 @@ import BaseService from "./base.service";
 
 
 import moment = require("moment");
+import { MigrationHubConfig } from "aws-sdk";
 
 
 
@@ -283,6 +284,11 @@ export default class EmployeeService extends BaseService {
         updateNotification = async (id:string,status:boolean)=>{
             const notification = await this.model.findByIdAndUpdate(id,{notification:status},{new:true})
             return notification
+        }
+
+        getEmpbyService = async(id:string[])=>{
+            const employee = await this.model.find({services:{$in:id}})
+            return employee
         }
     
 
