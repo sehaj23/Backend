@@ -101,18 +101,13 @@ export default class OtpService extends BaseService{
 
     public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
         const otpD = await this.verifyOtp(phone, otp)
-        const user = await this.userService.getId(userId) as UserSI
+        const user = await this.userService.update(userId,{phone:phone}) as UserSI
         if(user === null) throw new Error(`User not found to update phone number`)
-        user.phone = phone
-        await user.save()
         return {otpD, user}
     }
     public async emailVerifyUserOtp(email: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
         const otpD = await this.emailverifyOtp(email, otp)
-        const user = await this.userService.getId(userId) as UserSI
-        user.approved=true
-        
-        await user.save()
+        const user = await this.userService.update(userId,{approved:true}) as UserSI
         return {otpD, user}
     }
 
