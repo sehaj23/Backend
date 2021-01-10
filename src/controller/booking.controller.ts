@@ -308,7 +308,7 @@ export default class BookingController extends BaseController {
             return
         }
         const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
-        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()),employee) as SalonSI
+        const salon = await this.service.getSalonEmployees(req.params.salonId,new Date(req.query.dateTime.toString()),employee)
        
       
         if (salon === null) {
