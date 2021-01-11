@@ -1,16 +1,16 @@
 import { Router } from "express";
-import bookingRouter from "../UserRoutes/booking.router";
-import promoCodeRouter from "../UserRoutes/promo-code.router";
-import salonRouter from "../UserRoutes/salon.router";
-import userRouter from "../UserRoutes/user.router";
-import revenueRouter from "../VendorAppRoutes/revenue.routes";
-import vendorRouter from "../VendorAppRoutes/vendor.routes";
-import designerRouter from "../VendorRoutes/designer.router";
-import makeupArtistRouter from "../VendorRoutes/makeupartist.router";
-import offerRouter from "../VendorRoutes/offer.router";
 import adminRouter from "./admin.router";
+import bookingRouter from "./booking.router";
+import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
 import loginRouter from "./login.router";
+import makeupArtistRouter from "./makeupArtist.route";
+import offerRouter from "./offer.router";
+import promoCodeRouter from "./promo-code.router";
+import revenueRouter from "./revenue.router";
+import salonRouter from "./salon.router";
+import userRouter from "./user.router";
+import vendorRouter from "./vendor.router";
 import zattireServiceRouter from "./zattire-services.router";
 
 /**
