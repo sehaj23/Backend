@@ -8,14 +8,14 @@ const PromoCodeSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    description:{
+    description: {
         type: String,
         required: true
     },
-    salon_ids:{
+    salon_ids: {
         type: [String],
     },
-    categories:{
+    categories: {
         type: [String],
     },
     user_ids: {
@@ -28,7 +28,7 @@ const PromoCodeSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    time_type:{
+    time_type: {
         type: String,
         enum: ['All Day', 'Custom'],
         required: true
@@ -42,7 +42,7 @@ const PromoCodeSchema = new mongoose.Schema({
     custom_time_end_time: {
         type: String,
     },
-    minimum_bill:{
+    minimum_bill: {
         type: Number,
         min: 1,
         required: true
@@ -52,26 +52,25 @@ const PromoCodeSchema = new mongoose.Schema({
         enum: ['Flat Price', 'Discount Percentage'],
         required: true
     },
-    flat_price:{
+    flat_price: {
         type: Number,
     },
-    discount_percentage:{
+    discount_percentage: {
         type: Number,
     },
-    discount_cap:{
+    discount_cap: {
         type: Number,
-        required: true
     },
     payment_mode: {
         type: String,
         enum: ['COD', 'Online', 'Both'],
         required: true
     },
-    max_usage:{
+    max_usage: {
         type: Number,
         default: 1
     },
-    usage_time_difference:{
+    usage_time_difference: {
         type: Number,
         default: 0
     },
