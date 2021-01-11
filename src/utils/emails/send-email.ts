@@ -4,6 +4,7 @@ import '../../prototypes/string.prototypes';
 import logger from "../logger";
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
+import { LocationI } from "../../interfaces/salon.interface";
 
 type EmailSentTo = 'salon' | 'user' | 'admin' | 'employee'
 type EmailType = 'booking requested' | 'booking confirmed' | 'signup' | 'booking completed' | 'forgot password'
@@ -32,18 +33,21 @@ export default class SendEmail {
         const mail = new MailComposer(mailOptions);
     }
 
-    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string) => {
+    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string) => {
 
-        fs.readFile(`${__dirname}/booking-confirm.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
-                return
-            }else{
-                // const Name =  data.replace(`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">OTP</span>`,`<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">${otp}</span>`)
-                // fs.writeFile(`${__dirname}/booking-confirm.html`, writeOTP, 'utf8', function (err) {
-                //     if (err) return console.log(err);
-                //  });
-            }
+                     return
+                  }
+                  data = data.replaceAll("[Salon Name]", salonName)
+                  data = data.replaceAll("[ID]", bookingIdNumeric)
+                  data = data.replaceAll("[date&time]",dateTime)
+                  data = data.replaceAll("[staff]",emp_name)
+                  data = data.replaceAll("[serviceLocation]",location)
+                  data = data.replaceAll("[amount]",amount)
+                  data = data.replaceAll("[promo]",promo)
+                  //data = data.replaceAll("[services]",services)
             // TODO: string interpolation for the html content
 
             const params = {

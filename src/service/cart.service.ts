@@ -25,13 +25,14 @@ export default class CartService extends BaseService {
         return salon
     }
 
-    getPriceByOptionId: (optionId: string) => Promise<{price:number,service_name:string,option_name,category_name:string}> = async (optionId: string) => {
+    getPriceByOptionId: (optionId: string) => Promise<{price:number,service_name:string,option_name,category_name:string,service_id:string}> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
             for (let option of service.options) {
                 if (option._id.toString() === optionId){
-                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category}
+              
+                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category,service_id:service.service_id}
             }
         }
         }
@@ -90,7 +91,8 @@ export default class CartService extends BaseService {
                 quantity: 1,
                 service_name:optionPrice.service_name,
                 category_name:optionPrice.category_name,
-                option_name:optionPrice.option_name
+                option_name:optionPrice.option_name,
+                service_id:optionPrice.service_id
 
                 
             })
@@ -207,7 +209,7 @@ export default class CartService extends BaseService {
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
-            options: [{ option_id: optionId, quantity: 1 ,service_name:optionPrice.service_name,option_name:optionPrice.option_name,category_name:optionPrice.category_name}],
+            options: [{ option_id: optionId, quantity: 1 ,service_name:optionPrice.service_name,option_name:optionPrice.option_name,category_name:optionPrice.category_name,service_id:optionPrice.service_id}],
             total: optionPrice.price
         }
 
