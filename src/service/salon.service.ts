@@ -791,7 +791,7 @@ export default class SalonService extends BaseService {
                                 }
                         },
 
-                        { 
+                        {
                                 "$group": {
 
                                         "_id": "$salon_id",
@@ -877,17 +877,8 @@ export default class SalonService extends BaseService {
         }
 
         getNameandId = async () => {
-                const salon = await this.model.find({}).select("_id").select("name")
+                const salon = await this.model.find({}).select({ "_id": 1, "name": 1 })
                 return salon
         }
-
-        
-
-
-
-
-
-
-
 
 }
