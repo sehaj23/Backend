@@ -90,13 +90,14 @@ export default class BookingController extends BaseController {
         const { payment_method, location, date_time, salon_id, options, address, promo_code, cart_id } = req.body
         let employeeIds: string[]
         let gender
-        let status
+        const status = "Requested"
         let service_name
         let category_name
         const result: PromoDiscountResult[] = []
 
         //@ts-ignore
         const salon = await this.salonService.getId(salon_id) as SalonSI
+       // const employees =  await this.employeeService.getEmpbyService()
 
         let totalDiscountGiven = 0
         let promoCode: PromoCodeSI
@@ -189,6 +190,18 @@ export default class BookingController extends BaseController {
         }
         const discountOptionIds = result.map(r => r.option_id)
         let nextDateTime: moment.Moment
+        // let day = moment(date_time).day() - 1
+        // if (day < 0) day = 6
+        // const starting_hours = salon.start_working_hours
+        // const ending_hours = salon.end_working_hours
+        // const selectedStartingHour = moment(starting_hours[day]).get("hours")
+        // const selectedEndingHour = moment(ending_hours[day]).get("hours")
+        // if (moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)) {
+        //     console.log("time changed due to salon offline")
+        //     status = "Confirmed"
+        // } else {
+        //     status = "Requested"
+        // }
         for (let o of options) {
             for (let salonService of salon.services) {
                 const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
@@ -197,6 +210,7 @@ export default class BookingController extends BaseController {
                     o.service_name = salonService.name
                     o.category_name = salonService.category
                     o.gender = salonService.options[salonOptionIndex].gender
+               
                     if(discountIndex > -1) o.discount_given = result[discountIndex].discount
                     break
                 }
@@ -219,18 +233,7 @@ export default class BookingController extends BaseController {
                 if (!employeeIds || employeeIds?.length === 0) {
 
                     if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
-                    let day = moment(date_time).day() - 1
-                    if (day < 0) day = 6
-                    const starting_hours = salon.start_working_hours
-                    const ending_hours = salon.end_working_hours
-                    const selectedStartingHour = moment(starting_hours[day]).get("hours")
-                    const selectedEndingHour = moment(ending_hours[day]).get("hours")
-                    if (moment().get("hours") < (selectedStartingHour) && moment().hours() > (selectedEndingHour)) {
-                        console.log("time changed due to salon offline")
-                        status = "Confirmed"
-                    } else {
-                        status = "Requested"
-                    }
+                   
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
@@ -497,7 +500,7 @@ getEmployeebyService= controllerErrorHandler(async (req: Request, res: Response)
         if (status === "Confirmed") {
             console.log("booking confirmed sending notification to user")
             console.log("user fcm",user.fcm_token)
-            const notify = Notify.bookingConfirm(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
+            const notify = Notify.bookingConfirm(user,salon,employee,booking)
             console.log(notify)
         }
         if (status === "Start") {

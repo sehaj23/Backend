@@ -1,4 +1,8 @@
 
+import { BookingSI } from "../interfaces/booking.interface"
+import EmployeeSI from "../interfaces/employee.interface"
+import SalonSI, { LocationI } from "../interfaces/salon.interface"
+import { UserSI } from "../interfaces/user.interface"
 import SendEmail from "../utils/emails/send-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import OtpService from "./otp.service"
@@ -7,15 +11,19 @@ export default class Notify {
 
 //TODO: Null check for params because booking fails
 
-    static bookingConfirm = async (userPhone: string, userEmail: string, userFCM: string|string[], salonPhone: string, salonEmail: string, salonName: string, employeePhone: string, employeeFCMs: string[], bookingId: string, bookingIdNumeric: string, dateTime: string) => {
+    static bookingConfirm = async (user:UserSI,salon:SalonSI,employee:EmployeeSI,booking:BookingSI) => {
       try{  
-      SendEmail.bookingConfirm(userEmail, salonName, bookingId, bookingIdNumeric, dateTime)
+        let total=0
+        for(var i=0;i<booking.services.length;i++){
+          total =  total+ booking.services[i].service_total_price
+        }
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), booking.services[0].service_time.toString(),employee.name,booking.location,booking.payment_type,total.toString(),booking.services[0].service_discount_code)
       }catch(e){
         console.log(e)
       } 
       // TODO: Add notification data and the route
       try {
-        sendNotificationToDevice(userFCM, { notification: {title:"Booking Confirmed",body: `Your booking for ${dateTime} has been accepted by ${salonName}`},data:{booking_id:bookingId,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+        sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking.booking_numeric_id.toString(),status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
       } catch (error) {
         console.log(error)
       }
@@ -23,8 +31,8 @@ export default class Notify {
        
         //TODO: change the text of the uszer text 
         try {
-          const userText = `Your booking for ${dateTime} has been accepted by ${salonName}, CHEERS`
-          OtpService.sendMessage(userPhone, userText)
+          const userText = `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}, CHEERS`
+          OtpService.sendMessage(user.phone, userText)
         } catch (error) {
           
         }

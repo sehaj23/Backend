@@ -739,6 +739,7 @@ export default class BookingService extends BaseService {
                     service_name:service.service_name,
                     option_name:service.option_name,
                     category_name:service.category_name
+                    
                 }
                 cartOptions.push(cartOption)
             }
