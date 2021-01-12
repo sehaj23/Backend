@@ -21,6 +21,9 @@ const CartSchema = new mongoose.Schema({
             },
             category_name: {
                 type: String
+            },
+            service_id:{
+                type:String
             }
         }
     ],
