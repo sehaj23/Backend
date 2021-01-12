@@ -50,7 +50,8 @@ export default class CartService extends BaseService {
                     name: option.option_name.valueOf(),
                     price: option.price.valueOf(),
                     service_name:service.name.valueOf(),
-                    service_id:service.service_id.valueOf()
+                    //@ts-ignore
+                    service_id:service._id.valueOf()
             
                 }
             }
