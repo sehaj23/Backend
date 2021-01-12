@@ -424,7 +424,7 @@ export default class SalonController extends BaseController {
         })
         salon.services = filterService
         SalonRedis.set(salonId, {salon,reviews,user},filter)
-        res.status(200).send({salon,reviews})
+        res.status(200).send({salon,reviews,user})
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
