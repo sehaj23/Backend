@@ -302,7 +302,7 @@ export default class UserController extends BaseController {
       })
 
       appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
-        res.status(200).send({ios:"1.1.9",android:"1.0.0",success:true})
+        res.status(200).send({ios:"1.2.0",android:"1.0.0",success:true})
       })
 
       deleteRequest =  controllerErrorHandler(async (req: Request, res: Response) => {
