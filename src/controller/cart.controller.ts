@@ -68,7 +68,7 @@ export default class CartController extends BaseController{
         try {
             // saving photos 
             //@ts-ignore
-            CartRedis.remove(req.userId)
+           await CartRedis.remove(req.userId)
             const newEvent = await this.service.delete(id)
             res.send(newEvent)
         } catch (e) {
