@@ -359,7 +359,7 @@ export default class SalonService extends BaseService {
                 var checkPoint = {}
 
 
-                const salon = await this.model.findById(salonId) //.populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
                 if (salon.coordinates != null) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
 
