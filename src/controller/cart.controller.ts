@@ -1,5 +1,7 @@
 import { Request, Response } from "express"
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware"
+import { CartRedis } from "../redis/index.redis"
+import cartRouter from "../routes/UserRoutes/cart.router"
 import CartService from "../service/cart.service"
 import BaseController from "./base.controller"
 
@@ -61,5 +63,18 @@ export default class CartController extends BaseController{
         const data = await this.cartService.getCartByUserIdLean(userId, true)
         res.send(data)
     } )
+    deleteCart = async (req: Request, res: Response) => {
+        const {id} = req.params
+        try {
+            // saving photos 
+            //@ts-ignore
+            CartRedis.remove(req.userId)
+            const newEvent = await this.service.delete(id)
+            res.send(newEvent)
+        } catch (e) {
+            
+            res.status(403).send(`${e.message}` )
+        }
+    }
 
 }
