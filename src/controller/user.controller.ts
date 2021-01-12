@@ -257,7 +257,7 @@ export default class UserController extends BaseController {
         const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
             expiresIn: '30 days',
           })
-        res.send({success:true,message:"Password Updated",token})
+        res.send({success:true,message:"Password Updated",token:token,gender:user.gender})
        
     
       })
