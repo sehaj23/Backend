@@ -187,7 +187,7 @@ export default class CartService extends BaseService {
         //  }
         const redisCart = await CartRedis.get(userId)
         if(redisCart === null){
-            const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
+            const cart = await this.model.find({ user_id: userId }).populate("salon_id",{ '_id': 1,'name':1},).sort({ "createdAt": -1 }).limit(1).lean() as any[]
             if (cart.length > 0) {
                 for (let cc of cart) {
                     if(cc.status === 'Booked') return []
