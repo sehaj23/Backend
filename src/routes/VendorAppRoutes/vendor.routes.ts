@@ -31,6 +31,7 @@ const otpService = new OtpService(Otp, userService, es)
 const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService)
 
 vendorRouter.post("/",loginController.login);
+vendorRouter.post("/create", loginController.create)
 vendorRouter.post("/absent",VendorverifyToken,vendorController.employeeAbsent)
 vendorRouter.post("/absent/update",VendorverifyToken,vendorController.employeeAbsent)
 vendorRouter.get("/info",VendorverifyToken ,vendorController.vendorInfo)
@@ -52,5 +53,6 @@ vendorRouter.get("/version",vendorController.appVersion)
 
 
 vendorRouter.put("/profile-pic", VendorverifyToken, vendorController.putProfilePic)
+
 
 export default vendorRouter
