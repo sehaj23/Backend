@@ -24,7 +24,6 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import { UserSI } from "../interfaces/user.interface";
 
 
 export default class BookingController extends BaseController {
@@ -97,7 +96,7 @@ export default class BookingController extends BaseController {
 
         //@ts-ignore
         const salon = await this.salonService.getId(salon_id) as SalonSI
-       // const employees =  await this.employeeService.getEmpbyService()
+        // const employees =  await this.employeeService.getEmpbyService()
 
         let totalDiscountGiven = 0
         let promoCode: PromoCodeSI
@@ -148,7 +147,7 @@ export default class BookingController extends BaseController {
                     while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
                         const cartOpt = cart.options[i]
                         const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id)
-                        if (salonOptionIndex > -1 && (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category))) {
+                        if (salonOptionIndex > -1 && (promoCode.categories?.length === 0 || (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category)))) {
                             const salonOption = salonService.options[salonOptionIndex]
                             if (promoCode.discount_type === 'Flat Price') {
                                 const { flat_price } = promoCode
@@ -210,8 +209,8 @@ export default class BookingController extends BaseController {
                     o.service_name = salonService.name
                     o.category_name = salonService.category
                     o.gender = salonService.options[salonOptionIndex].gender
-               
-                    if(discountIndex > -1) o.discount_given = result[discountIndex].discount
+
+                    if (discountIndex > -1) o.discount_given = result[discountIndex].discount
                     break
                 }
 
@@ -233,7 +232,7 @@ export default class BookingController extends BaseController {
                 if (!employeeIds || employeeIds?.length === 0) {
 
                     if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
-                   
+
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
@@ -295,7 +294,7 @@ export default class BookingController extends BaseController {
     })
 
     getSalonEmployees = controllerErrorHandler(async (req: Request, res: Response) => {
-        const services =  req.body.services
+        const services = req.body.services
         if (!req.params.salonId) {
             const errMsg = `Salon Id not found`;
             logger.error(errMsg);
@@ -311,9 +310,9 @@ export default class BookingController extends BaseController {
             return
         }
         const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
-        const salon = await this.service.getSalonEmployees(req.params.salonId,new Date(req.query.dateTime.toString()),employee)
-       
-      
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), employee)
+
+
         if (salon === null) {
             const errMsg = `salon not found`;
             logger.error(errMsg);
@@ -324,11 +323,11 @@ export default class BookingController extends BaseController {
 
     })
 
-getEmployeebyService= controllerErrorHandler(async (req: Request, res: Response) => {
-    const services =  req.body.services
-    const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
-    res.send(employee)
-})
+    getEmployeebyService = controllerErrorHandler(async (req: Request, res: Response) => {
+        const services = req.body.services
+        const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
+        res.send(employee)
+    })
 
     getSalonBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         if (!req.params.id) {
@@ -499,8 +498,8 @@ getEmployeebyService= controllerErrorHandler(async (req: Request, res: Response)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         if (status === "Confirmed") {
             console.log("booking confirmed sending notification to user")
-            console.log("user fcm",user.fcm_token)
-            const notify = Notify.bookingConfirm(user,salon,employee,booking)
+            console.log("user fcm", user.fcm_token)
+            const notify = Notify.bookingConfirm(user, salon, employee, booking)
             console.log(notify)
         }
         if (status === "Start") {
