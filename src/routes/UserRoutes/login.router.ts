@@ -1,21 +1,21 @@
 import { Router } from 'express'
-import LoginService from '../../service/login.service'
-import { loginChecks, signupChecks,emailChecks } from '../../validators/login-validator'
-import mySchemaValidator from '../../middleware/my-schema-validator'
-import { signupLimiter, loginLimiter } from '../../middleware/rate-limit'
-import User from '../../models/user.model'
-import LoginController from '../../controller/login.controller'
 import CONFIG from '../../config'
-import OtpService from '../../service/otp.service'
-import Otp from '../../models/otp.model'
+import LoginController from '../../controller/login.controller'
+import mySchemaValidator from '../../middleware/my-schema-validator'
+import { loginLimiter, signupLimiter } from '../../middleware/rate-limit'
 import Booking from '../../models/booking.model'
 import EmployeeAbsenteeism from '../../models/employeeAbsenteeism.model'
 import Employee from '../../models/employees.model'
 import Feedback from '../../models/feedback.model'
+import Otp from '../../models/otp.model'
 import ReportVendor from '../../models/reportVendor.model'
 import Salon from '../../models/salon.model'
+import User from '../../models/user.model'
 import EmployeeService from '../../service/employee.service'
+import LoginService from '../../service/login.service'
+import OtpService from '../../service/otp.service'
 import UserService from '../../service/user.service'
+import { loginChecks, signupChecks } from '../../validators/login-validator'
 
 const loginRouter = Router()
 const loginService = new LoginService(User)
@@ -24,11 +24,37 @@ const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon
 const otpService = new OtpService(Otp, userService, employeeService)
 const loginController = new LoginController(loginService, CONFIG.USER_JWT, '30 days', otpService)
 
-// @ts-ignore
+/**
+ * @swagger
+ * /api/u/login:
+ *  post:
+ *      tags: [User]
+ *      description: To login as user
+ *      consumes:
+ *          - application/json
+ *      requestBody:
+ *          description: Optional description in
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          email:
+ *                              type: string
+ *                              default: mm@gmail.com
+ *                              required: true
+ *                          password:
+ *                              type: string
+ *                              default: 123456
+ *                              required: true
+ *      responses:
+ *          default:
+ *              description: Admin Login Response
+ */
 loginRouter.post(
   '/',
-  loginLimiter,
-  [loginChecks, mySchemaValidator],
+  [loginLimiter, loginChecks, mySchemaValidator],
   loginController.login
 )
 
@@ -37,7 +63,7 @@ loginRouter.post(
   loginController.signupWithOtpSendOtp
 )
 
-loginRouter.post( 
+loginRouter.post(
   '/otp-signup-verify',
   loginController.signupWithOtpVerifyOtp
 )
@@ -54,9 +80,9 @@ loginRouter.post(
 
 loginRouter.get("/pass/:password", loginController.getEncryptedPass)
 
-loginRouter.post('/forgot-password-send',loginController.forgotPasswordSendEmail)
+loginRouter.post('/forgot-password-send', loginController.forgotPasswordSendEmail)
 
-loginRouter.post('/forgot-password-verify',loginController.forgotPasswordVerifyEmail)
+loginRouter.post('/forgot-password-verify', loginController.forgotPasswordVerifyEmail)
 
 
 

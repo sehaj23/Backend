@@ -30,6 +30,16 @@ const promoCodeController = new PromoCodeController(promoCodeService, promoUserS
 
 promoCodeRouter.post("/discountApplicable", UserverifyToken, promoCodeController.discountApplicable)
 promoCodeRouter.post("/name", UserverifyToken, promoCodeController.getByName)
+/**
+ * @swagger
+ * /api/u/promo-code:
+ *  get:
+ *     tags: [User]
+ *     description: Get promo code applicable to user on his current cart.
+ *     responses:
+ *         default:
+ *             description: User will get the promo codes.
+ */
 promoCodeRouter.get("/", UserverifyToken, promoCodeController.promoCodeByUserId)
 
 
