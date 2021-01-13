@@ -12,6 +12,13 @@ import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
 import userRouter from "./user.router"
 
+/**
+ * @swagger
+ * tags:
+ *  name: User
+ *  description: User application routes
+ */
+
 const Userrouter = Router()
 
 Userrouter.use("/login", loginRouter)
