@@ -102,16 +102,12 @@ export default class BookingController extends BaseController {
         let promoCode: PromoCodeSI
 
         if (promo_code !== null) {
-            console.log(promo_code)
 
             promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
-            console.log(promoCode)
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
             const currentDateTime = moment(Date.now())
             // time check
-            console.log("expiryy")
-            console.log(promoCode.expiry_date_time)
             if (!currentDateTime.isBefore(promoCode.expiry_date_time)) throw new Error(`Promo code is expired`)
             if (promoCode.time_type === 'Custom') {
 
@@ -135,9 +131,6 @@ export default class BookingController extends BaseController {
                 //@ts-ignore
                 if (!promoCode.salon_ids.includes(cart.salon_id._id)) throw new Error(`This coupon code is not applied on this salon`)
             }
-
-
-
 
             if (promoCode.categories && promoCode.categories.length > 0) {
                 if (salon === null) throw new Error(`Salon not found from the cart`)
