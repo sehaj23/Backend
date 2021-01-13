@@ -31,15 +31,17 @@ export default class CartService extends BaseService {
         for (let service of salon.services) {
             for (let option of service.options) {
                 if (option._id.toString() === optionId){
-              
-                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category,service_id:service.service_id}
+                    //@ts-ignore
+                    console.log(service._id)
+              //@ts-ignore
+                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category,service_id:service._id}
             }
         }
         }
         throw new Error("Option not found")
     }
 
-    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number,service_name:string }> = async (optionId: string) => {
+    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number,service_name:string,service_id:string }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
@@ -47,7 +49,9 @@ export default class CartService extends BaseService {
                 if (option._id.toString() === optionId) return {
                     name: option.option_name.valueOf(),
                     price: option.price.valueOf(),
-                    service_name:service.name.valueOf()
+                    service_name:service.name.valueOf(),
+                    //@ts-ignore
+                    service_id:service._id.valueOf()
             
                 }
             }
@@ -149,6 +153,7 @@ export default class CartService extends BaseService {
                 }
                 option.quantity = qty,
                 option.service_name=optionPrice.service_name
+                option.service_id=optionPrice.service_id
                 break
             }
         }
@@ -187,10 +192,11 @@ export default class CartService extends BaseService {
                 for (let cc of cart) {
                     if(cc.status === 'Booked') return []
                     for (let c of cc.options) {
-                        const { name, price,service_name } = await this.getPriceAndNameByOptionId(c.option_id)
+                        const { name, price,service_name,service_id } = await this.getPriceAndNameByOptionId(c.option_id)
                         c.option_name = name
                         c.price = price
                         c.service_name=service_name
+                        c.service_id=service_id
                     }
                 }
             }

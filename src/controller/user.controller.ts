@@ -257,7 +257,7 @@ export default class UserController extends BaseController {
         const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
             expiresIn: '30 days',
           })
-        res.send({success:true,message:"Password Updated",token})
+        res.send({success:true,message:"Password Updated",token:token,gender:user.gender})
        
     
       })
@@ -302,7 +302,7 @@ export default class UserController extends BaseController {
       })
 
       appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
-        res.status(200).send({ios:"1.1.9",android:"1.0.0",success:true})
+        res.status(200).send({ios:"1.2.0",android:"1.0.0",success:true})
       })
 
       deleteRequest =  controllerErrorHandler(async (req: Request, res: Response) => {
