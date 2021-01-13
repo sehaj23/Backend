@@ -129,7 +129,7 @@ export default class EmployeeService extends BaseService {
         const slots = []
         for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
             
-            const time = moment(i).format('hh:mm a')
+            const time = moment(i).local().format('hh:mm a')
             const theSlot = {
                 store_date: time,
                 absent: false
