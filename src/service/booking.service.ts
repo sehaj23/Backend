@@ -2,6 +2,7 @@ import { String } from "aws-sdk/clients/acm";
 import mongoose from "../database";
 import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
+import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
 import { BookingRedis } from "../redis/index.redis";
 import ErrorResponse from "../utils/error-response";
@@ -11,7 +12,6 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
-import EmployeeSI from "../interfaces/employee.interface";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -25,17 +25,18 @@ export default class BookingService extends BaseService {
         this.mongoCounterService = mongoCounterService
     }
 
-    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI,promo_code:string,actualStatus:BookinStatus) => {
+    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
-                const totalPrice = o.quantity * o.price
+                let totalPrice = o.quantity * o.price
                 let zattire_commission = totalPrice * 0.20
                 const vendor_commission = totalPrice - zattire_commission
-                if(o.discount_given && o.discount_given !== 0){
+                if (o.discount_given && o.discount_given !== 0) {
                     zattire_commission -= o.discount_given
+                    totalPrice -= o.discount_given
                 }
 
                 const totalTime = o.quantity * o.duration
@@ -47,19 +48,19 @@ export default class BookingService extends BaseService {
                     service_time = nextDateTime.toDate()
                     nextDateTime = nextDateTime.add(totalTime, 'minutes')
                 }
-                
+
                 const bookingService: BookingServiceI = {
                     category_name: o.category_name,
-                    option_name:o.name,
+                    option_name: o.name,
                     option_id: o.option_id,
                     service_name: o.service_name,
-                    gender:o.gender,
+                    gender: o.gender,
                     service_real_price: o.price,
                     quantity: o.quantity,
                     duration: o.duration,
                     service_total_price: totalPrice,
                     service_discount: o.discount_given,
-                    service_discount_code:promo_code,
+                    service_discount_code: promo_code,
                     zattire_commission,
                     vendor_commission,
                     service_time,
@@ -71,7 +72,7 @@ export default class BookingService extends BaseService {
             const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
-               
+
                 salon_id: salon_id,
                 payment_type: payment_method,
                 location: location,
@@ -205,9 +206,9 @@ export default class BookingService extends BaseService {
      * 
      * @description This is the service to get the employees fof the salon on given date 
      */
-    getSalonEmployees = async (salonId: string, dateTime,employee:EmployeeSI[]) => {
-        const dateTimeAdd = moment(dateTime).add(15,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
-        const dateTimeSub = moment(dateTime).subtract(15,'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
+    getSalonEmployees = async (salonId: string, dateTime, employee: EmployeeSI[]) => {
+        const dateTimeAdd = moment(dateTime).add(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
+        const dateTimeSub = moment(dateTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
         console.log("*****")
         console.log(dateTimeAdd)
         console.log(dateTimeSub)
@@ -216,17 +217,17 @@ export default class BookingService extends BaseService {
         let busy = [];
         let book = []
 
-       
+
         // @ts-ignore
-        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time:{ $gte:dateTimeSub,$lt:dateTimeAdd} }}, salon_id: salonId,status:{$in:["Confirmed","Requested","Start","Rescheduled","Rescheduled and Pending"]} }).sort({ "createdAt": -1 });
-        
+        const bookingsDbReq = this.model.find({ services: { $elemMatch: { service_time: { $gte: dateTimeSub, $lt: dateTimeAdd } } }, salon_id: salonId, status: { $in: ["Confirmed", "Requested", "Start", "Rescheduled", "Rescheduled and Pending"] } }).sort({ "createdAt": -1 });
+
         // const salonDbReq = this.salonModel.findById(salonId).select("employees").populate({
         //     path: 'employees',
         //     populate: {
         //         path: 'photo'
         //     }
         // }).exec();
-        const [ bookings] = await Promise.all([ bookingsDbReq])
+        const [bookings] = await Promise.all([bookingsDbReq])
         console.log("*****")
         console.log(bookings)
         if (bookings !== null) {
@@ -249,16 +250,16 @@ export default class BookingService extends BaseService {
             if (i !== -1) employee.splice(i, 1);
         }
         // for (const bem of salon.employees) {
-            
+
         //     //@ts-ignore
         //     const i = employe.findIndex((e) => {
         //         return JSON.stringify(e._id) != JSON.stringify(bem._id)
         //     });
         //     if (i != -1) salon.employees.splice(i, 1);
         // }
-       
-          
-        
+
+
+
         return employee
     };
 
@@ -326,10 +327,10 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        const bookingRedis = await BookingRedis.get(userId, {type: "getByUserId"})
-        if(bookingRedis === null){
+        const bookingRedis = await BookingRedis.get(userId, { type: "getByUserId" })
+        if (bookingRedis === null) {
             const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id", 'name').lean()
-            BookingRedis.set(userId, JSON.stringify(booking), {type: "getByUserId"})
+            BookingRedis.set(userId, JSON.stringify(booking), { type: "getByUserId" })
             return booking
         }
         return JSON.parse(bookingRedis)
@@ -396,7 +397,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
 
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({'createdAt':-1}).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
@@ -418,7 +419,7 @@ export default class BookingService extends BaseService {
         console.log(booking)
         return booking
     }
-    getAllSalonBookings = async (salonId: string,q:any) => {
+    getAllSalonBookings = async (salonId: string, q: any) => {
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -469,14 +470,14 @@ export default class BookingService extends BaseService {
                 "$gte": dateFilter["start_date"],
                 "$lt": dateFilter["end_date"]
             }
-          
+
             //  filters["createdAt"] = {
             //      "$gte": dateFilter["start_date"],
             //      "$lt": dateFilter["end_date"]
             // // }
 
         }
-        const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({"createdAt":-1}).exec()
+        const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
         return bookings
 
     }
@@ -736,10 +737,10 @@ export default class BookingService extends BaseService {
                 const cartOption: CartOption = {
                     option_id: service.option_id,
                     quantity: service.quantity,
-                    service_name:service.service_name,
-                    option_name:service.option_name,
-                    category_name:service.category_name
-                    
+                    service_name: service.service_name,
+                    option_name: service.option_name,
+                    category_name: service.category_name
+
                 }
                 cartOptions.push(cartOption)
             }
@@ -750,14 +751,14 @@ export default class BookingService extends BaseService {
         }
     }
 
-    getDetailsOfSalon=async () => {
+    getDetailsOfSalon = async () => {
 
         const query = {
-            "match":{
-                status:"Completed"
+            "match": {
+                status: "Completed"
             }
         }
         const info = await this.model.aggregate([query])
-     
+
     }
 }
