@@ -27,7 +27,33 @@ const promoCodeController = new PromoCodeController(promoCodeService, promoUserS
 
 //TODO: validate the data before sending it the to DB 
 
-
+/**
+ * @swagger
+ * /api/u/promo-code/discountApplicable:
+ *  post:
+ *     tags: [User]
+ *     description: Check for discount for the current user
+ *     consumes:
+ *         - application/json
+ *     requestBody:
+ *          description: Optional description in
+ *          required: true
+ *          content:
+ *             application/json:
+ *                 schema:
+ *                     type: object
+ *                     properties:
+ *                         promo_code:
+ *                             type: string
+ *                             default: PREET15
+ *                             required: true
+ *                         cart_id:
+ *                             type: string
+ *                             required: false
+ *     responses:
+ *         default:
+ *             description: User will get the discount applicable on the promo code.
+ */
 promoCodeRouter.post("/discountApplicable", UserverifyToken, promoCodeController.discountApplicable)
 promoCodeRouter.post("/name", UserverifyToken, promoCodeController.getByName)
 /**

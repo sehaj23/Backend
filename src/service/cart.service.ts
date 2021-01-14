@@ -14,34 +14,34 @@ export default class CartService extends BaseService {
 
     bookCartByUserId: (userId: string) => Promise<CartSI> = async (userId: string) => {
         const cart = await this.getCartByUserId(userId)
-        cart.status= 'Booked'
+        cart.status = 'Booked'
         await cart.save()
         return cart
     }
 
-    getSalonByOptionId : (optionId: string) => Promise<SalonSI> = async (optionId: string) => {
+    getSalonByOptionId: (optionId: string) => Promise<SalonSI> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("getSalonByOptionId - Salon not found")
         return salon
     }
 
-    getPriceByOptionId: (optionId: string) => Promise<{price:number,service_name:string,option_name,category_name:string,service_id:string}> = async (optionId: string) => {
+    getPriceByOptionId: (optionId: string) => Promise<{ price: number, service_name: string, option_name, category_name: string, service_id: string }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
             for (let option of service.options) {
-                if (option._id.toString() === optionId){
+                if (option._id.toString() === optionId) {
                     //@ts-ignore
                     console.log(service._id)
-              //@ts-ignore
-                return {price:option.price.valueOf(),service_name:service.name,option_name:option.option_name,category_name:service.category,service_id:service._id}
+                    //@ts-ignore
+                    return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id }
+                }
             }
-        }
         }
         throw new Error("Option not found")
     }
 
-    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number,service_name:string,service_id:string }> = async (optionId: string) => {
+    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number, service_name: string, service_id: string }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
@@ -49,10 +49,10 @@ export default class CartService extends BaseService {
                 if (option._id.toString() === optionId) return {
                     name: option.option_name.valueOf(),
                     price: option.price.valueOf(),
-                    service_name:service.name.valueOf(),
+                    service_name: service.name.valueOf(),
                     //@ts-ignore
-                    service_id:service._id.valueOf()
-            
+                    service_id: service._id.valueOf()
+
                 }
             }
         }
@@ -93,16 +93,16 @@ export default class CartService extends BaseService {
             cart.options.push({
                 option_id,
                 quantity: 1,
-                service_name:optionPrice.service_name,
-                category_name:optionPrice.category_name,
-                option_name:optionPrice.option_name,
-                service_id:optionPrice.service_id
+                service_name: optionPrice.service_name,
+                category_name: optionPrice.category_name,
+                option_name: optionPrice.option_name,
+                service_id: optionPrice.service_id
 
-                
+
             })
         }
         // getting the price of the by option id
-       
+
         const newPrice = cart.total + optionPrice.price
         cart.total = newPrice
         return await cart.save()
@@ -152,8 +152,8 @@ export default class CartService extends BaseService {
                     cart.total -= optionPrice.price
                 }
                 option.quantity = qty,
-                option.service_name=optionPrice.service_name
-                option.service_id=optionPrice.service_id
+                    option.service_name = optionPrice.service_name
+                option.service_id = optionPrice.service_id
                 break
             }
         }
@@ -161,9 +161,9 @@ export default class CartService extends BaseService {
         return cart
     }
 
-    protected getCartByUserId = async (userId: string) => {
+    getCartByUserId = async (userId: string) => {
         const cart = await this.model.findOne({ user_id: userId }).sort({ "createdAt": -1 }).limit(1) as CartSI
-        if(cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
+        if (cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
         return cart
     }
     // getLastCartByUserId = async (userId: string) => {
@@ -173,7 +173,7 @@ export default class CartService extends BaseService {
     //         cart.status='Abandoned'
     //         console.log(cart)
     //        await cart.save()
-           
+
     //     }
     //  }
 
@@ -186,17 +186,17 @@ export default class CartService extends BaseService {
         //  const cart = await this.model.find({"user_id": userId}) as CartSI
         //  }
         const redisCart = await CartRedis.get(userId)
-        if(redisCart === null){
-            const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as any[]
+        if (redisCart === null) {
+            const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as CartSI[]
             if (cart.length > 0) {
                 for (let cc of cart) {
-                    if(cc.status === 'Booked') return []
+                    if (cc.status === 'Booked') return []
                     for (let c of cc.options) {
-                        const { name, price,service_name,service_id } = await this.getPriceAndNameByOptionId(c.option_id)
+                        const { name, price, service_name, service_id } = await this.getPriceAndNameByOptionId(c.option_id)
                         c.option_name = name
                         c.price = price
-                        c.service_name=service_name
-                        c.service_id=service_id
+                        c.service_name = service_name
+                        c.service_id = service_id
                     }
                 }
             }
@@ -207,15 +207,15 @@ export default class CartService extends BaseService {
     }
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
-      
-      //  await this.getLastCartByUserId(userId)
-        
+
+        //  await this.getLastCartByUserId(userId)
+
         const optionPrice = await this.getPriceByOptionId(optionId)
 
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
-            options: [{ option_id: optionId, quantity: 1 ,service_name:optionPrice.service_name,option_name:optionPrice.option_name,category_name:optionPrice.category_name,service_id:optionPrice.service_id}],
+            options: [{ option_id: optionId, quantity: 1, service_name: optionPrice.service_name, option_name: optionPrice.option_name, category_name: optionPrice.category_name, service_id: optionPrice.service_id }],
             total: optionPrice.price
         }
 
@@ -224,9 +224,9 @@ export default class CartService extends BaseService {
 
     createCartWithMultipleOptions = async (userId: string, salonId: string, options: CartOption[]) => {
 
-      //  await this.getLastCartByUserId(userId)
+        //  await this.getLastCartByUserId(userId)
         let total = 0
-        for(let opt of options){
+        for (let opt of options) {
             const optionPrice = await this.getPriceByOptionId(opt.option_id)
             total += optionPrice.price * opt.quantity
         }
@@ -235,7 +235,7 @@ export default class CartService extends BaseService {
             user_id: userId,
             salon_id: salonId,
             options: options,
-            
+
             total
         }
 
@@ -243,12 +243,12 @@ export default class CartService extends BaseService {
     }
 
     deleteCartByUserId = async (userId: string) => {
-        try{
+        try {
             const redisCart = await CartRedis.remove(userId)
             const cart: CartSI = await this.getCartByUserId(userId)
             await cart.remove()
             return null
-        }catch(e){
+        } catch (e) {
             throw e
         }
     }
