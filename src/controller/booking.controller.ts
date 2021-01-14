@@ -132,50 +132,48 @@ export default class BookingController extends BaseController {
                 if (!promoCode.salon_ids.includes(cart.salon_id._id)) throw new Error(`This coupon code is not applied on this salon`)
             }
 
-            if (promoCode.categories && promoCode.categories.length > 0) {
-                if (salon === null) throw new Error(`Salon not found from the cart`)
-                for (let salonService of salon.services) {
-                    const salonOptionIds = salonService.options.map(o => o._id.toString())
-                    let i = 0
-                    while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
-                        const cartOpt = cart.options[i]
-                        const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id)
-                        if (salonOptionIndex > -1 && (promoCode.categories?.length === 0 || (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category)))) {
-                            const salonOption = salonService.options[salonOptionIndex]
-                            if (promoCode.discount_type === 'Flat Price') {
-                                const { flat_price } = promoCode
-                                // calculating the discount which we can give
-                                let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
-                                discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
-                                const discount: PromoDiscountResult = {
-                                    option_id: cartOpt.option_id,
-                                    before_discount_price: salonOption.price,
-                                    discount: discountApplicable,
-                                    after_discount_price: salonOption.price - discountApplicable,
-                                    category_name: salonService.category
-                                }
-                                totalDiscountGiven += discountApplicable
-                                result.push(discount)
-                            } else {
-                                const { discount_percentage } = promoCode
-                                const discountInNumber = parseInt((salonOption.price * (discount_percentage / 100)).toString())
-                                let discountApplicable = (salonOption.price < discountInNumber) ? salonOption.price : discountInNumber
-                                discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
-                                const discount: PromoDiscountResult = {
-                                    option_id: cartOpt.option_id,
-                                    before_discount_price: salonOption.price,
-                                    discount: discountApplicable,
-                                    after_discount_price: salonOption.price - discountApplicable,
-                                    category_name: salonService.category
-                                }
-                                totalDiscountGiven += discountApplicable
-                                result.push(discount)
+            if (salon === null) throw new Error(`Salon not found from the cart`)
+            for (let salonService of salon.services) {
+                const salonOptionIds = salonService.options.map(o => o._id.toString())
+                let i = 0
+                while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
+                    const cartOpt = cart.options[i]
+                    const salonOptionIndex = salonOptionIds.indexOf(cartOpt.option_id)
+                    if (salonOptionIndex > -1 && (promoCode.categories?.length === 0 || (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category)))) {
+                        const salonOption = salonService.options[salonOptionIndex]
+                        if (promoCode.discount_type === 'Flat Price') {
+                            const { flat_price } = promoCode
+                            // calculating the discount which we can give
+                            let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
+                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                            const discount: PromoDiscountResult = {
+                                option_id: cartOpt.option_id,
+                                before_discount_price: salonOption.price,
+                                discount: discountApplicable,
+                                after_discount_price: salonOption.price - discountApplicable,
+                                category_name: salonService.category
                             }
-                            cart.options.splice(i, 1)
-
+                            totalDiscountGiven += discountApplicable
+                            result.push(discount)
                         } else {
-                            i++
+                            const { discount_percentage } = promoCode
+                            const discountInNumber = parseInt((salonOption.price * (discount_percentage / 100)).toString())
+                            let discountApplicable = (salonOption.price < discountInNumber) ? salonOption.price : discountInNumber
+                            discountApplicable = (discountApplicable > (promoCode.discount_cap - totalDiscountGiven)) ? (promoCode.discount_cap - totalDiscountGiven) : discountApplicable
+                            const discount: PromoDiscountResult = {
+                                option_id: cartOpt.option_id,
+                                before_discount_price: salonOption.price,
+                                discount: discountApplicable,
+                                after_discount_price: salonOption.price - discountApplicable,
+                                category_name: salonService.category
+                            }
+                            totalDiscountGiven += discountApplicable
+                            result.push(discount)
                         }
+                        cart.options.splice(i, 1)
+
+                    } else {
+                        i++
                     }
                 }
             }
@@ -196,8 +194,10 @@ export default class BookingController extends BaseController {
         // }
         for (let o of options) {
             for (let salonService of salon.services) {
-                const salonOptionIndex = salonService.options.map(o => o._id).indexOf(o.option_id)
+                const salonOptionIndex = salonService.options.map(o => o._id?.toString()).indexOf(o.option_id)
                 const discountIndex = discountOptionIds.indexOf(o.option_id)
+                // TODO: BUG Discount code not applying
+                console.log(`salonOptionIndex: ${salonOptionIndex}`)
                 if (salonOptionIndex > -1) {
                     o.service_name = salonService.name
                     o.category_name = salonService.category
@@ -229,6 +229,7 @@ export default class BookingController extends BaseController {
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
+                    // TODO: check if employee has the service
                     const empId = employeeIds[i]
                     const mongooseDateTime = service_time.toISOString()
                     const empBookings = await this.service.get({ "services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": mongooseDateTime })
