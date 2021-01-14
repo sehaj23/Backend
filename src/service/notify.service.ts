@@ -14,16 +14,20 @@ export default class Notify {
     static bookingConfirm = async (user:UserSI,salon:SalonSI,employee:EmployeeSI,booking:BookingSI) => {
       try{  
         let total=0
+        let promo_code
         for(var i=0;i<booking.services.length;i++){
           total =  total+ booking.services[i].service_total_price
+              if(booking.services[i].service_discount_code != null){
+                promo_code=booking.services[i].service_discount_code
+              }
         }
-      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), booking.services[0].service_time.toString(),employee.name,booking.location,booking.payment_type,total.toString(),booking.services[0].service_discount_code)
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), booking.services[0].service_time.toString(),employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services)
       }catch(e){
         console.log(e)
       } 
       // TODO: Add notification data and the route
       try {
-        sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking.booking_numeric_id.toString(),status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+        sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking._id,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
       } catch (error) {
         console.log(error)
       }
