@@ -101,7 +101,7 @@ export default class OtpService extends BaseService{
 
     public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
         const otpD = await this.verifyOtp(phone, otp)
-        const user = await this.userService.update(userId,{phone:phone}) as UserSI
+        const user = await this.userService.update(userId,{phone:phone,approved:true}) as UserSI
         if(user === null) throw new Error(`User not found to update phone number`)
         return {otpD, user}
     }
