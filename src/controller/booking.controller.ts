@@ -768,4 +768,9 @@ export default class BookingController extends BaseController {
         res.send(cart)
     })
 
+    sendInvoice = controllerErrorHandler(async (req: Request, res: Response) => {
+        const booking = await this.service.sendInvoice()
+        res.send(booking)
+    })
+
 }

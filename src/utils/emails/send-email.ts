@@ -34,6 +34,24 @@ export default class SendEmail {
           }
         const mail = new MailComposer(mailOptions);
     }
+    static bookingInvoice = async () => {
+        fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+            console.log(data)
+        })
+        const mailOptions: Mail.Options ={
+            from: 'source@example.com',
+            replyTo: 'source@example.com',
+            to: 'sehaj23chawla@gmail.com',
+            subject: 'Sample SES message with attachment',
+            text: 'Hey folks, this is a test message from SES with an attachment.',
+            attachments: [
+              {
+                path: '/tmp/file.docx'
+              },
+            ],
+          }
+        const mail = new MailComposer(mailOptions);
+    }
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {
 
