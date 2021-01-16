@@ -35,7 +35,7 @@ export const connectt = () => {
         useCreateIndex: true,
         poolSize: 10,
         useFindAndModify: true,
-        autoIndex: true
+        autoIndex: (process.env.NODE_ENV !== 'production')
       },
       (err: any) => {
         if (err) {
