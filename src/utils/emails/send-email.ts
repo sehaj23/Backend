@@ -34,6 +34,8 @@ export default class SendEmail {
           }
         const mail = new MailComposer(mailOptions);
     }
+    
+
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {
 
