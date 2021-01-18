@@ -125,7 +125,7 @@ export default class EmployeeService extends BaseService {
         if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
         const selectedStartingHour = moment(starting_hours[day])
         if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
-        const selectedEndHour = moment(salon.end_working_hours[day])
+        const selectedEndHour = moment(salon.end_working_hours[day]).hour()
         const slots = []
         for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
             

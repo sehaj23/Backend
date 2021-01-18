@@ -101,22 +101,9 @@ const SalonSchema = new mongoose.Schema({
         max: 5
     },
     location: {
-        type:{
-        address_line:{
-            type: String,    
-        },
-        area: {
-            type: String,    
-        },
-        city:{
-            type: String,    
-        },
-        state:{
-            type: String,    
-        },  
-    }
+      type:String
     },
-  
+
     insta_link: {
         type: String
     },
