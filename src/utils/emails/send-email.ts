@@ -55,7 +55,7 @@ export default class SendEmail {
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
         console.log("emaill")
-        const loop = services.map(s=>{s.service_name + "<br>"})
+        const loop = services.map(s=>{ return s.service_name + " <br>"})
         console.log(loop)
 
 
