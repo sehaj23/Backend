@@ -523,12 +523,12 @@ export default class BookingController extends BaseController {
         }
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const employeeReq = this.employeeService.getId(booking.services[0].employee_id)
-
-        const [salon, employee] = await Promise.all([salonReq, employeeReq])
+        const userReq = this.userService.getId(userId)
+        const [salon, employee,user] = await Promise.all([salonReq, employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+       
 
-        const notify = Notify.rescheduledBooking(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
+        const notify = Notify.rescheduledBooking(vendor,user,booking,employee,salon)
         console.log(notify)
         res.send({ message: "Booking Confirmed", success: true })
 

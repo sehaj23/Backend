@@ -1,8 +1,10 @@
 
+import moment = require("moment")
 import { BookingSI } from "../interfaces/booking.interface"
 import EmployeeSI from "../interfaces/employee.interface"
-import SalonSI, { LocationI } from "../interfaces/salon.interface"
+import SalonSI, { LocationI, SalonI } from "../interfaces/salon.interface"
 import { UserSI } from "../interfaces/user.interface"
+import { VendorI } from "../interfaces/vendor.interface"
 import SendEmail from "../utils/emails/send-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import OtpService from "./otp.service"
@@ -13,6 +15,7 @@ export default class Notify {
 
     static bookingConfirm = async (user:UserSI,salon:SalonSI,employee:EmployeeSI,booking:BookingSI) => {
       try{  
+        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         let total=0
         let promo_code
         for(var i=0;i<booking.services.length;i++){
@@ -23,7 +26,7 @@ export default class Notify {
                 promo_code=""
               }
         }
-      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), booking.services[0].service_time.toString(),employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services)
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services)
       }catch(e){
         console.log(e)
       } 
@@ -105,19 +108,33 @@ export default class Notify {
  
 
 
-    static rescheduledBooking = (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string,salonEmail:string,salonName:string,bookingIdNumeric:string) => {
-        //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
+    static rescheduledBooking = (vendor:VendorI,user:UserSI,booking:BookingSI,employee:EmployeeSI,salon:SalonI) => {
+      let total=0
+      let promo_code
+      for(var i=0;i<booking.services.length;i++){
+        total =  total+ booking.services[i].service_total_price
+            if(booking.services[i].service_discount_code != null){
+              promo_code=booking.services[i].service_discount_code
+            }else{
+              promo_code=""
+            }
+      }
+      const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+      SendEmail.rescheduleVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services,user.name)
+      
           // TODO: Add notification data and the route
 
+      
+
           try {
-            sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking Reschedule Accepted",body: `The booking you rescheduled for ${dateTime} has been accepted`},data:{booking_id:bookingId,status:"Requested"}})
+            sendNotificationToDevice(employee.fcm_token, { notification: {title:"Booking Reschedule Accepted",body: `The booking you rescheduled for ${bookingTime} has been accepted`},data:{booking_id:booking._id,status:"Requested"}})
           } catch (error) {
             
           }
 
           try {
-            sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Reschedule Accepted",body: `The rescheduled booking by ${employeeName} for ${dateTime} has been accepted’
-            `},data:{booking_id:bookingId,status:"Rescheduled"}})
+            sendNotificationToDevice(vendor.fcm_token, { notification: {title:"Booking Reschedule Accepted",body: `The rescheduled booking by ${employee.name} for ${bookingTime} has been accepted’
+            `},data:{booking_id:booking._id,status:"Rescheduled"}})
           } catch (error) {
             
           }
@@ -126,8 +143,8 @@ export default class Notify {
          
           //TODO: change the text of the uszer text 
           try {  
-           const vendorText = `The rescheduled booking by ${employeeName} for ${dateTime} has been accepted`
-          OtpService.sendMessage(vendorPhone, vendorText)
+           const vendorText = `The rescheduled booking by ${employee.name} for ${bookingTime} has been accepted`
+          OtpService.sendMessage(vendor.contact_number, vendorText)
 
             
           } catch (error) {

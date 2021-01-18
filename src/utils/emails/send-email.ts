@@ -54,10 +54,8 @@ export default class SendEmail {
     }
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
-        console.log("emaill")
         const loop = services.map(s=>{ return s.service_name + " <br>"})
-        console.log(loop)
-
+      
 
         fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
@@ -426,6 +424,77 @@ static rescheduleUser = async (userEmail: string,userName:string) => {
             }).catch(
                 function (err) {
                     SendEmail.logEmailStatus(false, 'reschedule booking', 'user', userEmail, err.message)
+                });
+    })
+
+}
+static rescheduleVendor = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[],customer_name:string) => {   
+    const loop = services.map(s=>{ return s.service_name + " <br>"})
+  
+
+    fs.readFile(`${__dirname}/rescheduleVendor.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        if (err) {
+            SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
+                 return
+              }
+              
+              data = data.replaceAll("[Vendor Name]", salonName)
+              data = data.replaceAll("[Customer name]", customer_name)
+              data = data.replaceAll("[ID]", bookingIdNumeric)
+              data = data.replaceAll("[date&time]",dateTime)
+              data = data.replaceAll("[staff]",emp_name)
+              data =  data.replaceAll("[services]",loop.toString())
+              data = data.replaceAll("[serviceLocation]",location)
+              data = data.replaceAll("[amount]",amount)
+              data = data.replaceAll("[payment-method]",payment_method)
+              data = data.replaceAll("[promo]",promo)
+              //data = data.replaceAll("[services]",services)
+        // TODO: string interpolation for the html content
+
+        const params = {
+            Destination: { /* required */
+                ToAddresses: [
+                    'preetsc27@gmail.com',
+                    'kashish@zattire.com',
+                    'pushaan@zattire.com',
+                    'developers@zattire.com',
+                    salonEmail
+                    /* more items */
+                ]
+            },
+            Message: { /* required */
+                Body: { /* required */
+                    Html: {
+                        Charset: "UTF-8",
+                        Data: data
+                    },
+                    Text: {
+                        Charset: "UTF-8",
+                        Data: "Hello!\n Welcome to Zattire. 33"
+                    }
+                },
+                Subject: {
+                    Charset: 'UTF-8',
+                    Data: 'Welcome to zattire'
+                }
+            },
+            Source: 'info@zattire.com', /* required */
+            ReplyToAddresses: [
+                'info@zattire.com',
+                /* more items */
+            ],
+        };
+
+        // Create the promise and SES service object
+        var sendPromise = new AWS.SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
+
+        // Handle promise's fulfilled/rejected states
+        sendPromise.then(
+            function (data) {
+                SendEmail.logEmailStatus(true, 'booking confirmed', 'salon', salonEmail, data.MessageId)
+            }).catch(
+                function (err) {
+                    SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 });
     })
 
