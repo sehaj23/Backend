@@ -19,6 +19,8 @@ export default class Notify {
           total =  total+ booking.services[i].service_total_price
               if(booking.services[i].service_discount_code != null){
                 promo_code=booking.services[i].service_discount_code
+              }else{
+                promo_code=""
               }
         }
       SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), booking.services[0].service_time.toString(),employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services)

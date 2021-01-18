@@ -53,13 +53,11 @@ export default class SendEmail {
         const mail = new MailComposer(mailOptions);
     }
 
-    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {
-      services.forEach(s=>console.log(s.service_name))
-
-       
+    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
         console.log("emaill")
-        const loop = services.map(s=>{s.service_name})
+        const loop = services.map(s=>{s.service_name + "<br>"})
         console.log(loop)
+
 
         fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
@@ -70,7 +68,7 @@ export default class SendEmail {
                   data = data.replaceAll("[ID]", bookingIdNumeric)
                   data = data.replaceAll("[date&time]",dateTime)
                   data = data.replaceAll("[staff]",emp_name)
-                  data =  data.replaceAll("[services]",services.forEach(s=>{s.service_name})+"<br>")
+                  data =  data.replaceAll("[services]",loop.toString())
                   data = data.replaceAll("[serviceLocation]",location)
                   data = data.replaceAll("[amount]",amount)
                   data = data.replaceAll("[payment-method]",payment_method)
