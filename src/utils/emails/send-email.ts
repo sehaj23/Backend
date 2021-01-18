@@ -63,7 +63,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
-                        salonEmail
+                      //  salonEmail
                         /* more items */
                     ]
                 },
@@ -121,7 +121,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
-                        salonEmail
+                    //    salonEmail
                         /* more items */
                     ]
                 },
@@ -202,9 +202,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -270,9 +270,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -328,9 +328,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
