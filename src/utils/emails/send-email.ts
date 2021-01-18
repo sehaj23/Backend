@@ -9,7 +9,7 @@ import { ServiceSI } from "../../interfaces/service.interface";
 import { BookingServiceI } from "../../interfaces/booking.interface";
 
 type EmailSentTo = 'salon' | 'user' | 'admin' | 'employee'
-type EmailType = 'booking requested' | 'booking confirmed' | 'signup' | 'booking completed' | 'forgot password'
+type EmailType = 'booking requested' | 'booking confirmed' | 'signup' | 'booking completed' | 'forgot password' | 'reschedule booking'
 
 export default class SendEmail {
 
@@ -54,6 +54,12 @@ export default class SendEmail {
     }
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {
+      services.forEach(s=>console.log(s.service_name))
+
+       
+        console.log("emaill")
+        const loop = services.map(s=>{s.service_name})
+        console.log(loop)
 
         fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
@@ -64,7 +70,7 @@ export default class SendEmail {
                   data = data.replaceAll("[ID]", bookingIdNumeric)
                   data = data.replaceAll("[date&time]",dateTime)
                   data = data.replaceAll("[staff]",emp_name)
-                  data =  data.replaceAll("[services]",services.map(s=>{s.service_name})+"<br>")
+                  data =  data.replaceAll("[services]",services.forEach(s=>{s.service_name})+"<br>")
                   data = data.replaceAll("[serviceLocation]",location)
                   data = data.replaceAll("[amount]",amount)
                   data = data.replaceAll("[payment-method]",payment_method)
@@ -99,9 +105,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -157,9 +163,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -218,9 +224,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -286,9 +292,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -344,9 +350,9 @@ export default class SendEmail {
                         Data: 'Welcome to zattire'
                     }
                 },
-                Source: 'preet@zattire.com', /* required */
+                Source: 'info@zattire.com', /* required */
                 ReplyToAddresses: [
-                    'preet@zattire.com',
+                    'info@zattire.com',
                     /* more items */
                 ],
             };
@@ -367,4 +373,66 @@ export default class SendEmail {
     }
 
 
+
+static rescheduleUser = async (userEmail: string,userName:string) => {
+
+    fs.readFile(`${__dirname}/reschedule-user.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        if (err) {
+            SendEmail.logEmailStatus(false, 'reschedule booking', 'user', userEmail, err.message)
+            return
+        }
+        data = data.replaceAll("[Customer Name]", userName)
+        // TODO: string interpolation for the html content
+            console.log("sending emailll")
+        const params = {
+            Destination: { /* required */
+                ToAddresses: [
+                    'preetsc27@gmail.com',
+                    'kashish@zattire.com',
+                    'pushaan@zattire.com',
+                    'developers@zattire.com',
+                    userEmail
+                    /* more items */
+                ]
+            },
+            Message: { /* required */
+                Body: { /* required */
+                    Html: {
+                        Charset: "UTF-8",
+                        Data: data,
+                    },
+                    Text: {
+                        Charset: "UTF-8",
+                        Data: "Hello!\n Welcome to Zattire. 33"
+                    }
+                },
+                Subject: {
+                    Charset: 'UTF-8',
+                    Data: 'Welcome to zattire'
+                }
+            },
+            Source: 'info@zattire.com', /* required */
+            ReplyToAddresses: [
+                'info@zattire.com',
+                /* more items */
+            ],
+        };
+
+        // Create the promise and SES service object
+        var sendPromise = new AWS.SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
+
+        // Handle promise's fulfilled/rejected states
+        sendPromise.then(
+            function (data) {
+                SendEmail.logEmailStatus(true, 'reschedule booking', 'user', userEmail, data.MessageId)
+            }).catch(
+                function (err) {
+                    SendEmail.logEmailStatus(false, 'reschedule booking', 'user', userEmail, err.message)
+                });
+    })
+
 }
+
+
+}
+

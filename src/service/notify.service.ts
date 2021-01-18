@@ -75,8 +75,12 @@ export default class Notify {
         //if required
     }
 
-    static rescheduledPending = async (userPhone: string, userEmail: string, userFCM: string, salonPhone: string, salonEmail: string, salonName: string, employeePhone: string, employeeFCMs: string[], bookingId: string, bookingIdNumeric: string, dateTime: string) => {
-      //  SendEmail.bookingConfirm(userEmail, salonName, bookingId, bookingIdNumeric, dateTime)
+    static rescheduledPending = async (userPhone: string, userEmail: string, userFCM: string, salonPhone: string, salonEmail: string, salonName: string, employeePhone: string, employeeFCMs: string[], bookingId: string, bookingIdNumeric: string, dateTime: string,userName:string) => {
+       try {
+        SendEmail.rescheduleUser(userEmail, userName)
+       } catch (error) {
+         console.log(error)
+       } 
         // TODO: Add notification data and the route
        try {
         sendNotificationToDevice(userFCM, { notification: {title:"Booking Rescheduled",body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`},data:{booking_id:bookingId,status:"Rescheduled and Pending",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
@@ -92,8 +96,6 @@ export default class Notify {
         } catch (error) {
           
         }
-        
-      
          //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
         //if required
     }
@@ -160,7 +162,7 @@ export default class Notify {
         
         // TODO: Add notification data and the route
         try {
-          sendNotificationToDevice(userFCM, { notification: {title:"Service start",body: `Enjoy the Service`},data:{booking_id:bookingId,status:"Start"}})
+          sendNotificationToDevice(userFCM, { notification: {title:"Service started",body: `The service has been started . Rate the salon to help us discover how well your experience went`},data:{booking_id:bookingId,status:"Start"}})
           //TODO: change the text of the uszer text 
         } catch (error) {
           

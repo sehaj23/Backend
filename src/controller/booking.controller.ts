@@ -630,7 +630,7 @@ export default class BookingController extends BaseController {
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
+        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime,user.name)
         console.log(notify)
 
         res.status(200).send(booking)

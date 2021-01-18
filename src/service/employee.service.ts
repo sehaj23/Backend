@@ -125,11 +125,11 @@ export default class EmployeeService extends BaseService {
         if(starting_hours.length < day) throw Error(`starting hours not found for day number ${day} `)
         const selectedStartingHour = moment(starting_hours[day])
         if(salon.end_working_hours.length < day )throw Error(`ending hours not found for day number ${day} `)
-        const selectedEndHour = moment(salon.end_working_hours[day]).hour()
+        const selectedEndHour = moment(salon.end_working_hours[day])
         const slots = []
         for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
             
-            const time = moment(i).local().format('hh:mm a')
+            const time = moment(i).utcOffset("+05:30").format('hh:mm a')
             const theSlot = {
                 store_date: time,
                 absent: false
@@ -137,7 +137,7 @@ export default class EmployeeService extends BaseService {
             if(employeesAbsenteeism !== null){
                 const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
                 for (let slot of employeeAbsentSlots) {
-                    slot = moment(slot).format('hh:mm a')
+                    slot = moment(slot).utcOffset("+05:30").format('hh:mm a')
                     if (slot === time) {
                             theSlot.absent =  true
                     }
