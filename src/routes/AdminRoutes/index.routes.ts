@@ -7,6 +7,7 @@ import loginRouter from "./login.router";
 import makeupArtistRouter from "./makeupArtist.route";
 import offerRouter from "./offer.router";
 import promoCodeRouter from "./promo-code.router";
+import reportAppRouter from "./report-app.router";
 import revenueRouter from "./revenue.router";
 import salonRouter from "./salon.router";
 import userRouter from "./user.router";
@@ -34,6 +35,7 @@ router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
 router.use("/revenue", revenueRouter)
 router.use("/promo-code", promoCodeRouter)
+router.use("/report-app", reportAppRouter)
 router.use("/zattire-services", zattireServiceRouter)
 
 export default router
