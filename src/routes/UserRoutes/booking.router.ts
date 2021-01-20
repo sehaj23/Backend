@@ -58,5 +58,6 @@ bookingRouter.patch("/cancel/:bookingId", UserverifyToken, bc.cancelBooking )
 bookingRouter.post("/feedback/:id",UserverifyToken,bc.bookingFeedback)
 bookingRouter.post("/book-again",UserverifyToken,bc.bookAgain)
 bookingRouter.post("/employee-service",UserverifyToken,bc.getEmployeebyService)
+bookingRouter.post("/send-invoice",bc.sendInvoice)
 
 export default bookingRouter
