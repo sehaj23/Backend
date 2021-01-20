@@ -1,12 +1,13 @@
 
 import moment = require("moment")
-import { BookingSI } from "../interfaces/booking.interface"
-import EmployeeSI from "../interfaces/employee.interface"
+import { BookingI, BookingSI } from "../interfaces/booking.interface"
+import EmployeeSI, { EmployeeI } from "../interfaces/employee.interface"
 import SalonSI, { LocationI, SalonI } from "../interfaces/salon.interface"
-import { UserSI } from "../interfaces/user.interface"
+import UserI, { UserSI } from "../interfaces/user.interface"
 import { VendorI } from "../interfaces/vendor.interface"
 import SendEmail from "../utils/emails/send-email"
 import sendNotificationToDevice from "../utils/send-notification"
+import BookingService from "./booking.service"
 import OtpService from "./otp.service"
 
 export default class Notify {
@@ -16,17 +17,8 @@ export default class Notify {
     static bookingConfirm = async (user:UserSI,salon:SalonSI,employee:EmployeeSI,booking:BookingSI) => {
       try{  
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        let total=0
-        let promo_code
-        for(var i=0;i<booking.services.length;i++){
-          total =  total+ booking.services[i].service_total_price
-              if(booking.services[i].service_discount_code != null){
-                promo_code=booking.services[i].service_discount_code
-              }else{
-                promo_code=""
-              }
-        }
-      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services)
+        const getDetails = Notify.getTotalPromo(booking)
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services)
       }catch(e){
         console.log(e)
       } 
@@ -50,16 +42,23 @@ export default class Notify {
         //if required
     }
 
-    static bookingRequest = async (vendorPhone: string, employeeFCMs: string[], bookingId: string, employeeName: string, dateTime: string,vendorFCM:string[],salonEmail:string,salonName:string,bookingIdNumeric:string) => {
-      //  SendEmail.bookingConfirm(salonEmail, salonName, bookingId, bookingIdNumeric, dateTime)
+    static bookingRequest = async (vendor:VendorI,employee:EmployeeI,salon:SalonI,booking:BookingSI,user:UserI) => {
+     
+      const getDetails = Notify.getTotalPromo(booking)
+      const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+      try {
+        SendEmail.bookingRequestVendor(salon.email,salon.name,booking._id,booking.booking_numeric_id.toString(),bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services,user.name,vendor.name)
+      } catch (error) {
+        console.log(error)
+      }  
         // TODO: Add notification data and the route
         try {
-          sendNotificationToDevice(vendorFCM, { notification: {title:"Booking Request",body: `${employeeName} has received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+          sendNotificationToDevice(vendor.fcm_token, { notification: {title:"Booking Request",body: `${employee.name} has received a new booking for ${bookingTime}`},data:{booking_id:booking._id,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
         } catch (error) {
           console.log(error)
         }
         try {
-          sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking Request",body: `You have received a new booking for ${dateTime}`},data:{booking_id:bookingId,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+          sendNotificationToDevice(employee.fcm_token, { notification: {title:"Booking Request",body: `You have received a new booking for ${bookingTime}`},data:{booking_id:booking._id,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
         } catch (error) {
           console.log(error)
         }
@@ -68,9 +67,9 @@ export default class Notify {
          //check
         //TODO: change the text of the uszer text 
         try {
-          const vendorText = `Received a new booking for ${dateTime}`
+          const vendorText = `Received a new booking for ${bookingTime}`
           console.log("sending message")
-          OtpService.sendMessage(vendorPhone, vendorText)
+          OtpService.sendMessage(vendor.contact_number, vendorText)
         } catch (error) {
           console.log(error)
         }
@@ -109,18 +108,10 @@ export default class Notify {
 
 
     static rescheduledBooking = (vendor:VendorI,user:UserSI,booking:BookingSI,employee:EmployeeSI,salon:SalonI) => {
-      let total=0
-      let promo_code
-      for(var i=0;i<booking.services.length;i++){
-        total =  total+ booking.services[i].service_total_price
-            if(booking.services[i].service_discount_code != null){
-              promo_code=booking.services[i].service_discount_code
-            }else{
-              promo_code=""
-            }
-      }
+   
       const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-      SendEmail.rescheduleVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,total.toString(),promo_code,booking.services,user.name)
+      const getDetails = Notify.getTotalPromo(booking)
+      SendEmail.rescheduleVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services,user.name)
       
           // TODO: Add notification data and the route
 
@@ -207,6 +198,73 @@ export default class Notify {
         // OtpService.sendMessage(userPhone, userText)
         //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
         //if required
+    }
+
+    static vendorCancelled = (user:UserSI,salon:SalonSI,employee:EmployeeSI,booking:BookingSI) => {
+      const dateTime = Notify.formatDate(booking)
+     try {
+      SendEmail.cancelUser(user.email,user.name,salon.name)
+     } catch (error) {
+       console.log(error)
+     }
+     
+       // TODO: Add notification data and the route
+
+       try {
+         sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Cancelled",body: `Sorry Booking has been cancelled`},data:{booking_id:booking._id,status:""}})
+         //TODO: change the text of the uszer text 
+       } catch (error) {
+         console.log(error)
+       }
+    
+       const userText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${salon.name}`
+       OtpService.sendMessage(user.phone, userText)
+       //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
+       //if required
+   }
+
+   static userCancelled = (user:UserSI,salon:SalonSI,booking:BookingSI) => {
+    const dateTime = Notify.formatDate(booking)
+   try {
+    SendEmail.cancelVendor(salon.email,user.name,salon.name)
+   } catch (error) {
+     console.log(error)
+   }
+   
+     // TODO: Add notification data and the route
+
+     try {
+       sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Cancelled",body: `Sorry Booking has been cancelled`},data:{booking_id:booking._id,status:""}})
+       //TODO: change the text of the uszer text 
+     } catch (error) {
+       console.log(error)
+     }
+  
+     const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
+     OtpService.sendMessage(salon.contact_number, salonText)
+     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
+     //if required
+ }
+
+
+     public static getTotalPromo(booking:BookingSI){
+      let total=0
+      let promo_code
+      for(var i=0;i<booking.services.length;i++){
+        total =  total+ booking.services[i].service_total_price
+            if(booking.services[i].service_discount_code != null){
+              promo_code=booking.services[i].service_discount_code
+            }else{
+              promo_code="N/A"
+            }
+      }
+      return {total,promo_code}
+    }
+
+
+    public static formatDate(booking:BookingSI){
+      const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+      return bookingTime
     }
 
 
