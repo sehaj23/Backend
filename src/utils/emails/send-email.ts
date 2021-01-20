@@ -34,10 +34,6 @@ export default class SendEmail {
           }
         const mail = new MailComposer(mailOptions);
     }
-<<<<<<< HEAD
-    
-
-=======
     static bookingInvoice = async () => {
         fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             console.log(data)
@@ -56,7 +52,6 @@ export default class SendEmail {
           }
         const mail = new MailComposer(mailOptions);
     }
->>>>>>> dev
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
         const loop = services.map(s=>{ return s.service_name + " <br>"})
