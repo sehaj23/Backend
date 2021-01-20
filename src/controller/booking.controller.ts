@@ -275,7 +275,7 @@ export default class BookingController extends BaseController {
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
-        const userReq = this.userService.get(userId) as UserI
+        const userReq = this.userService.getId(userId) as UserI
         const [employee,user] = await Promise.all([employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
