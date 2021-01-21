@@ -1,19 +1,9 @@
-FROM node:10.20.1-alpine3.11
-# Env
-ENV NODE_ENV test
-
-# Create Directory for the Container
+FROM node:12.18-alpine
 WORKDIR /usr/src/app
-# Only copy the package.json file to work directory
-COPY package.json .
-# Install all Packages
-RUN npm install
-RUN npm run vcheck
-# Copy all other source code to work directory
 COPY . .
-# TypeScript
+RUN npm install
 RUN npm run build
+ENV NODE_ENV=production
+ENV REDIS_HOST=10.0.0.104
 EXPOSE 8082
-
-# Start
-CMD [ "npm", "start" ]
+CMD ["node", "dist/server.js"]
