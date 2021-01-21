@@ -103,7 +103,7 @@ const SalonSchema = new mongoose.Schema({
     location: {
       type:String
     },
-
+  
     insta_link: {
         type: String
     },

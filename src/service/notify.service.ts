@@ -258,6 +258,7 @@ export default class Notify {
               promo_code="N/A"
             }
       }
+      total = total + (total * 18/100)
       return {total,promo_code}
     }
 

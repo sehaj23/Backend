@@ -81,7 +81,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
-                        salonEmail
+                      //  salonEmail
                         /* more items */
                     ]
                 },
@@ -139,7 +139,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
-                        salonEmail
+                    //    salonEmail
                         /* more items */
                     ]
                 },
