@@ -85,7 +85,10 @@ app.use(cors({
 export const io: SocketIO.Server = require("socket.io")(httpApp);
 startSocketIO(io)
 
+const URL_PREFIX = '/main-server'
+
 const s3 = new aws.S3();
+
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -97,7 +100,7 @@ const upload = multer({
     },
   }),
 }).array("upload", 1);
-app.post("/upload", function (request, response, next) {
+app.post(`${URL_PREFIX}/upload`, function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
       console.log(error);
@@ -122,14 +125,14 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api", router);
-app.use("/api/v", Vendorrouter)
-app.use("/api/u", Userrouter)
-app.use("/api/vendorapp", VendorApprouter)
+app.use(`${URL_PREFIX}/api`, router);
+app.use(`${URL_PREFIX}/api/v`, Vendorrouter)
+app.use(`${URL_PREFIX}/api/u`, Userrouter)
+app.use(`${URL_PREFIX}/api/vendorapp`, VendorApprouter)
 
 
 // TEMP: to clear redis
-app.get("/r/clr", async (req: express.Request, res: express.Response) => {
+app.get(`${URL_PREFIX}/r/clr`, async (req: express.Request, res: express.Response) => {
   try {
     redisClient.flushdb();
     res.status(200).send({ msg: 'Redis store cleared' })
@@ -138,7 +141,7 @@ app.get("/r/clr", async (req: express.Request, res: express.Response) => {
   }
 })
 
-app.get("/", (req, res) => {
+app.get(`${URL_PREFIX}`, (req, res) => {
   res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} servers.`)
 })
 
@@ -147,7 +150,9 @@ app.use(function (req, res, next) {
   var err = new Error("Not Found");
   err.name = "404";
   res.status(404);
-  res.send(err);
+  res.send({
+    message: `Page not found ${req.url} : ${req.baseUrl} : ${req.hostname}: ${req.ip}`,
+  });
 });
 
 
