@@ -633,7 +633,7 @@ export default class SalonService extends BaseService {
                                         "services.category": {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
                                         },
-                                        //  "$$services.options.at_home":false
+                                       
 
                                 }
 

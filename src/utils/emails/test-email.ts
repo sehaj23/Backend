@@ -7,6 +7,7 @@ import MailComposer = require("nodemailer/lib/mail-composer");
 
 function testEmail(){
     fs.readFile(`${__dirname}/vendor-invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+    
         pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
             const s3 = new aws.S3()
             var params: PutObjectRequest = {Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`,  Body: stream, ACL: 'public-read'};
@@ -17,9 +18,9 @@ function testEmail(){
                 }
                 const pdfURL = s3data.Location
                 const mailOptions: Mail.Options ={
-                    from: 'preet@zattire.com',
-                    replyTo: 'preet@zattire.com',
-                    to: 'preetsc27@gmail.com',
+                    from: 'info@zattire.com',
+                    replyTo: 'info@zattire.com',
+                    to: 'sehaj23chawla@gmail.com',
                     subject: 'SES message with invoice',
                     html: data,
                     attachments: [

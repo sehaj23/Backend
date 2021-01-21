@@ -39,8 +39,8 @@ export default class SendEmail {
             console.log(data)
         })
         const mailOptions: Mail.Options ={
-            from: 'source@example.com',
-            replyTo: 'source@example.com',
+            from: 'info@zattire.com',
+            replyTo: 'info@zattire.com',
             to: 'sehaj23chawla@gmail.com',
             subject: 'Sample SES message with attachment',
             text: 'Hey folks, this is a test message from SES with an attachment.',
