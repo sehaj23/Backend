@@ -24,6 +24,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import UserI from "../interfaces/user.interface";
 
 
 export default class BookingController extends BaseController {
@@ -274,15 +275,15 @@ export default class BookingController extends BaseController {
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
-
-        const [employee] = await Promise.all([employeeReq])
+        const userReq = this.userService.getId(userId) as UserI
+        const [employee,user] = await Promise.all([employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         // if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
-        const notify = Notify.bookingRequest(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
+        const notify = Notify.bookingRequest(vendor,employee,salon,booking,user)
         console.log(notify)
         res.send(booking);
     })
@@ -502,6 +503,10 @@ export default class BookingController extends BaseController {
         if (status === "Done") {
             const notify = Notify.serviceEnd(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         }
+        if (status ==='Vendor Cancelled'){
+            const notify =  Notify.vendorCancelled(user, salon, employee, booking)
+        }
+        
         res.send({ message: "Booking status changed", success: "true" })
 
     })
@@ -523,12 +528,12 @@ export default class BookingController extends BaseController {
         }
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const employeeReq = this.employeeService.getId(booking.services[0].employee_id)
-
-        const [salon, employee] = await Promise.all([salonReq, employeeReq])
+        const userReq = this.userService.getId(userId)
+        const [salon, employee,user] = await Promise.all([salonReq, employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+       
 
-        const notify = Notify.rescheduledBooking(vendor.contact_number, employee.fcm_token, booking.id, employee.name, bookingTime, vendor.fcm_token, salon.email, salon.name, booking.booking_numeric_id.toString())
+        const notify = Notify.rescheduledBooking(vendor,user,booking,employee,salon)
         console.log(notify)
         res.send({ message: "Booking Confirmed", success: true })
 
@@ -630,7 +635,7 @@ export default class BookingController extends BaseController {
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
+        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime,user.name)
         console.log(notify)
 
         res.status(200).send(booking)
@@ -738,6 +743,12 @@ export default class BookingController extends BaseController {
         const bookingId = req.params.bookingId
         const { reason } = req.body
         const data = await this.service.cancelBooking(userId, bookingId, reason)
+
+        const userReq =  this.userService.getId(userId)
+        const salonReq = this.salonService.getId(data.salon_id.toString())
+        const [user,salon] = await Promise.all([userReq,salonReq])
+
+        const notify = Notify.userCancelled(user,salon,data)
         res.send(data)
     })
 
@@ -766,6 +777,11 @@ export default class BookingController extends BaseController {
         const { booking_id } = req.body
         const cart = await this.service.bookAgain(booking_id)
         res.send(cart)
+    })
+
+    sendInvoice = controllerErrorHandler(async (req: Request, res: Response) => {
+        const booking = await this.service.sendInvoice()
+        res.send(booking)
     })
 
 }

@@ -717,6 +717,13 @@ export default class SalonController extends BaseController {
         res.status(200).send(salon)
     })
 
+    getUnapprovedSalon = controllerErrorHandler(async (req: Request, res: Response) => {
+        const salon = await this.service.getWithPagination({approved:false})
+        res.status(200).send(salon)
+    })
+
+    
+
 
 
 
