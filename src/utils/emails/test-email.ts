@@ -34,7 +34,7 @@ function testEmail(orderId:string,orderDate:string,orderTime:string,customerName
                 const mailOptions: Mail.Options ={
                     from: 'info@zattire.com',
                     replyTo: 'info@zattire.com',
-                    to: 'sehaj23chawla@gmail.com'
+                    to: 'sehaj23chawla@gmail.com',
                     subject: 'SES message with invoice',
                     html: data,
                     attachments: [
