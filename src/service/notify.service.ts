@@ -260,6 +260,15 @@ export default class Notify {
    }
    
  }
+ static signupUser = (user:UserSI) => {
+  try {
+   SendEmail.signupUser(user.email,user.name)
+    
+   } catch (error) {
+     console.log(error)
+   }
+   
+ }
 
 
      public static getTotalPromo(booking:BookingSI){
