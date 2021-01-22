@@ -507,7 +507,7 @@ export default class BookingController extends BaseController {
             const notify =  Notify.vendorCancelled(user, salon, employee, booking)
         }
         if (status === "Completed"){
-           const notify = Notify.bookingCompletedInvoice(user,salon,booking,employee)
+           const notify =await  Notify.bookingCompletedInvoice(user,salon,booking,employee)
         }
         
         res.send({ message: "Booking status changed", success: "true" })
