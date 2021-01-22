@@ -54,7 +54,7 @@ export default class SendEmail {
     }
 
     static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
-        const loop = services.map(s=>{ return s.service_name + " <br>"})
+        const serviceList = services.map(s=>{ return s.service_name + " <br>"})
       
 
         fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
@@ -66,7 +66,7 @@ export default class SendEmail {
                   data = data.replaceAll("[ID]", bookingIdNumeric)
                   data = data.replaceAll("[date&time]",dateTime)
                   data = data.replaceAll("[staff]",emp_name)
-                  data =  data.replaceAll("[services]",loop.toString())
+                  data =  data.replaceAll("[services]",serviceList.toString())
                   data = data.replaceAll("[serviceLocation]",location)
                   data = data.replaceAll("[amount]",amount)
                   data = data.replaceAll("[payment-method]",payment_method)

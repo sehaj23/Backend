@@ -506,6 +506,9 @@ export default class BookingController extends BaseController {
         if (status ==='Vendor Cancelled'){
             const notify =  Notify.vendorCancelled(user, salon, employee, booking)
         }
+        if (status === "Completed"){
+           const notify = Notify.bookingCompletedInvoice(user,salon,booking,employee)
+        }
         
         res.send({ message: "Booking status changed", success: "true" })
 
@@ -779,9 +782,6 @@ export default class BookingController extends BaseController {
         res.send(cart)
     })
 
-    sendInvoice = controllerErrorHandler(async (req: Request, res: Response) => {
-        const booking = await this.service.sendInvoice()
-        res.send(booking)
-    })
+   
 
 }

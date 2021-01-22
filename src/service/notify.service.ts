@@ -6,6 +6,7 @@ import SalonSI, { LocationI, SalonI } from "../interfaces/salon.interface"
 import UserI, { UserSI } from "../interfaces/user.interface"
 import { VendorI } from "../interfaces/vendor.interface"
 import SendEmail from "../utils/emails/send-email"
+import testEmail from "../utils/emails/test-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import BookingService from "./booking.service"
 import OtpService from "./otp.service"
@@ -243,7 +244,21 @@ export default class Notify {
      const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
      OtpService.sendMessage(salon.contact_number, salonText)
      //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
+    
+    
      //if required
+ }
+
+ static bookingCompletedInvoice = (user:UserSI,salon:SalonSI,booking:BookingSI,employee:EmployeeI) => {
+  try {
+    const getDetails = Notify.getTotalPromo(booking)
+  const gst =   getDetails.total * 18/100
+  const totalwithGst = getDetails.total +gst
+   testEmail(booking.booking_numeric_id.toString(),moment(booking.services[0].service_time).format("DD/mm/yyyy"),moment(booking.services[0].service_time).format("hh:mm:a"),user.name,booking.address??"",salon.name,salon.location,employee.name,getDetails.total.toString(),booking.payment_type,gst.toString(),totalwithGst.toString())
+   } catch (error) {
+     console.log(error)
+   }
+   
  }
 
 

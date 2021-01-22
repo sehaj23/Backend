@@ -4,10 +4,24 @@ import * as fs from 'fs';
 import * as pdf from 'html-pdf';
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
+import { address } from "faker";
 
-function testEmail(){
-    fs.readFile(`${__dirname}/vendor-invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-    
+function testEmail(orderId:string,orderDate:string,orderTime:string,customerName:string,customerAddress,salonName:string,salonAddress:string,stylist:string,subtotal:string,payment:string,gst:string,finalTotal:string){
+    fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        
+    data.replaceAll("[GSTIN]","07AABCZ2603G1ZL")
+    data.replaceAll("[CIN]","U74999DL2018PTC339065")
+    data.replaceAll("[Address]","8/5, South patel nagar, New Delhi-110008")
+    data.replaceAll("[Order ID]",orderId)
+    data.replaceAll("[Order Date]",orderDate)
+    data.replaceAll("[Order Time]",orderTime)
+    data.replaceAll("[Customer Name]",customerName)
+    data.replaceAll("[Customer Address]",customerAddress)
+    data.replaceAll("[Salon Name]",salonName)
+    data.replaceAll("[Salon Address]",salonAddress)
+    data.replaceAll("[Stylist]",stylist.toString())
+    data.replaceAll("[amt_3]",subtotal)
+    data.replaceAll("[payment]",payment)
         pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
             const s3 = new aws.S3()
             var params: PutObjectRequest = {Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`,  Body: stream, ACL: 'public-read'};
@@ -20,7 +34,7 @@ function testEmail(){
                 const mailOptions: Mail.Options ={
                     from: 'info@zattire.com',
                     replyTo: 'info@zattire.com',
-                    to: 'sehaj23chawla@gmail.com',
+                    to: ['sehaj23chawla@gmail.com','kashish@zattire.com'],
                     subject: 'SES message with invoice',
                     html: data,
                     attachments: [
