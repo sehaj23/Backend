@@ -22,6 +22,11 @@ export default class Notify {
       }catch(e){
         console.log(e)
       } 
+      try {
+        sendNotificationToDevice("dQRmA4ylYE52s-dvl9QnSF:APA91bEG0qxPTwZEk_F0N9gB5ab-Q8y-Xc88A_7-DcLp37XAs6ppRKkcqfD87MUImbOi6tc2dPqvVQqG-MOpQ2-ccC_EGqrer12HlL5y09LFakcXccR6tx03jmRoaAXx1CuNwTsyqzBz", { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking._id,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+      } catch (error) {
+        
+      }
       // TODO: Add notification data and the route
       try {
         sendNotificationToDevice(user.fcm_token, { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking._id,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
@@ -61,6 +66,12 @@ export default class Notify {
           sendNotificationToDevice(employee.fcm_token, { notification: {title:"Booking Request",body: `You have received a new booking for ${bookingTime}`},data:{booking_id:booking._id,status:"Requested",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
         } catch (error) {
           console.log(error)
+        }
+
+        try {
+          sendNotificationToDevice("dQRmA4ylYE52s-dvl9QnSF:APA91bEG0qxPTwZEk_F0N9gB5ab-Q8y-Xc88A_7-DcLp37XAs6ppRKkcqfD87MUImbOi6tc2dPqvVQqG-MOpQ2-ccC_EGqrer12HlL5y09LFakcXccR6tx03jmRoaAXx1CuNwTsyqzBz", { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking._id,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
+        } catch (error) {
+          
         }
       
       
@@ -151,6 +162,12 @@ export default class Notify {
           try {
             sendNotificationToDevice(employeeFCMs, { notification: {title:"Booking  Cancelled",body: `The rescheduled booking has been cancelled by the user`},data:{booking_id:bookingId,status:"Rescheduled and Cancelled"}})
             sendNotificationToDevice(vendorFCM, { notification: {title:"Booking  Cancelled",body: `The rescheduled booking has been cancelled by the user`},data:{booking_id:bookingId,status:"Rescheduled"}})
+
+          } catch (error) {
+            
+          }
+          try {
+            sendNotificationToDevice("dQRmA4ylYE52s-dvl9QnSF:APA91bEG0qxPTwZEk_F0N9gB5ab-Q8y-Xc88A_7-DcLp37XAs6ppRKkcqfD87MUImbOi6tc2dPqvVQqG-MOpQ2-ccC_EGqrer12HlL5y09LFakcXccR6tx03jmRoaAXx1CuNwTsyqzBz", { notification: {title:"Booking  Cancelled",body: `The rescheduled booking has been cancelled by the user`},data:{booking_id:bookingId,status:"Rescheduled and Cancelled"}})
           } catch (error) {
             
           }
