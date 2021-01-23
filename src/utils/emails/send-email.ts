@@ -53,7 +53,7 @@ export default class SendEmail {
         const mail = new MailComposer(mailOptions);
     }
 
-    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[]) => {   
+    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string,emp_name:string,location:string,payment_method:string,amount:string,promo:string,services:BookingServiceI[],userName:string) => {   
         const serviceList = services.map(s=>{ return s.service_name + " <br>"})
       
 
@@ -62,6 +62,7 @@ export default class SendEmail {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                      return
                   }
+                  data = data.replaceAll("[Customer Name]",userName)
                   data = data.replaceAll("[Salon Name]", salonName)
                   data = data.replaceAll("[ID]", bookingIdNumeric)
                   data = data.replaceAll("[date&time]",dateTime)
@@ -569,8 +570,8 @@ static bookingRequestVendor = async (salonEmail: string, salonName: string, book
             SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                  return
               }
-              data = data.replaceAll("[Customer name]",userName)
-              data = data.replaceAll("[Vendor Name]", salonName)
+              data = data.replaceAll("[Customer Name]",userName)
+              data = data.replaceAll("[Salon Name]", salonName)
               data = data.replaceAll("[ID]", bookingIdNumeric)
               data = data.replaceAll("[date&time]",dateTime)
               data = data.replaceAll("[staff]",emp_name)

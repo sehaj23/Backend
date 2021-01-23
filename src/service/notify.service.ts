@@ -19,7 +19,7 @@ export default class Notify {
       try{  
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         const getDetails = Notify.getTotalPromo(booking)
-      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services)
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services,user.name)
       }catch(e){
         console.log(e)
       } 
