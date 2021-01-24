@@ -35,7 +35,8 @@ export default class RevenueController extends BaseController {
     })
 
     adminTotalRevenuebySalonId = controllerErrorHandler(async (req: Request, res: Response) => {
-        const { start_date, end_date, salon_id, status } = req.query
+        const { start_date, end_date, status } = req.query
+        const salon_id =  req.params.id
         if (!start_date || !end_date) throw new ErrorResponse({ message: "start_date and end_date is required" })
         let salonIdCondition = {}
         if (salon_id) {

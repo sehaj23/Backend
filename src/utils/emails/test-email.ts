@@ -71,8 +71,18 @@ import { address } from "faker";
 // export default testEmail
 function testEmail(orderId:string,orderDate:string,orderTime:string,customerName:string,customerAddress,salonName:string,salonAddress:string,stylist:string,subtotal:string,payment:string,gst:string,finalTotal:string){
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-    
-        pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
+        if(err){
+            console.log(err)
+            return
+        }
+        console.log("1")
+       
+     pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
+         if(err){
+             console.log(err)
+             return
+         }
+         console.log("2")
             const s3 = new aws.S3()
             var params: PutObjectRequest = {Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`,  Body: stream, ACL: 'public-read'};
             s3.upload(params, function(err, s3data) {

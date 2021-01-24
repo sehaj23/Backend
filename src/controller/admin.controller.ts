@@ -22,4 +22,6 @@ export default class AdminController extends BaseController{
         }
         res.send(user)
     })
+
+    
 }

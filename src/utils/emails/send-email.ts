@@ -245,12 +245,14 @@ export default class SendEmail {
 
     static signupUser = async (userEmail:string,userName:string) => {
 
-        fs.readFile(`${__dirname}/signupUser.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/emailVerify.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
             }
             data = data.replaceAll("[username]", userName)
+            
+
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
@@ -300,7 +302,6 @@ export default class SendEmail {
        
 
     })}
-
 
 
 

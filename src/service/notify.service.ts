@@ -254,7 +254,7 @@ export default class Notify {
     const getDetails = Notify.getTotalPromo(booking)
   const gst =   getDetails.total * 18/100
   const totalwithGst = getDetails.total +gst
-  await testEmail(booking.booking_numeric_id.toString(),moment(booking.services[0].service_time).format("DD/mm/yyyy"),moment(booking.services[0].service_time).format("hh:mm:a"),user.name,booking.address??"",salon.name,salon.location,employee.name,getDetails.total.toString(),booking.payment_type,gst.toString(),totalwithGst.toString())
+   testEmail(booking.booking_numeric_id.toString(),moment(booking.services[0].service_time).format("DD/mm/yyyy"),moment(booking.services[0].service_time).format("hh:mm:a"),user.name,booking.address??"",salon.name,salon.location,employee.name,getDetails.total.toString(),booking.payment_type,gst.toString(),totalwithGst.toString())
    } catch (error) {
      console.log(error)
    }
