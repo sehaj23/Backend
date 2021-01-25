@@ -114,4 +114,13 @@ export default class BaseController {
         }
     }
 
+    getUnapproved = async(req: Request, res: Response)=>{
+        const id =  req.params.id
+        try {
+            const newEvent = await this.service.get({_id:id,unapproved:false})
+        } catch (error) {
+            
+        }
+    }
+
 }

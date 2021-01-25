@@ -142,7 +142,7 @@ app.get(`${URL_PREFIX}/r/clr`, async (req: express.Request, res: express.Respons
 })
 
 app.get(`${URL_PREFIX}`, (req, res) => {
-  res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} servers.`)
+  res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} main servers.`)
 })
 
 // this is for 404

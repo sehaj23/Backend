@@ -102,7 +102,6 @@ export default class LoginController extends BaseController {
 
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
-    console.log(user)
     var password = encryptData(user.password)
 
     user.password = password
@@ -115,9 +114,20 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
+    if(createUser.phone != null){
     const number = await this.otpService.sendUserOtpEmail(createUser.email)
-    SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
-
+    try {
+      SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+    } catch (error) {
+      
+    }
+    
+    }
+   try {
+    SendEmail.signupUser(createUser.email,createUser.name)
+   } catch (error) {
+     
+   } 
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,

@@ -13,6 +13,7 @@ import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
 import SendEmail from "../utils/emails/send-email";
+import testEmail from "../utils/emails/test-email";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -752,20 +753,8 @@ export default class BookingService extends BaseService {
         }
     }
 
-    getDetailsOfSalon = async () => {
-
-        const query = {
-            "match": {
-                status: "Completed"
-            }
-        }
-        const info = await this.model.aggregate([query])
-
-    }
+   
 
 
-    sendInvoice = async ()=>{
-        const email = SendEmail.bookingInvoice()
-        return email
-    }
+  
 }

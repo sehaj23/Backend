@@ -6,6 +6,7 @@ import SalonSI, { LocationI, SalonI } from "../interfaces/salon.interface"
 import UserI, { UserSI } from "../interfaces/user.interface"
 import { VendorI } from "../interfaces/vendor.interface"
 import SendEmail from "../utils/emails/send-email"
+import testEmail from "../utils/emails/test-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import BookingService from "./booking.service"
 import OtpService from "./otp.service"
@@ -18,7 +19,7 @@ export default class Notify {
       try{  
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         const getDetails = Notify.getTotalPromo(booking)
-      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services)
+      SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime,employee.name,booking.location,booking.payment_type,getDetails.total.toString(),getDetails.promo_code,booking.services,user.name)
       }catch(e){
         console.log(e)
       } 
@@ -243,7 +244,30 @@ export default class Notify {
      const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
      OtpService.sendMessage(salon.contact_number, salonText)
      //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
+    
+    
      //if required
+ }
+
+ static bookingCompletedInvoice = async (user:UserSI,salon:SalonSI,booking:BookingSI,employee:EmployeeI) => {
+  try {
+    const getDetails = Notify.getTotalPromo(booking)
+  const gst =   getDetails.total * 18/100
+  const totalwithGst = getDetails.total +gst
+   testEmail(booking.booking_numeric_id.toString(),moment(booking.services[0].service_time).format("DD/mm/yyyy"),moment(booking.services[0].service_time).format("hh:mm:a"),user.name,booking.address??"",salon.name,salon.location,employee.name,getDetails.total.toString(),booking.payment_type,gst.toString(),totalwithGst.toString())
+   } catch (error) {
+     console.log(error)
+   }
+   
+ }
+ static signupUser = (user:UserSI) => {
+  try {
+   SendEmail.signupUser(user.email,user.name)
+    
+   } catch (error) {
+     console.log(error)
+   }
+   
  }
 
 
