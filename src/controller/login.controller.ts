@@ -114,15 +114,15 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    if(createUser.phone != null){
-    const number = await this.otpService.sendUserOtpEmail(createUser.email)
-    try {
-      SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
-    } catch (error) {
+    // if(createUser.phone != null){
+    // const number = await this.otpService.sendUserOtpEmail(createUser.email)
+    // try {
+    //   SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+    // } catch (error) {
       
-    }
+    // }
     
-    }
+    // }
    try {
     SendEmail.signupUser(createUser.email,createUser.name)
    } catch (error) {
