@@ -115,8 +115,12 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    const number = await this.otpService.sendUserOtpEmail(createUser.email)
-    SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+   
+    try {
+      SendEmail.signupUser(createUser.email,createUser.name)
+    } catch (error) {
+      console.log(error)
+    }
 
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
@@ -134,6 +138,11 @@ export default class LoginController extends BaseController {
     if (getUser === null) {
       user.approved = true
       const createUser = await this.service.create(user)
+      try {
+        SendEmail.signupUser(createUser.email,createUser.name)
+      } catch (error) {
+        console.log(error)
+      }
       if (createUser == null) {
         const errMsg = `unable to create User`;
         logger.error(errMsg);
@@ -142,6 +151,7 @@ export default class LoginController extends BaseController {
         return
       }
       createUser.password = ''
+     
 
       const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
         expiresIn: this.jwtValidity,
