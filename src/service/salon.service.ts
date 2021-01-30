@@ -857,7 +857,7 @@ export default class SalonService extends BaseService {
                         console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (i.hours() > moment().hours()) {
-                                        const slot = moment(i.add(1, 'hour')).utcOffset("+05:30").format('hh:mm a')
+                                        const slot = moment(i).add(1, 'hour').utcOffset("+05:30").format('hh:mm a')
 
                                         slots.push(slot)
                                 }
@@ -880,5 +880,25 @@ export default class SalonService extends BaseService {
                 const salon = await this.model.find({}).select({ "_id": 1, "name": 1 })
                 return salon
         }
+
+        getUnapprovedWithPagination = async (q: any): Promise<any> => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 25)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                
+                const resourceQuery = this.model.find({approved:false}, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1 })
+                const resourceCountQuery = this.model.aggregate([
+                    { "$count": "count" }
+                ])
+        
+                const [salons, pageNo] = await Promise.all([resourceQuery, resourceCountQuery])
+                let totalPageNumber = 0
+                if (pageNo.length > 0) {
+                    totalPageNumber = pageNo[0].count
+                }
+                const totalPages = Math.ceil(totalPageNumber / pageLength)
+                return { salons, totalPages, pageNumber, pageLength }
+            }
 
 }

@@ -245,7 +245,7 @@ export default class SendEmail {
 
     static signupUser = async (userEmail:string,userName:string) => {
 
-        fs.readFile(`${__dirname}/emailVerify.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/signupUser.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                 return
@@ -566,13 +566,13 @@ static bookingRequestVendor = async (salonEmail: string, salonName: string, book
     const loop = services.map(s=>{ return s.service_name + " <br>"})
   
 
-    fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+    fs.readFile(`${__dirname}/booking-request-vendor.html.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
         if (err) {
             SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                  return
               }
               data = data.replaceAll("[Customer Name]",userName)
-              data = data.replaceAll("[Salon Name]", salonName)
+              data = data.replaceAll("[Vendor Name]", salonName)
               data = data.replaceAll("[ID]", bookingIdNumeric)
               data = data.replaceAll("[date&time]",dateTime)
               data = data.replaceAll("[staff]",emp_name)
