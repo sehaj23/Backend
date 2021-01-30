@@ -5,6 +5,7 @@ import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
+import redisClient from '../redis/redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
 import SendEmail from '../utils/emails/send-email'
@@ -114,24 +115,26 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    if(createUser.phone != null){
-    const number = await this.otpService.sendUserOtpEmail(createUser.email)
+    if (createUser.phone != null) {
+      const number = await this.otpService.sendUserOtpEmail(createUser.email)
+      try {
+        SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+      } catch (error) {
+
+      }
+
+    }
     try {
-      SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+      SendEmail.signupUser(createUser.email, createUser.name)
     } catch (error) {
-      
+
     }
-    
-    }
-   try {
-    SendEmail.signupUser(createUser.email,createUser.name)
-   } catch (error) {
-     
-   } 
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
+    // sending to redis
+    redisClient.publish("new-user", createUser._id.toString())
     res.status(201).send({ token })
 
   })
