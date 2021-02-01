@@ -1,11 +1,12 @@
+import AWS = require('aws-sdk')
 import { Request, Response } from 'express'
 import * as jwt from 'jwt-then'
+import { sqsNewUser } from '../aws'
 import CONFIG from '../config'
 import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
-import redisClient from '../redis/redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
 import SendEmail from '../utils/emails/send-email'
@@ -133,10 +134,13 @@ export default class LoginController extends BaseController {
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
-    // sending to redis
-    redisClient.publish("new-user", createUser._id.toString())
-    res.status(201).send({ token })
 
+    const queueData = {
+      "user_id": createUser._id
+    }
+    sqsNewUser(JSON.stringify(queueData))
+
+    res.status(201).send({ token })
   })
 
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {

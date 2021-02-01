@@ -11,6 +11,7 @@ import * as multerS3 from "multer-s3";
 import './cron-jobs/index.cron-job';
 import redisClient from './redis/redis';
 import router from "./routes/AdminRoutes/index.routes";
+import MicroserviceAuth from "./routes/MicroserviceAuth";
 import Userrouter from "./routes/UserRoutes/index.routes";
 import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
@@ -129,6 +130,7 @@ app.use(`${URL_PREFIX}/api`, router);
 app.use(`${URL_PREFIX}/api/v`, Vendorrouter)
 app.use(`${URL_PREFIX}/api/u`, Userrouter)
 app.use(`${URL_PREFIX}/api/vendorapp`, VendorApprouter)
+app.use(`${URL_PREFIX}`, MicroserviceAuth)
 
 
 // TEMP: to clear redis
