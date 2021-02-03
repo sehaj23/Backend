@@ -127,6 +127,47 @@ const BookingSchema = new mongoose.Schema({
     },
     razorpay_order_id: {
         type: String
+    },
+    vendor_invoice:{
+        type:[String]
+    },
+    user_invoice:{
+        type:[String]
+    },
+    history:{
+        type:[{
+            status_changed_to:{
+                type:String,
+                enum: ['Online Payment Failed', 'Online Payment Requested', 'Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled","Rescheduled and Pending"],
+                required:true
+            },
+            last_status:{
+                type:String,
+                required:true
+            },
+            changed_by:{
+                type:String,
+                enum: ["Admin", "User", "Vendor"],
+                required:true
+            },
+            vendor_id:{
+                type: mongoose.Schema.Types.ObjectId, 
+                ref:'vendors'
+            },
+            user_id:{
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'users',
+            },
+            admin_id:{
+                type: mongoose.Schema.Types.ObjectId, 
+                ref:'admin'
+            },
+            date_time:{
+                type:Date,
+                default:Date.now()
+            }
+
+        }]
     }
 }, {
     timestamps: true

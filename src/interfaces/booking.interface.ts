@@ -7,6 +7,7 @@ export type BookinStatus = 'Online Payment Failed' |  'Online Payment Requested'
 export type BookingPaymentType = 'COD' | 'Online' | 'Both'
 type BookingLoaction = 'Customer Place' | 'Vendor Place'
 type BookingGender = 'men' | 'women' | 'both'
+export type Author = 'User' | 'Admin' | 'Vendor'
 
 export interface BookingServiceI{
     option_id: string,
@@ -32,6 +33,15 @@ export interface BookingAddressI{
     lat?: number
     long?: number
 }
+export interface BookingHistoryI{
+    status_changed_to:BookinStatus,
+    last_status:BookinStatus,
+    changed_by:Author,
+    vendor_id?:string | mongoose.Schema.Types.ObjectId,
+    user_id?:string | mongoose.Schema.Types.ObjectId,
+    admin_id?:string | mongoose.Schema.Types.ObjectId
+    date_time?:Date
+}
 
 export interface BookingI{
     user_id: string | mongoose.Schema.Types.ObjectId
@@ -47,6 +57,7 @@ export interface BookingI{
     booking_numeric_id: number
     cancel_reason?: string
     razorpay_order_id?: string
+    history?:BookingHistoryI[]
 }
 
 export interface BookingSI extends BookingI, mongoose.Document{}

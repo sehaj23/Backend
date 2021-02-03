@@ -61,6 +61,9 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default:true
     },
+    referral_code:{
+        type:String
+    },
     address: {
         type: [{
             address: {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import { Author, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
@@ -39,8 +39,9 @@ export default class BookingController extends BaseController {
     feedbackService: FeedbackService
     employeeService: EmployeeService
     vendorService: VendorService
+    authorName:Author
     promoUserService: PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService) {
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService,authorName:Author) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -51,6 +52,7 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
+        this.authorName=authorName
     }
 
 
@@ -455,7 +457,6 @@ export default class BookingController extends BaseController {
         const bookingid = req.params.id
         const status = req.body.status
         logger.info(status)
-
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
             logger.error(errMsg)
@@ -469,19 +470,14 @@ export default class BookingController extends BaseController {
             res.status(400)
             res.send({ message: errMsg })
             return
-
         }
-        const booking = await this.service.updateStatusBookings(bookingid, status)
+        //@ts-ignore
+        const id = req.userId | req.adminId | req.vendorId
+        const booking = await this.service.updateStatusBookings(bookingid, status,this.authorName,id)
         const userData = await this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
-
-        console.log(employee.fcm_token)
-        console.log(salon.email)
-        console.log(user)
-
-
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)

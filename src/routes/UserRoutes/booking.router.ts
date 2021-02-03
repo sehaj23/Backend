@@ -41,7 +41,7 @@ const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,
 const promoUserService = new PromoUserService(PromoCode)
 
 
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService )
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"User" )
 const bookingRouter = Router()
 
 // get available employees by date & time

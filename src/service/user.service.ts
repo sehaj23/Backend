@@ -4,6 +4,7 @@ import { UserRedis } from "../redis/index.redis";
 import encryptData from "../utils/password-hash";
 import sendNotificationToDevice from "../utils/send-notification";
 import BaseService from "./base.service";
+import referralCodeGenerator from '../../node_modules/referral-code-generator/src/referralCodeGenerator.js'
 
 export default class UserService extends BaseService {
     bookingModel: mongoose.Model<any, any>
@@ -31,7 +32,9 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
+        const redisUser = await UserRedis.remove(id, {type: "info"})
         const user = await this.model.findOneAndUpdate({_id:_id}, d, { new: true })
+        UserRedis.set(id, user, {type: "info"})
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {
@@ -201,6 +204,11 @@ export default class UserService extends BaseService {
         return await this.model.findOneAndUpdate({ _id: id, email: email }, { password: passwordHash }, { new: true })
 
     }
+
+    createRefferal = async (name:string,id:string)=>{
+    const refferal =  name.toUpperCase().substr(0,4) + id.substr(0,4) 
+    return refferal
+}
 
 
 

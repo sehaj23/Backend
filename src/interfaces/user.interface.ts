@@ -24,6 +24,7 @@ export default interface UserI {
     approved ? : boolean
     address?: UserAddressI[]
     phone?: string
+    referral_code?:string
 }
 
 export interface UserSI extends UserI, mongoose.Document {}

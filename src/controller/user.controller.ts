@@ -30,13 +30,19 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         console.log(id)
-        const redisUser = await UserRedis.remove(id, {type: "info"})
-        const user = await this.service.getId(id)
+        // const redisUser = await UserRedis.remove(id, {type: "info"})
+        const user = await this.service.getId(id) as UserSI
         if (user === null) {
             logger.error(`Unable to fetch user details`)
             res.status(400)
             res.send({ message: `Unable to fetch user details` })
             return
+        }
+        if(user.referral_code == undefined){
+            console.log("creating")
+            const referral  = await this.service.createRefferal(user.name??"ZATT",user._id.toString())
+            const update = await this.service.update(user._id,{referral_code:referral})
+            return res.send(update)
         }
         res.send(user)
 
@@ -45,6 +51,7 @@ export default class UserController extends BaseController {
         //@ts-ignore   
         const id = req.userId
         const d = req.body
+     
         const user = await this.service.update(id, d)
         if (user === null) {
             logger.error(`Unable to update details`)
@@ -314,6 +321,15 @@ export default class UserController extends BaseController {
             return  res.status(400).send({success:false,message:"Something went Wrong"})
         }
         return  res.status(200).send({success:true,message:"Delete Request Sent"})
+      })
+
+      refferal = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const user = await this.service.getId(id) as UserSI
+        const referral =  await this.service.createRefferal(user.name,user._id.toString())
+        res.send({referral:referral})
+
       })
 
 }

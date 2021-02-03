@@ -1,6 +1,6 @@
 import { String } from "aws-sdk/clients/acm";
 import mongoose from "../database";
-import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { Author, BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -296,12 +296,15 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId: string, status: BookinStatus) => {
+    updateStatusBookings = async (bookingId: string, status: BookinStatus,author:Author,authorId) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
         if (booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
-        booking.status = status as BookinStatus
+       
+       booking.history.push({status_changed_to:status,last_status:booking.status,changed_by:author})
+       booking.status = status as BookinStatus
         await booking.save()
         return booking
+       // const booking = await this.model.findByIdAndUpdate({bookingId},{status:status,$push:{history:{status_changed_to:status,last_status:}}},{new:true})
     }
 
     assigneEmployeeBookings = async (bookingId: String, serviceName: String, employeeId: String) => {

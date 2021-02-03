@@ -41,7 +41,7 @@ const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,
 const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
 const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const promoUserService = new PromoUserService(PromoCode)
-const bookingController = new BookingController(bookingService,salonService,employeeAbsenteeism, cartService,feedbackService,userService,employeeService,vendorService,promoUserService)
+const bookingController = new BookingController(bookingService,salonService,employeeAbsenteeism, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"Vendor")
 
 
 // // bookingRouter.post("/", VendorverifyToken, bookingController.post)
