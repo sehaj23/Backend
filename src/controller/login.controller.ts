@@ -1,5 +1,7 @@
+import AWS = require('aws-sdk')
 import { Request, Response } from 'express'
 import * as jwt from 'jwt-then'
+import { sqsNewUser } from '../aws'
 import CONFIG from '../config'
 import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
@@ -114,26 +116,31 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-    // if(createUser.phone != null){
-    // const number = await this.otpService.sendUserOtpEmail(createUser.email)
-    // try {
-    //   SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
-    // } catch (error) {
-      
-    // }
-    
-    // }
-   try {
-    SendEmail.signupUser(createUser.email,createUser.name)
-   } catch (error) {
-     
-   } 
+    if (createUser.phone != null) {
+      const number = await this.otpService.sendUserOtpEmail(createUser.email)
+      try {
+        SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+      } catch (error) {
+
+      }
+
+    }
+    try {
+      SendEmail.signupUser(createUser.email, createUser.name)
+    } catch (error) {
+
+    }
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
-    res.status(201).send({ token })
 
+    const queueData = {
+      "user_id": createUser._id
+    }
+    sqsNewUser(JSON.stringify(queueData))
+
+    res.status(201).send({ token })
   })
 
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {

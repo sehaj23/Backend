@@ -1,4 +1,5 @@
 import * as AWS from "aws-sdk";
+import logger from "./utils/logger";
 require('dotenv').config()
 const activateAws = (activate: boolean = false) => {
   if (activate) {
@@ -12,6 +13,26 @@ const activateAws = (activate: boolean = false) => {
         // console.log("Region: ", AWS.config.region);
       }
     });
+  } else {
+    console.log(`Not activaiting the AWS`)
   }
 }
+
+export const sqsNewUser = (userInfo: string) => {
+
+  const sqs = new AWS.SQS()
+  const params: AWS.SQS.SendMessageRequest = {
+    MessageBody: userInfo,
+    QueueUrl: process.env.SQS_NEW_USER_URL
+  }
+  sqs.sendMessage(params, (err: AWS.AWSError, data: AWS.SQS.SendMessageResult) => {
+    if (err) {
+      logger.error(`sqsNewUser: ${err.message}`)
+      return
+    }
+  })
+
+}
+
+
 export default activateAws
