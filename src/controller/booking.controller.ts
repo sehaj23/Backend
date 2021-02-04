@@ -285,8 +285,14 @@ export default class BookingController extends BaseController {
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
-        const notify = Notify.bookingRequest(vendor,employee,salon,booking,user)
-        console.log(notify)
+        try {
+            const notify = Notify.bookingRequest(vendor,employee,salon,booking,user)
+            console.log(notify)
+        } catch (error) {
+            console.log(error)
+        }
+       
+        
         res.send(booking);
     })
 

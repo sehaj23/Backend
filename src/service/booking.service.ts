@@ -299,7 +299,6 @@ export default class BookingService extends BaseService {
     updateStatusBookings = async (bookingId: string, status: BookinStatus,author:Author,authorId) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
         if (booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
-       
        booking.history.push({status_changed_to:status,last_status:booking.status,changed_by:author})
        booking.status = status as BookinStatus
         await booking.save()
