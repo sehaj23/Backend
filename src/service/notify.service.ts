@@ -68,11 +68,7 @@ export default class Notify {
           console.log(error)
         }
 
-        try {
-          sendNotificationToDevice("dQRmA4ylYE52s-dvl9QnSF:APA91bEG0qxPTwZEk_F0N9gB5ab-Q8y-Xc88A_7-DcLp37XAs6ppRKkcqfD87MUImbOi6tc2dPqvVQqG-MOpQ2-ccC_EGqrer12HlL5y09LFakcXccR6tx03jmRoaAXx1CuNwTsyqzBz", { notification: {title:"Booking Confirmed",body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}`},data:{booking_id:booking._id,status:"Confirmed",click_action:"FLUTTER_NOTIFICATION_CLICK"}})
-        } catch (error) {
-          
-        }
+       
       
       
          //check
