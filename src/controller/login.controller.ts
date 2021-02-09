@@ -22,14 +22,14 @@ export default class LoginController extends BaseController {
   jwtValidity: string
   service: LoginService
   otpService: OtpService
-  referralService:ReferralService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService,referralService:ReferralService) {
+  referralService: ReferralService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
     this.otpService = otpService
-    this.referralService=referralService
+    this.referralService = referralService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -110,24 +110,24 @@ export default class LoginController extends BaseController {
     const user = req.body
     var password = encryptData(user.password)
     let refferallCode
-    
+
     user.password = password
     const createUser: UserSI = await this.service.create(user)
-     if(req.body.rfcode){
-    const rfCode = "SEHA601a"
-    refferallCode = await this.service.getOne({referral_code:rfCode})
-    if(refferallCode != null){
-    const referalData:ReferralI ={
-      referred_by:refferallCode._id,
-      referred_to:{
-        status:"Used",
-        referral_code:rfCode,
-        user:createUser._id,
+    if (req.body.rfcode) {
+      const rfCode = req.body.rfcode
+      refferallCode = await this.service.getOne({ referral_code: rfCode })
+      if (refferallCode != null) {
+        const referalData: ReferralI = {
+          referred_by: refferallCode._id,
+          referred_to: {
+            status: "Used",
+            referral_code: rfCode,
+            user: createUser._id,
+          }
+        }
+        const referral = await this.referralService.post(referalData)
       }
     }
-      const referral= await this.referralService.post(referalData)
-    }
-  }
     if (createUser == null) {
       const errMsg = `unable to create User`;
       logger.error(errMsg);
