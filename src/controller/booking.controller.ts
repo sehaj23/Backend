@@ -25,6 +25,7 @@ import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
 import UserI from "../interfaces/user.interface";
+import { auth } from "firebase-admin";
 
 
 export default class BookingController extends BaseController {
@@ -39,9 +40,8 @@ export default class BookingController extends BaseController {
     feedbackService: FeedbackService
     employeeService: EmployeeService
     vendorService: VendorService
-    authorName:Author
     promoUserService: PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService,authorName:Author) {
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -52,7 +52,7 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
-        this.authorName=authorName
+        
     }
 
 
@@ -462,6 +462,8 @@ export default class BookingController extends BaseController {
     updateStatusBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingid = req.params.id
         const status = req.body.status
+        let authorName
+        let id
         logger.info(status)
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
@@ -478,8 +480,29 @@ export default class BookingController extends BaseController {
             return
         }
         //@ts-ignore
-        const id = req.userId | req.adminId | req.vendorId
-        const booking = await this.service.updateStatusBookings(bookingid, status,this.authorName,id)
+        if(!req.userId){
+            authorName="User"
+            //@ts-ignore
+            id=req.userId
+
+        }
+         //@ts-ignore
+         if(!req.vendorId){
+            authorName="Vendor"
+            //@ts-ignore
+            id=req.vendorId
+
+        }
+         //@ts-ignore
+         if(!req.adminId){
+            authorName="Admin"
+            //@ts-ignore
+            id=req.adminId
+
+        }
+
+        
+        const booking = await this.service.updateStatusBookings(bookingid, status,authorName,id)
         const userData = await this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())

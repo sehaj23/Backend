@@ -43,7 +43,7 @@ const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsentee
 const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const promoUserService = new PromoUserService(PromoCode)
 
-const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"Admin")
+const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService)
 
 
 bookingRouter.post("/", verifyToken, bookingController.post)

@@ -1,5 +1,6 @@
 
 import mongoose from "../database";
+import { BookinStatus } from "./booking.interface";
 export type referralStatus = 'Used'| 'Not Used'
 
 export interface ReferralI{
@@ -10,7 +11,8 @@ export interface Referred_to{
     user:string|mongoose.Types.ObjectId,
     status:referralStatus,
     referral_code:string,
-    booking_id:string|mongoose.Types.ObjectId,
+    booking_id?:string|mongoose.Types.ObjectId,
+    bookingStatus?:BookinStatus
 
 
 }

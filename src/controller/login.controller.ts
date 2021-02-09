@@ -3,12 +3,14 @@ import { Request, Response } from 'express'
 import * as jwt from 'jwt-then'
 import { sqsNewUser } from '../aws'
 import CONFIG from '../config'
+import { ReferralI, ReferralSI } from '../interfaces/referral.interface'
 import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
+import ReferralService from '../service/referral.service'
 import SendEmail from '../utils/emails/send-email'
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
@@ -20,12 +22,14 @@ export default class LoginController extends BaseController {
   jwtValidity: string
   service: LoginService
   otpService: OtpService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService) {
+  referralService:ReferralService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService,referralService:ReferralService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
     this.otpService = otpService
+    this.referralService=referralService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -105,10 +109,25 @@ export default class LoginController extends BaseController {
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     var password = encryptData(user.password)
-
+    let refferallCode
+    
     user.password = password
     const createUser: UserSI = await this.service.create(user)
-    console.log(createUser)
+    if(req.body.rfcode){
+    const rfCode = req.body.rfcode
+    refferallCode = await this.service.get({referral_code:rfCode})
+    if(refferallCode != null){
+    const referalData:ReferralI ={
+      referred_by:refferallCode._id,
+      referred_to:{
+        status:"Used",
+        referral_code:rfCode,
+        user:createUser._id,
+      }
+    }
+      const referral= await this.referralService.post(referalData)
+    }
+  }
     if (createUser == null) {
       const errMsg = `unable to create User`;
       logger.error(errMsg);
