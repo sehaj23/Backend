@@ -24,6 +24,10 @@ const ReferralCodeSchema = new mongoose.Schema({
         booking_id:{
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'booking',
+        },
+        booking_status:{
+            type:String,
+            enum: ['Online Payment Failed', 'Online Payment Requested', 'Start','Done','Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed',"Rescheduled Canceled","Rescheduled","Rescheduled and Pending"],
         }
     }
 },{

@@ -14,17 +14,20 @@ import MongoCounterService from "./mongo-counter.service";
 import moment = require("moment");
 import SendEmail from "../utils/emails/send-email";
 import testEmail from "../utils/emails/test-email";
+import { ReferralI, ReferralSI } from "../interfaces/referral.interface";
+import ReferralService from "./referral.service";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
-
+    referral: mongoose.Model<any, any>
     cartService: CartService
     mongoCounterService: MongoCounterService
-    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService) {
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService,referral: mongoose.Model<any, any>) {
         super(bookingmodel);
         this.salonModel = salonModel
         this.cartService = cartService
         this.mongoCounterService = mongoCounterService
+        this.referral=referral
     }
 
     bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus) => {
@@ -74,7 +77,6 @@ export default class BookingService extends BaseService {
             const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
             const booking: BookingI = {
                 user_id: userId,
-
                 salon_id: salon_id,
                 payment_type: payment_method,
                 location: location,
@@ -88,7 +90,9 @@ export default class BookingService extends BaseService {
             await this.cartService.bookCartByUserId(userId)
             return b
         } catch (e) {
+            console.log(e)
             throw e
+           
         }
     }
 

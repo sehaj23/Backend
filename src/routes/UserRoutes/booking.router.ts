@@ -11,6 +11,7 @@ import Feedback from "../../models/feedback.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import Offer from "../../models/offer.model"
 import PromoCode from "../../models/promo-code.model"
+import Referral from "../../models/referral.model"
 import ReportSalon from "../../models/reportSalon.model"
 import ReportVendor from "../../models/reportVendor.model"
 import Review from "../../models/review.model"
@@ -24,6 +25,7 @@ import EmployeeService from "../../service/employee.service"
 import FeedbackService from "../../service/feedback.service"
 import MongoCounterService from "../../service/mongo-counter.service"
 import PromoUserService from "../../service/promo-user.service"
+import ReferralService from "../../service/referral.service"
 import SalonService from "../../service/salon.service"
 import UserService from "../../service/user.service"
 import VendorService from "../../service/vendor.service"
@@ -32,7 +34,8 @@ import VendorService from "../../service/vendor.service"
 const cartService = new CartService(Cart, Salon)
 const feedbackService = new FeedbackService(Feedback)
 const mongoCounterService = new MongoCounterService(MongoCounter)
-const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
+const referralService =  new ReferralService(Referral)
+const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
 const userService = new UserService(User, Booking)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
@@ -41,7 +44,7 @@ const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendo
 const promoUserService = new PromoUserService(PromoCode)
 
 
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService )
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,referralService )
 const bookingRouter = Router()
 
 // get available employees by date & time

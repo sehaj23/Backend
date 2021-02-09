@@ -24,8 +24,10 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import UserI from "../interfaces/user.interface";
+import UserI, { UserSI } from "../interfaces/user.interface";
 import { auth } from "firebase-admin";
+import ReferralService from "../service/referral.service";
+import { ReferralI, ReferralSI } from "../interfaces/referral.interface";
 
 
 export default class BookingController extends BaseController {
@@ -41,7 +43,8 @@ export default class BookingController extends BaseController {
     employeeService: EmployeeService
     vendorService: VendorService
     promoUserService: PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService) {
+    referralService:ReferralService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService,referralService:ReferralService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -52,6 +55,7 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
+        this.referralService=referralService
         
     }
 
@@ -498,12 +502,9 @@ export default class BookingController extends BaseController {
             authorName="Admin"
             //@ts-ignore
             id=req.adminId
-
-        }
-
-        
+        }  
         const booking = await this.service.updateStatusBookings(bookingid, status,authorName,id)
-        const userData = await this.userService.getId(booking.user_id.toString())
+        const userData =  this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -533,9 +534,21 @@ export default class BookingController extends BaseController {
         }
         if (status === "Completed"){
            const notify = Notify.bookingCompletedInvoice(user,salon,booking,employee)
+           const completedBooking = await this.service.get({user_id:booking.user_id.toString(),status:"Completed"})
+    
+           if(completedBooking.length==1){
+               console.log(booking.user_id.toString())
+            const referal = await this.referralService. getReferralByUserIdAndUpdate(booking.user_id.toString(),{"referred_to.booking_id":booking._id,"referred_to.booking_status":status})
+            console.log(referal)
+            if(!referal){
+                console.log("no referral")
+            }else{
+                //TODO:send money here to 
+                // referal.referred_by
+            }
         }
-        
-        res.send({ message: "Booking status changed", success: "true" })
+    }   
+        res.send({ message: "Booking status changed", success: true })
 
     })
 

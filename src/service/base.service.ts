@@ -91,4 +91,9 @@ export default class BaseService {
         return promo
     }
 
+    getAndUpdateByField = async (name: any,data: any) => {
+        const promo = await this.model.findOneAndUpdate(name ,data,{new:true})
+        return promo
+    }
+
 }

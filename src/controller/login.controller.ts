@@ -113,9 +113,9 @@ export default class LoginController extends BaseController {
     
     user.password = password
     const createUser: UserSI = await this.service.create(user)
-    if(req.body.rfcode){
-    const rfCode = req.body.rfcode
-    refferallCode = await this.service.get({referral_code:rfCode})
+     if(req.body.rfcode){
+    const rfCode = "SEHA601a"
+    refferallCode = await this.service.getOne({referral_code:rfCode})
     if(refferallCode != null){
     const referalData:ReferralI ={
       referred_by:refferallCode._id,
