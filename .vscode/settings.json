@@ -1,3 +1,14 @@
 {
-    "javascript.format.insertSpaceAfterConstructor": true
+    "javascript.format.insertSpaceAfterConstructor": true,
+    "vsicons.associations.folders": [
+        { "icon": "src", "extensions": ["validators"], "format": "svg" }
+    ],
+    "editor.cursorBlinking": "expand",
+    "editor.cursorWidth": 4,
+    "editor.fontFamily": "Verdana",
+    "editor.fontSize": 16,
+    "workbench.colorCustomizations": {
+        "editorCursor.background": "#ffff4d",
+        "editorCursor.foreground": "#ffff4d",    
+    },
 }
