@@ -7,6 +7,7 @@ import ServiceI from "../interfaces/service.interface";
 import { SalonRedis } from "../redis/index.redis";
 import BaseService from "../service/base.service";
 import { arePointsNear } from "../utils/location";
+import distance = require('google-distance');
 
 import moment = require("moment");
 
@@ -357,26 +358,44 @@ export default class SalonService extends BaseService {
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string, centerPoint: any) => {
                 var checkPoint = {}
+                distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                let  difference
 
 
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
                 if (salon.coordinates != null) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
-
-                                //@ts-ignore
-                                checkPoint.lng = salon.coordinates["coordinates"][1]
-                                //@ts-ignore
-                                checkPoint.lat = salon.coordinates["coordinates"][0]
-                                var n = await arePointsNear(checkPoint, centerPoint, 1000)
-                                console.log(n)
-                                if (n.bool) {
-                                        console.log(n.difference)
-                                        // @ts-ignore
-                                        salon.distance = n.difference.toFixed()
-                                }
+                            
+                                // //@ts-ignore
+                                // checkPoint.lng = 
+                                // //@ts-ignore
+                                // checkPoint.lat = 
+                                const userLocation  =  `${centerPoint.lat}`+`,`+`${centerPoint.lng}` 
+                                const salonCoordinates  = `${salon.coordinates["coordinates"][0].toString()+`,`+salon.coordinates["coordinates"][1].toString()}`
+                                console.log(userLocation)
+                                console.log(salonCoordinates)
+                                difference =  distance.get(
+                                        {
+                                          index: 1,
+                                          origin: userLocation,
+                                          destination: salonCoordinates
+                                        // origin: '37.772886,-122.423771',
+                                        //  destination: '37.871601,-122.269104'
+                                         },function(err, data) {
+                                                if (err) return console.log(err);
+                                              console.log(data)
+                                              salon.distance =data
+                                              console.log(salon.distance)
+                                              return salon
+                                             });
+                                
+                      
                         }
+
                 }
+                console.log("2")
                 return salon
+                
 
         }
 

@@ -42,7 +42,7 @@ const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Rev
 const employeeAbsenteesimService = new EmployeeAbsentismService(EmployeeAbsenteeism)
 const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const promoUserService = new PromoUserService(PromoCode)
-const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService )
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"Vendor" )
 
 
  bookingRouter.get("/",VendorverifyToken,bookingController.getbookings)
