@@ -85,14 +85,7 @@ export default class BookingController extends BaseController {
                 booking_amount: bookingTotalPrice,
                 amount_refunded: bookingTotalPrice
             }
-        ].map(d => {
-            return {
-                ...d,
-                booking_id: booking._id,
-                services: booking.services.map(s => s.service_name),
-                salon_name: booking.salon_id['name']
-            }
-        })
+        ]
         bookingJson['refundOptions'] = refundOptions
         res.send(bookingJson)
     })
