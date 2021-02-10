@@ -58,6 +58,7 @@
     "firebase-admin": "^9.3.0",
     "google-distance": "^1.0.1",
     "html-pdf": "^2.2.0",
+    "html-pdf-node": "^1.0.7",
     "jwt-then": "^1.0.1",
     "moment": "^2.29.1",
     "mongo-seeding-cli": "^3.5.0",
