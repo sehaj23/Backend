@@ -1,8 +1,8 @@
 import * as aws from "aws-sdk";
 import { PutObjectRequest } from "aws-sdk/clients/s3";
 import * as fs from 'fs';
-import * as pdf from 'html-pdf';
 import '../../prototypes/string.prototypes';
+var html_to_pdf = require('html-pdf-node');
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
 
@@ -26,11 +26,17 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             console.log(err)
             return
         }
-        pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
-            if(err){
-                console.log("PDF error ",err.message)
-                return
-            }
+        console.log("data")
+        console.log(data)
+        let options = { format: 'A4' };
+        let file = { content: data };
+        html_to_pdf.generatePdf(file, options).then(stream => {
+
+            // pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
+            // if (err) {
+            //     console.log("PDF error ", err.message)
+            //     return
+            // }
             const s3 = new aws.S3()
             var params: PutObjectRequest = { Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`, Body: stream, ACL: 'public-read' };
             s3.upload(params, function (err, s3data) {
