@@ -30,11 +30,14 @@ import ReportVendor from "../../models/reportVendor.model";
 import VendorService from "../../service/vendor.service";
 import PromoCode from "../../models/promo-code.model";
 import PromoUserService from "../../service/promo-user.service";
+import ReferralService from "../../service/referral.service";
+import Referral from "../../models/referral.model";
 
 const bookingRouter = Router()
 const cartService = new CartService(Cart, Salon)
 const mongoCounterService = new MongoCounterService(MongoCounter)
-const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService)
+const referralService =  new ReferralService(Referral)
+const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService,Referral)
 const feedbackService = new  FeedbackService(Feedback)
 const userService = new UserService(User,Booking)
 const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
@@ -43,7 +46,7 @@ const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsentee
 const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const promoUserService = new PromoUserService(PromoCode)
 
-const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"Admin")
+const bookingController = new BookingController(bookingService,salonService, employeeAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,referralService)
 
 
 bookingRouter.post("/", verifyToken, bookingController.post)

@@ -27,6 +27,10 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             return
         }
         pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
+            if(err){
+                console.log("PDF error ",err.message)
+                return
+            }
             const s3 = new aws.S3()
             var params: PutObjectRequest = { Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`, Body: stream, ACL: 'public-read' };
             s3.upload(params, function (err, s3data) {

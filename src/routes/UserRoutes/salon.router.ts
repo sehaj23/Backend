@@ -46,7 +46,7 @@ salonInfoRouter.get('/category/:id',salonController.getSalonCategories)
 //get services use query
 salonInfoRouter.get('/services/:id',salonController.getService)
 //post Reviews
-salonInfoRouter.post('/reviews/:id',salonController.postSalonReviews)
+salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonReviews)
 // get Reviews
 salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
 // check if user can Post Reviews

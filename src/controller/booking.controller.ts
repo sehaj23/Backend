@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { Author, BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
+import { BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
@@ -19,6 +19,7 @@ import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
 import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
+import ReferralService from "../service/referral.service";
 import RefundService from "../service/refund.service";
 import SalonService from "../service/salon.service";
 import UserService from "../service/user.service";
@@ -41,9 +42,9 @@ export default class BookingController extends BaseController {
     feedbackService: FeedbackService
     employeeService: EmployeeService
     vendorService: VendorService
-    authorName: Author
     promoUserService: PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, authorName: Author) {
+    referralService: ReferralService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -54,7 +55,8 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
-        this.authorName = authorName
+        this.referralService = referralService
+
     }
 
     getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -515,6 +517,8 @@ export default class BookingController extends BaseController {
     updateStatusBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingid = req.params.id
         const status = req.body.status
+        let authorName
+        let id
         logger.info(status)
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
@@ -531,9 +535,27 @@ export default class BookingController extends BaseController {
             return
         }
         //@ts-ignore
-        const id = req.userId | req.adminId | req.vendorId
-        const booking = await this.service.updateStatusBookings(bookingid, status, this.authorName, id)
-        const userData = await this.userService.getId(booking.user_id.toString())
+        if (!req.userId) {
+            authorName = "User"
+            //@ts-ignore
+            id = req.userId
+
+        }
+        //@ts-ignore
+        if (!req.vendorId) {
+            authorName = "Vendor"
+            //@ts-ignore
+            id = req.vendorId
+
+        }
+        //@ts-ignore
+        if (!req.adminId) {
+            authorName = "Admin"
+            //@ts-ignore
+            id = req.adminId
+        }
+        const booking = await this.service.updateStatusBookings(bookingid, status, authorName, id)
+        const userData = this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -563,9 +585,21 @@ export default class BookingController extends BaseController {
         }
         if (status === "Completed") {
             const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
-        }
+            const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
 
-        res.send({ message: "Booking status changed", success: "true" })
+            if (completedBooking.length == 1) {
+                console.log(booking.user_id.toString())
+                const referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+                console.log(referal)
+                if (!referal) {
+                    console.log("no referral")
+                } else {
+                    //TODO:send money here to 
+                    // referal.referred_by
+                }
+            }
+        }
+        res.send({ message: "Booking status changed", success: true })
 
     })
 
