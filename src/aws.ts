@@ -30,6 +30,24 @@ export const sqsNewUser = (userInfo: string) => {
       logger.error(`sqsNewUser: ${err.message}`)
       return
     }
+    logger.info(`SQS - New User - ${userInfo} - ${JSON.stringify(data)}`)
+  })
+
+}
+
+export const sqsRefundTransaction = (refundId: string) => {
+
+  const sqs = new AWS.SQS()
+  const params: AWS.SQS.SendMessageRequest = {
+    MessageBody: refundId,
+    QueueUrl: process.env.SQS_REFUND_TRANSACTION_URL
+  }
+  sqs.sendMessage(params, (err: AWS.AWSError, data: AWS.SQS.SendMessageResult) => {
+    if (err) {
+      logger.error(`sqsNewUser: ${err.message}`)
+      return
+    }
+    logger.info(`SQS - Refund Transaction - ${refundId} - ${JSON.stringify(data)}`)
   })
 
 }

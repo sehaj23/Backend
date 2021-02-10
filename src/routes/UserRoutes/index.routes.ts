@@ -5,6 +5,7 @@ import deviceInfoRouter from "./device-info.router"
 import loginRouter from "./login.router"
 import otpAppRouter from "./otp.route"
 import promoCodeRouter from "./promo-code.router"
+import refundRouter from "./refund.route"
 import reportAppRouter from "./report-app.route"
 import salonSearchRouter from "./salon-search.router"
 import salonInfoRouter from "./salon.router"
@@ -33,5 +34,6 @@ Userrouter.use("/report-app", reportAppRouter)
 Userrouter.use("/otp", otpAppRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
+Userrouter.use("/refund", refundRouter)
 
 export default Userrouter

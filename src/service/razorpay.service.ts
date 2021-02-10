@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import * as Razorpay from 'razorpay'
+import * as Razorpay from 'razorpay';
 dotenv.config()
 
 export default class RazorPayService {
@@ -23,5 +23,10 @@ export default class RazorPayService {
         };
         const order = await this.instance.orders.create(options);
         return order
+    }
+
+    refund = async (payment_id: string, amount: number, speed: "optimum" | "normal") => {
+        const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
+        return refund
     }
 }

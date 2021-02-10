@@ -12,24 +12,23 @@ import controllerErrorHandler from "../middleware/controller-error-handler.middl
 import { SalonRedis } from "../redis/index.redis";
 import SalonService from "../service/salon.service";
 import UserSearchService from "../service/user-search.service";
+import UserService from "../service/user.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import { ServicesI } from "../interfaces/zattire-service.interface";
-import UserService from "../service/user.service";
 
 
 export default class SalonController extends BaseController {
 
     service: SalonService
     userSearchService: UserSearchService
-    userService:UserService
-    constructor(service: SalonService, userSearchService: UserSearchService, userService:UserService) {
+    userService: UserService
+    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService) {
         super(service)
         this.service = service
         this.userSearchService = userSearchService
-        this.userService=userService
+        this.userService = userService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -159,7 +158,7 @@ export default class SalonController extends BaseController {
         }
         const salonn = await this.service.getService(id, filter) as SalonSI
         if (salonn === null) {
-            throw new ErrorResponse("Salon not found.")
+            throw new ErrorResponse({ message: "Salon not found." })
         }
         const salon = salonn.toObject() as SalonI
 
@@ -357,11 +356,11 @@ export default class SalonController extends BaseController {
         const salonId = req.params.id;
         const filter = {}
         const q = req.query
-         //@ts-ignore
-         const id = req.userId
-         
+        //@ts-ignore
+        const id = req.userId
 
-               //TODO: validator
+
+        //TODO: validator
         if (!salonId) {
             const errMsg = `id is missing from the params`
             logger.error(errMsg)
@@ -376,12 +375,12 @@ export default class SalonController extends BaseController {
         if (req.query.home) {
             if (req.query.home === "true") {
                 atHome = true
-               
+
             }
-            filter["home"]=req.query.home
+            filter["home"] = req.query.home
         }
-        filter["page_number"]=req.query.page_number
-        filter["page_length"]=req.query.page_length
+        filter["page_number"] = req.query.page_number
+        filter["page_length"] = req.query.page_length
         var centerPoint = {}
         //TODO: store location of User
         if (req.query.latitude && req.query.longitude) {
@@ -391,15 +390,15 @@ export default class SalonController extends BaseController {
             //@ts-ignore
             centerPoint.lng = req.query.longitude
         }
-        const sr: string = await SalonRedis.get(salonId,filter)
+        const sr: string = await SalonRedis.get(salonId, filter)
         if (sr !== null) return res.send(JSON.parse(sr))
-        const salonReq =  this.service.getSalonInfo(salonId, centerPoint)
-        const reviewsReq =  this.service.getSalonReviews(salonId, q)
-       
-        
-       const  userReq = this.userService.getFavourites(id)
-        
-        const [salon,reviews,user] = await Promise.all([salonReq,reviewsReq,userReq])
+        const salonReq = this.service.getSalonInfo(salonId, centerPoint)
+        const reviewsReq = this.service.getSalonReviews(salonId, q)
+
+
+        const userReq = this.userService.getFavourites(id)
+
+        const [salon, reviews, user] = await Promise.all([salonReq, reviewsReq, userReq])
         const services = salon.services
         const filterService = services.filter((service: ServiceI) => {
             const { options } = service
@@ -423,8 +422,8 @@ export default class SalonController extends BaseController {
             return false
         })
         salon.services = filterService
-        SalonRedis.set(salonId, {salon,reviews,user},filter)
-        res.status(200).send({salon,reviews,user})
+        SalonRedis.set(salonId, { salon, reviews, user }, filter)
+        res.status(200).send({ salon, reviews, user })
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -672,11 +671,11 @@ export default class SalonController extends BaseController {
         const q = req.query
         //@ts-ignore
         const _id = req.userId
-        const reviewsReq =  this.service.getSalonReviews(id, q)
-        const ratingReq =  this.service.getReviewsRating(id)
-        const userReq =  this.userService.getId(_id)
-        const [rating,reviews,user]= await Promise.all([ratingReq,reviewsReq,userReq])
-        res.send({rating,user,reviews,})
+        const reviewsReq = this.service.getSalonReviews(id, q)
+        const ratingReq = this.service.getReviewsRating(id)
+        const userReq = this.userService.getId(_id)
+        const [rating, reviews, user] = await Promise.all([ratingReq, reviewsReq, userReq])
+        res.send({ rating, user, reviews, })
 
     })
     salonSlots = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -723,7 +722,7 @@ export default class SalonController extends BaseController {
         res.status(200).send(salon)
     })
 
-    
+
 
 
 

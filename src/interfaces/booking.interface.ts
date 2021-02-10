@@ -3,20 +3,20 @@ import ReviewSI from "./review.interface";
 
 
 type Provider = 'MUA' | 'Salon' | 'Designer'
-export type BookinStatus = 'Online Payment Failed' |  'Online Payment Requested' | 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed' | 'Rescheduled Canceled' |  'Rescheduled'
+export type BookinStatus = 'Refunded' | 'Online Payment Failed' | 'Online Payment Requested' | 'Requested' | 'Confirmed' | 'Vendor Cancelled' | 'Customer Cancelled' | 'Completed' | 'Vendor Cancelled After Confirmed' | 'Customer Cancelled After Confirmed' | 'Rescheduled Canceled' | 'Rescheduled'
 export type BookingPaymentType = 'COD' | 'Online' | 'Both'
 type BookingLoaction = 'Customer Place' | 'Vendor Place'
 type BookingGender = 'men' | 'women' | 'both'
 export type Author = 'User' | 'Admin' | 'Vendor'
 
-export interface BookingServiceI{
+export interface BookingServiceI {
     option_id: string,
     employee_id: string,
     service_name: string,
-    category_name:string,
+    category_name: string,
     option_name: string,
     service_real_price: number,
-    duration:number,
+    duration: number,
     quantity: number,
     service_discount?: number,
     service_discount_code?: string,
@@ -24,26 +24,33 @@ export interface BookingServiceI{
     zattire_commission: number,
     vendor_commission: number,
     service_time: Date,
-    gender:BookingGender,
+    gender: BookingGender,
     rescheduled_service_time?: Date
 }
 
-export interface BookingAddressI{
+export interface BookingAddressI {
     address: string
     lat?: number
     long?: number
 }
-export interface BookingHistoryI{
-    status_changed_to:BookinStatus,
-    last_status:BookinStatus,
-    changed_by:Author,
-    vendor_id?:string | mongoose.Schema.Types.ObjectId,
-    user_id?:string | mongoose.Schema.Types.ObjectId,
-    admin_id?:string | mongoose.Schema.Types.ObjectId
-    date_time?:Date
+export interface BookingHistoryI {
+    status_changed_to: BookinStatus,
+    last_status: BookinStatus,
+    changed_by: Author,
+    vendor_id?: string | mongoose.Schema.Types.ObjectId,
+    user_id?: string | mongoose.Schema.Types.ObjectId,
+    admin_id?: string | mongoose.Schema.Types.ObjectId
+    date_time?: Date
 }
 
-export interface BookingI{
+export interface RazorpayPaymentData {
+    order_id: string
+    payment_id: string
+    signature: string
+    verified: boolean
+}
+
+export interface BookingI {
     user_id: string | mongoose.Schema.Types.ObjectId
     makeup_artist_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
     designer_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
@@ -53,11 +60,13 @@ export interface BookingI{
     payment_type: BookingPaymentType
     location: BookingLoaction
     reviews?: ReviewSI[],
-    address:BookingAddressI
+    address: BookingAddressI
     booking_numeric_id: number
     cancel_reason?: string
     razorpay_order_id?: string
-    history?:BookingHistoryI[]
+    razorpay_payment_data?: RazorpayPaymentData
+    history?: BookingHistoryI[]
+    refund_id?: string
 }
 
-export interface BookingSI extends BookingI, mongoose.Document{}
+export interface BookingSI extends BookingI, mongoose.Document { }

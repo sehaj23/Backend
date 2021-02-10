@@ -27,6 +27,7 @@ import PromoUserService from "../../service/promo-user.service"
 import SalonService from "../../service/salon.service"
 import UserService from "../../service/user.service"
 import VendorService from "../../service/vendor.service"
+import { BookingValidator } from "../../validators/booking.validator"
 
 
 const cartService = new CartService(Cart, Salon)
@@ -41,13 +42,16 @@ const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendo
 const promoUserService = new PromoUserService(PromoCode)
 
 
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService,feedbackService,userService,employeeService,vendorService,promoUserService,"User" )
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, "User")
 const bookingRouter = Router()
 
 // get available employees by date & time
 bookingRouter.get("/", UserverifyToken, bc.getAppointment)
 bookingRouter.get("/:id", UserverifyToken, bc.getId)
+bookingRouter.get("/online-cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
+
 bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
+bookingRouter.post("/razorpay-verify-payment/:id", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
 bookingRouter.patch("/update-status/:id", UserverifyToken, bc.updateStatusBookings)
 bookingRouter.patch("/rescheduled/:id", UserverifyToken, bc.confirmRescheduleSlot)
 // create a booking

@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
-import moment = require("moment");
+import * as jwt from 'jwt-then';
 import CONFIG from "../config";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import * as jwt from 'jwt-then'
-import { UserRedis } from "../redis/index.redis";
 import FeedbackService from "../service/feedback.service";
 import OtpService from "../service/otp.service";
 import UserService from "../service/user.service";
@@ -13,17 +11,18 @@ import SendEmail from "../utils/emails/send-email";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
+import moment = require("moment");
 
 
 export default class UserController extends BaseController {
     service: UserService
-    feedbackService:FeedbackService
-    otpService:OtpService
-    constructor(service: UserService,feedbackService:FeedbackService,otpService:OtpService) {
+    feedbackService: FeedbackService
+    otpService: OtpService
+    constructor(service: UserService, feedbackService: FeedbackService, otpService: OtpService) {
         super(service)
         this.service = service
-        this.feedbackService=feedbackService
-        this.otpService=otpService
+        this.feedbackService = feedbackService
+        this.otpService = otpService
     }
 
     getUser = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -38,10 +37,10 @@ export default class UserController extends BaseController {
             res.send({ message: `Unable to fetch user details` })
             return
         }
-        if(user.referral_code == undefined){
+        if (user.referral_code == undefined) {
             console.log("creating")
-            const referral  = await this.service.createRefferal(user.name??"ZATT",user._id.toString())
-            const update = await this.service.update(user._id,{referral_code:referral})
+            const referral = await this.service.createRefferal(user.name ?? "ZATT", user._id.toString())
+            const update = await this.service.update(user._id, { referral_code: referral })
             return res.send(update)
         }
         res.send(user)
@@ -51,7 +50,7 @@ export default class UserController extends BaseController {
         //@ts-ignore   
         const id = req.userId
         const d = req.body
-     
+
         const user = await this.service.update(id, d)
         if (user === null) {
             logger.error(`Unable to update details`)
@@ -63,12 +62,12 @@ export default class UserController extends BaseController {
 
     })
 
-    updateFCM =controllerErrorHandler( async (req: Request, res: Response) => {
+    updateFCM = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
         const fcm = req.body.fcm_token
-        const user = await this.service.updateFCM(id,fcm)
-        if(user==null){
+        const user = await this.service.updateFCM(id, fcm)
+        if (user == null) {
             logger.error(`Unable to fetch info. Please Login again`)
             res.status(400)
             res.send({ message: `Unable to fetch info. Please Login again` })
@@ -77,12 +76,12 @@ export default class UserController extends BaseController {
         res.send(user)
     })
 
-    deleteFcm =controllerErrorHandler( async (req: Request, res: Response) => {
+    deleteFcm = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
         const fcm = req.body.fcm_token
-        const user = await this.service.deleteFCM(id,fcm)
-        if(user==null){
+        const user = await this.service.deleteFCM(id, fcm)
+        if (user == null) {
             logger.error(`Unable to fetch info. Please Login again`)
             res.status(400)
             res.send({ message: `Unable to fetch info. Please Login again` })
@@ -177,7 +176,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         const salonid = req.body.salon_id
-        
+
         const user = await this.service.addToFavourites(id, salonid)
         if (user === null) {
             logger.error(`Unable to add favorites`)
@@ -192,7 +191,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         const salonid = req.body.salon_id
-        
+
         const user = await this.service.removeFavourites(id, salonid)
         if (user === null) {
             logger.error(`Unable to remove favorites`)
@@ -201,7 +200,7 @@ export default class UserController extends BaseController {
             return
         }
         res.send({ message: `Removed from favourites`, success: "true" })
-    
+
     })
     getFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
@@ -217,119 +216,117 @@ export default class UserController extends BaseController {
         res.send(user)
 
     })
-    postFeedback= controllerErrorHandler(async (req: Request, res: Response) =>{
-        const data:FeedbackI = req.body
-         //@ts-ignore
-         data.user_id=req.userId
+    postFeedback = controllerErrorHandler(async (req: Request, res: Response) => {
+        const data: FeedbackI = req.body
+        //@ts-ignore
+        data.user_id = req.userId
         const feedback = await this.feedbackService.post(data)
-        if(feedback===null){
+        if (feedback === null) {
             logger.error(`Unable to create feedback`)
             res.status(400)
             res.send({ message: `Unable to create feedback` })
             return
         }
-        res.status(200).send({message:"Thank you for your feedback",success:true})
+        res.status(200).send({ message: "Thank you for your feedback", success: true })
 
     })
-    sendNotifcation= controllerErrorHandler(async (req: Request, res: Response) =>{
-        const fcm_token= req.body.fcm_token
-       const message ={
-        "notification": {
-          "title": "$FooCorp up 1.43% on the day",
-          "body": "$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day."
+    sendNotifcation = controllerErrorHandler(async (req: Request, res: Response) => {
+        const fcm_token = req.body.fcm_token
+        const message = {
+            "notification": {
+                "title": "$FooCorp up 1.43% on the day",
+                "body": "$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day."
+            }
         }
-       }
-        const notification =  await this.service.sendNotification(fcm_token,message)
+        const notification = await this.service.sendNotification(fcm_token, message)
         res.send(notification)
     })
 
-    sendEmail =  controllerErrorHandler(async (req: Request, res: Response) =>{
-     const email =  await SendEmail.emailConfirm("developers@zattire.com","123","sehaj")
-    res.send(email)
+    sendEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+        const email = await SendEmail.emailConfirm("developers@zattire.com", "123", "sehaj")
+        res.send(email)
     })
 
-    searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) =>{
-       const q = req.query
+    searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+        const q = req.query
         const user = await this.service.searchUsersByEmail(q)
         res.send(user)
 
     })
 
-    updateForgotPassword =controllerErrorHandler(async (req: Request, res: Response) => {
-        const {email,password} = req.body
+    updateForgotPassword = controllerErrorHandler(async (req: Request, res: Response) => {
+        const { email, password } = req.body
         //@ts-ignore
         const id = req.userId
-        const user =  await this.service.updateNewPass(id,email,password)
-        if(!user) res.status(400).send({sucess:false,message:`password not updated for ${email}`})
+        const user = await this.service.updateNewPass(id, email, password)
+        if (!user) res.status(400).send({ sucess: false, message: `password not updated for ${email}` })
         const token = await jwt.sign(user.toJSON(), CONFIG.USER_JWT, {
             expiresIn: '30 days',
-          })
-        res.send({success:true,message:"Password Updated",token:token,gender:user.gender})
-       
-    
-      })
+        })
+        res.send({ success: true, message: "Password Updated", token: token, gender: user.gender })
+    })
 
-      emailConfirm =controllerErrorHandler(async (req: Request, res: Response) => {
-        const {email} = req.body
-        const user = await this.service.getOne({email}) as UserSI
-        if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
-       const number =  await this.otpService.sendUserOtpEmail(email)
-        SendEmail.emailConfirm(email,number.otp,user.name)
-        res.send({success:true,message:"Email Sent"})
-    
-      })
-      emailConfirmAfterSignup =controllerErrorHandler(async (req: Request, res: Response) => {
-        const {email} = req.body
-        const user = await this.service.getOne({email}) as UserSI
-       // if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
-       const number =  await this.otpService.sendUserOtpEmail(email)
-        SendEmail.emailConfirm(email,number.otp,user.name)
-        res.send({success:true,message:"Email Sent"})
-    
-      })
-      
-      emailVerify = controllerErrorHandler(async (req: Request, res: Response) => {
-      const {email, otp} = req.body
-    const user = await this.service.getOne({email}) as UserSI
-     if(user === null) throw new ErrorResponse(`User not found with ${email}`)
-     const otpd =  await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
-     res.status(200).send(otpd)
-        
-      })
+    emailConfirm = controllerErrorHandler(async (req: Request, res: Response) => {
+        const { email } = req.body
+        const user = await this.service.getOne({ email }) as UserSI
+        if (user) res.status(400).send({ sucess: false, message: "Email already Registered" })
+        const number = await this.otpService.sendUserOtpEmail(email)
+        SendEmail.emailConfirm(email, number.otp, user.name)
+        res.send({ success: true, message: "Email Sent" })
 
-      checkEmailVerfied = controllerErrorHandler(async (req: Request, res: Response) => {
-          //@ts-ignore
-          const id = req.userId
-        const user =  await this.service.getId(id)
-        if(user.approved==false){
-          return  res.status(400).send({success:false,message:"User not verified",email:user.email})
+    })
+    emailConfirmAfterSignup = controllerErrorHandler(async (req: Request, res: Response) => {
+        const { email } = req.body
+        const user = await this.service.getOne({ email }) as UserSI
+        // if(user) res.status(400).send({sucess:false,message:"Email already Registered"})
+        const number = await this.otpService.sendUserOtpEmail(email)
+        SendEmail.emailConfirm(email, number.otp, user.name)
+        res.send({ success: true, message: "Email Sent" })
+
+    })
+
+    emailVerify = controllerErrorHandler(async (req: Request, res: Response) => {
+        const { email, otp } = req.body
+        const user = await this.service.getOne({ email }) as UserSI
+        if (user === null) throw new ErrorResponse({ message: `User not found with ${email}` })
+        const otpd = await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
+        res.status(200).send(otpd)
+
+    })
+
+    checkEmailVerfied = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const user = await this.service.getId(id)
+        if (user.approved == false) {
+            return res.status(400).send({ success: false, message: "User not verified", email: user.email })
         }
-        return  res.status(200).send({success:true,message:"User  verified"})
+        return res.status(200).send({ success: true, message: "User  verified" })
 
-      })
+    })
 
-      appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
-        res.status(200).send({ios:"1.2.0",android:"1.0.0",success:true})
-      })
+    appVersion = controllerErrorHandler(async (req: Request, res: Response) => {
+        res.status(200).send({ ios: "1.2.0", android: "1.0.0", success: true })
+    })
 
-      deleteRequest =  controllerErrorHandler(async (req: Request, res: Response) => {
-          //@ts-ignore
+    deleteRequest = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
         const id = req.userId
         const dataTime = moment()
-        const deleteRequest = await this.service.update(id,{delete_request:dataTime})
-        if(deleteRequest==null){
-            return  res.status(400).send({success:false,message:"Something went Wrong"})
+        const deleteRequest = await this.service.update(id, { delete_request: dataTime })
+        if (deleteRequest == null) {
+            return res.status(400).send({ success: false, message: "Something went Wrong" })
         }
-        return  res.status(200).send({success:true,message:"Delete Request Sent"})
-      })
+        return res.status(200).send({ success: true, message: "Delete Request Sent" })
+    })
 
-      refferal = controllerErrorHandler(async (req: Request, res: Response) => {
+    refferal = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
         const user = await this.service.getId(id) as UserSI
-        const referral =  await this.service.createRefferal(user.name,user._id.toString())
-        res.send({referral:referral})
+        const referral = await this.service.createRefferal(user.name, user._id.toString())
+        res.send({ referral: referral })
 
-      })
+    })
 
 }

@@ -12,8 +12,6 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
-import SendEmail from "../utils/emails/send-email";
-import testEmail from "../utils/emails/test-email";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -296,14 +294,14 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId: string, status: BookinStatus,author:Author,authorId) => {
+    updateStatusBookings = async (bookingId: string, status: BookinStatus, author: Author, authorId) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
         if (booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
-       booking.history.push({status_changed_to:status,last_status:booking.status,changed_by:author})
-       booking.status = status as BookinStatus
+        booking.history.push({ status_changed_to: status, last_status: booking.status, changed_by: author })
+        booking.status = status as BookinStatus
         await booking.save()
         return booking
-       // const booking = await this.model.findByIdAndUpdate({bookingId},{status:status,$push:{history:{status_changed_to:status,last_status:}}},{new:true})
+        // const booking = await this.model.findByIdAndUpdate({bookingId},{status:status,$push:{history:{status_changed_to:status,last_status:}}},{new:true})
     }
 
     assigneEmployeeBookings = async (bookingId: String, serviceName: String, employeeId: String) => {
@@ -527,7 +525,7 @@ export default class BookingService extends BaseService {
      */
     getEmployeesBookingsByIdsTime = async (ids, dateTime) => {
         dateTime = moment(dateTime)
-        if (!(dateTime as moment.Moment).isValid()) throw new ErrorResponse(`Date time not valid: ${dateTime}`)
+        if (!(dateTime as moment.Moment).isValid()) throw new ErrorResponse({ message: `Date time not valid: ${dateTime}` })
         return this.model.find({ "services.employee_id": ids, "services.service_time": dateTime })
     }
 
@@ -755,8 +753,8 @@ export default class BookingService extends BaseService {
         }
     }
 
-   
 
 
-  
+
+
 }
