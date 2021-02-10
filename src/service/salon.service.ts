@@ -357,46 +357,36 @@ export default class SalonService extends BaseService {
         }
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string, centerPoint: any) => {
-                var checkPoint = {}
                 distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
-                let  difference
-
-
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
                 if (salon.coordinates != null) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
-                            
-                                // //@ts-ignore
-                                // checkPoint.lng = 
-                                // //@ts-ignore
-                                // checkPoint.lat = 
-                                const userLocation  =  `${centerPoint.lat}`+`,`+`${centerPoint.lng}` 
-                                const salonCoordinates  = `${salon.coordinates["coordinates"][0].toString()+`,`+salon.coordinates["coordinates"][1].toString()}`
+                                const userLocation = `${centerPoint.lat}` + `,` + `${centerPoint.lng}`
+                                const salonCoordinates = `${salon.coordinates["coordinates"][0].toString() + `,` + salon.coordinates["coordinates"][1].toString()}`
                                 console.log(userLocation)
                                 console.log(salonCoordinates)
-                                difference =  distance.get(
-                                        {
-                                          index: 1,
-                                          origin: userLocation,
-                                          destination: salonCoordinates
-                                        // origin: '37.772886,-122.423771',
-                                        //  destination: '37.871601,-122.269104'
-                                         },function(err, data) {
-                                                if (err) return console.log(err);
-                                              console.log(data)
-                                              salon.distance =data
-                                              console.log(salon.distance)
-                                              return salon
-                                             });
-                                
-                      
+                                const newSalon = await new Promise<any>((resolve, reject) => {
+                                        distance.get(
+                                                {
+                                                        index: 1,
+                                                        origin: userLocation,
+                                                        destination: salonCoordinates
+                                                }, function (err, data) {
+                                                        if (err) {
+                                                                reject(err);
+                                                                return
+                                                        }
+                                                        console.log(data)
+                                                        salon.distance = data
+                                                        console.log(salon.distance)
+                                                        resolve(salon)
+                                                });
+                                })
+                                return newSalon
                         }
-
+                        throw new Error("Salon coordinates index check did not pass")
                 }
-                console.log("2")
-                return salon
-                
-
+                throw new Error("Salon coordinates not found")
         }
 
         // Salon Rating-Wise  Recommended.
@@ -652,7 +642,7 @@ export default class SalonService extends BaseService {
                                         "services.category": {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
                                         },
-                                       
+
 
                                 }
 
@@ -905,19 +895,19 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 25)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                
-                const resourceQuery = this.model.find({approved:false}, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1 })
+
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1 })
                 const resourceCountQuery = this.model.aggregate([
-                    { "$count": "count" }
+                        { "$count": "count" }
                 ])
-        
+
                 const [salons, pageNo] = await Promise.all([resourceQuery, resourceCountQuery])
                 let totalPageNumber = 0
                 if (pageNo.length > 0) {
-                    totalPageNumber = pageNo[0].count
+                        totalPageNumber = pageNo[0].count
                 }
                 const totalPages = Math.ceil(totalPageNumber / pageLength)
                 return { salons, totalPages, pageNumber, pageLength }
-            }
+        }
 
 }
