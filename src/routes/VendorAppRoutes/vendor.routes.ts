@@ -20,11 +20,13 @@ import OtpService from "../../service/otp.service";
 import UserService from "../../service/user.service";
 import Referral from "../../models/referral.model";
 import ReferralService from "../../service/referral.service";
+import EmployeeAbsenteesmService from "../../service/employee-absentism.service";
 const vendorRouter = Router()
 
 const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const es = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,Feedback,ReportVendor, Booking)
-const vendorController = new VendorController(vs,es)
+const eas = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
+const vendorController = new VendorController(vs,es,eas)
 
 const loginService = new LoginService(Vendor)
 
@@ -52,6 +54,7 @@ vendorRouter.get("/service/:id",VendorverifyToken,vendorController.vendorService
 vendorRouter.get("/service/employee/:id",VendorverifyToken,vendorController.employeeServicecount)
 vendorRouter.patch("/notification",VendorverifyToken,vendorController.notificationUpdate)
 vendorRouter.get("/version",vendorController.appVersion)
+vendorRouter.get("/employee-absent",vendorController.checkIfEmployeeAbsent)
 
 
 

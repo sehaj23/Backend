@@ -79,9 +79,6 @@ export default class EmployeeService extends BaseService {
 
 
     employeeAbsentUpdate = async (d: EmployeeAbsenteeismI) => {
-
-
-
         const absent = await this.employeeAbsenteeismModel.findOneAndUpdate({ employee_id: d.employee_id, absenteeism_date: d.absenteeism_date }, d, { new: true })
         return absent
 

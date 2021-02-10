@@ -1,15 +1,13 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
+import { Author, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
 import { PromoUserSI } from "../interfaces/promo-user.inderface";
-import { RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
-import UserI from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
@@ -19,8 +17,6 @@ import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
 import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
-import ReferralService from "../service/referral.service";
-import RefundService from "../service/refund.service";
 import SalonService from "../service/salon.service";
 import UserService from "../service/user.service";
 import VendorService from "../service/vendor.service";
@@ -28,6 +24,10 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import UserI, { UserSI } from "../interfaces/user.interface";
+import { auth } from "firebase-admin";
+import ReferralService from "../service/referral.service";
+import { ReferralI, ReferralSI } from "../interfaces/referral.interface";
 
 
 export default class BookingController extends BaseController {
@@ -43,8 +43,8 @@ export default class BookingController extends BaseController {
     employeeService: EmployeeService
     vendorService: VendorService
     promoUserService: PromoUserService
-    referralService: ReferralService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService) {
+    referralService:ReferralService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService,referralService:ReferralService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -55,42 +55,10 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
-        this.referralService = referralService
-
+        this.referralService=referralService
+        
     }
 
-    getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
-        const booking = await this.service.getOne({ status: { "$in": ["Vendor Cancelled", "Vendor Cancelled After Confirmed"], payment_type: "Online" } }) as BookingSI
-        const bookingJson = booking.toJSON()
-        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
-        bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
-        bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
-        const refundOptions = [
-            {
-                name: "Zattire Wallet",
-                refund_type: RefundTypeEnum.Zattire_Wallet,
-                time: "1-10 seconds",
-                booking_amount: bookingTotalPrice,
-                amount_refunded: bookingTotalPrice,
-            },
-            {
-                name: "Instant - RazorPay",
-                refund_type: RefundTypeEnum.Instant_RazorPay,
-                time: "1-24 business hours",
-                booking_amount: bookingTotalPrice,
-                amount_refunded: bookingTotalPrice - RefundService.ZATTIRE_REFUND_COMMISION
-            },
-            {
-                name: "Normal - RazorPay",
-                refund_type: RefundTypeEnum.Normal_RazorPay,
-                time: "5-10 business days",
-                booking_amount: bookingTotalPrice,
-                amount_refunded: bookingTotalPrice
-            }
-        ]
-        bookingJson['refundOptions'] = refundOptions
-        res.send(bookingJson)
-    })
 
     getAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
@@ -98,29 +66,11 @@ export default class BookingController extends BaseController {
         res.send(bookings)
     })
 
-    // this to verify the razorpay payment
-    verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
-        //@ts-ignore
-        const userId = req.userId
-        const { booking_id } = req.params
-        const { order_id, payment_id, signature } = req.body
-        const booking = await this.service.getOne({ _id: mongoose.Types.ObjectId(booking_id), user_id: userId, razorpay_order_id: order_id }) as BookingSI
-        if (booking === null) throw new ErrorResponse({ message: "Booking not found with the given data" })
-        const razorpayPaymentData: RazorpayPaymentData = {
-            order_id,
-            payment_id,
-            signature,
-            verified: false
-        }
-        booking.razorpay_payment_data = razorpayPaymentData
-        await booking.save()
-        res.send({ message: booking.razorpay_payment_data, success: true })
-    })
-
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
         const { id } = req.params
         const booking = await this.service.getId(id) as BookingSI
-        if (booking === null) throw new ErrorResponse({ message: "No booking found with this id" })
+        if (booking === null) 
+       // {throw new ErrorResponse("No booking found with this id")}
         if (booking.razorpay_order_id && booking.razorpay_order_id !== null) {
             res.send({ order_id: booking.razorpay_order_id })
             return
@@ -282,8 +232,9 @@ export default class BookingController extends BaseController {
 
                 if (!employeeIds || employeeIds?.length === 0) {
 
-                    if (salon === null) throw new ErrorResponse({ message: `No salon found with salon id ${salon_id}` })
-
+                    if (salon === null){
+                    // throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
+                    }
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
@@ -324,7 +275,7 @@ export default class BookingController extends BaseController {
                 }
             }
             if (!o.employee_id || o.employee_id === null) {
-                throw new ErrorResponse({ message: `No employee found at this time for the service` })
+          //      throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
         console.log("optionsss")
@@ -333,7 +284,7 @@ export default class BookingController extends BaseController {
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
         const userReq = this.userService.getId(userId) as UserI
-        const [employee, user] = await Promise.all([employeeReq, userReq])
+        const [employee,user] = await Promise.all([employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         // if promocode applied then add to database that user used the promocode
@@ -341,13 +292,13 @@ export default class BookingController extends BaseController {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
         try {
-            const notify = Notify.bookingRequest(vendor, employee, salon, booking, user)
+            const notify = Notify.bookingRequest(vendor,employee,salon,booking,user)
             console.log(notify)
         } catch (error) {
             console.log(error)
         }
-
-
+       
+        
         res.send(booking);
     })
 
@@ -535,27 +486,27 @@ export default class BookingController extends BaseController {
             return
         }
         //@ts-ignore
-        if (!req.userId) {
-            authorName = "User"
+        if(!req.userId){
+            authorName="User"
             //@ts-ignore
-            id = req.userId
+            id=req.userId
 
         }
-        //@ts-ignore
-        if (!req.vendorId) {
-            authorName = "Vendor"
+         //@ts-ignore
+         if(!req.vendorId){
+            authorName="Vendor"
             //@ts-ignore
-            id = req.vendorId
+            id=req.vendorId
 
         }
-        //@ts-ignore
-        if (!req.adminId) {
-            authorName = "Admin"
+         //@ts-ignore
+         if(!req.adminId){
+            authorName="Admin"
             //@ts-ignore
-            id = req.adminId
-        }
-        const booking = await this.service.updateStatusBookings(bookingid, status, authorName, id)
-        const userData = this.userService.getId(booking.user_id.toString())
+            id=req.adminId
+        }  
+        const booking = await this.service.updateStatusBookings(bookingid, status,authorName,id)
+        const userData =  this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -580,25 +531,25 @@ export default class BookingController extends BaseController {
         if (status === "Done") {
             const notify = Notify.serviceEnd(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         }
-        if (status === 'Vendor Cancelled') {
-            const notify = Notify.vendorCancelled(user, salon, employee, booking)
+        if (status ==='Vendor Cancelled'){
+            const notify =  Notify.vendorCancelled(user, salon, employee, booking)
         }
-        if (status === "Completed") {
-            const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
-            const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
-
-            if (completedBooking.length == 1) {
-                console.log(booking.user_id.toString())
-                const referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
-                console.log(referal)
-                if (!referal) {
-                    console.log("no referral")
-                } else {
-                    //TODO:send money here to 
-                    // referal.referred_by
-                }
+        if (status === "Completed"){
+           const notify = Notify.bookingCompletedInvoice(user,salon,booking,employee)
+           const completedBooking = await this.service.get({user_id:booking.user_id.toString(),status:"Completed"})
+    
+           if(completedBooking.length==1){
+               console.log(booking.user_id.toString())
+            const referal :ReferralSI= await this.referralService. getReferralByUserIdAndUpdate(booking.user_id.toString(),{"referred_to.booking_id":booking._id,"referred_to.booking_status":status})
+            console.log(referal)
+            if(!referal){
+                console.log("no referral")
+            }else{
+                //TODO:send money here to 
+                // referal.referred_by
             }
         }
+    }   
         res.send({ message: "Booking status changed", success: true })
 
     })
@@ -621,11 +572,11 @@ export default class BookingController extends BaseController {
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const employeeReq = this.employeeService.getId(booking.services[0].employee_id)
         const userReq = this.userService.getId(userId)
-        const [salon, employee, user] = await Promise.all([salonReq, employeeReq, userReq])
+        const [salon, employee,user] = await Promise.all([salonReq, employeeReq,userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
+       
 
-
-        const notify = Notify.rescheduledBooking(vendor, user, booking, employee, salon)
+        const notify = Notify.rescheduledBooking(vendor,user,booking,employee,salon)
         console.log(notify)
         res.send({ message: "Booking Confirmed", success: true })
 
@@ -727,7 +678,7 @@ export default class BookingController extends BaseController {
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime, user.name)
+        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime,user.name)
         console.log(notify)
 
         res.status(200).send(booking)
@@ -836,11 +787,11 @@ export default class BookingController extends BaseController {
         const { reason } = req.body
         const data = await this.service.cancelBooking(userId, bookingId, reason)
 
-        const userReq = this.userService.getId(userId)
+        const userReq =  this.userService.getId(userId)
         const salonReq = this.salonService.getId(data.salon_id.toString())
-        const [user, salon] = await Promise.all([userReq, salonReq])
+        const [user,salon] = await Promise.all([userReq,salonReq])
 
-        const notify = Notify.userCancelled(user, salon, data)
+        const notify = Notify.userCancelled(user,salon,data)
         res.send(data)
     })
 
@@ -871,6 +822,6 @@ export default class BookingController extends BaseController {
         res.send(cart)
     })
 
-
+   
 
 }
