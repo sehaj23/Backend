@@ -26,9 +26,11 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             console.log(err)
             return
         }
+        console.log("data")
+        console.log(data)
         pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
-            if(err){
-                console.log("PDF error ",err.message)
+            if (err) {
+                console.log("PDF error ", err.message)
                 return
             }
             const s3 = new aws.S3()
