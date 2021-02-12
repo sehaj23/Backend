@@ -520,8 +520,7 @@ export default class BookingController extends BaseController {
         }
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         if (status === "Confirmed") {
-            console.log("booking confirmed sending notification to user")
-            console.log("user fcm", user.fcm_token)
+          
             const notify = Notify.bookingConfirm(user, salon, employee, booking)
             console.log(notify)
         }
