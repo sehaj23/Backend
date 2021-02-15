@@ -1,6 +1,6 @@
 import { String } from "aws-sdk/clients/acm";
 import mongoose from "../database";
-import { Author, BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -26,7 +26,7 @@ export default class BookingService extends BaseService {
         this.referral = referral
     }
 
-    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus) => {
+    bookAppointment = async (userId: string, payments: BookingPaymentI[], location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
 
@@ -70,11 +70,23 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
-            const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
+
+            // const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
+            let status: BookinStatus
+            for (const p of payments) {
+                if (p.mode === BookingPaymentMode.COD) {
+                    status = actualStatus
+                    p.verified = true
+                    break
+                } else if (p.mode === BookingPaymentMode.RAZORPAY) {
+                    status = 'Online Payment Requested'
+                    break
+                }
+            }
             const booking: BookingI = {
                 user_id: userId,
                 salon_id: salon_id,
-                payment_type: payment_method,
+                payments: payments,
                 location: location,
                 services,
                 address,
@@ -400,7 +412,7 @@ export default class BookingService extends BaseService {
 
         }
         console.log(filters);
-        console.log("page_length",pageLength)
+        console.log("page_length", pageLength)
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
@@ -482,11 +494,11 @@ export default class BookingService extends BaseService {
 
         }
         console.log(pageLength)
-        const bookingsReq =  this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
+        const bookingsReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
         const bookingPagesReq = this.model.count(filters)
         const [bookingDetails, bookingPages] = await Promise.all([bookingsReq, bookingPagesReq])
         return ({ bookingDetails, bookingPages })
-      
+
 
     }
     getAllMuaBookings = async (makeupArtistId: string) => {
@@ -624,7 +636,7 @@ export default class BookingService extends BaseService {
     }
 
     getFullBookingById = async (bookingId: string): Promise<BookingI> => {
-        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events") .populate("services.employee_id") as BookingSI
+        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("services.employee_id") as BookingSI
         const json: BookingI = booking.toJSON()
         const salons: SalonSI[] = await this.salonModel.find({ "services.options._id": json.services.map((s: BookingServiceI) => s.option_id) }).lean()
         console.log(`Salons ${salons.length}`)

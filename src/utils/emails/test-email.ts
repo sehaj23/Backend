@@ -2,11 +2,12 @@ import * as aws from "aws-sdk";
 import { PutObjectRequest } from "aws-sdk/clients/s3";
 import * as fs from 'fs';
 import * as pdf from 'html-pdf';
+import { BookingPaymentI } from "../../interfaces/booking.interface";
 import '../../prototypes/string.prototypes';
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
 
-function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payment: string, gst: string, finalTotal: string) {
+function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
 
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
@@ -21,7 +22,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[Salon Address]", salonAddress)
         data = data.replaceAll("[Stylist]", stylist.toString())
         data = data.replaceAll("[amt_3]", subtotal)
-        data = data.replaceAll("[payment]", payment)
+        data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
         if (err) {
             console.log(err)
             return

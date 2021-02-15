@@ -50,6 +50,20 @@ export interface RazorpayPaymentData {
     verified: boolean
 }
 
+
+export enum BookingPaymentMode {
+    COD = "COD",
+    WALLET = "WALLET",
+    RAZORPAY = "RAZORPAY"
+}
+
+export interface BookingPaymentI {
+    amount: number
+    mode: BookingPaymentMode
+    verified: boolean
+    transaction_id?: string
+}
+
 export interface BookingI {
     user_id: string | mongoose.Schema.Types.ObjectId
     makeup_artist_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
@@ -57,7 +71,7 @@ export interface BookingI {
     salon_id?: string | mongoose.Schema.Types.ObjectId// it can be anything MUA, Designer, Salon
     services?: BookingServiceI[]
     status?: BookinStatus
-    payment_type: BookingPaymentType
+    payments: BookingPaymentI[]
     location: BookingLoaction
     reviews?: ReviewSI[],
     address: BookingAddressI
