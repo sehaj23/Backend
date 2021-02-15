@@ -81,11 +81,26 @@ const BookingSchema = new mongoose.Schema({
         enum: bookingStatus,
         default: 'Requested'
     },
-    payment_type: {
-        type: String,
-        enum: ['COD', 'Online'],
-        default: 'COD'
-    },
+    payments: [{
+        amount: {
+            type: Number,
+            min: 0,
+            required: true
+        },
+        mode: {
+            type: String,
+            enum: ['COD', 'WALLET', 'RAZORPAY'],
+            required: true
+        },
+        verified: {
+            type: Boolean,
+            default: false
+        },
+        transaction_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'transactions',
+        }
+    }],
     location: {
         type: String,
         enum: ['Customer Place', 'Vendor Place'],
