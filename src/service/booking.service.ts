@@ -446,6 +446,7 @@ export default class BookingService extends BaseService {
         const filters = {
             salon_id: salonId
         }
+        console.log(filters)
         const dateFilter = {}
         dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
         dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
@@ -482,10 +483,7 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["services.service_time"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
+           
 
             //  filters["createdAt"] = {
             //      "$gte": dateFilter["start_date"],
@@ -493,10 +491,16 @@ export default class BookingService extends BaseService {
             // // }
 
         }
+        filters["services.service_time"] = {
+            "$gte": dateFilter["start_date"],
+            "$lt": dateFilter["end_date"]
+        }
         console.log(pageLength)
+        console.log(filters)
         const bookingsReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
         const bookingPagesReq = this.model.count(filters)
         const [bookingDetails, bookingPages] = await Promise.all([bookingsReq, bookingPagesReq])
+        console.log(bookingPages)
         return ({ bookingDetails, bookingPages })
 
 
