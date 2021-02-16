@@ -495,10 +495,10 @@ export default class BookingService extends BaseService {
         console.log(pageLength)
         console.log(filters)
         const bookingsReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
-       // const bookingPagesReq = this.model.countDocuments(filters)
-        const [bookingDetails] = await Promise.all([bookingsReq,])
-      ///  console.log(bookingPages)
-        return ({ bookingDetails, })
+        const bookingPagesReq = this.model.countDocuments(filters)
+        const [bookingDetails, bookingPages] = await Promise.all([bookingsReq, bookingPagesReq])
+        console.log(bookingPages)
+        return ({ bookingDetails, bookingPages })
 
 
     }
