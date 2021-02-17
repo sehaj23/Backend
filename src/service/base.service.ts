@@ -48,6 +48,9 @@ export default class BaseService {
      * This is to find by multipleIds
      */
     getByIds = async (ids: string[]) => {
+        return this.model.find({_id:{$in:ids}}).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
+    }
+    getByObjectIds = async (ids: string[]) => {
         return this.model.find(ids).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
     }
 
