@@ -3,7 +3,7 @@ import { BookingSI } from "../interfaces/booking.interface";
 import { BookingRedis } from "../redis/index.redis";
 
 
-const bookingStatus = ['Refunded', 'Online Payment Failed', 'Online Payment Requested', 'Start', 'Done', 'Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed', "Rescheduled Canceled", "Rescheduled", "Rescheduled and Pending"]
+const bookingStatus = ['Refunded', 'Online Payment Failed', 'Online Payment Requested', 'Start', 'Done', 'Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed', "Rescheduled Canceled", "Rescheduled", "Rescheduled and Pending","No Show"]
 
 const BookingSchema = new mongoose.Schema({
     user_id: {

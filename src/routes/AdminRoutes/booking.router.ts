@@ -54,6 +54,32 @@ bookingRouter.get("/", verifyToken, bookingController.getBookingsAdmin)
 bookingRouter.get("/:id", verifyToken, bookingController.getbookingbyId)
 bookingRouter.patch("/update-status/:id",verifyToken,bookingController.updateStatusBookings)
 bookingRouter.put("/:id", verifyToken, bookingController.put)
+/**
+ * @swagger
+ * /api/booking/salon-emp/:salonId:
+ *  post:
+ *      summary: Get list of employees available by service and booking date and time
+ *      tags: [Admin]
+ *      description: To get list and details of employees
+ *      parameters:
+ *         -in:query
+ *           name:dateTime
+ *           schema:
+ *              type: string  
+ *      requestBody:
+ *          description: send service id in array
+ *          content:
+ *             application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          service_id:
+ *                              type: [string]
+ *                              required: true
+ *      responses:
+ *          default:
+ *              description: Employee names and _ids.
+ */
 bookingRouter.post("/salon-emp/:salonId", bookingController.getSalonEmployees)
 
 

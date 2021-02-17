@@ -66,6 +66,18 @@ export default class BookingController extends BaseController {
         res.send(bookings)
     })
 
+    checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const codBooking = await this.service.get({user_id:id,"payments.mode":"'COD",status:{$in:[ 'Customer Cancelled','No Show']}})
+        const onlineBooking = await this.service.get({user_id:id,"payments.mode":"'RAZORPAY",status:'Completed'})
+        if(codBooking.length>onlineBooking.length){
+            res.status(400).send({message:"COD not allowed",success:false})
+        }else{
+            res.status(200).send({message:"COD allowed",success:true})
+        }
+    })
+
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
         const { id } = req.params
         const booking = await this.service.getId(id) as BookingSI

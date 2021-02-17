@@ -3,8 +3,8 @@ import * as Razorpay from 'razorpay';
 dotenv.config()
 
 export default class RazorPayService {
-    protected key_id = process.env.razorpay_key_id ?? "rzp_live_Yoj4J6C5jQR4op"
-    protected key_secret = process.env.razorpay_key_secret ?? "9DpEIzbKxpJnMnUPIFYTkps7"
+    protected key_id = process.env.razorpay_key_id ?? "rzp_test_gMJlYuQsuRQfh6"
+    protected key_secret = process.env.razorpay_key_secret ?? "Gxa2LB0IrkqyQom50BMskgbM"
 
     protected instance: any
     constructor() {
