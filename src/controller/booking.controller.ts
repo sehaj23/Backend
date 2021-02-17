@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { Author, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import { Author, BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
@@ -8,6 +8,7 @@ import { FeedbackI } from "../interfaces/feedback.interface";
 import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
 import { PromoUserSI } from "../interfaces/promo-user.inderface";
 import SalonSI from "../interfaces/salon.interface";
+import { RefundTypeEnum } from "../interfaces/refund.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
@@ -15,6 +16,7 @@ import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 import EmployeeService from "../service/employee.service";
 import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
+import RefundService from "../service/refund.service";
 import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
 import SalonService from "../service/salon.service";
@@ -64,6 +66,39 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const bookings = await this.service.getByUserId(req.userId)
         res.send(bookings)
+    })
+
+    getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
+        const booking = await this.service.getOne({ status: { "$in": ["Vendor Cancelled", "Vendor Cancelled After Confirmed"], payment_type: "Online" } }) as BookingSI
+        const bookingJson = booking.toJSON()
+        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
+        bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
+        bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+        const refundOptions = [
+            {
+                name: "Zattire Wallet",
+                refund_type: RefundTypeEnum.Zattire_Wallet,
+                time: "1-10 seconds",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice,
+            },
+            {
+                name: "Instant - RazorPay",
+                refund_type: RefundTypeEnum.Instant_RazorPay,
+                time: "1-24 business hours",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice - RefundService.ZATTIRE_REFUND_COMMISION
+            },
+            {
+                name: "Normal - RazorPay",
+                refund_type: RefundTypeEnum.Normal_RazorPay,
+                time: "5-10 business days",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice
+            }
+        ]
+        bookingJson['refundOptions'] = refundOptions
+        res.send(bookingJson)
     })
 
     checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -345,6 +380,25 @@ export default class BookingController extends BaseController {
         }
         res.send(salon);
 
+    })
+
+     // this to verify the razorpay payment
+     verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+        const { booking_id } = req.params
+        const { order_id, payment_id, signature } = req.body
+        const booking = await this.service.getOne({ _id: mongoose.Types.ObjectId(booking_id), user_id: userId, razorpay_order_id: order_id }) as BookingSI
+        if (booking === null) throw new ErrorResponse({ message: "Booking not found with the given data" })
+        const razorpayPaymentData: RazorpayPaymentData = {
+            order_id,
+            payment_id,
+            signature,
+            verified: false
+        }
+        booking.razorpay_payment_data = razorpayPaymentData
+        await booking.save()
+        res.send({ message: booking.razorpay_payment_data, success: true })
     })
 
     getEmployeebyService = controllerErrorHandler(async (req: Request, res: Response) => {
