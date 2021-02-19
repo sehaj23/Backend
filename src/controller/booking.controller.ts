@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
+import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
@@ -70,12 +70,12 @@ export default class BookingController extends BaseController {
     getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
-        const booking = await this.service.getOne({ user_id: mongoose.Types.ObjectId(userId), status: { "$in": ["Vendor Cancelled", "Vendor Cancelled After Confirmed"], payment_type: "Online" } }) as BookingSI
+        const booking = await this.service.getOne({ user_id: mongoose.Types.ObjectId(userId), status: { "$in": ["Vendor Cancelled", "Vendor Cancelled After Confirmed"], "payments.mode": { "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY] } } }) as BookingSI
         const bookingJson = booking.toJSON()
         let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
         bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
         bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
-        const refundOptions = [
+        let refundOptions = [
             {
                 name: "Zattire Wallet",
                 refund_type: RefundTypeEnum.Zattire_Wallet,
@@ -98,6 +98,10 @@ export default class BookingController extends BaseController {
                 amount_refunded: bookingTotalPrice
             }
         ]
+        const paymentModes = booking.payments.map((m: BookingPaymentI) => m.mode)
+        if (paymentModes.length === 1 && paymentModes[0] === BookingPaymentMode.RAZORPAY) {
+            refundOptions = [refundOptions[0]]
+        }
         bookingJson['refundOptions'] = refundOptions
         res.send(bookingJson)
     })
