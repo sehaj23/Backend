@@ -69,8 +69,16 @@ export default class BookingController extends BaseController {
 
     getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const userId = req.userId
-        const booking = await this.service.getOne({ user_id: mongoose.Types.ObjectId(userId), status: { "$in": ["Vendor Cancelled", "Vendor Cancelled After Confirmed"], "payments.mode": { "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY] } } }) as BookingSI
+        const userId = "5fc48755eae5723192b2c37f" //req.userId/
+        const booking = await this.service.getOne({
+            user_id: mongoose.Types.ObjectId(userId),
+            status: {
+                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed"],
+            },
+            "payments.mode": {
+                "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY]
+            }
+        }) as BookingSI
         const bookingJson = booking.toJSON()
         let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
         bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
