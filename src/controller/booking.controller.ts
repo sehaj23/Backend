@@ -131,6 +131,8 @@ export default class BookingController extends BaseController {
         const order_id = order['id']
         logger.info(`order_id ${order_id}`)
         console.log(order)
+        booking.razorpay_order_id = order_id
+        await booking.save()
         res.send({ order_id })
     })
 
