@@ -137,8 +137,15 @@ export default class BookingController extends BaseController {
             }
         const rp = new RazorPayService()
         const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
-        const totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
+        let totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
         logger.info(`totalAmount ${totalAmountWithTax}`)
+        if (booking.payments.length > 1) {
+            for (let payment of booking.payments) {
+                if (payment.mode === BookingPaymentMode.WALLET) {
+                    totalAmountWithTax -= payment.amount
+                }
+            }
+        }
         const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
         const order_id = order['id']
         logger.info(`order_id ${order_id}`)
