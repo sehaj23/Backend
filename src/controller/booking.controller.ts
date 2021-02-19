@@ -69,7 +69,7 @@ export default class BookingController extends BaseController {
 
     getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const userId = "5fc48755eae5723192b2c37f" //req.userId/
+        const userId = req.userId
         const booking = await this.service.getOne({
             user_id: mongoose.Types.ObjectId(userId),
             status: {
