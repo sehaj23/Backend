@@ -51,7 +51,7 @@ const bookingRouter = Router()
 // get available employees by date & time
 bookingRouter.get("/", UserverifyToken, bc.getAppointment)
 bookingRouter.get("/:id", UserverifyToken, bc.getId)
-bookingRouter.get("/online/cancelled", bc.getOnlineCancelledBookings)
+bookingRouter.get("/online/cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
 bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)
 bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
 bookingRouter.post("/razorpay-verify-payment/:bookingId", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
