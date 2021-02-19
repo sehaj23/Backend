@@ -54,7 +54,7 @@ bookingRouter.get("/:id", UserverifyToken, bc.getId)
 bookingRouter.get("/online/cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
 bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)
 bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
-bookingRouter.post("/razorpay-verify-payment/:id", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
+bookingRouter.post("/razorpay-verify-payment/:bookingId", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
 bookingRouter.patch("/update-status/:id", UserverifyToken, bc.updateStatusBookings)
 bookingRouter.patch("/rescheduled/:id", UserverifyToken, bc.confirmRescheduleSlot)
 // create a booking

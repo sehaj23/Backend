@@ -387,9 +387,9 @@ export default class BookingController extends BaseController {
     verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
-        const { booking_id } = req.params
+        const { bookingId } = req.params
         const { order_id, payment_id, signature } = req.body
-        const booking = await this.service.getOne({ _id: mongoose.Types.ObjectId(booking_id), user_id: userId, razorpay_order_id: order_id }) as BookingSI
+        const booking = await this.service.getOne({ _id: mongoose.Types.ObjectId(bookingId), user_id: userId, razorpay_order_id: order_id }) as BookingSI
         if (booking === null) throw new ErrorResponse({ message: "Booking not found with the given data" })
         const razorpayPaymentData: RazorpayPaymentData = {
             order_id,
