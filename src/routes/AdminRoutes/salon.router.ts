@@ -49,6 +49,7 @@ salonRouter.get("/:id/offer", verifyToken, salonController.getOffer)
 salonRouter.get("/:id/service", verifyToken, salonController.getService)
 salonRouter.post("/:id/offer/:sid", verifyToken, salonController.createOffer)
 salonRouter.post("/brand", verifyToken, salonController.addBrand)
+salonRouter.get("/reviews/:id",verifyToken,salonController.getSalonReviews)
 salonRouter.post("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
 
 
