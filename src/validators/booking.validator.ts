@@ -7,7 +7,7 @@ export class BookingValidator {
         body("order_id", "Need Razorpay order id").notEmpty(),
         body("payment_id", "Need Razorpay payment id").notEmpty(),
         body("signature", "Need Razorpay Signature").notEmpty(),
-        param("id", "Need mongo booking id").notEmpty().isMongoId(),
+        param("bookingId", "Need mongo booking id").notEmpty().isMongoId(),
         BaseValidator.validate
     ]
 
