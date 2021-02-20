@@ -646,6 +646,12 @@ export default class SalonController extends BaseController {
 
     })
 
+    getSalonReport = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const report = await this.service.getSalonReport(id)
+        res.status(200).send(report)
+    })
+
 
     getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string

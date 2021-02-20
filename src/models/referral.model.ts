@@ -16,6 +16,7 @@ const ReferralCodeSchema = new mongoose.Schema({
         },
         status:{
             type:String,
+            default:'Not Used',
             enum: ['Used', 'Not Used']
         },
         referral_code:{
