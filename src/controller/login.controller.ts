@@ -120,7 +120,7 @@ export default class LoginController extends BaseController {
         const referalData: ReferralI = {
           referred_by: refferallCode._id,
           referred_to: {
-            status: "Used",
+            status: "Not Used",
             referral_code: rfCode,
             user: createUser._id,
           }

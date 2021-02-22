@@ -12,5 +12,6 @@ const reportsSalonController = new ReportsSalonController(reportsSalonService)
 
 
 reportsSalonRouter.get("/:id",verifyToken, reportsSalonController.getId)
+reportsSalonRouter.get("/salon/:id",verifyToken,reportsSalonController.getSalonReport)
 
 export default reportsSalonRouter
