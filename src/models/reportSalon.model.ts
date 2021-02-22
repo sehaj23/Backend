@@ -3,8 +3,8 @@ import salons = require("../seeds/data/salons/salons");
 
 
 const ReportSalonSchema = new mongoose.Schema({
-    
-    user_id:{
+
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
     },
@@ -12,17 +12,19 @@ const ReportSalonSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "salons",
     },
-    error:{
+    error: {
         type: [String],
     },
     info: {
         required: true,
         type: String,
     },
-   
 
 
+
+}, {
+    timestamps: true
 })
-const ReportSalon = mongoose.model("reportSalon", ReportSalonSchema)
+const ReportSalon = mongoose.model("report-salon", ReportSalonSchema)
 
 export default ReportSalon

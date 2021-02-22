@@ -645,7 +645,6 @@ export default class BookingController extends BaseController {
             }
         }
         res.send({ message: "Booking status changed", success: true })
-
     })
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
