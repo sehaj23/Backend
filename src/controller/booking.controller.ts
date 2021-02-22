@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
@@ -628,15 +629,18 @@ export default class BookingController extends BaseController {
             const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
             const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
 
-            if (completedBooking.length == 1) {
+            if (completedBooking.length === 1) {
                 console.log(booking.user_id.toString())
                 const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
                 console.log(referal)
                 if (!referal) {
                     console.log("no referral")
                 } else {
-                    //TODO:send money here to 
-                    // referal.referred_by
+                    const sqsWalletTransactionData: SQSWalletTransactionI = {
+                        transaction_type: "Referral Bonus",
+                        user_id: referal.referred_by.toString()
+                    }
+                    sqsWalletTransaction(sqsWalletTransactionData)
                 }
             }
         }

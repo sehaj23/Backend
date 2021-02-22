@@ -35,7 +35,7 @@ export const sqsNewUser = (userInfo: string) => {
 
 }
 
-export const sqsRefundTransaction = (refundId: string) => {
+export const sqsRefundTransaction_ = (refundId: string) => {
 
   const sqs = new AWS.SQS()
   const params: AWS.SQS.SendMessageRequest = {
@@ -50,6 +50,32 @@ export const sqsRefundTransaction = (refundId: string) => {
     logger.info(`SQS - Refund Transaction - ${refundId} - ${JSON.stringify(data)}`)
   })
 
+}
+
+export interface SQSWalletTransactionI {
+  transaction_type: string
+  user_id?: string
+  refund_id?: string
+  booking_id?: string
+  wallet_razorpay_id?: string // this is the id if the user is adding the money
+  amount?: number
+  description?: string
+  done_by?: string // who did the transaction
+}
+
+export const sqsWalletTransaction = (walletTransaction: SQSWalletTransactionI) => {
+  const sqs = new AWS.SQS()
+  const params: AWS.SQS.SendMessageRequest = {
+    MessageBody: JSON.stringify(walletTransaction),
+    QueueUrl: process.env.SQS_WALLET_TRANSACTION_URL
+  }
+  sqs.sendMessage(params, (err: AWS.AWSError, data: AWS.SQS.SendMessageResult) => {
+    if (err) {
+      logger.error(`sqsWalletTransaction: ${err.message}`)
+      return
+    }
+    logger.info(`SQS - Wallet Transaction - ${walletTransaction} - ${JSON.stringify(data)}`)
+  })
 }
 
 

@@ -1,4 +1,4 @@
-import { sqsRefundTransaction } from "../aws";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
 import RefundSI, { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
@@ -6,7 +6,6 @@ import ErrorResponse from "../utils/error-response";
 import BaseService from "./base.service";
 import BookingService from "./booking.service";
 import RazorPayService from "./razorpay.service";
-
 export default class RefundService extends BaseService {
 
     static ZATTIRE_REFUND_COMMISION = 35
@@ -84,10 +83,11 @@ export default class RefundService extends BaseService {
                 booking_id: booking._id,
             }
             const refundSI = await this.model.create(refund) as RefundSI
-            const sqsMessage = JSON.stringify({
+            const sqsWalletTransactionData: SQSWalletTransactionI = {
+                transaction_type: "Refund",
                 refund_id: refundSI._id.toString()
-            })
-            sqsRefundTransaction(sqsMessage)
+            }
+            sqsWalletTransaction(sqsWalletTransactionData)
             booking.status = 'Refunded'
             booking.refund_id = refundSI._id
             await booking.save()
