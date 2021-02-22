@@ -9,6 +9,6 @@ const walletRazorpayRouter = Router()
 const walletRazorpayService = new WalletRazorpayService(WalletRazorpay)
 const walletRazorpayController = new WalletRazorpayController(walletRazorpayService)
 walletRazorpayRouter.post("/", [...WalletRazorpayValidator.post, UserverifyToken], walletRazorpayController.post)
-walletRazorpayRouter.patch("/", [...WalletRazorpayValidator.transactionResponse, UserverifyToken], walletRazorpayController.transactionResponse)
+walletRazorpayRouter.patch("/:walletRazorpayId", [...WalletRazorpayValidator.transactionResponse, UserverifyToken], walletRazorpayController.transactionResponse)
 
 export default walletRazorpayRouter
