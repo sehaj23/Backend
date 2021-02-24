@@ -1,4 +1,5 @@
 import { String } from "aws-sdk/clients/acm";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
@@ -73,6 +74,7 @@ export default class BookingService extends BaseService {
 
             // const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
             let status: BookinStatus
+            let usedWalletAmount: number = -1 // used as a flag
             for (const p of payments) {
                 if (p.mode === BookingPaymentMode.COD) {
                     status = actualStatus
@@ -81,6 +83,8 @@ export default class BookingService extends BaseService {
                 } else if (p.mode === BookingPaymentMode.RAZORPAY) {
                     status = 'Online Payment Requested'
                     break
+                } else if (p.mode === BookingPaymentMode.WALLET) {
+                    usedWalletAmount = p.amount
                 }
             }
             const booking: BookingI = {
@@ -94,6 +98,13 @@ export default class BookingService extends BaseService {
                 status
             }
             const b = await this.model.create(booking)
+            if (usedWalletAmount > -1) {
+                const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    transaction_type: "Used Credits",
+                    booking_id: b._id.toString()
+                }
+                sqsWalletTransaction(sqsWalletTransactionData)
+            }
             // delete the cart of the user
             await this.cartService.bookCartByUserId(userId)
             return b
