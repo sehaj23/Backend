@@ -37,7 +37,7 @@ export default class RefundService extends BaseService {
                 amount_refunded: amountToRefund,
                 zattire_commision: RefundService.ZATTIRE_REFUND_COMMISION,
                 //@ts-ignore
-                user_id: booking.user_id?._id ?? booking.user_id.toString(),
+                user_id: userId,
                 salon_id: booking.salon_id.toString(),
                 booking_id: booking._id,
                 razorpay_refund_id: razorpayRefund["id"]
@@ -60,7 +60,7 @@ export default class RefundService extends BaseService {
                 total_amount: bookingTotalPrice,
                 amount_refunded: amountToRefund,
                 zattire_commision: 0,
-                user_id: booking.user_id.toString(),
+                user_id: userId,
                 salon_id: booking.salon_id.toString(),
                 booking_id: booking._id,
                 razorpay_response: razorpayRefund,
@@ -79,7 +79,7 @@ export default class RefundService extends BaseService {
                 total_amount: bookingTotalPrice,
                 amount_refunded: amountToRefund,
                 zattire_commision: 0,
-                user_id: booking.user_id.toString(),
+                user_id: userId,
                 salon_id: booking.salon_id.toString(),
                 booking_id: booking._id,
             }
