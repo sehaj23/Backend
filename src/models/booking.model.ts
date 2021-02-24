@@ -92,10 +92,12 @@ const BookingSchema = new mongoose.Schema({
             enum: ['COD', 'WALLET', 'RAZORPAY'],
             required: true
         },
-        verified: {
-            type: Boolean,
-            default: false
+        verified_status: {
+            type: String,
+            enum: ["PENDING", "SUCCESSFUL", "UNSUCCESSFUL"],
+            default: "PENDING"
         },
+        verification_error: String,
         transaction_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'transactions',

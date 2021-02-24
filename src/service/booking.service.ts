@@ -1,7 +1,7 @@
 import { String } from "aws-sdk/clients/acm";
 import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
-import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingPaymentVerifiedStatusEnum, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -78,7 +78,7 @@ export default class BookingService extends BaseService {
             for (const p of payments) {
                 if (p.mode === BookingPaymentMode.COD) {
                     status = actualStatus
-                    p.verified = true
+                    p.verified_status = BookingPaymentVerifiedStatusEnum.SUCCESSFUL
                     break
                 } else if (p.mode === BookingPaymentMode.RAZORPAY) {
                     status = 'Online Payment Requested'

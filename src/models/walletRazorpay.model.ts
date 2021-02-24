@@ -14,11 +14,12 @@ const WalletRazorpaySchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["INITIATED", "SUCCESSFUL", "UNSUCCESSFUL"]
+        enum: ["INITIATED", "SUCCESSFUL", "UNSUCCESSFUL"],
+        default: "INITIATED"
     },
     razorpay_payment_data: Object,
     error_message: String
 })
-const WalletRazorpay = mongoose.model("wallet_razorpay", WalletRazorpaySchema)
+const WalletRazorpay = mongoose.model("wallet_razorpays", WalletRazorpaySchema)
 
 export default WalletRazorpay

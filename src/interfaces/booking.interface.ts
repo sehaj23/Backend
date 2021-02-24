@@ -57,10 +57,17 @@ export enum BookingPaymentMode {
     RAZORPAY = "RAZORPAY"
 }
 
+export enum BookingPaymentVerifiedStatusEnum {
+    PENDING = "PENDING",
+    SUCCESSFUL = "SUCCESSFUL",
+    UNSUCCESSFUL = "UNSUCCESSFUL"
+}
+
 export interface BookingPaymentI {
     amount: number
     mode: BookingPaymentMode
-    verified: boolean
+    verified_status: BookingPaymentVerifiedStatusEnum
+    verification_error?: string
     transaction_id?: string
 }
 

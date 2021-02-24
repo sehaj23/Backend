@@ -74,7 +74,7 @@ export default class BookingController extends BaseController {
         const booking = await this.service.getOne({
             user_id: mongoose.Types.ObjectId(userId),
             status: {
-                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed"],
+                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed", 'Low Funds Canceled'],
             },
             "payments.mode": {
                 "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY]
@@ -638,7 +638,7 @@ export default class BookingController extends BaseController {
                 } else {
                     const sqsWalletTransactionData: SQSWalletTransactionI = {
                         transaction_type: "Referral Bonus",
-                        user_id: referal.referred_by.toString()
+                        user_id: referal.referred_by.toString() // add money to this person account
                     }
                     sqsWalletTransaction(sqsWalletTransactionData)
                 }

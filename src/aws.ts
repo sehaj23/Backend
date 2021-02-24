@@ -52,6 +52,14 @@ export const sqsRefundTransaction_ = (refundId: string) => {
 
 }
 
+export enum SQSWalletTransactionType {
+  Referral_Bonus = "Referral_Bonus",
+  Add_Credits = "Add_Credits",
+  Refunded = "Refunded",
+  Used_Credits = "Used Credits"
+}
+
+
 export interface SQSWalletTransactionI {
   transaction_type: string
   user_id?: string
