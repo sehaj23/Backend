@@ -32,11 +32,12 @@ export default class RefundService extends BaseService {
             const refund: RefundI = {
                 type: RefundTypeEnum.Instant_RazorPay,
                 status: "Initiated",
-              razorpay_status: razorpayRefund["status"],
+                razorpay_status: razorpayRefund["status"],
                 total_amount: bookingTotalPrice,
                 amount_refunded: amountToRefund,
                 zattire_commision: RefundService.ZATTIRE_REFUND_COMMISION,
-                user_id: (booking.user_id?._id ??booking.user_id).toString(),
+                //@ts-ignore
+                user_id: booking.user_id?._id ?? booking.user_id.toString(),
                 salon_id: booking.salon_id.toString(),
                 booking_id: booking._id,
                 razorpay_refund_id: razorpayRefund["id"]
