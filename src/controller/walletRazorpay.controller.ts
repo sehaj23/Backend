@@ -1,11 +1,20 @@
 import { Request, Response } from "express";
 import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import { WalletRazorpaySI, WalletRazorpayStatus } from "../interfaces/walletRazorpay.interface";
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import WalletRazorpayService from "../service/walletRazorpay.service";
 import BaseController from "./base.controller";
 
 export default class WalletRazorpayController extends BaseController {
     service: WalletRazorpayService
+
+    post = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+        const resource = await this.service.post(req.body, userId)
+        res.send(resource)
+    })
+
     transactionResponse = async (req: Request, res: Response) => {
         const { walletRazorpayId } = req.params
         const {
