@@ -385,9 +385,9 @@ export default class SalonService extends BaseService {
                                 })
                                 return newSalon
                         }
-                        throw new Error("Salon coordinates index check did not pass")
+                      return salon
                 }
-                throw new Error("Salon coordinates not found")
+                return salon
         }
 
         // Salon Rating-Wise  Recommended.
@@ -902,7 +902,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
 
-                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1 })
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1,approved:1,location:1,createdAt:1 })
                 const resourceCountQuery = this.model.aggregate([
                         { "$count": "count" }
                 ])
