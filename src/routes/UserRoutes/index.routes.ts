@@ -12,6 +12,7 @@ import salonInfoRouter from "./salon.router"
 import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
 import userRouter from "./user.router"
+import walletRazorpayRouter from "./walletRazorpay.router"
 
 /**
  * @swagger
@@ -35,5 +36,5 @@ Userrouter.use("/otp", otpAppRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
-
+Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
 export default Userrouter

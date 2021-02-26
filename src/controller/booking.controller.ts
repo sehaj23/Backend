@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
@@ -73,7 +74,7 @@ export default class BookingController extends BaseController {
         const booking = await this.service.getOne({
             user_id: mongoose.Types.ObjectId(userId),
             status: {
-                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed"],
+                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed", 'Low Funds Canceled'],
             },
             "payments.mode": {
                 "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY]
@@ -621,28 +622,29 @@ export default class BookingController extends BaseController {
         if (status === "Done") {
             const notify = Notify.serviceEnd(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         }
-        if (status ==='Vendor Cancelled'){
-            const notify =  Notify.vendorCancelled(user, salon, employee, booking)
+        if (status === 'Vendor Cancelled') {
+            const notify = Notify.vendorCancelled(user, salon, employee, booking)
         }
-        if (status === "Completed"){
-           const notify = Notify.bookingCompletedInvoice(user,salon,booking,employee)
-           const completedBooking = await this.service.get({user_id:booking.user_id.toString(),status:"Completed"})
-    
-           if(completedBooking.length==1){
-               console.log(booking.user_id.toString())
-            const referal :ReferralSI= await this.referralService. getReferralByUserIdAndUpdate(booking.user_id.toString(),{"referred_to.booking_id":booking._id,"referred_to.booking_status":status,"referred_to.status":"Used"})
-            console.log(referal)
-            if(!referal){
-                console.log("no referral")
-            }else{
-                //TODO:send money here to 
-                // referal.referred_by
-      
-        }
-    }
-} 
-        res.send({ message: "Booking status changed", success: true })
+        if (status === "Completed") {
+            const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
+            const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
 
+            if (completedBooking.length === 1) {
+                console.log(booking.user_id.toString())
+                const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+                console.log(referal)
+                if (!referal) {
+                    console.log("no referral")
+                } else {
+                    const sqsWalletTransactionData: SQSWalletTransactionI = {
+                        transaction_type: "Referral Bonus",
+                        user_id: referal.referred_by.toString() // add money to this person account
+                    }
+                    sqsWalletTransaction(sqsWalletTransactionData)
+                }
+            }
+        }
+        res.send({ message: "Booking status changed", success: true })
     })
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {

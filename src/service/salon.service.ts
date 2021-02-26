@@ -384,9 +384,9 @@ export default class SalonService extends BaseService {
                                 })
                                 return newSalon
                         }
-                        throw new Error("Salon coordinates index check did not pass")
+                      return salon
                 }
-                throw new Error("Salon coordinates not found")
+                return salon
         }
 
         // Salon Rating-Wise  Recommended.

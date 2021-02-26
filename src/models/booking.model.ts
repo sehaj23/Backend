@@ -3,7 +3,7 @@ import { BookingSI } from "../interfaces/booking.interface";
 import { BookingRedis } from "../redis/index.redis";
 
 
-const bookingStatus = ['Refunded', 'Online Payment Failed', 'Online Payment Requested', 'Start', 'Done', 'Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed', "Rescheduled Canceled", "Rescheduled", "Rescheduled and Pending","No Show"]
+const bookingStatus = ['Refunded', 'Online Payment Failed', 'Online Payment Requested', 'Start', 'Done', 'Requested', 'Confirmed', 'Vendor Cancelled', 'Customer Cancelled', 'Completed', 'Vendor Cancelled After Confirmed', 'Customer Cancelled After Confirmed', "Rescheduled Canceled", "Rescheduled", "Rescheduled and Pending", "No Show", 'Low Funds Canceled']
 
 const BookingSchema = new mongoose.Schema({
     user_id: {
@@ -92,10 +92,12 @@ const BookingSchema = new mongoose.Schema({
             enum: ['COD', 'WALLET', 'RAZORPAY'],
             required: true
         },
-        verified: {
-            type: Boolean,
-            default: false
+        verified_status: {
+            type: String,
+            enum: ["PENDING", "SUCCESSFUL", "UNSUCCESSFUL"],
+            default: "PENDING"
         },
+        verification_error: String,
         transaction_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'transactions',
