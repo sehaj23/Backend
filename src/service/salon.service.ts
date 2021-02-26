@@ -359,6 +359,7 @@ export default class SalonService extends BaseService {
         getSalonInfo = async (salonId: string, centerPoint: any) => {
                 distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
+                return salon
                 if (salon.coordinates != null) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
                                 const userLocation = `${centerPoint.lat}` + `,` + `${centerPoint.lng}`
@@ -775,8 +776,8 @@ export default class SalonService extends BaseService {
                 return report
         }
 
-        getSalonReport =  async (id:string)=>{
-                const report = await this.reportSalonModel.find({salon_id:id}).populate('salon_id','name')
+        getSalonReport = async (id: string) => {
+                const report = await this.reportSalonModel.find({ salon_id: id }).populate('salon_id', 'name')
                 return report
         }
 
