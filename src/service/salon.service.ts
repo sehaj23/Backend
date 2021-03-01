@@ -775,11 +775,7 @@ export default class SalonService extends BaseService {
                 return report
         }
 
-        getSalonReport =  async (id:string)=>{
-                const report = await this.reportSalonModel.find({salon_id:id}).populate('salon_id','name')
-                return report
-        }
-
+     
         getReviewsRating = async (_id: string) => {
                 const id = mongoose.Types.ObjectId(_id)
                 /**
@@ -913,6 +909,12 @@ export default class SalonService extends BaseService {
                 }
                 const totalPages = Math.ceil(totalPageNumber / pageLength)
                 return { salons, totalPages, pageNumber, pageLength }
+        }
+
+        getSalonPhoto = async (id:string) => {
+                const salonPhoto = await this.model.findById(id).select("photo_ids").populate("photo_ids")
+                return salonPhoto
+
         }
 
 }

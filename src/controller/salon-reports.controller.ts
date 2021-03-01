@@ -16,5 +16,12 @@ export default class ReportsSalonController extends BaseController{
         const report = await this.service.getSalonReport(id,q)
         res.status(200).send(report)
     })
+
+    getSalonReportbyUser = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const q = req.query
+        const report = await this.service.getSalonReportbyUser(id,q)
+        res.status(200).send(report)
+    })
    
 }
