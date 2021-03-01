@@ -406,6 +406,14 @@ export default class BookingController extends BaseController {
     })
 
     // this to verify the razorpay payment
+
+
+
+
+
+
+
+
     verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
