@@ -646,11 +646,6 @@ export default class SalonController extends BaseController {
 
     })
 
-    getSalonReport = controllerErrorHandler(async (req: Request, res: Response) => {
-        const id = req.params.id
-        const report = await this.service.getSalonReport(id)
-        res.status(200).send(report)
-    })
 
 
     getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -725,6 +720,12 @@ export default class SalonController extends BaseController {
     getUnapprovedSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
         const salon = await this.service.getUnapprovedWithPagination(q)
+        res.status(200).send(salon)
+    })
+
+    getSalonPhoto = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const salon = await this.service.getSalonPhoto(id)
         res.status(200).send(salon)
     })
 

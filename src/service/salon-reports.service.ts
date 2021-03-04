@@ -22,4 +22,16 @@ export default class ReportsSalonService extends BaseService {
         const [report,count] =  await Promise.all([reportReq,reportCountReq])
         return {report,count}
 }
+getSalonReportbyUser =  async (id:string,q:any)=>{
+    const pageNumber: number = parseInt(q.page_number || 1)
+    let pageLength: number = parseInt(q.page_length || 25)
+    pageLength = (pageLength > 100) ? 100 : pageLength
+    const skipCount = (pageNumber - 1) * pageLength
+    const reportReq =  this.model.find({user_id:id}).skip(skipCount).limit(pageLength).populate('salon_id','name')
+    const reportCountReq = this.model.aggregate([
+        { "$count": "count" }
+    ])
+    const [report,count] =  await Promise.all([reportReq,reportCountReq])
+    return {report,count}
+}
 }

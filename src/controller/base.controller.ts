@@ -87,6 +87,8 @@ export default class BaseController {
             res.status(403).send({ message: e.message })
         }
     }
+
+    
     putProfilePic = async (req: Request, res: Response) => {
         try {
             const photoData: PhotoI = req.body
