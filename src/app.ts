@@ -18,6 +18,7 @@ import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
+var bodyParser = require('body-parser')
 const swaggerUi = require('swagger-ui-express');
 import swaggerJsdoc = require('swagger-jsdoc');
 const basicAuth = require('express-basic-auth')
@@ -79,6 +80,7 @@ http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
 
 app.use(compression())
+app.use(bodyParser({limit: '50mb'}));
 app.use(cors({
   origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com"],
   credentials: true
