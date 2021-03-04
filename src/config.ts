@@ -1,6 +1,6 @@
 
 enum CONFIG {
-    ADMIN_JWT_KEY = "thisisaveryfescuredtokesss",
+    ADMIN_JWT_KEY = "expectopatronum4wy76t7fdvbxhsjwytd99saaxc99^7812skjhsgvcmkjhbvgqbwnjdhuqygvwb nju21y736tetdfgvbsnjfwgvqbhdr1t62yuhwjndytrewqasdfghjsdfghhbgvdft617y8usxnjbdfghiuywtfscvbnk,mnbvcxsqasdfghjop098765rgvcxcvbhujaserfcvgydsasdfghjk123edfgyuiijhgfdsdfhsbhbdxasskjnssnakjiouygtf",
     VENDOR_JWT_KEY = "thisisVendorBRO!@34532@!2",
     USER_JWT_KEY = "expelliarmus-8541#9%",
     RES_ERROR = "Server Error:",
