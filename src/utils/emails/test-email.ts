@@ -24,6 +24,9 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[amt_3]", subtotal)
         data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
         data = data.replaceAll("[service_1]",serviceList.toString())
+        data = data.replaceAll("[qty_1]",serviceQuantity.toString())
+        data = data.replaceAll("[amt_1]",serviceAmount.toString())
+
         if (err) {
             console.log(err)
             return
