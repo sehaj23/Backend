@@ -566,7 +566,7 @@ export default class SendEmail {
         const loop = services.map(s => { return s.service_name + " <br>" })
         console.log("seending mail; to vendor")
 
-        fs.readFile(`${__dirname}/booking-request-vendor.html.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        fs.readFile(`${__dirname}/booking-request-vendor.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return

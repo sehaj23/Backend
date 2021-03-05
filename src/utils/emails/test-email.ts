@@ -1,13 +1,15 @@
 import * as aws from "aws-sdk";
 import * as fs from 'fs';
-import { BookingPaymentI } from "../../interfaces/booking.interface";
+import { BookingPaymentI, BookingServiceI } from "../../interfaces/booking.interface";
 import '../../prototypes/string.prototypes';
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
 
-function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string) {
+function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[]) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-
+        const serviceList = services.map(s => { return s.service_name + " <br>" })
+        const serviceAmount = services.map(s=>{return s.service_total_price + "<br>"})
+        const serviceQuantity = services.map(s=>{return s.quantity.toString()+" <br>"})
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
         data = data.replaceAll("[CIN]", "U74999DL2018PTC339065")
         data = data.replaceAll("[Address]", "8/5, South patel nagar, New Delhi-110008")
@@ -15,12 +17,25 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[Order Date]", orderDate)
         data = data.replaceAll("[Order Time]", orderTime)
         data = data.replaceAll("[Customer Name]", customerName)
-        data = data.replaceAll("[Customer Address]", customerAddress)
+        data = data.replaceAll("[Customer Address]", customerAddress.toString()??"N/A")
         data = data.replaceAll("[Salon Name]", salonName)
         data = data.replaceAll("[Salon Address]", salonAddress)
         data = data.replaceAll("[Stylist]", stylist.toString())
         data = data.replaceAll("[amt_3]", subtotal)
         data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
+        data = data.replaceAll(` <tr style="border-top:1rem solid transparent;"></tr>
+        <td style="width:30rem;">[service_1]</td>
+        <td style="width:10rem">[hsn_1]</td>
+        <td style="width:10rem">[qty_1]</td>
+        <td style="width:10rem">[up_1]</td>
+        <td style="width:10rem">[amt_1]</td>
+      </tr>`,`<tr style="border-top:1rem solid transparent;"></tr>
+      <td style="width:30rem;">${serviceList.toString()}/td>
+      <td style="width:10rem">[hsn_1]</td>
+      <td style="width:10rem">[qty_1]</td>
+      <td style="width:10rem">[up_1]</td>
+      <td style="width:10rem">;">${serviceAmount.toString()}</td>
+    </tr>`)
         if (err) {
             console.log(err)
             return
