@@ -7,9 +7,9 @@ import MailComposer = require("nodemailer/lib/mail-composer");
 
 function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[]) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-        const serviceList = services.map(s => { return s.service_name + " <br>" })
-        const serviceAmount = services.map(s=>{return s.service_total_price + "<br>"})
-        const serviceQuantity = services.map(s=>{return s.quantity.toString()+" <br>"})
+        const serviceList = services.map(s => { return s.service_name.replaceAll(","," ") + " <br>" })
+        const serviceAmount = services.map(s=>{return  s.service_total_price.toString().replaceAll(","," ") + "<br>"})
+        const serviceQuantity = services.map(s=>{return s.quantity.toString().replaceAll(","," ")+" <br>"})
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
         data = data.replaceAll("[CIN]", "U74999DL2018PTC339065")
         data = data.replaceAll("[Address]", "8/5, South patel nagar, New Delhi-110008")
@@ -26,6 +26,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[service_1]",serviceList.toString())
         data = data.replaceAll("[qty_1]",serviceQuantity.toString())
         data = data.replaceAll("[amt_1]",serviceAmount.toString())
+        data = data.replaceAll("[up_1]","N/A")
 
         if (err) {
             console.log(err)

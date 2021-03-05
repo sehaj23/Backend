@@ -571,12 +571,12 @@ export default class SendEmail {
                 SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                 return
             }
-            data = data.replaceAll("[Customer Name]", userName)
+            data = data.replaceAll("[Customer name]", userName)
             data = data.replaceAll("[Vendor Name]", salonName)
             data = data.replaceAll("[ID]", bookingIdNumeric)
             data = data.replaceAll("[date&time]", dateTime)
             data = data.replaceAll("[staff]", emp_name)
-            data = data.replaceAll("[services]", loop.toString())
+            data = data.replaceAll("[services]", loop.toString().replaceAll(",",""))
             data = data.replaceAll("[serviceLocation]", location)
             data = data.replaceAll("[amount]", amount)
             data = data.replaceAll("[payment-method]", payments.map((p: BookingPaymentI) => p.mode).join(","))
