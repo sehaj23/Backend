@@ -32,7 +32,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
       </tr>`,`<tr style="border-top:1rem solid transparent;"></tr>
       <td style="width:30rem;">${serviceList.toString()}/td>
       <td style="width:10rem">[hsn_1]</td>
-      <td style="width:10rem">[qty_1]</td>
+      <td style="width:10rem">${serviceQuantity}</td>
       <td style="width:10rem">[up_1]</td>
       <td style="width:10rem">;">${serviceAmount.toString()}</td>
     </tr>`)
