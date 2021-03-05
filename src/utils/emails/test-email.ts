@@ -23,19 +23,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[Stylist]", stylist.toString())
         data = data.replaceAll("[amt_3]", subtotal)
         data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
-        data = data.replaceAll(`<tr style="border-top:1rem solid transparent;"></tr>
-        <td style="width:30rem;">[service_1]</td>
-        <td style="width:10rem">[hsn_1]</td>
-        <td style="width:10rem">[qty_1]</td>
-        <td style="width:10rem">[up_1]</td>
-        <td style="width:10rem">[amt_1]</td>
-      </tr>`,`<tr style="border-top:1rem solid transparent;"></tr>
-      <td style="width:30rem;">${serviceList.toString()}/td>
-      <td style="width:10rem">[hsn_1]</td>
-      <td style="width:10rem">${serviceQuantity}</td>
-      <td style="width:10rem">[up_1]</td>
-      <td style="width:10rem">;">${serviceAmount.toString()}</td>
-    </tr>`)
+        data = data.replaceAll("[service_1]",serviceList.toString())
         if (err) {
             console.log(err)
             return
