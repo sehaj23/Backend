@@ -46,7 +46,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             from: 'info@zattire.com',
             replyTo: 'info@zattire.com',
             to: ['sehaj23chawla@gmail.com', 'preetsc27@gmail.com'],
-            subject: 'SES message with invoice',
+            subject: `Invoice for your Booking ${orderId}`,
             html: data,
             attachments: [
                 // {
