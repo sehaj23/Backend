@@ -10,6 +10,8 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         const serviceList = services.map(s => { return s.service_name.replaceAll(","," ") + " <br>" })
         const serviceAmount = services.map(s=>{return  s.service_total_price.toString().replaceAll(","," ") + "<br>"})
         const serviceQuantity = services.map(s=>{return s.quantity.toString().replaceAll(","," ")+" <br>"})
+        const gst = parseInt(subtotal) *18/100
+        const total = parseInt(subtotal) + gst
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
         data = data.replaceAll("[CIN]", "U74999DL2018PTC339065")
         data = data.replaceAll("[Address]", "8/5, South patel nagar, New Delhi-110008")
@@ -27,7 +29,8 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[qty_1]",serviceQuantity.toString())
         data = data.replaceAll("[amt_1]",serviceAmount.toString())
         data = data.replaceAll("[up_1]","N/A")
-
+        data = data.replaceAll("[amt_6]",gst.toString())
+        data = data.replaceAll("[total]",total.toString())
         if (err) {
             console.log(err)
             return
