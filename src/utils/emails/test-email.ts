@@ -29,7 +29,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[qty_1]",serviceQuantity.toString())
         data = data.replaceAll("[amt_1]",serviceAmount.toString())
         data = data.replaceAll("[up_1]","N/A")
-        data = data.replaceAll("[amt_4]",discount.toString())
+        data = data.replaceAll("[amt_4]",discount.toString()??"N/A")
         data = data.replaceAll("[amt_6]",gst.toString())
         data = data.replaceAll("[total]",finalTotal.toString())
         if (err) {
