@@ -292,7 +292,7 @@ export default class VendorController extends BaseController {
       })
 
       appVersion =  controllerErrorHandler(async (req: Request, res: Response) => {
-        res.status(200).send({ios:"0.0.1",android:"1.0.2",success:true})
+        res.status(200).send({ios:"0.0.0",android:"1.0.2",success:true})
       })
 
   
