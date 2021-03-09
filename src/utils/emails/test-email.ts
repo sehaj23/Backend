@@ -7,9 +7,9 @@ import MailComposer = require("nodemailer/lib/mail-composer");
 
 function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[]) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-        const serviceList = services.map(s => { return s.service_name.replaceAll(","," ") + " <br>" })
-        const serviceAmount = services.map(s=>{return  s.service_total_price.toString().replaceAll(","," ") + "<br>"})
-        const serviceQuantity = services.map(s=>{return s.quantity.toString().replaceAll(","," ")+" <br>"})
+        const serviceList = services.map(s => { return s.service_name + " <br>" })
+        const serviceAmount = services.map(s=>{return  s.service_total_price.toString() + "<br>"})
+        const serviceQuantity = services.map(s=>{return s.quantity.toString()+" <br>"})
         const discount =+ services.map(s=>{return s.service_discount})
 
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
