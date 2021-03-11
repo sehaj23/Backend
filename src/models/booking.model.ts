@@ -102,11 +102,7 @@ const BookingSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'transactions',
         }
-    }],
-    payment_method_supported:{
-        type:[String],
-        default:['COD', 'ONLINE','WALLET']
-    },        
+    }],     
     location: {
         type: String,
         enum: ['Customer Place', 'Vendor Place'],

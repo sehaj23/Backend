@@ -148,6 +148,10 @@ const SalonSchema = new mongoose.Schema({
     commision_fixed_price: {
         type: Number
     },
+    payment_method_supported:{
+        type:[String],
+        default:['COD', 'RAZORPAY','WALLET']
+    },
     coordinates: { type: {type: String, enum: ['Point']}, coordinates : [Number]
 },
 }, {
