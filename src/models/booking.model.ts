@@ -105,8 +105,8 @@ const BookingSchema = new mongoose.Schema({
     }],
     payment_method_supported:{
         type:String,
-        enum: ['COD', 'WALLET', 'RAZORPAY','ALL'],
-        default:"ALL"
+        enum: ['COD', 'ONLINE','BOTH'],
+        default:'BOTH'
     },        
     location: {
         type: String,
