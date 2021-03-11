@@ -105,7 +105,6 @@ const BookingSchema = new mongoose.Schema({
     }],
     payment_method_supported:{
         type:[String],
-        enum: ['COD', 'ONLINE','WALLET'],
         default:['COD', 'ONLINE','WALLET']
     },        
     location: {
