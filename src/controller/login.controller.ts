@@ -182,6 +182,10 @@ export default class LoginController extends BaseController {
       const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
         expiresIn: this.jwtValidity,
       })
+      const queueData = {
+        "user_id": createUser._id
+      }
+      sqsNewUser(JSON.stringify(queueData))
       return res.status(201).send({
         token: token
       })
