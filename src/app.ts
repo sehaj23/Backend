@@ -8,6 +8,7 @@ import * as https from 'https';
 import * as morgan from "morgan";
 import * as multer from "multer";
 import * as multerS3 from "multer-s3";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "./aws";
 import './cron-jobs/index.cron-job';
 import redisClient from './redis/redis';
 import router from "./routes/AdminRoutes/index.routes";
@@ -17,6 +18,7 @@ import VendorApprouter from "./routes/VendorAppRoutes/index.routes";
 import Vendorrouter from "./routes/VendorRoutes/index.routes";
 import startSocketIO from "./service/socketio";
 import logger from "./utils/logger";
+var bodyParser = require('body-parser')
 const swaggerUi = require('swagger-ui-express');
 import swaggerJsdoc = require('swagger-jsdoc');
 const basicAuth = require('express-basic-auth')
@@ -78,6 +80,7 @@ http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
 
 app.use(compression())
+app.use(bodyParser({limit: '50mb'}));
 app.use(cors({
   origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com"],
   credentials: true
@@ -144,6 +147,11 @@ app.get(`${URL_PREFIX}/r/clr`, async (req: express.Request, res: express.Respons
 })
 
 app.get(`${URL_PREFIX}`, (req, res) => {
+  const sqsWalletTransactionData: SQSWalletTransactionI = {
+    transaction_type: "checking",
+    booking_id: "yolo"
+  }
+  sqsWalletTransaction(sqsWalletTransactionData)
   res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} main-servers.`)
 })
 

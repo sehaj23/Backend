@@ -5,7 +5,7 @@ import RefundSI from "../interfaces/refund.interface";
 const RefundSchema = new mongoose.Schema({
     type: {
         type: String,
-        enum: ["Normal - RazorPay", "Instant - RazorPay", "Zattire Wallet"],
+        enum: ["Normal - RazorPay", "Instant - RazorPay", "Zattire_Wallet"],
         required: true
     },
     status: {

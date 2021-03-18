@@ -406,6 +406,14 @@ export default class BookingController extends BaseController {
     })
 
     // this to verify the razorpay payment
+
+
+
+
+
+
+
+
     verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
@@ -636,11 +644,16 @@ export default class BookingController extends BaseController {
                 if (!referal) {
                     console.log("no referral")
                 } else {
-                    const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    const sqsWalletTransactionDataRefferedTo: SQSWalletTransactionI = {
                         transaction_type: "Referral Bonus",
                         user_id: referal.referred_by.toString() // add money to this person account
                     }
-                    sqsWalletTransaction(sqsWalletTransactionData)
+                    const sqsWalletTransactionDataRefferedBy: SQSWalletTransactionI = {
+                        transaction_type: "Referral Bonus",
+                        user_id: referal.referred_by.toString() // add money to  person account who shared
+                    }
+                    sqsWalletTransaction(sqsWalletTransactionDataRefferedTo)
+                    sqsWalletTransaction(sqsWalletTransactionDataRefferedBy)
                 }
             }
         }

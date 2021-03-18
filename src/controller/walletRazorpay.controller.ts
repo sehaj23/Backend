@@ -15,7 +15,7 @@ export default class WalletRazorpayController extends BaseController {
         res.send(resource)
     })
 
-    transactionResponse = async (req: Request, res: Response) => {
+    transactionResponse = controllerErrorHandler(async (req: Request, res: Response) => {
         const { walletRazorpayId } = req.params
         const {
             status,
@@ -33,6 +33,6 @@ export default class WalletRazorpayController extends BaseController {
             sqsWalletTransaction(sQSWalletTransactionData)
         }
         res.send(walletRazorpay)
-    }
+    })
 
 }

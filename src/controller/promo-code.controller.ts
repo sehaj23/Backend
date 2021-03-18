@@ -134,4 +134,11 @@ export default class PromoCodeController extends BaseController {
         res.send(promoCodesArr)
     })
 
+
+    getPromoBySalon = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const salon = await this.service. getPromoBySalon(id)
+        res.status(200).send(salon)
+    })
+
 }

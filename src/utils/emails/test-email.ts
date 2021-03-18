@@ -1,12 +1,16 @@
 import * as aws from "aws-sdk";
 import * as fs from 'fs';
-import { BookingPaymentI } from "../../interfaces/booking.interface";
+import { BookingPaymentI, BookingServiceI } from "../../interfaces/booking.interface";
 import '../../prototypes/string.prototypes';
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
 
-function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string) {
+function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[]) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
+        const serviceList = services.map(s => { return s.service_name + " <br>" })
+        const serviceAmount = services.map(s=>{return  s.service_total_price.toString() + "<br>"})
+        const serviceQuantity = services.map(s=>{return s.quantity.toString()+" <br>"})
+        const discount =+ services.map(s=>{return s.service_discount})
 
         data = data.replaceAll("[GSTIN]", "07AABCZ2603G1ZL")
         data = data.replaceAll("[CIN]", "U74999DL2018PTC339065")
@@ -15,12 +19,19 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[Order Date]", orderDate)
         data = data.replaceAll("[Order Time]", orderTime)
         data = data.replaceAll("[Customer Name]", customerName)
-        data = data.replaceAll("[Customer Address]", customerAddress)
+        data = data.replaceAll("[Customer Address]", customerAddress.toString()??"N/A")
         data = data.replaceAll("[Salon Name]", salonName)
         data = data.replaceAll("[Salon Address]", salonAddress)
         data = data.replaceAll("[Stylist]", stylist.toString())
         data = data.replaceAll("[amt_3]", subtotal)
         data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
+        data = data.replaceAll("[service_1]",serviceList.toString())
+        data = data.replaceAll("[qty_1]",serviceQuantity.toString())
+        data = data.replaceAll("[amt_1]",serviceAmount.toString())
+        data = data.replaceAll("[up_1]","N/A")
+        data = data.replaceAll("[amt_4]",discount.toString()??"N/A")
+        data = data.replaceAll("[amt_6]",gst.toString())
+        data = data.replaceAll("[total]",finalTotal.toString())
         if (err) {
             console.log(err)
             return
@@ -31,7 +42,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             from: 'info@zattire.com',
             replyTo: 'info@zattire.com',
             to: ['sehaj23chawla@gmail.com', 'preetsc27@gmail.com'],
-            subject: 'SES message with invoice',
+            subject: `Invoice for your Booking ${orderId}`,
             html: data,
             attachments: [
                 // {

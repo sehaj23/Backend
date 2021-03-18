@@ -42,4 +42,9 @@ export default class PromoCodeService extends BaseService {
         return promoCodes
     }
 
+    getPromoBySalon = async (salonId: string) => {
+        const salons = await this.model.find({salon_ids:{$in:salonId}})
+        return salons
+    }
+
 }

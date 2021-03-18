@@ -32,4 +32,6 @@ export default class PromoUserService extends BaseService {
         return res
     }
 
+ 
+
 }

@@ -384,9 +384,9 @@ export default class SalonService extends BaseService {
                                 })
                                 return newSalon
                         }
-                        throw new Error("Salon coordinates index check did not pass")
+                      return salon
                 }
-                throw new Error("Salon coordinates not found")
+                return salon
         }
 
         // Salon Rating-Wise  Recommended.
@@ -775,10 +775,8 @@ export default class SalonService extends BaseService {
                 return report
         }
 
-        getSalonReport =  async (id:string)=>{
-                const report = await this.reportSalonModel.find({salon_id:id}).populate('salon_id','name')
-                return report
-        }
+     
+
 
         getReviewsRating = async (_id: string) => {
                 const id = mongoose.Types.ObjectId(_id)
@@ -871,7 +869,7 @@ export default class SalonService extends BaseService {
                         console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (i.hours() > moment().hours()) {
-                                        const slot = moment(i).add(1, 'hour').utcOffset("+05:30").format('hh:mm a')
+                                        const slot = moment(i).add(30, 'minutes').utcOffset("+05:30").format('hh:mm a')
 
                                         slots.push(slot)
                                 }
@@ -901,7 +899,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
 
-                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1 })
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1,approved:1,location:1,createdAt:1 })
                 const resourceCountQuery = this.model.aggregate([
                         { "$count": "count" }
                 ])
@@ -913,6 +911,12 @@ export default class SalonService extends BaseService {
                 }
                 const totalPages = Math.ceil(totalPageNumber / pageLength)
                 return { salons, totalPages, pageNumber, pageLength }
+        }
+
+        getSalonPhoto = async (id:string) => {
+                const salonPhoto = await this.model.findById(id).select("photo_ids").populate("photo_ids")
+                return salonPhoto
+
         }
 
 }

@@ -102,7 +102,7 @@ const BookingSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'transactions',
         }
-    }],
+    }],     
     location: {
         type: String,
         enum: ['Customer Place', 'Vendor Place'],

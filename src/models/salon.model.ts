@@ -1,3 +1,4 @@
+import { Mongoose } from "mongoose";
 import mongoose from "../database";
 import SalonSI from "../interfaces/salon.interface";
 
@@ -130,7 +131,8 @@ const SalonSchema = new mongoose.Schema({
     },
     profile_pic: { // this is the DP of salon
         type: mongoose.Schema.Types.ObjectId,
-        ref: "photos"
+        ref: "photos",
+        default:mongoose.Types.ObjectId("5fe059984ed7e11cdd326c00")
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -145,6 +147,10 @@ const SalonSchema = new mongoose.Schema({
     },
     commision_fixed_price: {
         type: Number
+    },
+    payment_method_supported:{
+        type:[String],
+        default:['COD', 'RAZORPAY','WALLET']
     },
     coordinates: { type: {type: String, enum: ['Point']}, coordinates : [Number]
 },
