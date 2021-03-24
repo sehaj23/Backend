@@ -43,8 +43,42 @@ export default class PromoCodeService extends BaseService {
     }
 
     getPromoBySalon = async (salonId: string) => {
-        const salons = await this.model.find({salon_ids:{$in:salonId}}).limit(8);
+        const salons = await this.model.find({ "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonId } }] },).limit(8);
         return salons
+    }
+
+    getPromoforHomePage = async (q: any) => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const filter = {
+            pageNumber,
+            pageLength,
+            skipCount
+        }
+        const redisKey = "getPromo"
+        const cachedGetPromo = await PromoCodeRedis.get(redisKey, filter)
+        let out
+        if (cachedGetPromo == null) {
+            const promoQuery = this.model.find({ active: true }, {}, { skip: skipCount, limit: pageLength }).select("promo_code").select("description").select("expiry_date_time").select("discount_cap").select("disctount_type").sort([['rating', -1], ['createdAt', -1]]).lean()
+            const promoCountQuery = this.model.aggregate([
+                { "$count": "count" }
+            ])
+
+            const [promoCode, pageNo] = await Promise.all([promoQuery, promoCountQuery])
+            let totalPageNumber = 0
+            if (pageNo.length > 0) {
+                totalPageNumber = pageNo[0].count
+            }
+            const totalPages = Math.ceil(totalPageNumber / pageLength)
+            out = { promoCode, totalPages, pageNumber }
+            PromoCodeRedis.set(redisKey, out, filter)
+
+        } else {
+            out = JSON.parse(cachedGetPromo)
+        }
+        return out
     }
 
 }

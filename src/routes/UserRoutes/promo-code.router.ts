@@ -68,6 +68,7 @@ promoCodeRouter.post("/name", UserverifyToken, promoCodeController.getByName)
  */
 promoCodeRouter.get("/", UserverifyToken, promoCodeController.promoCodeByUserId)
 promoCodeRouter.get("/salon/:id",promoCodeController.getPromoBySalon)
+promoCodeRouter.get("/salon",promoCodeController.getPromoforHomepage)
 
 
 export default promoCodeRouter
