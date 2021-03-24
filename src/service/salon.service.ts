@@ -405,7 +405,7 @@ export default class SalonService extends BaseService {
                 let out
                 if (cahceGetSalon === null) {
                         //TODO: send salon with rating 5
-                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                         const salonPage = this.model.aggregate([
@@ -453,7 +453,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 1000000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
 
                         return salons
                 }
@@ -500,7 +500,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 100000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
 
                         return salons
                 }
