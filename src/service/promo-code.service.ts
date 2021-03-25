@@ -1,4 +1,5 @@
 import moment = require("moment");
+import mongoose from "../database";
 import { PromoCodeRedis } from "../redis/index.redis";
 import BaseService from "./base.service";
 
@@ -79,6 +80,10 @@ export default class PromoCodeService extends BaseService {
             out = JSON.parse(cachedGetPromo)
         }
         return out
+    }
+
+    getPromoById = async (id: string) => {
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id),active:true })
     }
 
 }

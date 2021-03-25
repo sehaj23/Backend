@@ -41,6 +41,8 @@ salonInfoRouter.get('/names',salonController.getRecomendSalon)
 salonInfoRouter.get('/location', salonController.getSalonNearby)
 //sort by distance
 salonInfoRouter.get('/distance', salonController.getSalonDistance)
+// get salon by promo codes 
+salonInfoRouter.get('/promo-code/:id',salonController.getSalonByPromo)
 //sort rating-wise
 //salonInfoRouter.get('/sort', salonController.getSalonsRw)
 //get home service salons

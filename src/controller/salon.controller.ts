@@ -18,6 +18,8 @@ import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
 import PromoCodeService from "../service/promo-code.service";
+import { PromoCodeSI } from "../interfaces/promo-code.interface";
+import mongoose from "../database";
 
 
 export default class SalonController extends BaseController {
@@ -731,6 +733,17 @@ export default class SalonController extends BaseController {
         const salon = await this.service.getSalonPhoto(id)
         res.status(200).send(salon)
     })
+
+
+    getSalonByPromo=  controllerErrorHandler(async (req: Request, res: Response) => {
+        const id =  req.params.id
+        const q = req.query
+        const promo = await this.promoCodeService. getPromoById (id) as PromoCodeSI
+        const salon = await this.service.getSalonByIds(promo.salon_ids,q)
+        res.status(200).send(salon)
+    })
+
+ 
 
 
 
