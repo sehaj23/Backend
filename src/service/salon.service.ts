@@ -385,7 +385,7 @@ export default class SalonService extends BaseService {
                                 })
                                 return newSalon
                         }
-                      return salon
+                        return salon
                 }
                 return salon
         }
@@ -776,7 +776,7 @@ export default class SalonService extends BaseService {
                 return report
         }
 
-     
+
 
 
         getReviewsRating = async (_id: string) => {
@@ -900,7 +900,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
 
-                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1,approved:1,location:1,createdAt:1 })
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1, approved: 1, location: 1, createdAt: 1 })
                 const resourceCountQuery = this.model.aggregate([
                         { "$count": "count" }
                 ])
@@ -914,14 +914,14 @@ export default class SalonService extends BaseService {
                 return { salons, totalPages, pageNumber, pageLength }
         }
 
-        getSalonPhoto = async (id:string) => {
+        getSalonPhoto = async (id: string) => {
                 const salonPhoto = await this.model.findById(id).select("photo_ids").populate("photo_ids")
                 return salonPhoto
 
         }
 
 
-        getSalonByIds = async (ids: string[],q:any) => {
+        getSalonByIds = async (ids: string[], q: any) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
@@ -932,30 +932,30 @@ export default class SalonService extends BaseService {
                         skipCount,
                         ids
                 }
-                
+
                 const redisKey = "getSalonByPromoCodes"
                 const promoGetSalon = await SalonRedis.get(redisKey, filter)
                 let out
                 let salonReq
-                if(promoGetSalon == null){
-                if(ids.length != 0){
-                 salonReq = this.model.find({_id:{$in:ids}}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
-                }else{
-                        salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                if (promoGetSalon == null) {
+                        if (ids.length != 0) {
+                                salonReq = this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        } else {
+                                salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        }
+                        // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                        const salonPagesReq = this.model.aggregate([
+                                { "$count": "count" }
+                        ])
+                        const [salon, pages] = await Promise.all([salonReq, salonPagesReq])
+                        out = { salon, pages }
+                        SalonRedis.set(redisKey, out, filter)
+                } else {
+                        out = JSON.parse(promoGetSalon)
                 }
-                 // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
-                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                const salonPagesReq = this.model.aggregate([
-                        { "$count": "count" }
-                ])
-                const [salon,pages]= await Promise.all([salonReq,salonPagesReq])
-                out = {salon,pages}
-                SalonRedis.set(redisKey,out,filter)
-        }else{
-                out = JSON.parse(promoGetSalon )
+                return out
+
         }
-        return out
-               
-            }
 
 }

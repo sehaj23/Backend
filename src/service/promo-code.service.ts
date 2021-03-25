@@ -62,7 +62,7 @@ export default class PromoCodeService extends BaseService {
         const cachedGetPromo = await PromoCodeRedis.get(redisKey, filter)
         let out
         if (cachedGetPromo == null) {
-            const promoQuery = this.model.find({ active: true }, {}, { skip: skipCount, limit: pageLength }).select("promo_code").select("description").select("expiry_date_time").select("discount_cap").select("disctount_type").sort([['rating', -1], ['createdAt', -1]]).lean()
+            const promoQuery = this.model.find({ active: true }, {}, { skip: skipCount, limit: pageLength }).select("-salon_ids")
             const promoCountQuery = this.model.aggregate([
                 { "$count": "count" }
             ])
