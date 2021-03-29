@@ -17,6 +17,9 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import PromoCodeService from "../service/promo-code.service";
+import { PromoCodeSI } from "../interfaces/promo-code.interface";
+import mongoose from "../database";
 
 
 export default class SalonController extends BaseController {
@@ -24,11 +27,13 @@ export default class SalonController extends BaseController {
     service: SalonService
     userSearchService: UserSearchService
     userService: UserService
-    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService) {
+    promoCodeService:PromoCodeService
+    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService,promoCodeService:PromoCodeService) {
         super(service)
         this.service = service
         this.userSearchService = userSearchService
         this.userService = userService
+        this.promoCodeService=promoCodeService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -394,11 +399,11 @@ export default class SalonController extends BaseController {
         if (sr !== null) return res.send(JSON.parse(sr))
         const salonReq = this.service.getSalonInfo(salonId, centerPoint)
         const reviewsReq = this.service.getSalonReviews(salonId, q)
-
+        const promoCodeReq = this.promoCodeService.getPromoBySalon(salonId)
 
         const userReq = this.userService.getFavourites(id)
 
-        const [salon, reviews, user] = await Promise.all([salonReq, reviewsReq, userReq])
+        const [salon, reviews, user,promocodes] = await Promise.all([salonReq, reviewsReq, userReq,promoCodeReq])
         const services = salon.services
         const filterService = services.filter((service: ServiceI) => {
             const { options } = service
@@ -422,8 +427,8 @@ export default class SalonController extends BaseController {
             return false
         })
         salon.services = filterService
-        SalonRedis.set(salonId, { salon, reviews, user }, filter)
-        res.status(200).send({ salon, reviews, user })
+        SalonRedis.set(salonId, { salon, reviews, user,promocodes }, filter)
+        res.status(200).send({ salon, reviews, user,promocodes })
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -728,6 +733,17 @@ export default class SalonController extends BaseController {
         const salon = await this.service.getSalonPhoto(id)
         res.status(200).send(salon)
     })
+
+
+    getSalonByPromo=  controllerErrorHandler(async (req: Request, res: Response) => {
+        const id =  req.params.id
+        const q = req.query
+        const promo = await this.promoCodeService. getPromoById (id) as PromoCodeSI
+        const salon = await this.service.getSalonByIds(promo.salon_ids,q)
+        res.status(200).send(salon)
+    })
+
+ 
 
 
 

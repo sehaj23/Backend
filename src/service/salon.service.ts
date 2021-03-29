@@ -10,6 +10,7 @@ import { arePointsNear } from "../utils/location";
 import distance = require('google-distance');
 
 import moment = require("moment");
+import e = require("express");
 
 
 
@@ -359,7 +360,6 @@ export default class SalonService extends BaseService {
         getSalonInfo = async (salonId: string, centerPoint: any) => {
                 distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
-                return salon
                 if (salon.coordinates != null) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
                                 const userLocation = `${centerPoint.lat}` + `,` + `${centerPoint.lng}`
@@ -385,7 +385,7 @@ export default class SalonService extends BaseService {
                                 })
                                 return newSalon
                         }
-                      return salon
+                        return salon
                 }
                 return salon
         }
@@ -406,7 +406,7 @@ export default class SalonService extends BaseService {
                 let out
                 if (cahceGetSalon === null) {
                         //TODO: send salon with rating 5
-                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                         const salonPage = this.model.aggregate([
@@ -454,7 +454,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 1000000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
 
                         return salons
                 }
@@ -501,7 +501,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 100000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
 
                         return salons
                 }
@@ -776,7 +776,7 @@ export default class SalonService extends BaseService {
                 return report
         }
 
-     
+
 
 
         getReviewsRating = async (_id: string) => {
@@ -870,7 +870,7 @@ export default class SalonService extends BaseService {
                         console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (i.hours() > moment().hours()) {
-                                        const slot = moment(i).add(1, 'hour').utcOffset("+05:30").format('hh:mm a')
+                                        const slot = moment(i).add(30, 'minutes').utcOffset("+05:30").format('hh:mm a')
 
                                         slots.push(slot)
                                 }
@@ -900,7 +900,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
 
-                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1,approved:1,location:1,createdAt:1 })
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1, approved: 1, location: 1, createdAt: 1 })
                 const resourceCountQuery = this.model.aggregate([
                         { "$count": "count" }
                 ])
@@ -914,9 +914,47 @@ export default class SalonService extends BaseService {
                 return { salons, totalPages, pageNumber, pageLength }
         }
 
-        getSalonPhoto = async (id:string) => {
+        getSalonPhoto = async (id: string) => {
                 const salonPhoto = await this.model.findById(id).select("photo_ids").populate("photo_ids")
                 return salonPhoto
+
+        }
+
+
+        getSalonByIds = async (ids: string[], q: any) => {
+                const pageNumber: number = parseInt(q.page_number || 1)
+                let pageLength: number = parseInt(q.page_length || 8)
+                pageLength = (pageLength > 100) ? 100 : pageLength
+                const skipCount = (pageNumber - 1) * pageLength
+                const filter = {
+                        pageNumber,
+                        pageLength,
+                        skipCount,
+                        ids
+                }
+
+                const redisKey = "getSalonByPromoCodes"
+                const promoGetSalon = await SalonRedis.get(redisKey, filter)
+                let out
+                let salonReq
+                if (promoGetSalon == null) {
+                        if (ids.length != 0) {
+                                salonReq = this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        } else {
+                                salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        }
+                        // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                        const salonPagesReq = this.model.aggregate([
+                                { "$count": "count" }
+                        ])
+                        const [salon, pages] = await Promise.all([salonReq, salonPagesReq])
+                        out = { salon, pages }
+                        SalonRedis.set(redisKey, out, filter)
+                } else {
+                        out = JSON.parse(promoGetSalon)
+                }
+                return out
 
         }
 

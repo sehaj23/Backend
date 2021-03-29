@@ -103,4 +103,10 @@ loginRouter.post(
   loginController.loginwithGoogle
 )
 
+//@ts-ignore
+loginRouter.post(
+  '/facebook',
+  loginController.loginwithFacebook
+)
+
 export default loginRouter

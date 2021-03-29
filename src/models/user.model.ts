@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
     },
     signin_from: {
         type: String,
+        default:"Normal"
     },
     profile_pic: {
         type: mongoose.Schema.Types.ObjectId,
