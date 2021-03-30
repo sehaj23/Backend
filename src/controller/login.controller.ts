@@ -204,7 +204,6 @@ export default class LoginController extends BaseController {
   loginwithFacebook = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid} = req.body
-
     const getUser = await this.service.getbyUID(uid) as UserSI
     if (getUser === null) {
       user.approved = true
