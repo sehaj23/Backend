@@ -363,6 +363,19 @@ export default class BookingService extends BaseService {
         return JSON.parse(bookingRedis)
     }
 
+
+
+    getBookingByUserId = async (userId: string,q:any) => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+            const bookingReq =  this.model.find({ "user_id": userId }).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).lean().populate("salon_id","name")
+           const bookingCountReq = this.model.count({"user_id": userId})
+            const [booking,bookingCount] =  await Promise.all([bookingReq,bookingCountReq])
+            return {booking,bookingCount}
+    }
+
     getbookings = async (q) => {
 
         console.log(q)

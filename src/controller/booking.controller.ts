@@ -62,6 +62,7 @@ export default class BookingController extends BaseController {
     }
 
 
+    
     getAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const bookings = await this.service.getByUserId(req.userId)
@@ -926,6 +927,14 @@ export default class BookingController extends BaseController {
         const { booking_id } = req.body
         const cart = await this.service.bookAgain(booking_id)
         res.send(cart)
+    })
+
+    getAppointmentByUserID = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.params.id
+        const q = req.query
+        const bookings = await this.service.getBookingByUserId(id,q)
+        res.send(bookings)
     })
 
 
