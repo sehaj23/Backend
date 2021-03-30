@@ -41,6 +41,7 @@ export default class WalletRazorpayService extends BaseService {
         walletRazorpay.error_message = error_message
         const sqsWalletTransactionData: SQSWalletTransactionI = {
             transaction_type: "Add Credits",
+            user_id: walletRazorpay.user_id,
             wallet_razorpay_id: walletRazorpay._id?.toString()
         }
         sqsWalletTransaction(sqsWalletTransactionData)
