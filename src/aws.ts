@@ -78,10 +78,10 @@ export const sqsWalletTransaction = (walletTransaction: SQSWalletTransactionI) =
   }
   sqs.sendMessage(params, (err: AWS.AWSError, data: AWS.SQS.SendMessageResult) => {
     if (err) {
-      logger.error(`sqsWalletTransaction: ${err.message}`)
+      logger.error(`sqsWalletTransaction Error: ${err.message}`)
       return
     }
-    logger.info(`SQS - Wallet Transaction - ${walletTransaction} - ${JSON.stringify(data)}`)
+    logger.info(`SQS - Wallet Transaction - ${JSON.stringify(walletTransaction)} - ${JSON.stringify(data)}`)
   })
 }
 
