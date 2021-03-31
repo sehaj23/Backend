@@ -123,8 +123,9 @@ export default class BookingController extends BaseController {
     checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        const codBooking = await this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
-        const onlineBooking = await this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
+        const codBookingReq =  this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
+        const onlineBookingReq =  this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
+        const [codBooking,onlineBooking] =  await Promise.all([codBookingReq,onlineBookingReq])
         if (codBooking.length > onlineBooking.length) {
             res.status(400).send({ message: "COD not allowed", success: false })
         } else {
