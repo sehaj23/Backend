@@ -1,4 +1,3 @@
-import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import { RazorpayPaymentData } from "../interfaces/booking.interface";
 import { WalletRazorpayI, WalletRazorpaySI, WalletRazorpayStatus } from "../interfaces/walletRazorpay.interface";
 import BaseService from "./base.service";
@@ -39,11 +38,7 @@ export default class WalletRazorpayService extends BaseService {
         walletRazorpay.status = status
         walletRazorpay.razorpay_payment_data = razorpay_payment_data
         walletRazorpay.error_message = error_message
-        const sqsWalletTransactionData: SQSWalletTransactionI = {
-            transaction_type: "Add Credits",
-            wallet_razorpay_id: walletRazorpay._id?.toString()
-        }
-        sqsWalletTransaction(sqsWalletTransactionData)
+
         await walletRazorpay.save()
         return walletRazorpay
     }
