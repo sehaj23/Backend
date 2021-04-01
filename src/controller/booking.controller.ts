@@ -358,21 +358,21 @@ export default class BookingController extends BaseController {
         console.log(options)
         const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
 
-        const employeeReq = this.employeeService.getId(options[0].employee_id)
-        const userReq = this.userService.getId(userId) as UserI
-        const [employee, user] = await Promise.all([employeeReq, userReq])
-        const vendor = await this.vendorService.getId(salon.vendor_id)
-        const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
+        // const employeeReq = this.employeeService.getId(options[0].employee_id)
+        // const userReq = this.userService.getId(userId) as UserI
+        // const [employee, user] = await Promise.all([employeeReq, userReq])
+        // const vendor = await this.vendorService.getId(salon.vendor_id)
+        // const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         // if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
-        try {
-            const notify = Notify.bookingRequest(vendor, employee, salon, booking, user)
-            console.log(notify)
-        } catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     const notify = Notify.bookingRequest(vendor, employee, salon, booking, user)
+        //     console.log(notify)
+        // } catch (error) {
+        //     console.log(error)
+        // }
 
 
         res.send(booking);
