@@ -78,7 +78,7 @@ export default class BookingController extends BaseController {
                 "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed", 'Low Funds Canceled'],
             },
             "payments.mode": {
-                "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY]
+                "$in": [BookingPaymentMode.RAZORPAY]
             }
         }) as BookingSI
         const bookingJson = booking.toJSON()
