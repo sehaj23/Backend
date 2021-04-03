@@ -63,6 +63,7 @@ export interface SQSWalletTransactionI {
   transaction_type: string
   user_id?: string
   refund_id?: string
+  referral_id?: string
   booking_id?: string
   wallet_razorpay_id?: string // this is the id if the user is adding the money
   amount?: number
