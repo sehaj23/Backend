@@ -18,6 +18,7 @@ export default class RefundService extends BaseService {
 
     createRefund = async (refundType: RefundTypeEnum, bookingId: string, userId: string): Promise<RefundSI> => {
         const booking = await this.bookingService.getOne({ _id: mongoose.Types.ObjectId(bookingId), user_id: userId }) as BookingSI
+        if (booking.status === 'Refunded') throw new ErrorResponse({ message: "It has already been refunded" })
         let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
         bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
         bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
