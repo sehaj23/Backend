@@ -33,7 +33,7 @@ const loginService = new LoginService(Vendor)
 const userService = new UserService(User, Booking)
 const otpService = new OtpService(Otp, userService, es)
 const referralService = new  ReferralService(Referral)
-const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService,referralService)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '30 days', otpService,referralService)
 
 vendorRouter.post("/",loginController.login);
 vendorRouter.post("/create", loginController.create)
