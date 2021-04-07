@@ -738,10 +738,20 @@ export default class SalonController extends BaseController {
     getSalonByPromo=  controllerErrorHandler(async (req: Request, res: Response) => {
         const id =  req.params.id
         const q = req.query
+        let getDistance=false
+        if(q.latitude && q.longitude){
+            getDistance=true
+        }
         const promo = await this.promoCodeService. getPromoById (id) as PromoCodeSI
-        const salon = await this.service.getSalonByIds(promo.salon_ids,q)
+
+        const salon = await this.service.getSalonByIds(promo.salon_ids,q,getDistance)
         res.status(200).send(salon)
     })
+
+    getDistanceInPairs =  controllerErrorHandler(async(req: Request, res: Response)=>{
+        const getDistance = await this.service.getDistanceInPairs()
+        res.send(getDistance)
+    } )
 
  
 

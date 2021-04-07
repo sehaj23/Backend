@@ -658,10 +658,14 @@ export default class BookingController extends BaseController {
                     }
                     const sqsWalletTransactionDataRefferedBy: SQSWalletTransactionI = {
                         transaction_type: "Referral Bonus",
-                        user_id: referal.referred_by.toString() // add money to  person account who shared
+                        user_id: referal.referred_to.toString() // add money to  person account who shared
                     }
                     sqsWalletTransaction(sqsWalletTransactionDataRefferedTo)
                     sqsWalletTransaction(sqsWalletTransactionDataRefferedBy)
+                    const referred_by_req = this.userService.getId(referal.referred_by.toString())
+                    const referred_to_req = this.userService.getId(referal.referred_to.toString())
+                    const [referred_by,referred_to] = await Promise.all([referred_by_req,referred_to_req])
+                    const notify = Notify.referralComplete(referred_by,referred_to)
                 }
             }
         }

@@ -13,6 +13,20 @@ import OtpService from "./otp.service"
 export default class Notify {
 
   //TODO: Null check for params because booking fails
+  static referralComplete = async (user: UserSI,userReferred:UserSI) => {
+    
+    // TODO: Add notification data and the route
+    try {
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each ask your ${userReferred.name}has made their first booking through ZATTIRE.` }, data: {  click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
+
+
 
   static bookingConfirm = async (user: UserSI, salon: SalonSI, employee: EmployeeSI, booking: BookingSI) => {
     try {
