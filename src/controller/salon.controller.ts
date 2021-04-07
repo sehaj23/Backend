@@ -742,10 +742,30 @@ export default class SalonController extends BaseController {
         if(q.latitude && q.longitude){
             getDistance=true
         }
+        const filter = {
+          q,
+          id,
+            getDistance
+    }
+
+        const redisKey = `getSalonByPromoCodes`
+        const promoGetSalon = await SalonRedis.get(redisKey, filter)
+        let out
+        let salonReq
+      
+        if (promoGetSalon == null) {
         const promo = await this.promoCodeService. getPromoById (id) as PromoCodeSI
 
         const salon = await this.service.getSalonByIds(promo.salon_ids,q,getDistance)
+
+        SalonRedis.set(redisKey, salon, filter)
         res.status(200).send(salon)
+        }else {
+            
+            out = JSON.parse(promoGetSalon)
+            res.status(200).send(out)
+    }
+       
     })
 
     getDistanceInPairs =  controllerErrorHandler(async(req: Request, res: Response)=>{

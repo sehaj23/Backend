@@ -928,20 +928,8 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const filter = {
-                        pageNumber,
-                        pageLength,
-                        skipCount,
-                        ids,
-                        getDistance
-                }
-
-                const redisKey = `getSalonByPromoCodes`
-                const promoGetSalon = await SalonRedis.get(redisKey, filter)
-                let out
                 let salonReq
-              
-                if (promoGetSalon == null) {
+                let out
                         if (ids.length != 0) {
                                salonReq= this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         } else {
@@ -987,13 +975,11 @@ export default class SalonService extends BaseService {
                         }catch(e){
                                 return salon
                         }
-                        }
-                        out = { salon, pages }
-                        SalonRedis.set(redisKey, out, filter)
-                } else {
-                        out = JSON.parse(promoGetSalon)
                 }
+                out = {salon,pages}
                 return out
+                   
+             
 
         }
         getDistanceInPairs = async () => {
