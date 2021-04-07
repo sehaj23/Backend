@@ -11,7 +11,6 @@ import { PromoUserSI } from "../interfaces/promo-user.inderface";
 import { ReferralSI } from "../interfaces/referral.interface";
 import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
-import UserI from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
@@ -63,7 +62,7 @@ export default class BookingController extends BaseController {
     }
 
 
-    
+
     getAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const bookings = await this.service.getByUserId(req.userId)
@@ -79,15 +78,15 @@ export default class BookingController extends BaseController {
                 "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed", 'Low Funds Canceled'],
             },
             "payments.mode": {
-                "$in": [BookingPaymentMode.WALLET, BookingPaymentMode.RAZORPAY]
+                "$in": [BookingPaymentMode.RAZORPAY]
             }
         }) as BookingSI
         const bookingJson = booking.toJSON()
         let walletAmount: number = 0
         const walletPayemntIndex = booking.payments.findIndex(p => p.mode === BookingPaymentMode.WALLET)
         if (walletPayemntIndex > -1) walletAmount = booking.payments[walletPayemntIndex].amount
-        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b) - walletAmount
-        bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
+        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
+        bookingTotalPrice = (bookingTotalPrice + (bookingTotalPrice * 0.18)) - walletAmount
         bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
         let refundOptions = [
             {
@@ -123,9 +122,9 @@ export default class BookingController extends BaseController {
     checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        const codBookingReq =  this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
-        const onlineBookingReq =  this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
-        const [codBooking,onlineBooking] =  await Promise.all([codBookingReq,onlineBookingReq])
+        const codBookingReq = this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
+        const onlineBookingReq = this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
+        const [codBooking, onlineBooking] = await Promise.all([codBookingReq, onlineBookingReq])
         if (codBooking.length > onlineBooking.length) {
             res.status(400).send({ message: "COD not allowed", success: false })
         } else {
@@ -654,11 +653,11 @@ export default class BookingController extends BaseController {
                 } else {
                     const sqsWalletTransactionDataRefferedTo: SQSWalletTransactionI = {
                         transaction_type: "Referral Bonus",
-                        user_id: referal.referred_by.toString() // add money to this person account
+                        user_id: referal.referred_to.toString() 
                     }
                     const sqsWalletTransactionDataRefferedBy: SQSWalletTransactionI = {
                         transaction_type: "Referral Bonus",
-                        user_id: referal.referred_to.toString() // add money to  person account who shared
+                        user_id: referal.referred_by.toString() // add money to  person account who shared
                     }
                     sqsWalletTransaction(sqsWalletTransactionDataRefferedTo)
                     sqsWalletTransaction(sqsWalletTransactionDataRefferedBy)
@@ -974,7 +973,7 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const id = req.params.id
         const q = req.query
-        const bookings = await this.service.getBookingByUserId(id,q)
+        const bookings = await this.service.getBookingByUserId(id, q)
         res.send(bookings)
     })
 
