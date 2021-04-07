@@ -952,8 +952,10 @@ export default class SalonService extends BaseService {
                         const salonPagesReq = this.model.aggregate([
                                 { "$count": "count" }
                         ])
-                        const [salon , pages] = await Promise.all([salonReq, salonPagesReq])
+                       
+                       const [salon , pages] = await Promise.all([salonReq, salonPagesReq])
                         if(getDistance){
+                                try{
                                 const salonCoordinates:string[] = salon.map((e)=>{
                                     return    `${e.coordinates.coordinates[0]}`+`,`+`${e.coordinates.coordinates[1]}` 
                                     
@@ -978,10 +980,13 @@ export default class SalonService extends BaseService {
                                         //   salon.map((e)=>{
                                         //           e.distance=data
                                         //   })
-                                          return resolve(salon)
+                                          return resolve({salon,pages})
                                         });
                                 })
                                 return newSalon
+                        }catch(e){
+                                return salon
+                        }
                         }
                         out = { salon, pages }
                         SalonRedis.set(redisKey, out, filter)
