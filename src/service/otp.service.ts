@@ -39,7 +39,7 @@ export default class OtpService extends BaseService{
 
     protected async sendOtp(phone: string, text: string) {
         try {
-            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&TemplateID=1707161760729885815`
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&TemplateID=1707161760729885815&EntityID=1701159826650719034`
             const res = await axios.get(url)
             if(res.status === 200){
                 return res.data
