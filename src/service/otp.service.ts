@@ -118,7 +118,7 @@ export default class OtpService extends BaseService {
         console.log("user", user)
         if (user !== null) throw new Error(`User already registered with this phone number`)
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
@@ -149,7 +149,7 @@ export default class OtpService extends BaseService {
 
     public async sendUserOtpEmail(email: string): Promise<OtpSI> {
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             email: email,
             otp: otpNumber,
