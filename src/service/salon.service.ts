@@ -451,7 +451,7 @@ export default class SalonService extends BaseService {
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                                                $geometry: { type: "Point", coordinates:  [latitude, longitude] },
                                                 $minDistance: 0,
                                                 $maxDistance: 1000000
                                         }
@@ -492,13 +492,15 @@ export default class SalonService extends BaseService {
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
+                console.log(`latitude: ${latitude}`)
+                console.log(`longitude: ${longitude}`)
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
                                                 $maxDistance: 100000
                                         }
