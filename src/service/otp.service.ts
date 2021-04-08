@@ -4,6 +4,7 @@ import EmployeeSI from "../interfaces/employee.interface"
 import OtpSI, { OtpI } from "../interfaces/otp.interface"
 import UserI, { UserSI } from "../interfaces/user.interface"
 import logger from "../utils/logger"
+import SMSCONFIG from "../utils/sms-config"
 import BaseService from "./base.service"
 import EmployeeService from "./employee.service"
 import UserService from "./user.service"
@@ -23,9 +24,9 @@ export default class OtpService extends BaseService {
      * @param phone phone number of the user
      * @param text complete message you want to send
      */
-    static async sendMessage(phone: string | string[], text: string) {
+    static async sendMessage(phone: string | string[], text: string,template_id:string) {
         try {
-            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
             if (res.status === 200) {
                 logger.info(`Text message sent to :: ${phone} :: ${text}`)
@@ -37,10 +38,11 @@ export default class OtpService extends BaseService {
         }
     }
 
-    protected async sendOtp(phone: string, text: string) {
+    protected async sendOtp(phone: string, text: string,template_id:string) {
         try {
-            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&TemplateID=1707161760729885815&EntityID=1701159826650719034`
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
+            console.log(res.data)
             if (res.status === 200) {
                 return res.data
             }
@@ -75,27 +77,27 @@ export default class OtpService extends BaseService {
         const emp = await this.employeeService.getOne({ phone }) as EmployeeSI
         if (emp === null) throw new Error(`No employee found with this phone number`);
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your login otp is ${otpNumber}`
+        const text: string = `Your login otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
             user_type: 'Vendor'
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.LOGIN_OTP)
         return otpD
     }
 
     public async sendUserOtp(phone: string): Promise<OtpSI> {
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
@@ -123,7 +125,7 @@ export default class OtpService extends BaseService {
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
