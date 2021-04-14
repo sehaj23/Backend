@@ -13,7 +13,7 @@ const reviewsSalonService=  new  ReviewsServices(Review)
 const reviewsSalonController = new ReviewsController(reviewsSalonService)
 
 
-reviewsSalonRouter.get("/:id",verifyToken, reviewsSalonController.getId)
+reviewsSalonRouter.get("/:id",verifyToken, reviewsSalonController. getById )
 reviewsSalonRouter.get("/salon/:id",verifyToken,reviewsSalonController.getReviewsBySalon)
 reviewsSalonRouter.get("/user/:id",verifyToken,reviewsSalonController.getReviewsByUser)
 

@@ -63,9 +63,7 @@ export default class PromoCodeService extends BaseService {
         let out
         if (cachedGetPromo == null) {
             const promoQuery = this.model.find({ active: true }, {}, { skip: skipCount, limit: pageLength }).select("-salon_ids")
-            const promoCountQuery = this.model.aggregate([
-                { "$count": "count" }
-            ])
+            const promoCountQuery = this.model.countDocuments({active:true})
 
             const [promoCode, pageNo] = await Promise.all([promoQuery, promoCountQuery])
             let totalPageNumber = 0

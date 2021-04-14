@@ -34,4 +34,11 @@ getSalonReportbyUser =  async (id:string,q:any)=>{
     const [report,count] =  await Promise.all([reportReq,reportCountReq])
     return {report,count}
 }
+
+getById = async(id:string,)=>{
+    const review = await this.model.findById(id).populate("user_id","name")
+    return review
+}
+
+
 }

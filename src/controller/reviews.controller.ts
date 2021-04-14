@@ -102,4 +102,10 @@ export default class ReviewsController extends BaseController{
         res.status(200).send(reviews)
         }
 
+        getById =async (req: Request, res: Response) => {
+            const id = req.params.id
+            const reviews = await this.service.getById(id)
+            res.status(200).send(reviews)
+        }
+
 }
