@@ -30,7 +30,11 @@ export default class RazorPayService {
     }
 
     refund = async (payment_id: string, amount: number, speed: "optimum" | "normal") => {
-        const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
-        return refund
+        try {
+            const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
+            return refund
+        } catch (e) {
+            throw e
+        }
     }
 }
