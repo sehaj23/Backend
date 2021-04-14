@@ -923,14 +923,40 @@ export default class BookingController extends BaseController {
         const userId = req.userId
         const bookingId = req.params.bookingId
         const { reason } = req.body
-        const data = await this.service.cancelBooking(userId, bookingId, reason)
-
+        const booking = await this.service.cancelBooking(userId, bookingId, reason) as BookingSI
+        const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
+        if (cancelledStatuses.includes(booking.status)) {
+            const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
+            if (walletPaymentIndex > -1) {
+                let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
+                bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
+                bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+                const refund: RefundI = {
+                    type: RefundTypeEnum.Zattire_Wallet,
+                    status: "Initiated",
+                    total_amount: bookingTotalPrice,
+                    amount_refunded: booking.payments[walletPaymentIndex].amount,
+                    zattire_commision: 0,
+                    //@ts-ignore
+                    user_id: booking?.user_id?._id?.toString() ?? booking.user_id.toString(),
+                    //@ts-ignore
+                    salon_id: (booking.salon_id?._id ?? booking.salon_id).toString(),
+                    booking_id: booking._id,
+                }
+                const refundSI = await this.refundService.post(refund)
+                const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    transaction_type: "Refund",
+                    refund_id: refundSI._id.toString()
+                }
+                sqsWalletTransaction(sqsWalletTransactionData)
+            }
+        }
         const userReq = this.userService.getId(userId)
-        const salonReq = this.salonService.getId(data.salon_id.toString())
+        const salonReq = this.salonService.getId(booking.salon_id.toString())
         const [user, salon] = await Promise.all([userReq, salonReq])
 
-        const notify = Notify.userCancelled(user, salon, data)
-        res.send(data)
+        const notify = Notify.userCancelled(user, salon, booking)
+        res.send(booking)
     })
 
     getFullBookingById = controllerErrorHandler(async (req: Request, res: Response) => {
