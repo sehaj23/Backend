@@ -10,6 +10,7 @@ import promoCodeRouter from "./promo-code.router";
 import referralRouter from "./referral.router";
 import reportAppRouter from "./report-app.router";
 import revenueRouter from "./revenue.router";
+import reviewsSalonRouter from "./reviews.router";
 import reportsSalonRouter from "./salon-reports.router";
 import salonRouter from "./salon.router";
 import userRouter from "./user.router";
@@ -35,6 +36,7 @@ router.use("/user", userRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
+router.use("/reviews",reviewsSalonRouter)
 router.use("/revenue", revenueRouter)
 router.use("/promo-code", promoCodeRouter)
 router.use("/report-app", reportAppRouter)

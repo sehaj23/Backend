@@ -10,5 +10,6 @@ const referralService = new ReferralService(Referral)
 const referralController = new ReferralController(referralService)
 
 referralRouter.get("/code",verifyToken,referralController.getRefferalbyCode)
+referralRouter.get("/user/:id",verifyToken,referralController.getRefferalsByUser)
 
 export default referralRouter

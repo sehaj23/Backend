@@ -68,5 +68,7 @@ salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
 
 salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 
+salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
+
 
 export default salonInfoRouter

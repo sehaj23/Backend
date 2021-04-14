@@ -11,6 +11,8 @@ import distance = require('google-distance');
 
 import moment = require("moment");
 import e = require("express");
+import { resolve } from "bluebird";
+import SalonShortSI from "../interfaces/short-salon.interface";
 
 
 
@@ -449,7 +451,7 @@ export default class SalonService extends BaseService {
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                                                $geometry: { type: "Point", coordinates:  [latitude, longitude] },
                                                 $minDistance: 0,
                                                 $maxDistance: 1000000
                                         }
@@ -490,13 +492,15 @@ export default class SalonService extends BaseService {
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
+                console.log(`latitude: ${latitude}`)
+                console.log(`longitude: ${longitude}`)
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
                                                 $maxDistance: 100000
                                         }
@@ -921,41 +925,84 @@ export default class SalonService extends BaseService {
         }
 
 
-        getSalonByIds = async (ids: string[], q: any) => {
+        getSalonByIds = async (ids: string[], q: any, getDistance: boolean = false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                const filter = {
-                        pageNumber,
-                        pageLength,
-                        skipCount,
-                        ids
-                }
-
-                const redisKey = "getSalonByPromoCodes"
-                const promoGetSalon = await SalonRedis.get(redisKey, filter)
-                let out
                 let salonReq
-                if (promoGetSalon == null) {
+                let out
                         if (ids.length != 0) {
-                                salonReq = this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                               salonReq= this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         } else {
-                                salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                                salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
                         }
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                         const salonPagesReq = this.model.aggregate([
                                 { "$count": "count" }
                         ])
-                        const [salon, pages] = await Promise.all([salonReq, salonPagesReq])
-                        out = { salon, pages }
-                        SalonRedis.set(redisKey, out, filter)
-                } else {
-                        out = JSON.parse(promoGetSalon)
+                       
+                       const [salon , pages] = await Promise.all([salonReq, salonPagesReq])
+                        if(getDistance){
+                                try{
+                                const salonCoordinates:string[] = salon.map((e)=>{
+                                    return    `${e.coordinates.coordinates[0]}`+`,`+`${e.coordinates.coordinates[1]}` 
+                                    
+                                })
+                                const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
+                                console.log(salonCoordinates)
+                              //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                const newSalon = await new Promise<any>((resolve, reject) => {
+                 
+                                        distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                        return distance.get(
+                                        {
+                                          origins: userLocation,
+                                          destinations:salonCoordinates
+                                        },
+                                        function(err, data) {
+                                          if (err) return console.log(err);
+                                          console.log(data);
+                                          for(var i = 0 ;i<data.length;i++){
+                                                  salon[i].distance=data[i]
+                                          }
+                                        //   salon.map((e)=>{
+                                        //           e.distance=data
+                                        //   })
+                                          return resolve({salon,pages})
+                                        });
+                                })
+                                return newSalon
+                        }catch(e){
+                                return salon
+                        }
                 }
+                out = {salon,pages}
                 return out
+                   
+             
 
         }
+        getDistanceInPairs = async () => {
+                const newSalon = await new Promise<any>((resolve, reject) => {
+                 
+                distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                return distance.get(
+                {
+                  origins: [`28.584450,77.341812`],
+                  destinations: [`28.540331,77.342979`,`28.040331,77.342979`,`27.040331,77.342979`]
+                },
+                function(err, data) {
+                  if (err) return console.log(err);
+                  console.log(data);
+                  return resolve(data)
+                });
+                return newSalon
+                
+        })
+}
+
+
 
 }

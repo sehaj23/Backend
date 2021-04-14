@@ -8,11 +8,26 @@ import { VendorI } from "../interfaces/vendor.interface"
 import SendEmail from "../utils/emails/send-email"
 import testEmail from "../utils/emails/test-email"
 import sendNotificationToDevice from "../utils/send-notification"
+import SMSCONFIG from "../utils/sms-config"
 import OtpService from "./otp.service"
 
 export default class Notify {
 
   //TODO: Null check for params because booking fails
+  static referralComplete = async (user: UserSI,userReferred:UserSI) => {
+    
+    // TODO: Add notification data and the route
+    try {
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each ask your ${userReferred.name}has made their first booking through ZATTIRE.` }, data: {  click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
+
+
 
   static bookingConfirm = async (user: UserSI, salon: SalonSI, employee: EmployeeSI, booking: BookingSI) => {
     try {
@@ -33,7 +48,7 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const userText = `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}, CHEERS`
-      OtpService.sendMessage(user.phone, userText)
+      OtpService.sendMessage(user.phone, userText,SMSCONFIG.BOOKING_ACCEPTED)
     } catch (error) {
 
     }
@@ -71,7 +86,7 @@ export default class Notify {
     try {
       const vendorText = `Received a new booking for ${bookingTime}`
       console.log("sending message")
-      OtpService.sendMessage(vendor.contact_number, vendorText)
+      OtpService.sendMessage(vendor.contact_number, vendorText,SMSCONFIG.NEW_BOOKING)
     } catch (error) {
       console.log(error)
     }
@@ -98,7 +113,7 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const userText = `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`
-      OtpService.sendMessage(userPhone, userText)
+      OtpService.sendMessage(userPhone, userText,SMSCONFIG.RESCHEDULE)
     } catch (error) {
 
     }
@@ -140,7 +155,7 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const vendorText = `The rescheduled booking by ${employee.name} for ${bookingTime} has been accepted`
-      OtpService.sendMessage(vendor.contact_number, vendorText)
+      OtpService.sendMessage(vendor.contact_number, vendorText,SMSCONFIG.RESCHEDULE_ACCEPT)
 
 
     } catch (error) {
@@ -162,7 +177,7 @@ export default class Notify {
 
     try {
       const vendorText = `The rescheduled booking has been cancelled by the user`
-      OtpService.sendMessage(vendorPhone, vendorText)
+      OtpService.sendMessage(vendorPhone, vendorText,SMSCONFIG.RESCHEDULE_CANCEL)
     } catch (error) {
 
     }
@@ -222,8 +237,8 @@ export default class Notify {
       console.log(error)
     }
 
-    const userText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${salon.name}`
-    OtpService.sendMessage(user.phone, userText)
+    // const userText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${salon.name}`
+    // OtpService.sendMessage(user.phone, userText)
     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
     //if required
   }
@@ -245,8 +260,8 @@ export default class Notify {
       console.log(error)
     }
 
-    const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
-    OtpService.sendMessage(salon.contact_number, salonText)
+    // const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
+    // OtpService.sendMessage(salon.contact_number, salonText)
     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
 
 

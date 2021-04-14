@@ -4,11 +4,12 @@ import EmployeeSI from "../interfaces/employee.interface"
 import OtpSI, { OtpI } from "../interfaces/otp.interface"
 import UserI, { UserSI } from "../interfaces/user.interface"
 import logger from "../utils/logger"
+import SMSCONFIG from "../utils/sms-config"
 import BaseService from "./base.service"
 import EmployeeService from "./employee.service"
 import UserService from "./user.service"
 
-export default class OtpService extends BaseService{
+export default class OtpService extends BaseService {
 
     userService: UserService
     employeeService: EmployeeService
@@ -23,13 +24,13 @@ export default class OtpService extends BaseService{
      * @param phone phone number of the user
      * @param text complete message you want to send
      */
-    static async sendMessage(phone: string|string[], text: string){
+    static async sendMessage(phone: string | string[], text: string,template_id:string) {
         try {
-            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
-            if(res.status === 200){
+            if (res.status === 200) {
                 logger.info(`Text message sent to :: ${phone} :: ${text}`)
-            }else{
+            } else {
                 logger.info(`Text message error sending to :: ${phone} :: ${text}`)
             }
         } catch (error) {
@@ -37,11 +38,12 @@ export default class OtpService extends BaseService{
         }
     }
 
-    protected async sendOtp(phone: string, text: string) {
+    protected async sendOtp(phone: string, text: string,template_id:string) {
         try {
-            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}`
+            const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
-            if(res.status === 200){
+            console.log(res.data)
+            if (res.status === 200) {
                 return res.data
             }
             throw Error(`sendOtp status code: ${res.status} and message ${res.data}`)
@@ -51,9 +53,9 @@ export default class OtpService extends BaseService{
     }
 
     protected async verifyOtp(phone: string, otp: string): Promise<OtpSI> {
-        const otpD = await this.model.findOne({phone, verified: false}).sort({ "createdAt": -1 }) as OtpSI
-        if(otpD === null) throw new Error(`Phone does not match`)
-        if(otpD.otp !== otp){
+        const otpD = await this.model.findOne({ phone, verified: false }).sort({ "createdAt": -1 }) as OtpSI
+        if (otpD === null) throw new Error(`Phone does not match`)
+        if (otpD.otp !== otp) {
             throw new Error("Otp does not match")
         }
         otpD.verified = true
@@ -61,9 +63,9 @@ export default class OtpService extends BaseService{
         return otpD
     }
     protected async emailverifyOtp(email: string, otp: string): Promise<OtpSI> {
-        const otpD = await this.model.findOne({email, verified: false}).sort({ "createdAt": -1 }) as OtpSI
-        if(otpD === null) throw new Error(`email does not match`)
-        if(otpD.otp !== otp){
+        const otpD = await this.model.findOne({ email, verified: false }).sort({ "createdAt": -1 }) as OtpSI
+        if (otpD === null) throw new Error(`email does not match`)
+        if (otpD.otp !== otp) {
             throw new Error("Otp does not match")
         }
         otpD.verified = true
@@ -71,72 +73,72 @@ export default class OtpService extends BaseService{
         return otpD
     }
 
-    public async sendEmployeeOtp(phone: string): Promise<OtpSI>{
-        const emp = await this.employeeService.getOne({phone}) as EmployeeSI
-        if(emp === null) throw new Error(`No employee found with this phone number`);
+    public async sendEmployeeOtp(phone: string): Promise<OtpSI> {
+        const emp = await this.employeeService.getOne({ phone }) as EmployeeSI
+        if (emp === null) throw new Error(`No employee found with this phone number`);
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your login otp is ${otpNumber}`
+        const text: string = `Your login otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
             user_type: 'Vendor'
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.LOGIN_OTP)
         return otpD
     }
 
-    public async sendUserOtp(phone: string): Promise<OtpSI>{
+    public async sendUserOtp(phone: string): Promise<OtpSI> {
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
-    public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
+    public async verifyUserOtp(phone: string, otp: string, userId: string): Promise<{ otpD: OtpSI, user: UserSI }> {
         const otpD = await this.verifyOtp(phone, otp)
-        const user = await this.userService.update(userId,{phone:phone,approved:true}) as UserSI
-        if(user === null) throw new Error(`User not found to update phone number`)
-        return {otpD, user}
+        const user = await this.userService.update(userId, { phone: phone, approved: true }) as UserSI
+        if (user === null) throw new Error(`User not found to update phone number`)
+        return { otpD, user }
     }
-    public async emailVerifyUserOtp(email: string, otp: string, userId: string): Promise<{otpD: OtpSI, user: UserSI}>{
+    public async emailVerifyUserOtp(email: string, otp: string, userId: string): Promise<{ otpD: OtpSI, user: UserSI }> {
         const otpD = await this.emailverifyOtp(email, otp)
-        const user = await this.userService.update(userId,{approved:true}) as UserSI
-        return {otpD, user}
+        const user = await this.userService.update(userId, { approved: true }) as UserSI
+        return { otpD, user }
     }
 
-    public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI>{
-        const user = await this.userService.getOne({phone})
-        console.log("user",user)
-        if(user !== null) throw new Error(`User already registered with this phone number`)
+    public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI> {
+        const user = await this.userService.getOne({ phone })
+        console.log("user", user)
+        if (user !== null) throw new Error(`User already registered with this phone number`)
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             phone: phone,
             otp: otpNumber,
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text)
+        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
-    public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI>{
-      const verifyOtp =   await this.verifyOtp(phone, otp)
+    public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI> {
+        const verifyOtp = await this.verifyOtp(phone, otp)
         // const user: UserI = {
         //     phone
         // }
-     //   const userSI = await this.userService.post(user) as UserSI
+        //   const userSI = await this.userService.post(user) as UserSI
         return verifyOtp
     }
 
-    public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI>{
+    public async verifyEmployeeOtp(phone: string, otp: string): Promise<OtpSI> {
         const otpD = await this.verifyOtp(phone, otp)
         return otpD
     }
@@ -145,9 +147,9 @@ export default class OtpService extends BaseService{
         return Math.floor(1000 + Math.random() * 9000);
     }
 
-    public async sendUserOtpEmail(email: string): Promise<OtpSI>{
+    public async sendUserOtpEmail(email: string): Promise<OtpSI> {
         const otpNumber: string = this.getRandomInt().toString()
-        const text: string = `Your otp is ${otpNumber}`
+        const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`
         const otp: OtpI = {
             email: email,
             otp: otpNumber,

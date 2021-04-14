@@ -120,12 +120,17 @@ export default class LoginController extends BaseController {
         const referalData: ReferralI = {
           referred_by: refferallCode._id,
           referred_to: {
-            status: "Not Used",
+            status: "Used",
             referral_code: rfCode,
             user: createUser._id,
           }
         }
-        const referral = await this.referralService.post(referalData)
+        try {
+          const referral = await this.referralService.post(referalData)
+        } catch (error) {
+          console.log(error)
+        }
+      
       }
     }
     if (createUser == null) {

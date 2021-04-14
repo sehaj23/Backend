@@ -19,4 +19,13 @@ export default class ReferralController extends BaseController {
         res.status(200).send(referral)
     })
 
+
+    getRefferalsByUser= controllerErrorHandler(async (req: Request, res: Response) => {
+        const id=req.params.id
+        const q=req.query
+        const referral = await this.service.getRefferalsByUser(id,q)
+        res.status(200).send(referral)
+    })
+    
+
 }

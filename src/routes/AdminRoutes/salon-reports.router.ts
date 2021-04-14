@@ -11,7 +11,7 @@ const reportsSalonService =  new ReportsSalonService(ReportSalon)
 const reportsSalonController = new ReportsSalonController(reportsSalonService)
 
 
-reportsSalonRouter.get("/:id",verifyToken, reportsSalonController.getId)
+reportsSalonRouter.get("/:id",verifyToken, reportsSalonController. getById)
 reportsSalonRouter.get("/salon/:id",verifyToken,reportsSalonController.getSalonReport)
 reportsSalonRouter.get("/user/:id",verifyToken,reportsSalonController.getSalonReportbyUser)
 

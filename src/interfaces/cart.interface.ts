@@ -15,6 +15,7 @@ export default interface CartI {
     options: CartOption[] // option ids of the service
     total?: number
     salon_id: string
+    salon_name?:string,
     user_id?: string
     status?: cartStatus
 }
