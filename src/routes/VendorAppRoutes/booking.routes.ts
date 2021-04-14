@@ -26,6 +26,7 @@ import EmployeeAbsentismService from "../../service/employee-absentism.service";
 import EmployeeService from "../../service/employee.service";
 import FeedbackService from "../../service/feedback.service";
 import MongoCounterService from "../../service/mongo-counter.service";
+import PromoCodeService from "../../service/promo-code.service";
 import PromoUserService from "../../service/promo-user.service";
 import ReferralService from "../../service/referral.service";
 import RefundService from "../../service/refund.service";
@@ -47,7 +48,8 @@ const employeeAbsenteesimService = new EmployeeAbsentismService(EmployeeAbsentee
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
 const promoUserService = new PromoUserService(PromoCode)
 const refundService = new RefundService(Refund, bookingService)
-const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService)
+const promoCodeService = new PromoCodeService(PromoCode)
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService,promoCodeService)
 
 
 
