@@ -21,12 +21,20 @@ export default class RazorPayService {
             currency: "INR",
             receipt: bookingId
         };
-        const order = await this.instance.orders.create(options);
-        return order
+        try {
+            const order = await this.instance.orders.create(options);
+            return order
+        } catch (e) {
+            throw e
+        }
     }
 
     refund = async (payment_id: string, amount: number, speed: "optimum" | "normal") => {
-        const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
-        return refund
+        try {
+            const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
+            return refund
+        } catch (e) {
+            throw e
+        }
     }
 }
