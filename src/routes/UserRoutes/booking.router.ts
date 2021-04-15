@@ -11,6 +11,7 @@ import Feedback from "../../models/feedback.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import Offer from "../../models/offer.model"
 import PromoCode from "../../models/promo-code.model"
+import PromoUserCode from "../../models/promo-user.model"
 import Referral from "../../models/referral.model"
 import Refund from "../../models/refund.model"
 import ReportSalon from "../../models/reportSalon.model"
@@ -45,7 +46,7 @@ const userService = new UserService(User, Booking)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
-const promoUserService = new PromoUserService(PromoCode)
+const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeService = new PromoCodeService(PromoCode)
 
 const refundService = new RefundService(Refund, bookingService)
