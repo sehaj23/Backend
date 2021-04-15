@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import * as Razorpay from 'razorpay';
+import ErrorResponse from "../utils/error-response";
 dotenv.config()
 
 export default class RazorPayService {
@@ -16,16 +17,20 @@ export default class RazorPayService {
     }
 
     createOrderId = async (bookingId: string, totalAmount: number) => {
+        console.log(`totalAmount : ${totalAmount}`)
         var options = {
-            amount: totalAmount * 100,  // amount in the smallest currency unit
+            amount: parseFloat(totalAmount.toFixed(2)) * 100,  // amount in the smallest currency unit
             currency: "INR",
             receipt: bookingId
         };
+        console.log(options)
         try {
             const order = await this.instance.orders.create(options);
             return order
         } catch (e) {
-            console.log(`Razorpay error createOrderId: ${e.message}`)
+            console.log(`Razorpay error createOrderId: ${e}`)
+            console.log(e)
+            if (e?.error?.description) throw new ErrorResponse({ message: e?.error?.description })
             throw e
         }
     }
@@ -35,7 +40,9 @@ export default class RazorPayService {
             const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
             return refund
         } catch (e) {
-            console.log(`Razorpay error refund: ${e.message}`)
+            console.log(`Razorpay error refund: ${e}`)
+            console.log(e)
+            if (e?.error?.description) throw new ErrorResponse({ message: e?.error?.description })
             throw e
         }
     }

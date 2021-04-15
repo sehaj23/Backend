@@ -50,7 +50,7 @@ const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeService = new PromoCodeService(PromoCode)
 
 const refundService = new RefundService(Refund, bookingService)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService,promoCodeService)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService)
 
 const bookingRouter = Router()
 
@@ -59,7 +59,8 @@ bookingRouter.get("/", UserverifyToken, bc.getAppointment)
 bookingRouter.get("/:id", UserverifyToken, bc.getId)
 bookingRouter.get("/online/cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
 bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)
-bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
+// bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
+bookingRouter.get("/razorpay-orderid/:id", bc.getRazorpayOrderId)
 bookingRouter.post("/razorpay-verify-payment/:bookingId", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
 bookingRouter.patch("/update-status/:id", UserverifyToken, bc.updateStatusBookings)
 bookingRouter.patch("/rescheduled/:id", UserverifyToken, bc.confirmRescheduleSlot)
