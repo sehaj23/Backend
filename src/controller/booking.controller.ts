@@ -61,6 +61,7 @@ export default class BookingController extends BaseController {
         this.promoUserService = promoUserService
         this.referralService = referralService
         this.refundService = refundService
+        this.promoCodeService=promoCodeService
     }
 
 
