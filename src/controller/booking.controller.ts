@@ -29,6 +29,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import PromoCodeService from "../service/promo-code.service";
 
 
 export default class BookingController extends BaseController {
@@ -44,9 +45,10 @@ export default class BookingController extends BaseController {
     employeeService: EmployeeService
     vendorService: VendorService
     promoUserService: PromoUserService
+    promoCodeService:PromoCodeService
     referralService: ReferralService
     refundService: RefundService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService) {
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService,   promoCodeService:PromoCodeService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -59,6 +61,7 @@ export default class BookingController extends BaseController {
         this.promoUserService = promoUserService
         this.referralService = referralService
         this.refundService = refundService
+        this.promoCodeService=promoCodeService
     }
 
 
@@ -186,7 +189,7 @@ export default class BookingController extends BaseController {
 
         if (promo_code !== null) {
 
-            promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
+            promoCode = await this.promoCodeService.getOne({ promo_code:promo_code }) as PromoCodeSI
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
             const currentDateTime = moment(Date.now())
