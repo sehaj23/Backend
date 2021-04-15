@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 import * as Razorpay from 'razorpay';
-import logger from "../utils/logger";
 dotenv.config()
 
 export default class RazorPayService {
@@ -26,7 +25,7 @@ export default class RazorPayService {
             const order = await this.instance.orders.create(options);
             return order
         } catch (e) {
-            logger.error(`Razorpay error createOrderId: ${e.message}`)
+            console.log(`Razorpay error createOrderId: ${e.message}`)
             throw e
         }
     }
@@ -36,7 +35,7 @@ export default class RazorPayService {
             const refund = await this.instance.payments.refund(payment_id, { amount: amount * 100, speed })
             return refund
         } catch (e) {
-            logger.error(`Razorpay error refund: ${e.message}`)
+            console.log(`Razorpay error refund: ${e.message}`)
             throw e
         }
     }
