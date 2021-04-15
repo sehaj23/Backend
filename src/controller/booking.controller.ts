@@ -189,7 +189,7 @@ export default class BookingController extends BaseController {
 
         if (promo_code !== null) {
 
-            promoCode = await this.promoCodeService.getOne({ promo_code }) as PromoCodeSI
+            promoCode = await this.promoCodeService.getOne({ promo_code:promo_code }) as PromoCodeSI
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
             const currentDateTime = moment(Date.now())
