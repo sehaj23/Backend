@@ -605,12 +605,42 @@ export default class SalonService extends BaseService {
         // Search by salon
         getSearchResult = async (phrase: string) => {
                 console.log(phrase)
-                const data = await this.model.find(
-                        { $text: { $search: phrase, $caseSensitive: false } },
-                        { score: { $meta: 'textScore' } }
-                ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
-                return data
+                // const data = await this.model.find(
+                //         { $text: { $search: phrase, $caseSensitive: false } },
+                //         { score: { $meta: 'textScore' } }
+                // ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
+             //   const data =  await this.model.find({name:{$regex: `.*${phrase}.*`, $options: 'i'}}).populate("profile_pic")
+             console.log("searching")
+             var result1 = await this.model.aggregate([
 
+
+                {
+                        $match: {
+                        name:   {$regex: `.*${phrase}.*`, $options: 'i'}
+                        }
+                },
+                { $lookup: {from: 'photos', localField: 'profile_pic', foreignField: '_id', as: 'profile_pic'} },
+                {
+                        $project: {
+                                "_id": 1,
+                                name:1 ,
+                                profile_pic:1 ,
+                                rating: 1,
+                                area:1
+                               // service: { $addToSet: "$services" },
+
+
+
+
+                        }
+                }
+                // {
+                //         $unwind: "$profile_pic"
+                // },
+        
+
+              ]) 
+              return result1
         }
 
         getSearchservice = async (phrase: string) => {
