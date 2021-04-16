@@ -33,23 +33,23 @@ const SalonSchema = new mongoose.Schema({
             category: {
                 type: String,
                 required: true,
-                
+
             },
             name: {
                 type: String,
                 required: true,
             },
             options: [{
-                at_home:{
-                    type:Boolean,
-                    required:true,
-                    default:false
+                at_home: {
+                    type: Boolean,
+                    required: true,
+                    default: false
                 },
                 option_name: {
                     type: String,
                     default: 'Default',
                     required: true,
-                    
+
                 },
                 price: {
                     type: Number,
@@ -89,10 +89,10 @@ const SalonSchema = new mongoose.Schema({
     speciality: {
         type: [{ type: String }]
     },
-    gst:{
+    gst: {
         type: String,
     },
-    pan:{
+    pan: {
         type: String,
     },
     rating: {
@@ -102,9 +102,9 @@ const SalonSchema = new mongoose.Schema({
         max: 5
     },
     location: {
-      type:String
+        type: String
     },
-  
+
     insta_link: {
         type: String
     },
@@ -132,7 +132,7 @@ const SalonSchema = new mongoose.Schema({
     profile_pic: { // this is the DP of salon
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos",
-        default:mongoose.Types.ObjectId("5fe059984ed7e11cdd326c00")
+        default: mongoose.Types.ObjectId("5fe059984ed7e11cdd326c00")
     },
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -148,18 +148,19 @@ const SalonSchema = new mongoose.Schema({
     commision_fixed_price: {
         type: Number
     },
-    payment_method_supported:{
-        type:[String],
-        default:['COD', 'RAZORPAY','WALLET']
+    payment_method_supported: {
+        type: [String],
+        default: ['COD', 'RAZORPAY', 'WALLET']
     },
-    coordinates: { type: {type: String, enum: ['Point']}, coordinates : [Number]
-},
+    coordinates: {
+        type: { type: String, enum: ['Point'] }, coordinates: [Number]
+    },
 }, {
     timestamps: true
 })
 
-SalonSchema.index({coordinates: '2dsphere'});
-SalonSchema.index({'name': 'text'});
+SalonSchema.index({ coordinates: '2dsphere' });
+SalonSchema.index({ 'name': 'text' });
 
 const Salon = mongoose.model<SalonSI>("salons", SalonSchema)
 

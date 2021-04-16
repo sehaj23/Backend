@@ -451,7 +451,7 @@ export default class SalonService extends BaseService {
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
-                                                $geometry: { type: "Point", coordinates:  [latitude, longitude] },
+                                                $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
                                                 $maxDistance: 1000000
                                         }
@@ -605,12 +605,42 @@ export default class SalonService extends BaseService {
         // Search by salon
         getSearchResult = async (phrase: string) => {
                 console.log(phrase)
-                const data = await this.model.find(
-                        { $text: { $search: phrase, $caseSensitive: false } },
-                        { score: { $meta: 'textScore' } }
-                ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
-                return data
+                // const data = await this.model.find(
+                //         { $text: { $search: phrase, $caseSensitive: false } },
+                //         { score: { $meta: 'textScore' } }
+                // ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
+                //   const data =  await this.model.find({name:{$regex: `.*${phrase}.*`, $options: 'i'}}).populate("profile_pic")
+                console.log("searching")
+                var result1 = await this.model.aggregate([
 
+
+                        {
+                                $match: {
+                                        name: { $regex: `.*${phrase}.*`, $options: 'i' }
+                                }
+                        },
+                        { $lookup: { from: 'photos', localField: 'profile_pic', foreignField: '_id', as: 'profile_pic' } },
+                        {
+                                $project: {
+                                        "_id": 1,
+                                        name: 1,
+                                        profile_pic: 1,
+                                        rating: 1,
+                                        area: 1
+                                        // service: { $addToSet: "$services" },
+
+
+
+
+                                }
+                        }
+                        // {
+                        //         $unwind: "$profile_pic"
+                        // },
+
+
+                ])
+                return result1
         }
 
         getSearchservice = async (phrase: string) => {
@@ -932,76 +962,76 @@ export default class SalonService extends BaseService {
                 const skipCount = (pageNumber - 1) * pageLength
                 let salonReq
                 let out
-                        if (ids.length != 0) {
-                               salonReq= this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
-                        } else {
-                                salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
-                        }
-                        // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
-                        // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                        const salonPagesReq = this.model.aggregate([
-                                { "$count": "count" }
-                        ])
-                       
-                       const [salon , pages] = await Promise.all([salonReq, salonPagesReq])
-                        if(getDistance){
-                                try{
-                                const salonCoordinates:string[] = salon.map((e)=>{
-                                    return    `${e.coordinates.coordinates[0]}`+`,`+`${e.coordinates.coordinates[1]}` 
-                                    
+                if (ids.length != 0) {
+                        salonReq = this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                } else {
+                        salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
+                }
+                // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                const salonPagesReq = this.model.aggregate([
+                        { "$count": "count" }
+                ])
+
+                const [salon, pages] = await Promise.all([salonReq, salonPagesReq])
+                if (getDistance) {
+                        try {
+                                const salonCoordinates: string[] = salon.map((e) => {
+                                        return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
+
                                 })
                                 const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
                                 console.log(salonCoordinates)
-                              //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                 const newSalon = await new Promise<any>((resolve, reject) => {
-                 
+
                                         distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                         return distance.get(
-                                        {
-                                          origins: userLocation,
-                                          destinations:salonCoordinates
-                                        },
-                                        function(err, data) {
-                                          if (err) return console.log(err);
-                                          console.log(data);
-                                          for(var i = 0 ;i<data.length;i++){
-                                                  salon[i].distance=data[i]
-                                          }
-                                        //   salon.map((e)=>{
-                                        //           e.distance=data
-                                        //   })
-                                          return resolve({salon,pages})
-                                        });
+                                                {
+                                                        origins: userLocation,
+                                                        destinations: salonCoordinates
+                                                },
+                                                function (err, data) {
+                                                        if (err) return console.log(err);
+                                                        console.log(data);
+                                                        for (var i = 0; i < data.length; i++) {
+                                                                salon[i].distance = data[i]
+                                                        }
+                                                        //   salon.map((e)=>{
+                                                        //           e.distance=data
+                                                        //   })
+                                                        return resolve({ salon, pages })
+                                                });
                                 })
                                 return newSalon
-                        }catch(e){
+                        } catch (e) {
                                 return salon
                         }
                 }
-                out = {salon,pages}
+                out = { salon, pages }
                 return out
-                   
-             
+
+
 
         }
         getDistanceInPairs = async () => {
                 const newSalon = await new Promise<any>((resolve, reject) => {
-                 
-                distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
-                return distance.get(
-                {
-                  origins: [`28.584450,77.341812`],
-                  destinations: [`28.540331,77.342979`,`28.040331,77.342979`,`27.040331,77.342979`]
-                },
-                function(err, data) {
-                  if (err) return console.log(err);
-                  console.log(data);
-                  return resolve(data)
-                });
-                return newSalon
-                
-        })
-}
+
+                        distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                        return distance.get(
+                                {
+                                        origins: [`28.584450,77.341812`],
+                                        destinations: [`28.540331,77.342979`, `28.040331,77.342979`, `27.040331,77.342979`]
+                                },
+                                function (err, data) {
+                                        if (err) return console.log(err);
+                                        console.log(data);
+                                        return resolve(data)
+                                });
+                        return newSalon
+
+                })
+        }
 
 
 
