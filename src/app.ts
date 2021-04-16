@@ -150,6 +150,16 @@ app.get(`${URL_PREFIX}`, (req, res) => {
   res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} main-servers.`)
 })
 
+// app.get("/r", async (req, res) => {
+//   try {
+//     const rp = new RazorPayService()
+//     const o = await rp.createOrderId("id1", 300)
+//     res.send(o)
+//   } catch (e) {
+//     res.status(400).send(e.message)
+//   }
+// })
+
 // this is for 404
 app.use(function (req, res, next) {
   var err = new Error("Not Found");
