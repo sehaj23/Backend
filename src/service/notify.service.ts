@@ -30,6 +30,7 @@ export default class Notify {
 
 
   static bookingConfirm = async (user: UserSI, salon: SalonSI, employee: EmployeeSI, booking: BookingSI) => {
+    console.log(booking._id.toString())
     try {
       const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
       const getDetails = Notify.getTotalPromo(booking)
@@ -39,7 +40,9 @@ export default class Notify {
     }
     // TODO: Add notification data and the route
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}` }, data: { booking_id: booking._id, status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      console.log((booking._id).toString())
+    sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    
     } catch (error) {
       console.log(error)
     }
@@ -70,12 +73,12 @@ export default class Notify {
     }
     // TODO: Add notification data and the route
     try {
-      sendNotificationToDevice(vendor.fcm_token, { notification: { title: "Booking Request", body: `${employee.name} has received a new booking for ${bookingTime}` }, data: { booking_id: booking._id, status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      sendNotificationToDevice(vendor.fcm_token, { notification: { title: "Booking Request", body: `${employee.name} has received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
     } catch (error) {
       console.log(error)
     }
     try {
-      sendNotificationToDevice(employee.fcm_token, { notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: booking._id, status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      sendNotificationToDevice(employee.fcm_token, { notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
     } catch (error) {
       console.log(error)
     }
@@ -144,7 +147,7 @@ export default class Notify {
       sendNotificationToDevice(vendor.fcm_token, {
         notification: {
           title: "Booking Reschedule Accepted", body: `The rescheduled booking by ${employee.name} for ${bookingTime} has been accepted’
-            `}, data: { booking_id: booking._id, status: "Rescheduled" }
+            `}, data: { booking_id: (booking._id).toString(), status: "Rescheduled" }
       })
     } catch (error) {
 
@@ -231,7 +234,7 @@ export default class Notify {
     // TODO: Add notification data and the route
 
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: booking._id, status: "" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "Vendor Cancelled" } })
       //TODO: change the text of the uszer text 
     } catch (error) {
       console.log(error)
@@ -254,7 +257,7 @@ export default class Notify {
     // TODO: Add notification data and the route
 
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: booking._id, status: "" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "" } })
       //TODO: change the text of the uszer text 
     } catch (error) {
       console.log(error)
