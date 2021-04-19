@@ -18,6 +18,7 @@ import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 import EmployeeService from "../service/employee.service";
 import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
+import PromoCodeService from "../service/promo-code.service";
 import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
 import ReferralService from "../service/referral.service";
@@ -29,7 +30,6 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import PromoCodeService from "../service/promo-code.service";
 
 
 export default class BookingController extends BaseController {
@@ -45,10 +45,10 @@ export default class BookingController extends BaseController {
     employeeService: EmployeeService
     vendorService: VendorService
     promoUserService: PromoUserService
-    promoCodeService:PromoCodeService
+    promoCodeService: PromoCodeService
     referralService: ReferralService
     refundService: RefundService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService,   promoCodeService:PromoCodeService) {
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -61,7 +61,7 @@ export default class BookingController extends BaseController {
         this.promoUserService = promoUserService
         this.referralService = referralService
         this.refundService = refundService
-        this.promoCodeService=promoCodeService
+        this.promoCodeService = promoCodeService
     }
 
 
@@ -85,12 +85,7 @@ export default class BookingController extends BaseController {
             }
         }) as BookingSI
         const bookingJson = booking.toJSON()
-        let walletAmount: number = 0
-        const walletPayemntIndex = booking.payments.findIndex(p => p.mode === BookingPaymentMode.WALLET)
-        if (walletPayemntIndex > -1) walletAmount = booking.payments[walletPayemntIndex].amount
-        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
-        bookingTotalPrice = (bookingTotalPrice + (bookingTotalPrice * 0.18)) - walletAmount
-        bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+        let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
         let refundOptions = [
             {
                 name: "Zattire Wallet",
@@ -145,6 +140,20 @@ export default class BookingController extends BaseController {
                 return
             }
         const rp = new RazorPayService()
+        let totalAmountWithTax = BookingController.getRazorPayPayableAmount(booking)
+        const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
+        const order_id = order['id']
+        logger.info(`order_id ${order_id}`)
+        console.log(order)
+        booking.razorpay_order_id = order_id
+        await booking.save()
+        res.send({ order_id })
+    })
+
+    /**
+     * @description get total amount to be paid with tax in a booking at Razorpay
+     */
+    static getRazorPayPayableAmount = (booking: BookingSI): number => {
         const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
         let totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
         logger.info(`totalAmount ${totalAmountWithTax}`)
@@ -155,14 +164,8 @@ export default class BookingController extends BaseController {
                 }
             }
         }
-        const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
-        const order_id = order['id']
-        logger.info(`order_id ${order_id}`)
-        console.log(order)
-        booking.razorpay_order_id = order_id
-        await booking.save()
-        res.send({ order_id })
-    })
+        return parseFloat(totalAmountWithTax.toFixed(2))
+    }
 
     /**
      * @description book the the appointment with the salon
@@ -189,7 +192,7 @@ export default class BookingController extends BaseController {
 
         if (promo_code !== null) {
 
-            promoCode = await this.promoCodeService.getOne({ promo_code:promo_code }) as PromoCodeSI
+            promoCode = await this.promoCodeService.getOne({ promo_code: promo_code }) as PromoCodeSI
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
             const currentDateTime = moment(Date.now())
@@ -435,6 +438,11 @@ export default class BookingController extends BaseController {
             signature,
             verified: false
         }
+        const rs = new RazorPayService()
+        const bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
+        const capture = await rs.capture(payment_id, bookingTotalPrice)
+        console.log("CAPTURE Razor Pay")
+        console.log(capture)
         booking.razorpay_payment_data = razorpayPaymentData
         await booking.save()
         res.send({ message: booking.razorpay_payment_data, success: true })
@@ -678,9 +686,7 @@ export default class BookingController extends BaseController {
         if (refundToWallet === true) {
             const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
             if (walletPaymentIndex > -1) {
-                let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
-                bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
-                bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+                let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
                 const refund: RefundI = {
                     type: RefundTypeEnum.Zattire_Wallet,
                     status: "Initiated",
@@ -940,9 +946,7 @@ export default class BookingController extends BaseController {
         if (cancelledStatuses.includes(booking.status)) {
             const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
             if (walletPaymentIndex > -1) {
-                let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
-                bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
-                bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+                let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
                 const refund: RefundI = {
                     type: RefundTypeEnum.Zattire_Wallet,
                     status: "Initiated",

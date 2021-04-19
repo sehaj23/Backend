@@ -1,6 +1,7 @@
 import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
+import BookingController from "../controller/booking.controller";
 import mongoose from "../database";
-import { BookingPaymentMode, BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import { BookingSI } from "../interfaces/booking.interface";
 import RefundSI, { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import ErrorResponse from "../utils/error-response";
 import BaseService from "./base.service";
@@ -19,18 +20,13 @@ export default class RefundService extends BaseService {
     createRefund = async (refundType: RefundTypeEnum, bookingId: string, userId: string): Promise<RefundSI> => {
         const booking = await this.bookingService.getOne({ _id: mongoose.Types.ObjectId(bookingId), user_id: userId }) as BookingSI
         if (booking.status === 'Refunded') throw new ErrorResponse({ message: "It has already been refunded" })
-        let bookingTotalPrice = booking.services.map((s: BookingServiceI) => s.service_total_price).reduce((a: number, b: number) => a + b)
-        bookingTotalPrice = bookingTotalPrice + (bookingTotalPrice * 0.18)
-        bookingTotalPrice = parseFloat(bookingTotalPrice.toFixed(2))
+        let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
         const payment_id = booking?.razorpay_payment_data?.payment_id
         if (!payment_id) throw new ErrorResponse({ message: "Payment id not found" })
         const rp = new RazorPayService()
         // this is the amount which has already been returned
-        let walletAmount: number = 0
-        const walletPayemntIndex = booking.payments.findIndex(p => p.mode === BookingPaymentMode.WALLET)
-        if (walletPayemntIndex > -1) walletAmount = booking.payments[walletPayemntIndex].amount
         if (refundType === RefundTypeEnum.Instant_RazorPay) {
-            const amountToRefund = bookingTotalPrice - RefundService.ZATTIRE_REFUND_COMMISION - walletAmount
+            const amountToRefund = bookingTotalPrice - RefundService.ZATTIRE_REFUND_COMMISION
             const razorpayRefund = await rp.refund(payment_id, amountToRefund, "optimum")
             if (!razorpayRefund) throw new ErrorResponse({ message: "Razor Pay is null" })
             if (!razorpayRefund["status"]) throw new ErrorResponse({ message: "Cannot get Razorpay Refund Status" })
@@ -54,7 +50,7 @@ export default class RefundService extends BaseService {
             await booking.save()
             return refundSI
         } else if (refundType === RefundTypeEnum.Normal_RazorPay) {
-            const amountToRefund = bookingTotalPrice - walletAmount
+            const amountToRefund = bookingTotalPrice
             const razorpayRefund = await rp.refund(payment_id, amountToRefund, "optimum")
             if (!razorpayRefund) throw new ErrorResponse({ message: "Razor Pay is null" })
             if (!razorpayRefund["status"]) throw new ErrorResponse({ message: "Cannot get Razorpay Refund Status" })
@@ -78,7 +74,7 @@ export default class RefundService extends BaseService {
             await booking.save()
             return refundSI
         } else if (refundType === RefundTypeEnum.Zattire_Wallet) {
-            const amountToRefund = bookingTotalPrice - walletAmount
+            const amountToRefund = bookingTotalPrice
             const refund: RefundI = {
                 type: RefundTypeEnum.Zattire_Wallet,
                 status: "Initiated",
