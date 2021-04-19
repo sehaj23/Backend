@@ -433,16 +433,37 @@ export default class SalonController extends BaseController {
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
-
+        let getDistance = false
         //  const sr = await SalonRedis.get('Salons')
         const q = req.query
-        //   if (sr !== null) { salons = JSON.parse(sr)
-        //    }
-        //   else {
-        salons = await this.service.getSalon(q)
-        //      SalonRedis.set('Salons', salons)
-        // }
-        res.status(200).send(salons)
+        if (q.latitude && q.longitude) {
+            getDistance = true
+        }
+        const pageNumber: number = parseInt(q.page_number.toString()) || 1
+        let pageLength: number = parseInt(q.page_length.toString()) || 7
+        const latitude = q.latitude
+        const longitude = q.longitude
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const filter = {
+            pageNumber,
+            pageLength,
+            skipCount,
+            longitude,
+            latitude
+
+        }
+        const redisKey = "getSalon"
+        let out
+        const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+        if (cahceGetSalon == null) {
+            out = await this.service.getSalon(q, getDistance)
+            SalonRedis.set(redisKey, out, filter)
+        } else {
+            out = JSON.parse(cahceGetSalon)
+
+        }
+        res.status(200).send(out)
 
     })
     getHomeServiceSalon = controllerErrorHandler(async (req: Request, res: Response) => {
