@@ -393,7 +393,7 @@ export default class SalonService extends BaseService {
         }
 
         // Salon Rating-Wise  Recommended.
-        getSalon = async (q: any, getDistance: boolean = false) => {
+        getSalon = async (q: any,getDistance:boolean=false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
@@ -403,60 +403,60 @@ export default class SalonService extends BaseService {
                         pageLength,
                         skipCount
                 }
+               
+               
+                        //TODO: send salon with rating 5
+                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
+                        // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
+                        const salonPage = this.model.aggregate([
+                                { "$count": "count" }
+                        ])
 
-
-                //TODO: send salon with rating 5
-                const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
-                // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
-                // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
-                const salonPage = this.model.aggregate([
-                        { "$count": "count" }
-                ])
-
-                const [salon, pageNo] = await Promise.all([salons, salonPage])
-                console.log(pageNo)
-                let totalPageNumber = 0
-                if (pageNo.length > 0) {
-                        totalPageNumber = pageNo[0].count
-                }
-                const totalPages = Math.ceil(totalPageNumber / pageLength)
-                if (getDistance) {
-                        try {
-                                const salonCoordinates: string[] = salon.map((e) => {
-                                        return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
-
-                                })
-                                const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                console.log(salonCoordinates)
-                                //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
-                                const newSalon = await new Promise<any>((resolve, reject) => {
-
-                                        distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
-                                        return distance.get(
-                                                {
-                                                        origins: userLocation,
-                                                        destinations: salonCoordinates
-                                                },
-                                                function (err, data) {
-                                                        if (err) return console.log(err);
-                                                        console.log(data);
-                                                        for (var i = 0; i < data.length; i++) {
-                                                                salon[i].distance = data[i]
-                                                        }
-                                                        //   salon.map((e)=>{
-                                                        //           e.distance=data
-                                                        //   })
-                                                        return resolve({ salon, totalPages })
-                                                });
-                                })
-                                return newSalon
-                        } catch (e) {
-                                console.log(e)
-                                return salon
+                        const [salon, pageNo] = await Promise.all([salons, salonPage])
+                        console.log(pageNo)
+                        let totalPageNumber = 0
+                        if (pageNo.length > 0) {
+                                totalPageNumber = pageNo[0].count
                         }
-                }
-
-
+                        const totalPages = Math.ceil(totalPageNumber / pageLength)
+                        if (getDistance) {
+                                try {
+                                        const salonCoordinates: string[] = salon.map((e) => {
+                                                return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
+        
+                                        })
+                                        const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
+                                        console.log(salonCoordinates)
+                                        //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                        const newSalon = await new Promise<any>((resolve, reject) => {
+        
+                                                distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                                return distance.get(
+                                                        {
+                                                                origins: userLocation,
+                                                                destinations: salonCoordinates
+                                                        },
+                                                        function (err, data) {
+                                                                if (err) return console.log(err);
+                                                                console.log(data);
+                                                                for (var i = 0; i < data.length; i++) {
+                                                                        salon[i].distance = data[i]
+                                                                }
+                                                                //   salon.map((e)=>{
+                                                                //           e.distance=data
+                                                                //   })
+                                                               return  resolve({ salon,  totalPages  })
+                                                        });
+                                        })
+                                        return newSalon
+                                } catch (e) {
+                                        console.log(e)
+                                        return salon
+                                }
+                        }
+                      
+             
 
                 return salon
         }

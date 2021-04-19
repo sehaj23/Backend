@@ -435,12 +435,12 @@ export default class SalonController extends BaseController {
         let salons
         let getDistance = false
         //  const sr = await SalonRedis.get('Salons')
-        const q = req.query
+        const q:any = req.query
         if (q.latitude && q.longitude) {
             getDistance = true
         }
-        const pageNumber: number = parseInt(q.page_number.toString()) || 1
-        let pageLength: number = parseInt(q.page_length.toString()) || 7
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 8)
         const latitude = q.latitude
         const longitude = q.longitude
         pageLength = (pageLength > 100) ? 100 : pageLength
