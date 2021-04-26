@@ -361,7 +361,7 @@ export default class BookingController extends BaseController {
         }
         console.log("optionsss")
         console.log(options)
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status,salon.commision_percentage??20)
 
         // const employeeReq = this.employeeService.getId(options[0].employee_id)
         // const userReq = this.userService.getId(userId) as UserI
