@@ -24,7 +24,7 @@ export default class EmployeeAbsenteesmService extends BaseService{
                 let empAbsent = false
                 if(absent.absenteeism_times.length>0){
                     for (let empAbTime of absent.absenteeism_times) {
-                        const utcformateTime =  moment(dateTime).subtract(moment.duration("5:30"),"hours").format('hh:mm a')
+                        const utcformateTime =  moment(dateTime).format('hh:mm a')
                         console.log(utcformateTime)
                        
                         if (empAbTime ===  utcformateTime)  {
@@ -58,7 +58,7 @@ export default class EmployeeAbsenteesmService extends BaseService{
                      let empAbsent = false
                      if(absent.absenteeism_times.length>0){
                          for (let empAbTime of absent.absenteeism_times) {
-                             const utcformateTime =  moment(dateTime).subtract(moment.duration("5:30"),"hours").format('hh:mm a')
+                             const utcformateTime =  moment(dateTime).format('hh:mm a')
                              console.log(utcformateTime)
                              timeSlotAbsent.push(empAbTime)
                              if (empAbTime ===  utcformateTime)  {

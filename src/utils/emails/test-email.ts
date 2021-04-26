@@ -5,7 +5,7 @@ import '../../prototypes/string.prototypes';
 import Mail = require("nodemailer/lib/mailer");
 import MailComposer = require("nodemailer/lib/mail-composer");
 
-function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[]) {
+function testEmail(orderId: string, orderDate: string, orderTime: string, customerName: string, customerAddress, salonName: string, salonAddress: string, stylist: string, subtotal: string, payments: BookingPaymentI[], gst: string, finalTotal: string,services:BookingServiceI[],userEmail:string) {
     fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
         const serviceList = services.map(s => { return s.service_name + " <br>" })
         const serviceAmount = services.map(s=>{return  s.service_total_price.toString() + "<br>"})
@@ -41,7 +41,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         const mailOptions: Mail.Options = {
             from: 'info@zattire.com',
             replyTo: 'info@zattire.com',
-            to: ['sehaj23chawla@gmail.com', 'preetsc27@gmail.com'],
+            to: ['sehaj@zattire.com', 'preetsc27@gmail.com',userEmail],
             subject: `Invoice for your Booking ${orderId}`,
             html: data,
             attachments: [

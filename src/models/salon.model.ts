@@ -104,7 +104,9 @@ const SalonSchema = new mongoose.Schema({
     location: {
         type: String
     },
-
+    area:{
+        type: String
+    },
     insta_link: {
         type: String
     },
