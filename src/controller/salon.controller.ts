@@ -361,6 +361,7 @@ export default class SalonController extends BaseController {
         const salonId = req.params.id;
         const filter = {}
         const q = req.query
+        let getDistance=false
         //@ts-ignore
         const id = req.userId
 
@@ -388,16 +389,17 @@ export default class SalonController extends BaseController {
         filter["page_length"] = req.query.page_length
         var centerPoint = {}
         //TODO: store location of User
-        if (req.query.latitude && req.query.longitude) {
+        if (req.query.latitude != null && req.query.longitude != null) {
 
             //@ts-ignore
             centerPoint.lat = req.query.latitude
             //@ts-ignore
             centerPoint.lng = req.query.longitude
+            getDistance=true
         }
         const sr: string = await SalonRedis.get(salonId, filter)
         if (sr !== null) return res.send(JSON.parse(sr))
-        const salonReq = this.service.getSalonInfo(salonId, centerPoint)
+        const salonReq = this.service.getSalonInfo(salonId, centerPoint,getDistance)
         const reviewsReq = this.service.getSalonReviews(salonId, q)
         const promoCodeReq = this.promoCodeService.getPromoBySalon(salonId)
 

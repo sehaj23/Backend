@@ -359,13 +359,14 @@ export default class SalonService extends BaseService {
 
         }
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
-        getSalonInfo = async (salonId: string, centerPoint: any) => {
+        getSalonInfo = async (salonId: string, centerPoint: any,getDistance:boolean) => {
                 distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                 const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
-                if (salon.coordinates != null) {
+                if (salon.coordinates != null && getDistance==true) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
                                 const userLocation = `${centerPoint.lat}` + `,` + `${centerPoint.lng}`
                                 const salonCoordinates = `${salon.coordinates["coordinates"][0].toString() + `,` + salon.coordinates["coordinates"][1].toString()}`
+                                console.log("******")
                                 console.log(userLocation)
                                 console.log(salonCoordinates)
                                 const newSalon = await new Promise<any>((resolve, reject) => {
