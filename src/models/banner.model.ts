@@ -11,7 +11,7 @@ const BannerSchema = new mongoose.Schema({
     },
     type:{
         type:String,
-        enum:["DEALS","COUPON CODE","SPECIAL DAY","COVID"],
+        enum:["DEALS","PROMOCODE","COVID"],
         required:true
     },
     photo_id: {
@@ -19,20 +19,21 @@ const BannerSchema = new mongoose.Schema({
         ref: "photos",
         required: true
     },
+    promocode_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"promoCodes"
+    },
     active:{
         type:Boolean,
-        required: true,
-        default:false
+        default:true
     },
-    salon_id: {
-        type: [{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "salons"  
-        }]
+    priority:{
+        type:Number,
+        default:2,
     }
    
 })
 
-const Banner = mongoose.model<BannerSI>("banner", BannerSchema)
+const Banner = mongoose.model<BannerSI>("banners", BannerSchema)
 
 export default Banner
