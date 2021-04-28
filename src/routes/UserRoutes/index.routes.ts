@@ -1,10 +1,12 @@
 import { Router } from "express"
+import bannerRouter from "./banner.router"
 import bookingRouter from './booking.router'
 import cartRouter from "./cart.router"
 import deviceInfoRouter from "./device-info.router"
 import loginRouter from "./login.router"
 import otpAppRouter from "./otp.route"
 import promoCodeRouter from "./promo-code.router"
+import promoHomeRouter from "./promo-home.router"
 import refundRouter from "./refund.route"
 import reportAppRouter from "./report-app.route"
 import salonSearchRouter from "./salon-search.router"
@@ -37,4 +39,6 @@ Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
 Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
+Userrouter.use("/promo-home",promoHomeRouter)
+Userrouter.use("/banner",bannerRouter)
 export default Userrouter

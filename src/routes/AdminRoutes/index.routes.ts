@@ -1,5 +1,6 @@
 import { Router } from "express";
 import adminRouter from "./admin.router";
+import bannerRouter from "./banner.router";
 import bookingRouter from "./booking.router";
 import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
@@ -7,6 +8,7 @@ import loginRouter from "./login.router";
 import makeupArtistRouter from "./makeupArtist.route";
 import offerRouter from "./offer.router";
 import promoCodeRouter from "./promo-code.router";
+import promoHomeRouter from "./promo-home.router";
 import referralRouter from "./referral.router";
 import reportAppRouter from "./report-app.router";
 import revenueRouter from "./revenue.router";
@@ -42,6 +44,8 @@ router.use("/promo-code", promoCodeRouter)
 router.use("/report-app", reportAppRouter)
 router.use("/report-salon",reportsSalonRouter)
 router.use("/referrals",referralRouter)
+router.use("/banner",bannerRouter)
+router.use("/promo-home",promoHomeRouter)
 router.use("/zattire-services", zattireServiceRouter)
 
 export default router
