@@ -142,7 +142,11 @@ app.use(
 );
 
 app.use(express.json());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
 
+  next();
+});
 app.use(`${URL_PREFIX}/api`, router);
 app.use(`${URL_PREFIX}/api/v`, Vendorrouter)
 app.use(`${URL_PREFIX}/api/u`, Userrouter)
