@@ -790,8 +790,8 @@ export default class SalonController extends BaseController {
 
             const salon = await this.service.getSalonByIds(promo.salon_ids, q, getDistance)
 
-            SalonRedis.set(redisKey, salon, filter)
-            res.status(200).send(salon)
+            SalonRedis.set(redisKey, {salon,promo}, filter)
+            res.status(200).send({salon,promo})
         } else {
 
             out = JSON.parse(promoGetSalon)
