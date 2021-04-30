@@ -382,6 +382,7 @@ export default class BookingService extends BaseService {
 
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
+        //TODO:remove page length for cron 
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
@@ -437,7 +438,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
         console.log("page_length", pageLength)
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id",fcm_token:1, populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
