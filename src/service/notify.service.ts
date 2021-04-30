@@ -31,8 +31,8 @@ export default class Notify {
 
   static bookingConfirm = async (user: UserSI, salon: SalonSI, employee: EmployeeSI, booking: BookingSI) => {
     console.log(booking._id.toString())
+    const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
     try {
-      const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
       const getDetails = Notify.getTotalPromo(booking)
       SendEmail.bookingConfirm(user.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime, employee.name, booking.location, booking.payments, getDetails.total.toString(), getDetails.promo_code, booking.services, user.name)
     } catch (e) {
@@ -41,7 +41,7 @@ export default class Notify {
     // TODO: Add notification data and the route
     try {
       console.log((booking._id).toString())
-    sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
     
     } catch (error) {
       console.log(error)
@@ -50,7 +50,7 @@ export default class Notify {
 
     //TODO: change the text of the uszer text 
     try {
-      const userText = `Your booking for ${booking.services[0].service_time} has been accepted by ${salon.name}, CHEERS`
+      const userText = `Your booking for ${bookingTime} has been accepted by ${salon.name}, CHEERS`
       OtpService.sendMessage(user.phone, userText,SMSCONFIG.BOOKING_ACCEPTED)
     } catch (error) {
 
