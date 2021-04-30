@@ -10,6 +10,7 @@ import * as multer from "multer";
 import * as multerS3 from "multer-s3";
 import BookingController from "./controller/booking.controller";
 import './cron-jobs/index.cron-job';
+import job2 from "./cron-jobs/index.cron-job";
 import { RefundTypeEnum } from "./interfaces/refund.interface";
 import Booking from "./models/booking.model";
 import Cart from "./models/cart.model";
@@ -36,7 +37,6 @@ var bodyParser = require('body-parser')
 const swaggerUi = require('swagger-ui-express');
 import swaggerJsdoc = require('swagger-jsdoc');
 
-import job2 from "./cron-jobs/index.cron-job";
 const basicAuth = require('express-basic-auth')
 
 dotenv.config();
@@ -98,7 +98,7 @@ https.globalAgent.maxSockets = Infinity;
 app.use(compression())
 app.use(bodyParser({ limit: '50mb' }));
 app.use(cors({
-  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com","'http://localhost:37909'"],
+  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688"],
   credentials: true
 }));
 
@@ -144,7 +144,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
 
   next();
