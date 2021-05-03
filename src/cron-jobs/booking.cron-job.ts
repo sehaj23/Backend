@@ -1,12 +1,17 @@
 import moment = require("moment");
 import Booking from "../models/booking.model";
 import Cart from "../models/cart.model";
+import EmployeeAbsenteeism from "../models/employeeAbsenteeism.model";
+import Feedback from "../models/feedback.model";
 import MongoCounter from "../models/mongo-counter.model";
 import Referral from "../models/referral.model";
+import ReportVendor from "../models/reportVendor.model";
 import Salon from "../models/salon.model";
+import Vendor from "../models/vendor.model";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
 import MongoCounterService from "../service/mongo-counter.service";
+import VendorService from "../service/vendor.service";
 import sendNotificationToDevice from "../utils/send-notification";
 var CronJob = require('cron').CronJob;
 
@@ -94,6 +99,7 @@ var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
 const cartService = new CartService(Cart, Salon)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const bookingService = new BookingService(Booking, Salon, cartService,mongoCounterService , Referral)
+const vendorService = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
 const todayDateMoment = moment(Date.now())
 const todayDate = todayDateMoment.date()
 console.log(todayDate)
@@ -105,7 +111,7 @@ const q = {
 const booking = await bookingService.getbookings(q) 
 let tokens = []
 var format = 'hh:mm:ss'
-booking.bookingDetails.forEach(element => {
+booking.bookingDetails.forEach(async element => {
  const service_time =  moment(element.services[0].service_time,format)
 const after_time =   moment(service_time).add(15,'minute')
 console.log("serviceTime",service_time)
@@ -115,8 +121,9 @@ console.log("before time",after_time)
  console.log("time",time)
  console.log(booking.bookingDetails.length)
  if(time.isBetween(service_time,after_time)){
-     console.log(element.services[0].employee_id.fcm_token)
-  tokens =  tokens.concat(element.services[0].employee_id.fcm_token)
+     const vendor = await vendorService.getId(element.vendor_id)
+     console.log(vendor)
+     tokens.concat(vendor)
 
  }
 });
