@@ -8,7 +8,7 @@ import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
 import MongoCounterService from "../service/mongo-counter.service";
 import sendNotificationToDevice from "../utils/send-notification";
-import { morningNotificationJob,minsNotificationCron } from "./booking.cron-job";
+import { morningNotificationJob,thirtyMinsNotificationCron ,tenMinsNotificationCron} from "./booking.cron-job";
 
 var CronJob = require('cron').CronJob;
 // after one hour check if there is anything in the users cart
@@ -29,7 +29,8 @@ var CronJob = require('cron').CronJob;
 const runAllCrons =()=>{
     console.log("starting All crons")
     morningNotificationJob.start()
-    minsNotificationCron.start()
+    thirtyMinsNotificationCron.start()
+    tenMinsNotificationCron.start()
 
     
 }
