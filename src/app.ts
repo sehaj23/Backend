@@ -35,8 +35,8 @@ import logger from "./utils/logger";
 var bodyParser = require('body-parser')
 const swaggerUi = require('swagger-ui-express');
 import swaggerJsdoc = require('swagger-jsdoc');
+import runAllCrons from "./cron-jobs/index.cron-job";
 
-import job2 from "./cron-jobs/index.cron-job";
 const basicAuth = require('express-basic-auth')
 
 dotenv.config();
@@ -154,8 +154,8 @@ app.use(`${URL_PREFIX}/api/v`, Vendorrouter)
 app.use(`${URL_PREFIX}/api/u`, Userrouter)
 app.use(`${URL_PREFIX}/api/vendorapp`, VendorApprouter)
 app.use(`${URL_PREFIX}`, MicroserviceAuth)
-console.log("running cron jobs")
-job2.start()
+console.log("running all crons")
+runAllCrons()
 
 // TEMP: to clear redis
 app.get(`${URL_PREFIX}/r/clr`, async (req: express.Request, res: express.Response) => {
