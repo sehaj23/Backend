@@ -125,6 +125,10 @@ const SalonSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+   temporary_closed: {
+        type: Boolean,
+        default: false
+    },
     photo_ids: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -136,6 +140,7 @@ const SalonSchema = new mongoose.Schema({
         ref: "photos",
         default: mongoose.Types.ObjectId("5fe059984ed7e11cdd326c00")
     },
+   
     vendor_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "vendors",
