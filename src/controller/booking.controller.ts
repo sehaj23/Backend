@@ -400,12 +400,18 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
+        //get emp by services
         const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
+        //get all services in array 
         const employee_ids = employee.map(e => { return e._id })
+        // check employee is absent 
+        console.log("emplopyee_ids",employee_ids)
         const employeeAbsent = await this.employeeAbsentismService.checkIfEmployeeAbsent(employee_ids, req.query.dateTime.toString())
-        const getEmp = await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
+        console.log("employee absent ", employeeAbsent)
+        // get employee by ids
+        const getEmp =  await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
+        //check booking of employee at that time slot
         const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), getEmp)
-
 
         if (salon === null) {
             const errMsg = `salon not found`;

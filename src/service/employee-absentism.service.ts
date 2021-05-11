@@ -37,8 +37,9 @@ export default class EmployeeAbsenteesmService extends BaseService{
                     console.log("employee is absent for whole day")
                     break
                 }
-            }else{
-            empIdPresent.push(employee_ids)
+            }
+        else{
+            empIdPresent.push(emp_id)
             }
         }
         return  empIdPresent
