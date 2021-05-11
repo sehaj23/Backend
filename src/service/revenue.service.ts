@@ -131,6 +131,9 @@ export default class RevenueService extends BaseService {
                     'services.service_time': {
                         '$gte': startDate
                     },
+                    'payments.mode': {
+                        "$exists": true
+                    },
                     ...salonIdCondition
                 }
             },
@@ -140,8 +143,8 @@ export default class RevenueService extends BaseService {
                     'bills_receivable': {
                         '$cond': [
                             {
-                                '$eq': [
-                                    '$payment_type', 'COD'
+                                '$in': [
+                                    'COD', '$payments.mode'
                                 ]
                             }, {
                                 '$sum': {
@@ -161,8 +164,8 @@ export default class RevenueService extends BaseService {
                     'bills_payable': {
                         '$cond': [
                             {
-                                '$eq': [
-                                    '$payment_type', 'Online'
+                                '$in': [
+                                    'RAZORPAY', '$payments.mode'
                                 ]
                             }, {
                                 '$sum': {
@@ -182,8 +185,8 @@ export default class RevenueService extends BaseService {
                     'cod': {
                         '$cond': [
                             {
-                                '$eq': [
-                                    '$payment_type', 'COD'
+                                '$in': [
+                                    'COD', '$payments.mode'
                                 ]
                             }, 1, 0
                         ]
@@ -191,8 +194,8 @@ export default class RevenueService extends BaseService {
                     'online': {
                         '$cond': [
                             {
-                                '$eq': [
-                                    '$payment_type', 'Online'
+                                '$in': [
+                                    'RAZORPAY', '$payments.mode'
                                 ]
                             }, 1, 0
                         ]
