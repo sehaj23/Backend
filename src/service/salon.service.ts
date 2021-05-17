@@ -448,7 +448,7 @@ export default class SalonService extends BaseService {
                                                                 //   salon.map((e)=>{
                                                                 //           e.distance=data
                                                                 //   })
-                                                               return  resolve({ salon,  totalPages  })
+                                                               return  resolve( salon)
                                                         });
                                         })
                                         return newSalon
