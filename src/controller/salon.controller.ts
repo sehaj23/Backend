@@ -452,7 +452,8 @@ export default class SalonController extends BaseController {
             pageLength,
             skipCount,
             longitude,
-            latitude
+            latitude,
+            getDistance
 
         }
         const redisKey = "getSalon"

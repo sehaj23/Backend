@@ -422,6 +422,7 @@ export default class SalonService extends BaseService {
                         }
                         const totalPages = Math.ceil(totalPageNumber / pageLength)
                         if (getDistance) {
+                                console.log(salon)
                                 try {
                                         const salonCoordinates: string[] = salon.map((e) => {
                                                 return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
