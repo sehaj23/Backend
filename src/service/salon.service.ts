@@ -429,7 +429,7 @@ export default class SalonService extends BaseService {
         
                                         })
                                         const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                        console.log(salonCoordinates)
+
                                         //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                         const newSalon = await new Promise<any>((resolve, reject) => {
         
@@ -652,6 +652,7 @@ export default class SalonService extends BaseService {
                                 }
                         },
                         { $lookup: { from: 'photos', localField: 'profile_pic', foreignField: '_id', as: 'profile_pic' } },
+                        {$unwind:"$profile_pic"},
                         {
                                 $project: {
                                         "_id": 1,
