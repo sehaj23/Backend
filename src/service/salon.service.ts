@@ -377,7 +377,7 @@ export default class SalonService extends BaseService {
                                                         destination: salonCoordinates
                                                 }, function (err, data) {
                                                         if (err) {
-                                                                reject(err);
+                                                                reject(salon);
                                                                 return
                                                         }
                                                         console.log(data)
