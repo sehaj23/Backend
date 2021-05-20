@@ -37,6 +37,7 @@ var bodyParser = require('body-parser')
 const swaggerUi = require('swagger-ui-express');
 import swaggerJsdoc = require('swagger-jsdoc');
 import runAllCrons from "./cron-jobs/index.cron-job";
+import AdminApprouter from "./routes/AdminAppRoutes/index.router";
 
 const basicAuth = require('express-basic-auth')
 
@@ -154,6 +155,7 @@ app.use(`${URL_PREFIX}/api`, router);
 app.use(`${URL_PREFIX}/api/v`, Vendorrouter)
 app.use(`${URL_PREFIX}/api/u`, Userrouter)
 app.use(`${URL_PREFIX}/api/vendorapp`, VendorApprouter)
+app.use(`${URL_PREFIX}/api/adminapp`, AdminApprouter)
 app.use(`${URL_PREFIX}`, MicroserviceAuth)
 console.log("running all crons")
 runAllCrons()
