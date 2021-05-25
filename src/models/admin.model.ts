@@ -10,7 +10,10 @@ const AdminSchema = new mongoose.Schema({
         type: String,
         enum : ["admin", "sub-admin"],
         default: "admin"
-    }
+    },
+    fcm_token: {
+        type: [String]
+    },
 }, {
     timestamps: true
 })
