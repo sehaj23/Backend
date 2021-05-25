@@ -9,6 +9,7 @@ import makeupArtistRouter from "./makeupArtist.route";
 import offerRouter from "./offer.router";
 import promoCodeRouter from "./promo-code.router";
 import promoHomeRouter from "./promo-home.router";
+import promoUserRouter from "./promo-user.routes";
 import referralRouter from "./referral.router";
 import reportAppRouter from "./report-app.router";
 import revenueRouter from "./revenue.router";
@@ -46,6 +47,7 @@ router.use("/report-salon",reportsSalonRouter)
 router.use("/referrals",referralRouter)
 router.use("/banner",bannerRouter)
 router.use("/promo-home",promoHomeRouter)
+router.use("/promo-user",promoUserRouter)
 router.use("/zattire-services", zattireServiceRouter)
 
 export default router
