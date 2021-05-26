@@ -4,6 +4,8 @@ import { UserRedis } from "../redis/index.redis";
 import encryptData from "../utils/password-hash";
 import sendNotificationToDevice from "../utils/send-notification";
 import BaseService from "./base.service";
+import referralCodeGenerator from '../../node_modules/referral-code-generator/src/referralCodeGenerator.js'
+import { name } from "faker";
 
 export default class UserService extends BaseService {
     bookingModel: mongoose.Model<any, any>
@@ -31,7 +33,9 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
+        const redisUser = await UserRedis.remove(id, {type: "info"})
         const user = await this.model.findOneAndUpdate({_id:_id}, d, { new: true })
+        UserRedis.set(id, user, {type: "info"})
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {
@@ -130,10 +134,10 @@ export default class UserService extends BaseService {
         if(redisUser === null){
             const user = await this.model.findOne({ _id: id }).select("favourites").populate({
                 path: "favourites", select: {
-                    name: "name", rating: "rating", location: "location", profile_pic: "profile_pic"
-                }, populate: {
-                    path: 'profile_pic'
-                }
+                    name: 1, rating: 1, location: 1
+                , profile_pic: {
+                    path: `profile_pic`,
+                }}
             })
             UserRedis.set(id, JSON.stringify(user), {type: "favourites"})
             return user
@@ -147,7 +151,7 @@ export default class UserService extends BaseService {
         return user
     }
     sendNotification = async (fcm_token: string, message: any) => {
-        var messagee = {
+        var messageee = {
             notification: {
                 title: '$FooCorp up 1.43% on the day',
                 body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.'
@@ -201,6 +205,11 @@ export default class UserService extends BaseService {
         return await this.model.findOneAndUpdate({ _id: id, email: email }, { password: passwordHash }, { new: true })
 
     }
+
+    createRefferal = async (name:string,id:string)=>{
+    const refferal =  name.toUpperCase().substr(0,4) + id.substr(0,4) 
+    return refferal
+}
 
 
 

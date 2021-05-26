@@ -12,24 +12,28 @@ import controllerErrorHandler from "../middleware/controller-error-handler.middl
 import { SalonRedis } from "../redis/index.redis";
 import SalonService from "../service/salon.service";
 import UserSearchService from "../service/user-search.service";
+import UserService from "../service/user.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import { ServicesI } from "../interfaces/zattire-service.interface";
-import UserService from "../service/user.service";
+import PromoCodeService from "../service/promo-code.service";
+import { PromoCodeSI } from "../interfaces/promo-code.interface";
+import mongoose from "../database";
 
 
 export default class SalonController extends BaseController {
 
     service: SalonService
     userSearchService: UserSearchService
-    userService:UserService
-    constructor(service: SalonService, userSearchService: UserSearchService, userService:UserService) {
+    userService: UserService
+    promoCodeService: PromoCodeService
+    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService, promoCodeService: PromoCodeService) {
         super(service)
         this.service = service
         this.userSearchService = userSearchService
-        this.userService=userService
+        this.userService = userService
+        this.promoCodeService = promoCodeService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -159,7 +163,7 @@ export default class SalonController extends BaseController {
         }
         const salonn = await this.service.getService(id, filter) as SalonSI
         if (salonn === null) {
-            throw new ErrorResponse("Salon not found.")
+            throw new ErrorResponse({ message: "Salon not found." })
         }
         const salon = salonn.toObject() as SalonI
 
@@ -357,11 +361,12 @@ export default class SalonController extends BaseController {
         const salonId = req.params.id;
         const filter = {}
         const q = req.query
-         //@ts-ignore
-         const id = req.userId
-         
+        let getDistance=false
+        //@ts-ignore
+        const id = req.userId
 
-               //TODO: validator
+
+        //TODO: validator
         if (!salonId) {
             const errMsg = `id is missing from the params`
             logger.error(errMsg)
@@ -376,30 +381,33 @@ export default class SalonController extends BaseController {
         if (req.query.home) {
             if (req.query.home === "true") {
                 atHome = true
-               
+
             }
-            filter["home"]=req.query.home
+            filter["home"] = req.query.home
         }
-        filter["page_number"]=req.query.page_number
-        filter["page_length"]=req.query.page_length
+        filter["page_number"] = req.query.page_number
+        filter["page_length"] = req.query.page_length
+      
         var centerPoint = {}
         //TODO: store location of User
-        if (req.query.latitude && req.query.longitude) {
+        if (req.query.latitude != null && req.query.longitude != null) {
 
             //@ts-ignore
             centerPoint.lat = req.query.latitude
             //@ts-ignore
             centerPoint.lng = req.query.longitude
+            getDistance=true
         }
-        const sr: string = await SalonRedis.get(salonId,filter)
+        filter["distance"] = getDistance
+        const sr: string = await SalonRedis.get(salonId, filter)
         if (sr !== null) return res.send(JSON.parse(sr))
-        const salonReq =  this.service.getSalonInfo(salonId, centerPoint)
-        const reviewsReq =  this.service.getSalonReviews(salonId, q)
-       
-        
-       const  userReq = this.userService.getFavourites(id)
-        
-        const [salon,reviews,user] = await Promise.all([salonReq,reviewsReq,userReq])
+        const salonReq = this.service.getSalonInfo(salonId, centerPoint,getDistance)
+        const reviewsReq = this.service.getSalonReviews(salonId, q)
+        const promoCodeReq = this.promoCodeService.getPromoBySalon(salonId)
+
+        const userReq = this.userService.getFavourites(id)
+
+        const [salon, reviews, user, promocodes] = await Promise.all([salonReq, reviewsReq, userReq, promoCodeReq])
         const services = salon.services
         const filterService = services.filter((service: ServiceI) => {
             const { options } = service
@@ -423,22 +431,44 @@ export default class SalonController extends BaseController {
             return false
         })
         salon.services = filterService
-        SalonRedis.set(salonId, {salon,reviews,user},filter)
-        res.status(200).send({salon,reviews,user})
+        SalonRedis.set(salonId, { salon, reviews, user, promocodes }, filter)
+        res.status(200).send({ salon, reviews, user, promocodes })
     })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
-
+        let getDistance = false
         //  const sr = await SalonRedis.get('Salons')
-        const q = req.query
-        //   if (sr !== null) { salons = JSON.parse(sr)
-        //    }
-        //   else {
-        salons = await this.service.getSalon(q)
-        //      SalonRedis.set('Salons', salons)
-        // }
-        res.status(200).send(salons)
+        const q:any = req.query
+        if (q.latitude && q.longitude) {
+            getDistance = true
+        }
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 8)
+        const latitude = q.latitude
+        const longitude = q.longitude
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const filter = {
+            pageNumber,
+            pageLength,
+            skipCount,
+            longitude,
+            latitude,
+            getDistance
+
+        }
+        const redisKey = "getSalon"
+        let out
+        const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+        if (cahceGetSalon == null) {
+            out = await this.service.getSalon(q, getDistance)
+            SalonRedis.set(redisKey, out, filter)
+        } else {
+            out = JSON.parse(cahceGetSalon)
+
+        }
+        res.status(200).send(out)
 
     })
     getHomeServiceSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -648,6 +678,7 @@ export default class SalonController extends BaseController {
     })
 
 
+
     getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string
         let home: boolean
@@ -672,11 +703,11 @@ export default class SalonController extends BaseController {
         const q = req.query
         //@ts-ignore
         const _id = req.userId
-        const reviewsReq =  this.service.getSalonReviews(id, q)
-        const ratingReq =  this.service.getReviewsRating(id)
-        const userReq =  this.userService.getId(_id)
-        const [rating,reviews,user]= await Promise.all([ratingReq,reviewsReq,userReq])
-        res.send({rating,user,reviews,})
+        const reviewsReq = this.service.getSalonReviews(id, q)
+        const ratingReq = this.service.getReviewsRating(id)
+        const userReq = this.userService.getId(_id)
+        const [rating, reviews, user] = await Promise.all([ratingReq, reviewsReq, userReq])
+        res.send({ rating, user, reviews, })
 
     })
     salonSlots = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -718,11 +749,68 @@ export default class SalonController extends BaseController {
     })
 
     getUnapprovedSalon = controllerErrorHandler(async (req: Request, res: Response) => {
-        const salon = await this.service.getWithPagination({approved:false})
+        const q = req.query
+        const salon = await this.service.getUnapprovedWithPagination(q)
         res.status(200).send(salon)
     })
 
-    
+    getSalonPhoto = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const salon = await this.service.getSalonPhoto(id)
+        res.status(200).send(salon)
+    })
+
+
+    getSalonByPromo = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.params.id
+        const q: any = req.query
+        let getDistance = false
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 8)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        if (q.latitude && q.longitude) {
+            getDistance = true
+        }
+        const latitude = q.latitude
+        const longitude = q.longitude
+        const filter = {
+            latitude,
+            longitude,
+            pageLength,
+            pageNumber,
+            id,
+            getDistance
+        }
+
+        const redisKey = `getSalonByPromoCodes`
+        const promoGetSalon = await SalonRedis.get(redisKey, filter)
+        let out
+        let salonReq
+
+        if (promoGetSalon == null) {
+            const promo = await this.promoCodeService.getPromoById(id) as PromoCodeSI
+
+            const salon = await this.service.getSalonByIds(promo.salon_ids, q, getDistance)
+
+            SalonRedis.set(redisKey, {salon,promo}, filter)
+            res.status(200).send({salon,promo})
+        } else {
+
+            out = JSON.parse(promoGetSalon)
+            res.status(200).send(out)
+        }
+
+    })
+
+    getDistanceInPairs = controllerErrorHandler(async (req: Request, res: Response) => {
+        const getDistance = await this.service.getDistanceInPairs()
+        res.send(getDistance)
+    })
+
+
+
+
 
 
 

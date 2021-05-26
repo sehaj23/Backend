@@ -19,9 +19,11 @@ export interface SalonI{
     services?: ServiceI[] | ServiceSI[]
     employees?: EmployeeI[] | EmployeeSI[]
     speciality?: string[]
+    profile_pic?:number,
     location?: string
     insta_link?: string
     fb_link?: string
+    rating?:number,
     start_working_hours?: Date[]
     end_working_hours?: Date[]
     photo_ids?: number[]

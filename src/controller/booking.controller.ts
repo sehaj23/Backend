@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
-import { BookingServiceI, BookingSI } from "../interfaces/booking.interface";
+import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
 import { PromoUserSI } from "../interfaces/promo-user.inderface";
+import { ReferralSI } from "../interfaces/referral.interface";
+import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
@@ -15,8 +18,11 @@ import EmployeeAbsenteesmService from "../service/employee-absentism.service";
 import EmployeeService from "../service/employee.service";
 import FeedbackService from "../service/feedback.service";
 import Notify from "../service/notify.service";
+import PromoCodeService from "../service/promo-code.service";
 import PromoUserService from "../service/promo-user.service";
 import RazorPayService from "../service/razorpay.service";
+import ReferralService from "../service/referral.service";
+import RefundService from "../service/refund.service";
 import SalonService from "../service/salon.service";
 import UserService from "../service/user.service";
 import VendorService from "../service/vendor.service";
@@ -40,7 +46,10 @@ export default class BookingController extends BaseController {
     employeeService: EmployeeService
     vendorService: VendorService
     promoUserService: PromoUserService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService) {
+    promoCodeService: PromoCodeService
+    referralService: ReferralService
+    refundService: RefundService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -51,7 +60,11 @@ export default class BookingController extends BaseController {
         this.employeeService = employeeService
         this.vendorService = vendorService
         this.promoUserService = promoUserService
+        this.referralService = referralService
+        this.refundService = refundService
+        this.promoCodeService = promoCodeService
     }
+
 
 
     getAppointment = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -60,24 +73,100 @@ export default class BookingController extends BaseController {
         res.send(bookings)
     })
 
+    getOnlineCancelledBookings = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+        const booking = await this.service.getOne({
+            user_id: mongoose.Types.ObjectId(userId),
+            status: {
+                "$in": ["Customer Cancelled", "Vendor Cancelled", "Vendor Cancelled After Confirmed", 'Low Funds Canceled'],
+            },
+            "payments.mode": {
+                "$in": [BookingPaymentMode.RAZORPAY]
+            }
+        }) as BookingSI
+        const bookingJson = booking.toJSON()
+        let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
+        let refundOptions = [
+            {
+                name: "Zattire Wallet",
+                refund_type: RefundTypeEnum.Zattire_Wallet,
+                time: "1-10 seconds",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice,
+            },
+            {
+                name: "Instant - RazorPay",
+                refund_type: RefundTypeEnum.Instant_RazorPay,
+                time: "1-24 business hours",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice - RefundService.ZATTIRE_REFUND_COMMISION
+            },
+            {
+                name: "Normal - RazorPay",
+                refund_type: RefundTypeEnum.Normal_RazorPay,
+                time: "5-10 business days",
+                booking_amount: bookingTotalPrice,
+                amount_refunded: bookingTotalPrice
+            }
+        ]
+        const paymentModes = booking.payments.map((m: BookingPaymentI) => m.mode)
+        if (paymentModes.length === 1 && paymentModes[0] === BookingPaymentMode.RAZORPAY) {
+            refundOptions = [refundOptions[0]]
+        }
+        bookingJson['refundOptions'] = refundOptions
+        res.send(bookingJson)
+    })
+
+    checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.userId
+        const codBookingReq = this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
+        const onlineBookingReq = this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
+        const [codBooking, onlineBooking] = await Promise.all([codBookingReq, onlineBookingReq])
+        if (codBooking.length > onlineBooking.length) {
+            res.status(400).send({ message: "COD not allowed", success: false })
+        } else {
+            res.status(200).send({ message: "COD allowed", success: true })
+        }
+    })
+
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
         const { id } = req.params
         const booking = await this.service.getId(id) as BookingSI
-        if (booking === null) throw new ErrorResponse("No booking found with this id")
-        if (booking.razorpay_order_id && booking.razorpay_order_id !== null) {
-            res.send({ order_id: booking.razorpay_order_id })
-            return
-        }
+        if (booking === null)
+            // {throw new ErrorResponse("No booking found with this id")}
+            if (booking.razorpay_order_id && booking.razorpay_order_id !== null) {
+                res.send({ order_id: booking.razorpay_order_id })
+                return
+            }
         const rp = new RazorPayService()
-        const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
-        const totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
-        logger.info(`totalAmount ${totalAmountWithTax}`)
+        let totalAmountWithTax = BookingController.getRazorPayPayableAmount(booking)
         const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
         const order_id = order['id']
         logger.info(`order_id ${order_id}`)
         console.log(order)
+        booking.razorpay_order_id = order_id
+        await booking.save()
         res.send({ order_id })
     })
+
+    /**
+     * @description get total amount to be paid with tax in a booking at Razorpay
+     */
+    static getRazorPayPayableAmount = (booking: BookingSI): number => {
+        const totalAmount = booking?.services?.map((s: BookingServiceI) => s.service_total_price).reduce((preValue: number, currentValue: number) => preValue + currentValue)
+        let totalAmountWithTax = Math.round((totalAmount + (totalAmount * 0.18)) * 100) / 100
+        logger.info(`totalAmount ${totalAmountWithTax}`)
+        if (booking.payments.length > 1) {
+            for (let payment of booking.payments) {
+                if (payment.mode === BookingPaymentMode.WALLET) {
+                    totalAmountWithTax -= payment.amount
+                }
+            }
+        }
+        return parseFloat(totalAmountWithTax.toFixed(2))
+    }
 
     /**
      * @description book the the appointment with the salon
@@ -104,7 +193,7 @@ export default class BookingController extends BaseController {
 
         if (promo_code !== null) {
 
-            promoCode = await this.promoUserService.getOne({ promo_code }) as PromoCodeSI
+            promoCode = await this.promoCodeService.getOne({ promo_code: promo_code }) as PromoCodeSI
 
             if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
             const currentDateTime = moment(Date.now())
@@ -225,8 +314,9 @@ export default class BookingController extends BaseController {
 
                 if (!employeeIds || employeeIds?.length === 0) {
 
-                    if (salon === null) throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
-
+                    if (salon === null) {
+                        // throw new ErrorResponse(`No salon found with salon id ${salon_id}`)
+                    }
                     employeeIds = (salon?.employees as EmployeeSI[] ?? []).map((e: EmployeeSI) => e._id.toString())
                 }
                 for (let i = 0; i < employeeIds.length; i++) {
@@ -267,29 +357,30 @@ export default class BookingController extends BaseController {
                 }
             }
             if (!o.employee_id || o.employee_id === null) {
-                throw new ErrorResponse(`No employee found at this time for the service`)
+                //      throw new ErrorResponse(`No employee found at this time for the service`)
             }
         }
         console.log("optionsss")
         console.log(options)
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status,salon.commision_percentage??20)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
         const userReq = this.userService.getId(userId) as UserI
-        const [employee,user] = await Promise.all([employeeReq,userReq])
+        const [employee, user] = await Promise.all([employeeReq, userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        // if promocode applied then add to database that user used the promocode
+      //  if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
         try {
-            const notify = Notify.bookingRequest(vendor,employee,salon,booking,user)
+            const notify = Notify.bookingRequest(vendor, employee, salon, booking, user)
             console.log(notify)
         } catch (error) {
             console.log(error)
         }
-       
+
+
         res.send(booking);
     })
 
@@ -309,9 +400,18 @@ export default class BookingController extends BaseController {
             res.send({ message: errMsg });
             return
         }
+        //get emp by services
         const employee = await this.employeeService.getEmpbyService(services) as EmployeeSI[]
-        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), employee)
-
+        //get all services in array 
+        const employee_ids = employee.map(e => { return e._id })
+        // check employee is absent 
+        console.log("emplopyee_ids",employee_ids)
+        const employeeAbsent = await this.employeeAbsentismService.checkIfEmployeeAbsent(employee_ids, req.query.dateTime.toString())
+        console.log("employee absent ", employeeAbsent)
+        // get employee by ids
+        const getEmp =  await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
+        //check booking of employee at that time slot
+        const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), getEmp)
 
         if (salon === null) {
             const errMsg = `salon not found`;
@@ -321,6 +421,38 @@ export default class BookingController extends BaseController {
         }
         res.send(salon);
 
+    })
+
+    // this to verify the razorpay payment
+
+
+
+
+
+
+
+
+    verifyRazorPayPayment = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const userId = req.userId
+        const { bookingId } = req.params
+        const { order_id, payment_id, signature } = req.body
+        const booking = await this.service.getOne({ _id: mongoose.Types.ObjectId(bookingId), user_id: userId, razorpay_order_id: order_id }) as BookingSI
+        if (booking === null) throw new ErrorResponse({ message: "Booking not found with the given data" })
+        const razorpayPaymentData: RazorpayPaymentData = {
+            order_id,
+            payment_id,
+            signature,
+            verified: false
+        }
+        const rs = new RazorPayService()
+        const bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
+        const capture = await rs.capture(payment_id, bookingTotalPrice)
+        console.log("CAPTURE Razor Pay")
+        console.log(capture)
+        booking.razorpay_payment_data = razorpayPaymentData
+        await booking.save()
+        res.send({ message: booking.razorpay_payment_data, success: true })
     })
 
     getEmployeebyService = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -458,9 +590,10 @@ export default class BookingController extends BaseController {
     })
     updateStatusBookings = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingid = req.params.id
-        const status = req.body.status
+        const status: BookinStatus = req.body.status
+        let authorName
+        let id
         logger.info(status)
-
         if (!bookingid) {
             const errMsg = 'Booking Id not found'
             logger.error(errMsg)
@@ -474,31 +607,44 @@ export default class BookingController extends BaseController {
             res.status(400)
             res.send({ message: errMsg })
             return
+        }
+        //@ts-ignore
+        if (!req.userId) {
+            authorName = "User"
+            //@ts-ignore
+            id = req.userId
 
         }
-        const booking = await this.service.updateStatusBookings(bookingid, status)
-        const userData = await this.userService.getId(booking.user_id.toString())
-        const salonData = this.salonService.getId(booking.salon_id.toString())
-        const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
-        const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
+        //@ts-ignore
+        if (!req.vendorId) {
+            authorName = "Vendor"
+            //@ts-ignore
+            id = req.vendorId
 
-        console.log(employee.fcm_token)
-        console.log(salon.email)
-        console.log(user)
-
-
+        }
+        //@ts-ignore
+        if (!req.adminId) {
+            authorName = "Admin"
+            //@ts-ignore
+            id = req.adminId
+        }
+        const booking = await this.service.updateStatusBookings(bookingid, status, authorName, id)
         if (!booking) {
             const errMsg = 'No Bookings Found'
             logger.error(errMsg)
             res.status(400)
             res.send({ message: errMsg })
             return
-
         }
+        const userData = this.userService.getId(booking.user_id.toString())
+        const salonData = this.salonService.getId(booking.salon_id.toString())
+        const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
+        const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
+        let refundToWallet = false
+
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         if (status === "Confirmed") {
-            console.log("booking confirmed sending notification to user")
-            console.log("user fcm", user.fcm_token)
+
             const notify = Notify.bookingConfirm(user, salon, employee, booking)
             console.log(notify)
         }
@@ -508,12 +654,67 @@ export default class BookingController extends BaseController {
         if (status === "Done") {
             const notify = Notify.serviceEnd(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
         }
-        if (status ==='Vendor Cancelled'){
-            const notify =  Notify.vendorCancelled(user, salon, employee, booking)
+        if (status === 'Vendor Cancelled') {
+            const notify = Notify.vendorCancelled(user, salon, employee, booking)
         }
-        
-        res.send({ message: "Booking status changed", success: "true" })
 
+        if (status === "Completed") {
+            const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
+            const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
+
+            if (completedBooking.length === 1) {
+                console.log(booking.user_id.toString())
+                const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+                console.log(referal)
+                if (!referal) {
+                    console.log("no referral")
+                } else {
+                    const sqsWalletTransactionDataRefferedTo: SQSWalletTransactionI = {
+                        transaction_type: "Referral Bonus",
+                        user_id: referal.referred_to.toString()
+                    }
+                    const sqsWalletTransactionDataRefferedBy: SQSWalletTransactionI = {
+                        transaction_type: "Referral Bonus",
+                        user_id: referal.referred_by.toString() // add money to  person account who shared
+                    }
+                    sqsWalletTransaction(sqsWalletTransactionDataRefferedTo)
+                    sqsWalletTransaction(sqsWalletTransactionDataRefferedBy)
+                    const referred_by_req = this.userService.getId(referal.referred_by.toString())
+                    const referred_to_req = this.userService.getId(referal.referred_to.toString())
+                    const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+                    const notify = Notify.referralComplete(referred_by, referred_to)
+                }
+            }
+        }
+        const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
+        if (cancelledStatuses.includes(status)) {
+            refundToWallet = true
+        }
+        if (refundToWallet === true) {
+            const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
+            if (walletPaymentIndex > -1) {
+                let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
+                const refund: RefundI = {
+                    type: RefundTypeEnum.Zattire_Wallet,
+                    status: "Initiated",
+                    total_amount: bookingTotalPrice,
+                    amount_refunded: booking.payments[walletPaymentIndex].amount,
+                    zattire_commision: 0,
+                    //@ts-ignore
+                    user_id: booking?.user_id?._id?.toString() ?? booking.user_id.toString(),
+                    //@ts-ignore
+                    salon_id: (booking.salon_id?._id ?? booking.salon_id).toString(),
+                    booking_id: booking._id,
+                }
+                const refundSI = await this.refundService.post(refund)
+                const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    transaction_type: "Refund",
+                    refund_id: refundSI._id.toString()
+                }
+                sqsWalletTransaction(sqsWalletTransactionData)
+            }
+        }
+        res.send({ message: "Booking status changed", success: true })
     })
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -534,11 +735,11 @@ export default class BookingController extends BaseController {
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const employeeReq = this.employeeService.getId(booking.services[0].employee_id)
         const userReq = this.userService.getId(userId)
-        const [salon, employee,user] = await Promise.all([salonReq, employeeReq,userReq])
+        const [salon, employee, user] = await Promise.all([salonReq, employeeReq, userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
-       
 
-        const notify = Notify.rescheduledBooking(vendor,user,booking,employee,salon)
+
+        const notify = Notify.rescheduledBooking(vendor, user, booking, employee, salon)
         console.log(notify)
         res.send({ message: "Booking Confirmed", success: true })
 
@@ -640,7 +841,7 @@ export default class BookingController extends BaseController {
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime,user.name)
+        const notify = Notify.rescheduledPending(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime, user.name)
         console.log(notify)
 
         res.status(200).send(booking)
@@ -747,14 +948,38 @@ export default class BookingController extends BaseController {
         const userId = req.userId
         const bookingId = req.params.bookingId
         const { reason } = req.body
-        const data = await this.service.cancelBooking(userId, bookingId, reason)
+        const booking = await this.service.cancelBooking(userId, bookingId, reason) as BookingSI
+        const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
+        if (cancelledStatuses.includes(booking.status)) {
+            const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
+            if (walletPaymentIndex > -1) {
+                let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
+                const refund: RefundI = {
+                    type: RefundTypeEnum.Zattire_Wallet,
+                    status: "Initiated",
+                    total_amount: bookingTotalPrice,
+                    amount_refunded: booking.payments[walletPaymentIndex].amount,
+                    zattire_commision: 0,
+                    //@ts-ignore
+                    user_id: booking?.user_id?._id?.toString() ?? booking.user_id.toString(),
+                    //@ts-ignore
+                    salon_id: (booking.salon_id?._id ?? booking.salon_id).toString(),
+                    booking_id: booking._id,
+                }
+                const refundSI = await this.refundService.post(refund)
+                const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    transaction_type: "Refund",
+                    refund_id: refundSI._id.toString()
+                }
+                sqsWalletTransaction(sqsWalletTransactionData)
+            }
+        }
+        const userReq = this.userService.getId(userId)
+        const salonReq = this.salonService.getId(booking.salon_id.toString())
+        const [user, salon] = await Promise.all([userReq, salonReq])
 
-        const userReq =  this.userService.getId(userId)
-        const salonReq = this.salonService.getId(data.salon_id.toString())
-        const [user,salon] = await Promise.all([userReq,salonReq])
-
-        const notify = Notify.userCancelled(user,salon,data)
-        res.send(data)
+        const notify = Notify.userCancelled(user, salon, booking)
+        res.send(booking)
     })
 
     getFullBookingById = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -784,9 +1009,14 @@ export default class BookingController extends BaseController {
         res.send(cart)
     })
 
-    sendInvoice = controllerErrorHandler(async (req: Request, res: Response) => {
-        const booking = await this.service.sendInvoice()
-        res.send(booking)
+    getAppointmentByUserID = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.params.id
+        const q = req.query
+        const bookings = await this.service.getBookingByUserId(id, q)
+        res.send(bookings)
     })
+
+
 
 }

@@ -17,7 +17,7 @@ export default class BaseService {
     }
 
     get = async (filters = {}): Promise<any[]> => {
-        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")
+        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo")
     }
 
     getWithPagination = async (q: any): Promise<any> => {
@@ -48,11 +48,14 @@ export default class BaseService {
      * This is to find by multipleIds
      */
     getByIds = async (ids: string[]) => {
+        return this.model.find({_id:{$in:ids}}).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
+    }
+    getByObjectIds = async (ids: string[]) => {
         return this.model.find(ids).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
     }
 
     getId = async (id: string) => {
-        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id")  //.populate({
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo") //.populate({
     }
 
     put = async (_id: string, data: any) => {
@@ -90,5 +93,12 @@ export default class BaseService {
         const promo = await this.model.findOne({ promo_code }).select({ payment_mode: 1, description: 1, promo_code: 1, _id: 1 })
         return promo
     }
+
+    getAndUpdateByField = async (name: any,data: any) => {
+        const promo = await this.model.findOneAndUpdate(name ,data,{new:true})
+        return promo
+    }
+
+
 
 }

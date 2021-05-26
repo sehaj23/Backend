@@ -1,0 +1,6 @@
+[
+    {
+      "name": "main-server",
+      "imageUri": "692026763821.dkr.ecr.ap-south-1.amazonaws.com/main-server:latest"
+    }
+]

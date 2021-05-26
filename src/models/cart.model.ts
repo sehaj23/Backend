@@ -36,6 +36,9 @@ const CartSchema = new mongoose.Schema({
         ref: "salons",
         required: true
     },
+    salon_name:{
+        type:String,
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"

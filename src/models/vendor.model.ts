@@ -56,7 +56,10 @@ const VendorSchema = new mongoose.Schema({
     notification: {
         type: Boolean,
         default:true
-    }
+    },
+    uid:{
+        type:String,
+    },
 }, {
     timestamps: true
 })

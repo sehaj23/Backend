@@ -89,4 +89,23 @@ export default class ReviewsController extends BaseController{
 
     }
 
+    getReviewsBySalon=async (req: Request, res: Response) => {
+    const id = req.params.id
+    const q = req.query
+    const reviews = await this.service.getReviewsbySalon(id,q)
+    res.status(200).send(reviews)
+    }
+    getReviewsByUser=async (req: Request, res: Response) => {
+        const id = req.params.id
+        const q = req.query
+        const reviews = await this.service.getReviewsbyUser(id,q)
+        res.status(200).send(reviews)
+        }
+
+        getById =async (req: Request, res: Response) => {
+            const id = req.params.id
+            const reviews = await this.service.getById(id)
+            res.status(200).send(reviews)
+        }
+
 }

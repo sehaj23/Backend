@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 import * as winston from "winston";
-import * as WinstonCloudWatch from 'winston-cloudwatch';
 dotenv.config()
 
 const logger = winston.createLogger({
@@ -11,15 +10,15 @@ const logger = winston.createLogger({
     ]
 })
 
-logger.add(new WinstonCloudWatch({
-    logGroupName: 'dev-backend',
-    logStreamName:  process?.env?.NODE_ENV ?? 'first',
-    awsRegion: 'ap-south-1'
-}))
+// logger.add(new WinstonCloudWatch({
+//     logGroupName: 'dev-backend',
+//     logStreamName:  process?.env?.NODE_ENV ?? 'first',
+//     awsRegion: 'ap-south-1'
+// }))
 
 logger.stream = {
     //@ts-ignore
-    write: function(message: any, encoding: any){
+    write: function (message: any, encoding: any) {
         logger.info(message);
     }
 }

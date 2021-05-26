@@ -46,5 +46,6 @@ const revenueController = new RevenueController(revenueService)
  *              description: Total Revenue and salon wise revenue
  */
 revenueRouter.get("/", verifyToken, revenueController.adminTotalRevenue)
+revenueRouter.get("/:id",verifyToken,revenueController.adminTotalRevenuebySalonId)
 
 export default revenueRouter

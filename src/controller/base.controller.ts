@@ -87,6 +87,8 @@ export default class BaseController {
             res.status(403).send({ message: e.message })
         }
     }
+
+    
     putProfilePic = async (req: Request, res: Response) => {
         try {
             const photoData: PhotoI = req.body
@@ -111,6 +113,15 @@ export default class BaseController {
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
             res.status(403).send(`${e.message}` )
+        }
+    }
+
+    getUnapproved = async(req: Request, res: Response)=>{
+        const id =  req.params.id
+        try {
+            const newEvent = await this.service.get({_id:id,unapproved:false})
+        } catch (error) {
+            
         }
     }
 

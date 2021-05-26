@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import AdminService from "../service/admin.service";
+import logger from "../utils/logger";
 import BaseController from "./base.controller";
 
 
@@ -22,4 +23,34 @@ export default class AdminController extends BaseController{
         }
         res.send(user)
     })
+
+    updateFCM = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.adminId
+        const fcm = req.body.fcm_token
+        const user = await this.service.updateFCM(id, fcm)
+        if (user == null) {
+            logger.error(`Unable to fetch info. Please Login again`)
+            res.status(400)
+            res.send({ message: `Unable to fetch info. Please Login again` })
+            return
+        }
+        res.send(user)
+    })
+
+    deleteFcm = controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const id = req.adminId
+        const fcm = req.body.fcm_token
+        const user = await this.service.deleteFCM(id, fcm)
+        if (user == null) {
+            logger.error(`Unable to fetch info. Please Login again`)
+            res.status(400)
+            res.send({ message: `Unable to fetch info. Please Login again` })
+            return
+        }
+        res.send(user)
+    })
+
+    
 }

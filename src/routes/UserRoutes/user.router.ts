@@ -48,5 +48,6 @@ userRouter.post("/otp-email-verify",UserverifyToken,userController.emailConfirmA
 userRouter.patch("/update-forgot-password",UserverifyToken,userController.updateForgotPassword)
 userRouter.get("/delete-account",UserverifyToken,userController.deleteRequest)
 userRouter.get("/version",userController.appVersion)
+userRouter.get("/referral",UserverifyToken,userController.refferal)
 
 export default userRouter

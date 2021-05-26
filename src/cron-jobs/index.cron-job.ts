@@ -1,4 +1,14 @@
 import moment = require("moment");
+import Booking from "../models/booking.model";
+import Cart from "../models/cart.model";
+import MongoCounter from "../models/mongo-counter.model";
+import Referral from "../models/referral.model";
+import Salon from "../models/salon.model";
+import BookingService from "../service/booking.service";
+import CartService from "../service/cart.service";
+import MongoCounterService from "../service/mongo-counter.service";
+import sendNotificationToDevice from "../utils/send-notification";
+import { morningNotificationJob,thirtyMinsNotificationCron ,tenMinsNotificationCron} from "./booking.cron-job";
 
 var CronJob = require('cron').CronJob;
 // after one hour check if there is anything in the users cart
@@ -14,3 +24,16 @@ var CronJob = require('cron').CronJob;
 //     console.log(carts)
 // }, null, true);
 // job.start();
+
+
+const runAllCrons =()=>{
+    console.log("starting All crons")
+    morningNotificationJob.start()
+    thirtyMinsNotificationCron.start()
+    tenMinsNotificationCron.start()
+
+    
+}
+
+
+export default runAllCrons

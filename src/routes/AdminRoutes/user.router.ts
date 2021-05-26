@@ -24,7 +24,7 @@ const otpService = new OtpService(Otp, userService, employeeService)
 const userController= new UserController(userService,feedbackService,otpService)
 
 userRouter.post("/", verifyToken, userController.post)
-userRouter.get("/", verifyToken, userController.get)
+userRouter.get("/", verifyToken, userController.getWithPagination)
 userRouter.get("/info/:id", verifyToken, userController.getId)
 userRouter.put("/:id", verifyToken, userController.put)
 userRouter.get("/search",userController.searchUsersByEmail)
