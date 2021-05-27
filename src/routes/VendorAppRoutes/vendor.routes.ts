@@ -21,6 +21,8 @@ import UserService from "../../service/user.service";
 import Referral from "../../models/referral.model";
 import ReferralService from "../../service/referral.service";
 import EmployeeAbsenteesmService from "../../service/employee-absentism.service";
+import PromoCodeService from "../../service/promo-code.service";
+import PromoCode from "../../models/promo-code.model";
 const vendorRouter = Router()
 
 const vs = new VendorService(Vendor,EmployeeAbsenteeism,ReportVendor,Feedback)
@@ -33,7 +35,8 @@ const loginService = new LoginService(Vendor)
 const userService = new UserService(User, Booking)
 const otpService = new OtpService(Otp, userService, es)
 const referralService = new  ReferralService(Referral)
-const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '30 days', otpService,referralService)
+const promoCodeService =  new PromoCodeService(PromoCode)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '30 days', otpService,referralService,promoCodeService)
 
 vendorRouter.post("/",loginController.login);
 vendorRouter.post("/create", loginController.create)

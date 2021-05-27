@@ -1,7 +1,6 @@
 import mongoose from "../database";
 import { PromoCodeSI } from "../interfaces/promo-code.interface";
 
-
 const PromoCodeSchema = new mongoose.Schema({
     promo_code: {
         type: String,
@@ -77,6 +76,11 @@ const PromoCodeSchema = new mongoose.Schema({
     active: {
         type: Boolean,
         default: true
+    },
+    visiblity:{
+        type:String,
+        enum:["All","User"],
+        default:"All"
     }
 }, {
     timestamps: true

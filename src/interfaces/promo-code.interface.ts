@@ -3,6 +3,7 @@ import { BookingPaymentType } from "./booking.interface"
 
 export type PromoCodeTimeType = 'All Day' | 'Custom'
 export type PromoCodeDiscountType = 'Flat Price' | 'Discount Percentage'
+export type PromoCodeVisiblity = 'All' | 'User'
 
 export interface PromoDiscountResult {
     option_id: string
@@ -52,15 +53,15 @@ export interface PromoCodeI{
      * list of days in number on the day on which the coupon is applicable on.
      * Starting from Sunday 0 snd ending at Saturday 6
      */
-    custom_time_days: number[]
+    custom_time_days?: number[]
     /**
      * time start when the coupon is valid
      */
-    custom_time_start_time: string
+    custom_time_start_time?: string
     /**
      * time end when the coupon is valid
      */
-    custom_time_end_time: string
+    custom_time_end_time?: string
     minimum_bill: number
     discount_type: PromoCodeDiscountType
     flat_price: number
@@ -70,6 +71,7 @@ export interface PromoCodeI{
     max_usage: number // this is how many times user can use the promo code
     usage_time_difference: number // this is the time difference between the usage of the coupon by the user. in minutes
     active: boolean
+    visiblity:PromoCodeVisiblity // visiblity of promocodes
 }
 
 export interface PromoCodeSI extends PromoCodeI, mongoose.Document{}

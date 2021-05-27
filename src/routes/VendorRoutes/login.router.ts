@@ -19,6 +19,8 @@ import OtpService from "../../service/otp.service";
 import UserService from "../../service/user.service";
 import ReferralService from "../../service/referral.service";
 import Referral from "../../models/referral.model";
+import PromoCodeService from "../../service/promo-code.service";
+import PromoCode from "../../models/promo-code.model";
 
 // const ls = new  LoginService()
 
@@ -30,7 +32,8 @@ const userService = new UserService(User, Booking)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
-const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService,referralService)
+const promoCodeService = new PromoCodeService(PromoCode)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService,referralService,promoCodeService)
 
 loginRouter.post("/", loginController.loginVendor)
 loginRouter.post("/create", loginController.create)

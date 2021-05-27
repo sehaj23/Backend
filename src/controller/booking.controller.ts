@@ -663,7 +663,6 @@ export default class BookingController extends BaseController {
             const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
 
             if (completedBooking.length === 1) {
-                console.log(booking.user_id.toString())
                 const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
                 console.log(referal)
                 if (!referal) {

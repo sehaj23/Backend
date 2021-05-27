@@ -1,15 +1,20 @@
 import AWS = require('aws-sdk')
 import { Request, Response } from 'express'
 import * as jwt from 'jwt-then'
+import moment = require('moment')
 import { sqsNewUser } from '../aws'
 import CONFIG from '../config'
+import { PromoCodeSI, PromoCodeTimeType } from "../interfaces/promo-code.interface"
+import { PromoCodeI } from '../interfaces/promo-code.interface'
 import { ReferralI, ReferralSI } from '../interfaces/referral.interface'
 import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
-import { UserRedis } from '../redis/index.redis'
+import { PromoCodeRedis, UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
+import Notify from '../service/notify.service'
 import OtpService from '../service/otp.service'
+import PromoCodeService from '../service/promo-code.service'
 import ReferralService from '../service/referral.service'
 import SendEmail from '../utils/emails/send-email'
 import ErrorResponse from '../utils/error-response'
@@ -23,13 +28,15 @@ export default class LoginController extends BaseController {
   service: LoginService
   otpService: OtpService
   referralService: ReferralService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService) {
+  promoCodeService: PromoCodeService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService, promoCodeService: PromoCodeService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
     this.otpService = otpService
     this.referralService = referralService
+    this.promoCodeService = promoCodeService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -126,11 +133,40 @@ export default class LoginController extends BaseController {
           }
         }
         try {
-          const referral = await this.referralService.post(referalData)
+          const referral = await this.referralService.post(referalData) as ReferralSI
         } catch (error) {
           console.log(error)
         }
-      
+        try {
+          const getRefferal = await this.referralService.countDocumnet({ referred_by: refferallCode._id, "referred_to.status": "Used" })
+          console.log(refferallCode._id)
+          if (getRefferal === 4) {
+            const promoCode = {
+              promo_code: "REFBONUS" + refferallCode._id.toString().substring(1, 4),
+              user_ids: [refferallCode._id],
+              description: "refer your 4 friends and get your first haircut free",
+              active: true,
+              salon_ids: [],
+              categories: ["HAIRCUT"],
+              time_type: 'All Day',
+              visiblity: "User",
+              payment_mode: "Both",
+              minimum_bill: 100,
+              discount_type: "Discount Percentage",
+              discount_percentage: 60,
+              discount_cap: 600,
+              usage_time_difference: 1,
+              max_usage: 1,
+              start_date_time: moment().toDate(),
+              expiry_date_time: moment("2021-05-30").toDate()
+            }
+            const promo = await this.promoCodeService.post(promoCode) as PromoCodeSI
+            PromoCodeRedis.removeAll()
+          }
+        } catch (error) {
+          console.log(error)
+        }
+
       }
     }
     if (createUser == null) {
@@ -194,7 +230,7 @@ export default class LoginController extends BaseController {
       return res.status(201).send({
         token: token
       })
-    } 
+    }
     getUser.password = ''
     const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
@@ -208,7 +244,7 @@ export default class LoginController extends BaseController {
 
   loginwithFacebook = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
-    const { uid} = req.body
+    const { uid } = req.body
     const getUser = await this.service.getbyUID(uid) as UserSI
     if (getUser === null) {
       user.approved = true
@@ -232,7 +268,7 @@ export default class LoginController extends BaseController {
       return res.status(201).send({
         token: token
       })
-    } 
+    }
     getUser.password = ''
     const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
