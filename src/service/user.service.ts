@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import mongoose from "../database";
 import { UserSI } from "../interfaces/user.interface";
 import { UserRedis } from "../redis/index.redis";
@@ -13,10 +14,10 @@ export default class UserService extends BaseService {
     }
 
     getId = async (id: string) => {
-       const redisUser = await UserRedis.get(id, {type: "info"})
-        if(redisUser === null){
+        const redisUser = await UserRedis.get(id, { type: "info" })
+        if (redisUser === null) {
             const user = await this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").lean()
-            UserRedis.set(id, user, {type: "info"})
+            UserRedis.set(id, user, { type: "info" })
             return user
         }
         return JSON.parse(redisUser)
@@ -31,7 +32,7 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
-        const user = await this.model.findOneAndUpdate({_id:_id}, d, { new: true })
+        const user = await this.model.findOneAndUpdate({ _id: _id }, d, { new: true })
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {
@@ -57,15 +58,15 @@ export default class UserService extends BaseService {
     deleteFCM = async (id: string, fcmToken: any) => {
         const _id = mongoose.Types.ObjectId(id)
         //@ts-ignore
-        const user = await this.model.findOne(_id ) as UserSI
+        const user = await this.model.findOne(_id) as UserSI
         const fcmTokenIndex = user.fcm_token.indexOf(fcmToken)
-        if(fcmTokenIndex >-1){
-            user.fcm_token.splice(fcmTokenIndex,1)
-            await user.save()    
-        }else{
+        if (fcmTokenIndex > -1) {
+            user.fcm_token.splice(fcmTokenIndex, 1)
+            await user.save()
+        } else {
             throw new Error("Fcm token not found")
         }
-        
+
         return user
     }
 
@@ -117,7 +118,7 @@ export default class UserService extends BaseService {
 
 
     addToFavourites = async (id: string, salon_id: string) => {
-        UserRedis.remove(id, {type: "favourites"})
+        UserRedis.remove(id, { type: "favourites" })
         const salonid = mongoose.Types.ObjectId(salon_id)
         //@ts-ignore 
         const user = await this.model.update({ _id: id }, { $push: { favourites: [salonid] } }, { new: true })
@@ -126,8 +127,8 @@ export default class UserService extends BaseService {
 
     }
     getFavourites = async (id: string,) => {
-        const redisUser = await UserRedis.get(id, {type: "favourites"})
-        if(redisUser === null){
+        const redisUser = await UserRedis.get(id, { type: "favourites" })
+        if (redisUser === null) {
             const user = await this.model.findOne({ _id: id }).select("favourites").populate({
                 path: "favourites", select: {
                     name: "name", rating: "rating", location: "location", profile_pic: "profile_pic"
@@ -135,13 +136,13 @@ export default class UserService extends BaseService {
                     path: 'profile_pic'
                 }
             })
-            UserRedis.set(id, JSON.stringify(user), {type: "favourites"})
+            UserRedis.set(id, JSON.stringify(user), { type: "favourites" })
             return user
         }
-        return JSON.parse(redisUser)  
+        return JSON.parse(redisUser)
     }
     removeFavourites = async (id: string, salon_id: string) => {
-        UserRedis.remove(id, {type: "favourites"})
+        UserRedis.remove(id, { type: "favourites" })
         //@ts-ignore
         const user = await this.model.findByIdAndUpdate({ _id: id }, { $pull: { favourites: salon_id } }, { new: true })
         return user
@@ -202,6 +203,32 @@ export default class UserService extends BaseService {
 
     }
 
+    // this is to add balance to wallet
+    addBalance = async (userId: string, amount: number) => {
+        const user: UserSI = await this.model.findOne({ _id: Types.ObjectId(userId) })
+        if (user.balance === undefined) {
+            user.balance = 0
+        }
+        const strAmount = amount.toFixed(2)
+        const floatAmount = parseFloat(strAmount)
+        user.balance += floatAmount
+        await user.save()
+        return user
+    }
+
+    // this is to minus balance to wallet
+    minusBalance = async (userId: string, amount: number) => {
+        const user: UserSI = await this.model.findOne({ _id: Types.ObjectId(userId) })
+        if (user.balance === undefined) {
+            user.balance = 0
+        }
+        const strAmount = amount.toFixed(2)
+        const floatAmount = parseFloat(strAmount)
+        if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
+        user.balance -= floatAmount
+        await user.save()
+        return user
+    }
 
 
 }
