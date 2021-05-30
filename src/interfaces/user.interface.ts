@@ -24,7 +24,7 @@ export default interface UserI {
     approved?: boolean
     address?: UserAddressI[]
     phone?: string
-    balance: number
+    balance?: number
     referral_code?: string
 }
 

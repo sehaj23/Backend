@@ -11,6 +11,7 @@ import { PromoUserSI } from "../interfaces/promo-user.inderface";
 import { ReferralSI } from "../interfaces/referral.interface";
 import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
+import UserI from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
@@ -30,7 +31,6 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import UserI from "../interfaces/user.interface";
 
 
 export default class BookingController extends BaseController {
@@ -362,14 +362,14 @@ export default class BookingController extends BaseController {
         }
         console.log("optionsss")
         console.log(options)
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status,salon.commision_percentage??20)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status, salon.commision_percentage ?? 20)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
-        const userReq = this.userService.getId(userId) as UserI
+        const userReq = this.userService.getId(userId) as Promise<UserI>
         const [employee, user] = await Promise.all([employeeReq, userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-      //  if promocode applied then add to database that user used the promocode
+        //  if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
@@ -405,11 +405,11 @@ export default class BookingController extends BaseController {
         //get all services in array 
         const employee_ids = employee.map(e => { return e._id })
         // check employee is absent 
-        console.log("emplopyee_ids",employee_ids)
+        console.log("emplopyee_ids", employee_ids)
         const employeeAbsent = await this.employeeAbsentismService.checkIfEmployeeAbsent(employee_ids, req.query.dateTime.toString())
         console.log("employee absent ", employeeAbsent)
         // get employee by ids
-        const getEmp =  await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
+        const getEmp = await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
         //check booking of employee at that time slot
         const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), getEmp)
 
