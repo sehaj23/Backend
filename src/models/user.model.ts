@@ -4,10 +4,6 @@ import { UserSI } from "../interfaces/user.interface";
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
-<<<<<<< HEAD
-
-=======
->>>>>>> d0de01cce02c14b8b1ee8ded94cc94c8c55c2366
     },
     email: {
         type: String,
