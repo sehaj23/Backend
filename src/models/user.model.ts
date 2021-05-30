@@ -4,11 +4,11 @@ import { UserSI } from "../interfaces/user.interface";
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
-        
+
     },
     email: {
         type: String,
-        index:true
+        index: true
     },
     password: {
         type: String,
@@ -21,12 +21,12 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos"
     },
-    phone: { 
+    phone: {
         type: String,
-        
-     },
-    uid:{
-        type:String,
+
+    },
+    uid: {
+        type: String,
     },
     age: {
         type: String,
@@ -54,32 +54,32 @@ const UserSchema = new mongoose.Schema({
     fcm_token: {
         type: [String]
     },
-    delete_request:{
-        type:Date
+    delete_request: {
+        type: Date
     },
     notification: {
         type: Boolean,
-        default:true
+        default: true
     },
     address: {
         type: [{
             address: {
                 type: String,
-               required:true
+                required: true
             },
             city: {
                 type: String,
-                required:true
+                required: true
             },
             state: {
                 type: String,
-               // enum:["Andra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Uttaranchal","Uttar Pradesh","West Bengal","Andaman and Nicobar Islands","Chandigarh","Daman and Diu","Delhi","Lakshadeep","Pondicherry"],
-               // enum:["Delhi","DL"]
-                required:true
+                // enum:["Andra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Uttaranchal","Uttar Pradesh","West Bengal","Andaman and Nicobar Islands","Chandigarh","Daman and Diu","Delhi","Lakshadeep","Pondicherry"],
+                // enum:["Delhi","DL"]
+                required: true
             },
-            pincode:{
+            pincode: {
                 type: Number,
-                required:true
+                required: true
             },
             latitude: {
                 type: Number,
@@ -88,15 +88,19 @@ const UserSchema = new mongoose.Schema({
                 type: Number,
             },
             tag: {
-                type: String,   
+                type: String,
             },
-           
+
         }]
+    },
+    balance: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
 })
-UserSchema.index({"$**": `text`});
+UserSchema.index({ "$**": `text` });
 
 const User = mongoose.model<UserSI>("users", UserSchema)
 
