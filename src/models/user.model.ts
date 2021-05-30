@@ -4,7 +4,10 @@ import { UserSI } from "../interfaces/user.interface";
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
+<<<<<<< HEAD
 
+=======
+>>>>>>> d0de01cce02c14b8b1ee8ded94cc94c8c55c2366
     },
     email: {
         type: String,
@@ -16,6 +19,7 @@ const UserSchema = new mongoose.Schema({
     },
     signin_from: {
         type: String,
+        default: "Normal"
     },
     profile_pic: {
         type: mongoose.Schema.Types.ObjectId,
@@ -61,6 +65,9 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    referral_code: {
+        type: String
+    },
     address: {
         type: [{
             address: {
@@ -101,6 +108,13 @@ const UserSchema = new mongoose.Schema({
     timestamps: true
 })
 UserSchema.index({ "$**": `text` });
+UserSchema.pre<UserSI>('save', () => {
+    //@ts-ignore
+    let { name } = this
+    if (name) {
+        name = name.split(" ").map((l: string) => l[0].toUpperCase() + l.substr(1)).join(" ")
+    }
+})
 
 const User = mongoose.model<UserSI>("users", UserSchema)
 

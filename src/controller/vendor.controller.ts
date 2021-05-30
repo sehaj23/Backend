@@ -10,15 +10,18 @@ import { PhotoI } from '../interfaces/photo.interface'
 import { ReportVendorI } from '../interfaces/reportVendor.interface'
 import { FeedbackI } from '../interfaces/feedback.interface'
 import EmployeeService from '../service/employee.service'
+import EmployeeAbsenteesmService from '../service/employee-absentism.service'
 
 export default class VendorController extends BaseController {
   
   service: VendorService;
   employeeService:EmployeeService
-  constructor(service: VendorService,employeeService:EmployeeService) {
+  employeeAbsentism:EmployeeAbsenteesmService
+  constructor(service: VendorService,employeeService:EmployeeService,employeeAbsentism:EmployeeAbsenteesmService) {
     super(service)
     this.service = service
     this.employeeService=employeeService
+    this.employeeAbsentism=employeeAbsentism
   }
 //   vendorLogin =controllerErrorHandler( async (req: Request, res: Response) => {
 //     const { email, password } = req.body
@@ -56,6 +59,12 @@ export default class VendorController extends BaseController {
 
   })
 
+  checkIfEmployeeAbsent=controllerErrorHandler( async (req: Request, res: Response) => {
+    const {employee_id ,absenteeism_date} =req.body 
+    console.log(employee_id)
+    const absent = await  this.employeeAbsentism.checkIfEmployeeAbsent(employee_id,absenteeism_date)
+    res.send(absent)
+  })
     employeeAbsentUpdate =controllerErrorHandler( async (req: Request, res: Response) => {
         const d: EmployeeAbsenteeismI = req.body
         const update = await this.service.employeeAbsentUpdate(d)

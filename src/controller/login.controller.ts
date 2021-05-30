@@ -1,12 +1,16 @@
+import AWS = require('aws-sdk')
 import { Request, Response } from 'express'
 import * as jwt from 'jwt-then'
+import { sqsNewUser } from '../aws'
 import CONFIG from '../config'
+import { ReferralI, ReferralSI } from '../interfaces/referral.interface'
 import { UserSI } from '../interfaces/user.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
 import { UserRedis } from '../redis/index.redis'
 import LoginService from '../service/login.service'
 import OtpService from '../service/otp.service'
+import ReferralService from '../service/referral.service'
 import SendEmail from '../utils/emails/send-email'
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
@@ -18,12 +22,14 @@ export default class LoginController extends BaseController {
   jwtValidity: string
   service: LoginService
   otpService: OtpService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService) {
+  referralService: ReferralService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
     this.jwtValidity = jwtValidity
     this.otpService = otpService
+    this.referralService = referralService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -102,12 +108,31 @@ export default class LoginController extends BaseController {
 
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
-    console.log(user)
     var password = encryptData(user.password)
+    let refferallCode
 
     user.password = password
     const createUser: UserSI = await this.service.create(user)
-    console.log(createUser)
+    if (req.body.rfcode) {
+      const rfCode = req.body.rfcode
+      refferallCode = await this.service.getOne({ referral_code: rfCode })
+      if (refferallCode != null) {
+        const referalData: ReferralI = {
+          referred_by: refferallCode._id,
+          referred_to: {
+            status: "Used",
+            referral_code: rfCode,
+            user: createUser._id,
+          }
+        }
+        try {
+          const referral = await this.referralService.post(referalData)
+        } catch (error) {
+          console.log(error)
+        }
+      
+      }
+    }
     if (createUser == null) {
       const errMsg = `unable to create User`;
       logger.error(errMsg);
@@ -115,26 +140,38 @@ export default class LoginController extends BaseController {
       res.send({ message: errMsg });
       return
     }
-   
-    try {
-      SendEmail.signupUser(createUser.email,createUser.name)
-    } catch (error) {
-      console.log(error)
-    }
+    if (createUser.phone != null) {
+      const number = await this.otpService.sendUserOtpEmail(createUser.email)
+      try {
+        SendEmail.emailConfirm(createUser.email, number.otp, createUser.name)
+      } catch (error) {
 
+      }
+
+    }
+    try {
+      SendEmail.signupUser(createUser.email, createUser.name)
+    } catch (error) {
+
+    }
     console.log(createUser.email)
     const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
-    res.status(201).send({ token })
 
+    const queueData = {
+      "user_id": createUser._id
+    }
+    sqsNewUser(JSON.stringify(queueData))
+
+    res.status(201).send({ token })
   })
 
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid, email } = req.body
 
-    const getUser = await this.service.getbyUID(uid, email) as UserSI
+    const getUser = await this.service.getbyUIDandEmail(uid, email) as UserSI
     if (getUser === null) {
       user.approved = true
       const createUser = await this.service.create(user)
@@ -156,10 +193,52 @@ export default class LoginController extends BaseController {
       const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
         expiresIn: this.jwtValidity,
       })
+      const queueData = {
+        "user_id": createUser._id
+      }
+      sqsNewUser(JSON.stringify(queueData))
       return res.status(201).send({
         token: token
       })
-    }
+    } 
+    getUser.password = ''
+    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+      expiresIn: this.jwtValidity,
+    })
+    return res.status(200).send({
+      token: token, gender: getUser.gender
+    })
+
+
+  })
+
+  loginwithFacebook = controllerErrorHandler(async (req: Request, res: Response) => {
+    const user = req.body
+    const { uid} = req.body
+    const getUser = await this.service.getbyUID(uid) as UserSI
+    if (getUser === null) {
+      user.approved = true
+      const createUser = await this.service.create(user)
+      if (createUser == null) {
+        const errMsg = `unable to create User`;
+        logger.error(errMsg);
+        res.status(400);
+        res.send({ message: errMsg });
+        return
+      }
+      createUser.password = ''
+
+      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+        expiresIn: this.jwtValidity,
+      })
+      const queueData = {
+        "user_id": createUser._id
+      }
+      sqsNewUser(JSON.stringify(queueData))
+      return res.status(201).send({
+        token: token
+      })
+    } 
     getUser.password = ''
     const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
       expiresIn: this.jwtValidity,
@@ -192,7 +271,7 @@ export default class LoginController extends BaseController {
   loginWithOtpSendOtp = controllerErrorHandler(async (req: Request, res: Response) => {
     const { phone } = req.body
     const user = await this.service.getOne({ phone }) as UserSI
-    if (user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    if (user === null) throw new ErrorResponse({ message: `User not found with phone ${phone}` })
     await this.otpService.sendUserOtp(phone)
     res.send({ message: "Otp sent" })
   })
@@ -200,7 +279,7 @@ export default class LoginController extends BaseController {
   loginWithOtpVerifyOtp = controllerErrorHandler(async (req: Request, res: Response) => {
     const { phone, otp } = req.body
     const user = await this.service.getOne({ phone }) as UserSI
-    if (user === null) throw new ErrorResponse(`User not found with phone ${phone}`)
+    if (user === null) throw new ErrorResponse({ message: `User not found with phone ${phone}` })
     await this.otpService.verifyUserOtp(phone, otp, user._id.toString())
     user.password = ''
     const token = await jwt.sign(user.toJSON(), this.jwtKey, {
@@ -214,7 +293,7 @@ export default class LoginController extends BaseController {
   forgotPasswordVerifyEmail = controllerErrorHandler(async (req: Request, res: Response) => {
     const { email, otp } = req.body
     const user = await this.service.getOne({ email }) as UserSI
-    if (user === null) throw new ErrorResponse(`User not found with phone ${email}`)
+    if (user === null) throw new ErrorResponse({ message: `User not found with phone ${email}` })
     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
     user.password = ''
     const token = await jwt.sign(user.toJSON(), this.jwtKey, {

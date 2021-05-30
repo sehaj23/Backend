@@ -1,6 +1,7 @@
 import { String } from "aws-sdk/clients/acm";
+import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
-import { BookingAddressI, BookingI, BookingPaymentType, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
+import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingPaymentVerifiedStatusEnum, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -12,28 +13,28 @@ import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
 
 import moment = require("moment");
-import SendEmail from "../utils/emails/send-email";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
-
+    referral: mongoose.Model<any, any>
     cartService: CartService
     mongoCounterService: MongoCounterService
-    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService) {
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService, referral: mongoose.Model<any, any>) {
         super(bookingmodel);
         this.salonModel = salonModel
         this.cartService = cartService
         this.mongoCounterService = mongoCounterService
+        this.referral = referral
     }
 
-    bookAppointment = async (userId: string, payment_method: BookingPaymentType, location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus) => {
+    bookAppointment = async (userId: string, payments: BookingPaymentI[], location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus, commision_percentage:number) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
                 let totalPrice = o.quantity * o.price
-                let zattire_commission = totalPrice * 0.20
+                let zattire_commission = totalPrice *  commision_percentage/100
                 const vendor_commission = totalPrice - zattire_commission
                 if (o.discount_given && o.discount_given !== 0) {
                     zattire_commission -= o.discount_given
@@ -70,12 +71,26 @@ export default class BookingService extends BaseService {
                 return bookingService
             })
             const booking_numeric_id = await this.mongoCounterService.incrementByName("booking_id")
-            const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
+
+            // const status: BookinStatus = (payment_method === 'COD') ? actualStatus : 'Online Payment Requested'
+            let status: BookinStatus
+            let usedWalletAmount: number = -1 // used as a flag
+            for (const p of payments) {
+                if (p.mode === BookingPaymentMode.COD) {
+                    status = actualStatus
+                    p.verified_status = BookingPaymentVerifiedStatusEnum.SUCCESSFUL
+                    break
+                } else if (p.mode === BookingPaymentMode.RAZORPAY) {
+                    status = 'Online Payment Requested'
+                    break
+                } else if (p.mode === BookingPaymentMode.WALLET) {
+                    usedWalletAmount = p.amount
+                }
+            }
             const booking: BookingI = {
                 user_id: userId,
-
                 salon_id: salon_id,
-                payment_type: payment_method,
+                payments: payments,
                 location: location,
                 services,
                 address,
@@ -83,11 +98,20 @@ export default class BookingService extends BaseService {
                 status
             }
             const b = await this.model.create(booking)
+            if (usedWalletAmount > -1) {
+                const sqsWalletTransactionData: SQSWalletTransactionI = {
+                    transaction_type: "Used Credits",
+                    booking_id: b._id.toString()
+                }
+                sqsWalletTransaction(sqsWalletTransactionData)
+            }
             // delete the cart of the user
             await this.cartService.bookCartByUserId(userId)
             return b
         } catch (e) {
+            console.log(e)
             throw e
+
         }
     }
 
@@ -295,12 +319,14 @@ export default class BookingService extends BaseService {
     }
 
 
-    updateStatusBookings = async (bookingId: string, status: BookinStatus) => {
+    updateStatusBookings = async (bookingId: string, status: BookinStatus, author: Author, authorId) => {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }) as BookingSI
         if (booking === null) throw new Error(`No booking find with this id: ${bookingId}`)
+        booking.history.push({ status_changed_to: status, last_status: booking.status, changed_by: author })
         booking.status = status as BookinStatus
         await booking.save()
         return booking
+        // const booking = await this.model.findByIdAndUpdate({bookingId},{status:status,$push:{history:{status_changed_to:status,last_status:}}},{new:true})
     }
 
     assigneEmployeeBookings = async (bookingId: String, serviceName: String, employeeId: String) => {
@@ -337,12 +363,26 @@ export default class BookingService extends BaseService {
         return JSON.parse(bookingRedis)
     }
 
+
+
+    getBookingByUserId = async (userId: string,q:any) => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+            const bookingReq =  this.model.find({ "user_id": userId }).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).lean().populate("salon_id","name")
+           const bookingCountReq = this.model.count({"user_id": userId})
+            const [booking,bookingCount] =  await Promise.all([bookingReq,bookingCountReq])
+            return {booking,bookingCount}
+    }
+
     getbookings = async (q) => {
 
         console.log(q)
 
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
+        //TODO:remove page length for cron 
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
@@ -397,8 +437,8 @@ export default class BookingService extends BaseService {
 
         }
         console.log(filters);
-
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        console.log("page_length", pageLength)
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id",fcm_token:1, populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
@@ -410,7 +450,7 @@ export default class BookingService extends BaseService {
 
     }
     bookingByID = async (id: string) => {
-        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate("salon_id","name").exec()
         return booking
     }
 
@@ -431,6 +471,7 @@ export default class BookingService extends BaseService {
         const filters = {
             salon_id: salonId
         }
+        console.log(filters)
         const dateFilter = {}
         dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
         dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
@@ -467,19 +508,23 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["services.service_time"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
 
-            //  filters["createdAt"] = {
-            //      "$gte": dateFilter["start_date"],
-            //      "$lt": dateFilter["end_date"]
-            // // }
+
+
 
         }
-        const bookings = await this.model.find(filters).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
-        return bookings
+        filters["services.service_time"] = {
+            "$gte": dateFilter["start_date"],
+            "$lt": dateFilter["end_date"]
+        }
+        console.log(pageLength)
+        console.log(filters)
+        const bookingsReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
+        const bookingPagesReq = this.model.countDocuments(filters)
+        const [bookingDetails, bookingPages] = await Promise.all([bookingsReq, bookingPagesReq])
+        console.log(bookingPages)
+        return ({ bookingDetails, bookingPages })
+
 
     }
     getAllMuaBookings = async (makeupArtistId: string) => {
@@ -524,7 +569,7 @@ export default class BookingService extends BaseService {
      */
     getEmployeesBookingsByIdsTime = async (ids, dateTime) => {
         dateTime = moment(dateTime)
-        if (!(dateTime as moment.Moment).isValid()) throw new ErrorResponse(`Date time not valid: ${dateTime}`)
+        if (!(dateTime as moment.Moment).isValid()) throw new ErrorResponse({ message: `Date time not valid: ${dateTime}` })
         return this.model.find({ "services.employee_id": ids, "services.service_time": dateTime })
     }
 
@@ -617,7 +662,7 @@ export default class BookingService extends BaseService {
     }
 
     getFullBookingById = async (bookingId: string): Promise<BookingI> => {
-        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events") as BookingSI
+        const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("services.employee_id") as BookingSI
         const json: BookingI = booking.toJSON()
         const salons: SalonSI[] = await this.salonModel.find({ "services.options._id": json.services.map((s: BookingServiceI) => s.option_id) }).lean()
         console.log(`Salons ${salons.length}`)
@@ -752,20 +797,5 @@ export default class BookingService extends BaseService {
         }
     }
 
-    getDetailsOfSalon = async () => {
 
-        const query = {
-            "match": {
-                status: "Completed"
-            }
-        }
-        const info = await this.model.aggregate([query])
-
-    }
-
-
-    sendInvoice = async ()=>{
-        const email = SendEmail.bookingInvoice()
-        return email
-    }
 }

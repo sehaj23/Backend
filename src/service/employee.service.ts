@@ -79,9 +79,6 @@ export default class EmployeeService extends BaseService {
 
 
     employeeAbsentUpdate = async (d: EmployeeAbsenteeismI) => {
-
-
-
         const absent = await this.employeeAbsenteeismModel.findOneAndUpdate({ employee_id: d.employee_id, absenteeism_date: d.absenteeism_date }, d, { new: true })
         return absent
 
@@ -102,7 +99,7 @@ export default class EmployeeService extends BaseService {
         const salonReq = this.salonModel.findOne({ employees: {$in:[empId] }})
         
         
-        const employeesAbsenteeismReq = this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
+        const employeesAbsenteeismReq:EmployeeAbsenteeismI= this.employeeAbsenteeismModel.findOne({ employee_id: empId, absenteeism_date: slotsDate })
         const empBookings = await this.bookingModel.find({"services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": { "$gte": slotsDate }}) as BookingSI[]
         let empBookingTimes: string[] = []
         if(empBookings.length > 0){
@@ -129,19 +126,23 @@ export default class EmployeeService extends BaseService {
         const slots = []
         for(let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')){
             
-            const time = moment(i).utcOffset("+05:30").format('hh:mm a')
+            const time = moment(i).format('hh:mm a')
             const theSlot = {
                 store_date: time,
                 absent: false
             }
             if(employeesAbsenteeism !== null){
+                if(employeesAbsenteeism.absenteeism_times.length > 0){
                 const employeeAbsentSlots = employeesAbsenteeism.absenteeism_times
                 for (let slot of employeeAbsentSlots) {
-                    slot = moment(slot).utcOffset("+05:30").format('hh:mm a')
+                  //  slot = moment(slot).utcOffset("+05:30").format('hh:mm a')
                     if (slot === time) {
                             theSlot.absent =  true
                     }
                 }
+            }if(employeesAbsenteeism.absenteeism_times.length ==0){
+                theSlot.absent=true
+            }
             }
             // booking slot check
             if(empBookingTimes.includes(time)){

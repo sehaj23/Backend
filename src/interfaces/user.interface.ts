@@ -25,6 +25,7 @@ export default interface UserI {
     address?: UserAddressI[]
     phone?: string
     balance: number
+    referral_code?: string
 }
 
 export interface UserSI extends UserI, mongoose.Document { }

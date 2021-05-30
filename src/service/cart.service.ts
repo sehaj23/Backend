@@ -25,7 +25,7 @@ export default class CartService extends BaseService {
         return salon
     }
 
-    getPriceByOptionId: (optionId: string) => Promise<{ price: number, service_name: string, option_name, category_name: string, service_id: string }> = async (optionId: string) => {
+    getPriceByOptionId: (optionId: string) => Promise<{ price: number, service_name: string, option_name, category_name: string, service_id: string,salon_name:string }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
@@ -34,7 +34,7 @@ export default class CartService extends BaseService {
                     //@ts-ignore
                     console.log(service._id)
                     //@ts-ignore
-                    return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id }
+                    return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id,salon_name:salon.name }
                 }
             }
         }
@@ -96,7 +96,7 @@ export default class CartService extends BaseService {
                 service_name: optionPrice.service_name,
                 category_name: optionPrice.category_name,
                 option_name: optionPrice.option_name,
-                service_id: optionPrice.service_id
+                service_id: optionPrice.service_id,
 
 
             })
@@ -211,10 +211,11 @@ export default class CartService extends BaseService {
         //  await this.getLastCartByUserId(userId)
 
         const optionPrice = await this.getPriceByOptionId(optionId)
-
+        
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
+            salon_name:optionPrice.salon_name,
             options: [{ option_id: optionId, quantity: 1, service_name: optionPrice.service_name, option_name: optionPrice.option_name, category_name: optionPrice.category_name, service_id: optionPrice.service_id }],
             total: optionPrice.price
         }
@@ -226,15 +227,18 @@ export default class CartService extends BaseService {
 
         //  await this.getLastCartByUserId(userId)
         let total = 0
+        let salonName
         for (let opt of options) {
             const optionPrice = await this.getPriceByOptionId(opt.option_id)
             total += optionPrice.price * opt.quantity
+            salonName=optionPrice.salon_name
         }
 
         const cart: CartI = {
             user_id: userId,
             salon_id: salonId,
             options: options,
+            salon_name:salonName,
 
             total
         }
