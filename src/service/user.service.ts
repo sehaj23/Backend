@@ -218,6 +218,7 @@ export default class UserService extends BaseService {
 
     // this is to minus balance to wallet
     minusBalance = async (userId: string, amount: number) => {
+        if (amount > 0) throw new Error(`To minus transction amount should be less than 0: ${amount}`)
         const user: UserSI = await this.model.findOne({ _id: Types.ObjectId(userId) })
         if (user.balance === undefined) {
             user.balance = 0
@@ -225,7 +226,7 @@ export default class UserService extends BaseService {
         const strAmount = amount.toFixed(2)
         const floatAmount = parseFloat(strAmount)
         if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
-        user.balance -= floatAmount
+        user.balance += floatAmount
         await user.save()
         return user
     }
