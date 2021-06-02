@@ -614,11 +614,7 @@ export default class SalonService extends BaseService {
                           path : 'profile_pic'
                         }
                       })
-                 //.populate({
-                //         path: "user_id",name:1,
-                        
-                        
-                // })
+               
                 const reviewsPage = this.reviewModel.find({ salon_id: _id }).count();
 
                 const [reviews, pageNo] = await Promise.all([reviewsAll, reviewsPage])
