@@ -992,6 +992,8 @@ export default class BookingController extends BaseController {
         const bookingId = req.params.id
         const data: FeedbackI = req.body
         data.booking_id = bookingId
+        //@ts-ignore
+        data.user_id =  req.userId
         const feedback = await this.feedbackService.post(data)
         res.send(feedback)
     })
