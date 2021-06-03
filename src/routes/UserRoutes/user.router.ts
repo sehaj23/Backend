@@ -49,5 +49,6 @@ userRouter.patch("/update-forgot-password",UserverifyToken,userController.update
 userRouter.get("/delete-account",UserverifyToken,userController.deleteRequest)
 userRouter.get("/version",userController.appVersion)
 userRouter.get("/referral",UserverifyToken,userController.refferal)
+userRouter.post('/referral-verify',userController.verifyReferral)
 
 export default userRouter

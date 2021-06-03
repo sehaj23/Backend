@@ -329,4 +329,13 @@ export default class UserController extends BaseController {
 
     })
 
+    verifyReferral= controllerErrorHandler(async (req: Request, res: Response) => {
+        const { referral_code} = req.body
+        const  getRefferal = await this.service.get({referral_code})
+        if(getRefferal.length == 0){
+           return res.status(400).send({message:"Invalid Referral",success:false})
+        }
+        res.status(200).send({message:"Valid Referral",success:true})
+    })
+
 }
