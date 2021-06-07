@@ -134,9 +134,10 @@ export default class UserService extends BaseService {
             const user = await this.model.findOne({ _id: id }).select("favourites").populate({
                 path: "favourites", select: {
                     name: 1, rating: 1, location: 1
-                    , profile_pic: {
-                        path: `profile_pic`,
-                    }
+                    , profile_pic: 1
+                },
+                populate: {
+                    path: 'profile_pic'
                 }
             })
             UserRedis.set(id, JSON.stringify(user), { type: "favourites" })
