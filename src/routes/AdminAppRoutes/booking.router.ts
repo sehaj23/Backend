@@ -19,6 +19,7 @@ import Review from "../../models/review.model";
 import Salon from "../../models/salon.model";
 import User from "../../models/user.model";
 import Vendor from "../../models/vendor.model";
+import WalletTransaction from "../../models/wallet-transaction.model";
 import BookingService from "../../service/booking.service";
 import CartService from "../../service/cart.service";
 import EmployeeAbsentismService from "../../service/employee-absentism.service";
@@ -32,23 +33,25 @@ import RefundService from "../../service/refund.service";
 import SalonService from "../../service/salon.service";
 import UserService from "../../service/user.service";
 import VendorService from "../../service/vendor.service";
+import WalletTransactionService from "../../service/wallet-transaction.service";
 
 
 const bookingRouter = Router()
 const cartService = new CartService(Cart, Salon)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const referralService = new ReferralService(Referral)
-const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral)
-const feedbackService = new FeedbackService(Feedback)
 const userService = new UserService(User, Booking)
+const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)
+const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral, walletTransactionService)
+const feedbackService = new FeedbackService(Feedback)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
 const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsenteeism)
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
 const promoUserService = new PromoUserService(PromoCode)
-const refundService = new RefundService(Refund, bookingService)
+const refundService = new RefundService(Refund, bookingService, walletTransactionService)
 const promoCodeService = new PromoCodeService(PromoCode)
-const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService,promoCodeService)
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService, walletTransactionService)
 
 
 bookingRouter.post("/", verifyToken, bookingController.post)

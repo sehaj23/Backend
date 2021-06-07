@@ -495,7 +495,7 @@ export default class SalonService extends BaseService {
                                         {
                                                 $geometry: { type: "Point", coordinates: [latitude, longitude] },
                                                 $minDistance: 0,
-                                                $maxDistance: 1000000
+                                                $maxDistance: 10000000
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")

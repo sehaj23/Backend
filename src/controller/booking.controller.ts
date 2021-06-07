@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus, RazorpayPaymentData } from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
@@ -11,6 +10,8 @@ import { PromoUserSI } from "../interfaces/promo-user.inderface";
 import { ReferralSI } from "../interfaces/referral.interface";
 import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
+import UserI from "../interfaces/user.interface";
+import { WalletTransactionI } from "../interfaces/wallet-transaction.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import BookingService from "../service/booking.service";
 import CartService from "../service/cart.service";
@@ -26,11 +27,11 @@ import RefundService from "../service/refund.service";
 import SalonService from "../service/salon.service";
 import UserService from "../service/user.service";
 import VendorService from "../service/vendor.service";
+import WalletTransactionService from "../service/wallet-transaction.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-import UserI from "../interfaces/user.interface";
 
 
 export default class BookingController extends BaseController {
@@ -49,7 +50,8 @@ export default class BookingController extends BaseController {
     promoCodeService: PromoCodeService
     referralService: ReferralService
     refundService: RefundService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService) {
+    walletTransactionService: WalletTransactionService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -63,6 +65,7 @@ export default class BookingController extends BaseController {
         this.referralService = referralService
         this.refundService = refundService
         this.promoCodeService = promoCodeService
+        this.walletTransactionService = walletTransactionService
     }
 
 
@@ -362,14 +365,14 @@ export default class BookingController extends BaseController {
         }
         console.log("optionsss")
         console.log(options)
-        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status,salon.commision_percentage??20)
+        const booking = await this.service.bookAppointment(userId, payment_method, location, date_time, salon_id, options, address, promo_code, status, salon.commision_percentage ?? 20)
 
         const employeeReq = this.employeeService.getId(options[0].employee_id)
-        const userReq = this.userService.getId(userId) as UserI
+        const userReq = this.userService.getId(userId) as Promise<UserI>
         const [employee, user] = await Promise.all([employeeReq, userReq])
         const vendor = await this.vendorService.getId(salon.vendor_id)
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
-      //  if promocode applied then add to database that user used the promocode
+        //  if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
             await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
         }
@@ -405,11 +408,11 @@ export default class BookingController extends BaseController {
         //get all services in array 
         const employee_ids = employee.map(e => { return e._id })
         // check employee is absent 
-        console.log("emplopyee_ids",employee_ids)
+        console.log("emplopyee_ids", employee_ids)
         const employeeAbsent = await this.employeeAbsentismService.checkIfEmployeeAbsent(employee_ids, req.query.dateTime.toString())
         console.log("employee absent ", employeeAbsent)
         // get employee by ids
-        const getEmp =  await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
+        const getEmp = await this.employeeService.getByIds(employeeAbsent) as EmployeeSI[]
         //check booking of employee at that time slot
         const salon = await this.service.getSalonEmployees(req.params.salonId, new Date(req.query.dateTime.toString()), getEmp)
 
@@ -668,16 +671,19 @@ export default class BookingController extends BaseController {
                 if (!referal) {
                     console.log("no referral")
                 } else {
-                    const sqsWalletTransactionDataRefferedTo: SQSWalletTransactionI = {
-                        transaction_type: "Referral Bonus",
-                        user_id: referal.referred_to.toString()
+                    const walletTransactionI: WalletTransactionI = {
+                        amount: 50,
+                        user_id: referal.referred_to.toString(),
+                        reference_model: 'referal',
+                        reference_id: referal._id.toString(),
+                        transaction_type: "",
+                        transaction_owner: "ALGO",
+                        comment: "Refferal Bonus Added"
                     }
-                    const sqsWalletTransactionDataRefferedBy: SQSWalletTransactionI = {
-                        transaction_type: "Referral Bonus",
-                        user_id: referal.referred_by.toString() // add money to  person account who shared
-                    }
-                    sqsWalletTransaction(sqsWalletTransactionDataRefferedTo)
-                    sqsWalletTransaction(sqsWalletTransactionDataRefferedBy)
+                    await this.walletTransactionService.post(walletTransactionI)
+                    // changing the id olny
+                    walletTransactionI.user_id = referal.referred_by.toString()
+                    await this.walletTransactionService.post(walletTransactionI)
                     const referred_by_req = this.userService.getId(referal.referred_by.toString())
                     const referred_to_req = this.userService.getId(referal.referred_to.toString())
                     const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
@@ -706,11 +712,17 @@ export default class BookingController extends BaseController {
                     booking_id: booking._id,
                 }
                 const refundSI = await this.refundService.post(refund)
-                const sqsWalletTransactionData: SQSWalletTransactionI = {
-                    transaction_type: "Refund",
-                    refund_id: refundSI._id.toString()
+
+                const walletTransactionI: WalletTransactionI = {
+                    user_id: refund.user_id,
+                    amount: refund.amount_refunded,
+                    transaction_owner: "ALGO",
+                    transaction_type: "REFUND",
+                    reference_model: "refund",
+                    reference_id: refundSI._id.toString(),
+                    comment: "Amount is refunded"
                 }
-                sqsWalletTransaction(sqsWalletTransactionData)
+                await this.walletTransactionService.post(walletTransactionI)
             }
         }
         res.send({ message: "Booking status changed", success: true })
@@ -966,11 +978,16 @@ export default class BookingController extends BaseController {
                     booking_id: booking._id,
                 }
                 const refundSI = await this.refundService.post(refund)
-                const sqsWalletTransactionData: SQSWalletTransactionI = {
-                    transaction_type: "Refund",
-                    refund_id: refundSI._id.toString()
+                const walletTransactionI: WalletTransactionI = {
+                    user_id: refund.user_id,
+                    amount: refund.amount_refunded,
+                    transaction_owner: "ALGO",
+                    transaction_type: "REFUND",
+                    reference_model: "refund",
+                    reference_id: refundSI._id.toString(),
+                    comment: "Amount is refunded"
                 }
-                sqsWalletTransaction(sqsWalletTransactionData)
+                await this.walletTransactionService.post(walletTransactionI)
             }
         }
         const userReq = this.userService.getId(userId)

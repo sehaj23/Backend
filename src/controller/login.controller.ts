@@ -211,6 +211,11 @@ export default class LoginController extends BaseController {
     if (getUser === null) {
       user.approved = true
       const createUser = await this.service.create(user)
+      try {
+        SendEmail.signupUser(createUser.email,createUser.name)
+      } catch (error) {
+        console.log(error)
+      }
       if (createUser == null) {
         const errMsg = `unable to create User`;
         logger.error(errMsg);
@@ -219,6 +224,7 @@ export default class LoginController extends BaseController {
         return
       }
       createUser.password = ''
+     
 
       const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
         expiresIn: this.jwtValidity,

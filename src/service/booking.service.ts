@@ -1,16 +1,18 @@
 import { String } from "aws-sdk/clients/acm";
-import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import mongoose from "../database";
 import { Author, BookingAddressI, BookingI, BookingPaymentI, BookingPaymentMode, BookingPaymentVerifiedStatusEnum, BookingServiceI, BookingSI, BookinStatus } from "../interfaces/booking.interface";
 import { CartOption } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import SalonSI from "../interfaces/salon.interface";
+import { WalletTransactionI } from "../interfaces/wallet-transaction.interface";
 import { BookingRedis } from "../redis/index.redis";
 import ErrorResponse from "../utils/error-response";
 import MyStringUtils from "../utils/my-string.utils";
 import BaseService from "./base.service";
 import CartService from "./cart.service";
 import MongoCounterService from "./mongo-counter.service";
+import WalletTransactionService from "./wallet-transaction.service";
+
 
 import moment = require("moment");
 
@@ -19,22 +21,24 @@ export default class BookingService extends BaseService {
     referral: mongoose.Model<any, any>
     cartService: CartService
     mongoCounterService: MongoCounterService
-    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService, referral: mongoose.Model<any, any>) {
+    walletTransactionService: WalletTransactionService
+    constructor(bookingmodel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, cartService: CartService, mongoCounterService: MongoCounterService, referral: mongoose.Model<any, any>, walletTransactionService: WalletTransactionService) {
         super(bookingmodel);
         this.salonModel = salonModel
         this.cartService = cartService
         this.mongoCounterService = mongoCounterService
         this.referral = referral
+        this.walletTransactionService = walletTransactionService
     }
 
-    bookAppointment = async (userId: string, payments: BookingPaymentI[], location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus, commision_percentage:number) => {
+    bookAppointment = async (userId: string, payments: BookingPaymentI[], location: any, date_time: string, salon_id: string, options: any[], address: BookingAddressI, promo_code: string, actualStatus: BookinStatus, commision_percentage: number) => {
         try {
             let convertedDateTime: moment.Moment = moment(date_time)//.local()
 
             let nextDateTime: moment.Moment
             const services: BookingServiceI[] = options.map((o) => {
                 let totalPrice = o.quantity * o.price
-                let zattire_commission = totalPrice *  commision_percentage/100
+                let zattire_commission = totalPrice * commision_percentage / 100
                 const vendor_commission = totalPrice - zattire_commission
                 if (o.discount_given && o.discount_given !== 0) {
                     zattire_commission -= o.discount_given
@@ -97,13 +101,18 @@ export default class BookingService extends BaseService {
                 booking_numeric_id,
                 status
             }
-            const b = await this.model.create(booking)
+            const b = await this.model.create(booking) as BookingSI
             if (usedWalletAmount > -1) {
-                const sqsWalletTransactionData: SQSWalletTransactionI = {
-                    transaction_type: "Used Credits",
-                    booking_id: b._id.toString()
+                const walletTransactionI: WalletTransactionI = {
+                    amount: usedWalletAmount,
+                    user_id: b.user_id.toString(),
+                    reference_model: 'bookings',
+                    reference_id: b._id.toString(),
+                    transaction_type: "",
+                    transaction_owner: "ALGO",
+                    comment: "Used Credits"
                 }
-                sqsWalletTransaction(sqsWalletTransactionData)
+                await this.walletTransactionService.post(walletTransactionI)
             }
             // delete the cart of the user
             await this.cartService.bookCartByUserId(userId)
@@ -365,15 +374,15 @@ export default class BookingService extends BaseService {
 
 
 
-    getBookingByUserId = async (userId: string,q:any) => {
+    getBookingByUserId = async (userId: string, q: any) => {
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-            const bookingReq =  this.model.find({ "user_id": userId }).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).lean().populate("salon_id","name")
-           const bookingCountReq = this.model.count({"user_id": userId})
-            const [booking,bookingCount] =  await Promise.all([bookingReq,bookingCountReq])
-            return {booking,bookingCount}
+        const bookingReq = this.model.find({ "user_id": userId }).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).lean().populate("salon_id", "name")
+        const bookingCountReq = this.model.count({ "user_id": userId })
+        const [booking, bookingCount] = await Promise.all([bookingReq, bookingCountReq])
+        return { booking, bookingCount }
     }
 
     getbookings = async (q) => {
@@ -438,7 +447,7 @@ export default class BookingService extends BaseService {
         }
         console.log(filters);
         console.log("page_length", pageLength)
-        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id",fcm_token:1, populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
+        const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", fcm_token: 1, populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
 
@@ -450,7 +459,7 @@ export default class BookingService extends BaseService {
 
     }
     bookingByID = async (id: string) => {
-        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate("salon_id","name").exec()
+        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate("salon_id", "name").exec()
         return booking
     }
 

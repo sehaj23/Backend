@@ -14,6 +14,7 @@ import salonInfoRouter from "./salon.router"
 import searchRouter from "./search.router"
 import serviceRouter from "./service.router"
 import userRouter from "./user.router"
+import walletTransactionRouter from "./wallet-transactions.route"
 import walletRazorpayRouter from "./walletRazorpay.router"
 
 /**
@@ -39,6 +40,7 @@ Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
 Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
-Userrouter.use("/promo-home",promoHomeRouter)
-Userrouter.use("/banner",bannerRouter)
+Userrouter.use("/promo-home", promoHomeRouter)
+Userrouter.use("/banner", bannerRouter)
+Userrouter.use("/wallet-transaction", walletTransactionRouter)
 export default Userrouter

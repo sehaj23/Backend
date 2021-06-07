@@ -138,7 +138,6 @@ const SalonSchema = new mongoose.Schema({
     profile_pic: { // this is the DP of salon
         type: mongoose.Schema.Types.ObjectId,
         ref: "photos",
-        default: mongoose.Types.ObjectId("5fe059984ed7e11cdd326c00")
     },
    
     vendor_id: {

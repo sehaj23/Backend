@@ -2,7 +2,7 @@ import axios from "axios"
 import mongoose from "../database"
 import EmployeeSI from "../interfaces/employee.interface"
 import OtpSI, { OtpI } from "../interfaces/otp.interface"
-import UserI, { UserSI } from "../interfaces/user.interface"
+import { UserSI } from "../interfaces/user.interface"
 import logger from "../utils/logger"
 import SMSCONFIG from "../utils/sms-config"
 import BaseService from "./base.service"
@@ -24,7 +24,7 @@ export default class OtpService extends BaseService {
      * @param phone phone number of the user
      * @param text complete message you want to send
      */
-    static async sendMessage(phone: string | string[], text: string,template_id:string) {
+    static async sendMessage(phone: string | string[], text: string, template_id: string) {
         try {
             const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
@@ -38,7 +38,7 @@ export default class OtpService extends BaseService {
         }
     }
 
-    protected async sendOtp(phone: string, text: string,template_id:string) {
+    protected async sendOtp(phone: string, text: string, template_id: string) {
         try {
             const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
@@ -84,7 +84,7 @@ export default class OtpService extends BaseService {
             user_type: 'Vendor'
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text,SMSCONFIG.LOGIN_OTP)
+        await this.sendOtp(phone, text, SMSCONFIG.LOGIN_OTP)
         return otpD
     }
 
@@ -97,7 +97,7 @@ export default class OtpService extends BaseService {
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
+        await this.sendOtp(phone, text, SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
@@ -125,11 +125,11 @@ export default class OtpService extends BaseService {
             user_type: 'User',
         }
         const otpD = await this.post(otp)
-        await this.sendOtp(phone, text,SMSCONFIG.SIGNUP_OTP)
+        await this.sendOtp(phone, text, SMSCONFIG.SIGNUP_OTP)
         return otpD
     }
 
-    public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<UserSI> {
+    public async signupUserWithPhoneVerifyOtp(phone: string, otp: string): Promise<OtpSI> {
         const verifyOtp = await this.verifyOtp(phone, otp)
         // const user: UserI = {
         //     phone

@@ -1,6 +1,6 @@
 import mongoose from "../database";
 
-export interface UserAddressI{
+export interface UserAddressI {
     address: string
     city: string
     state: string
@@ -13,18 +13,19 @@ export interface UserAddressI{
 export default interface UserI {
     name?: string
     email?: string
-    password ? : string
-    signin_from ? : string
-    photo ? : string
-    age ? : string
-    gender ? : string
-    color_complextion ? : string
-    fcm_token? : string[],
-    blocked ? : boolean
-    approved ? : boolean
+    password?: string
+    signin_from?: string
+    photo?: string
+    age?: string
+    gender?: string
+    color_complextion?: string
+    fcm_token?: string[],
+    blocked?: boolean
+    approved?: boolean
     address?: UserAddressI[]
     phone?: string
-    referral_code?:string
+    balance?: number
+    referral_code?: string
 }
 
-export interface UserSI extends UserI, mongoose.Document {}
+export interface UserSI extends UserI, mongoose.Document { }

@@ -9,6 +9,7 @@ import SendEmail from "../utils/emails/send-email"
 import testEmail from "../utils/emails/test-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import SMSCONFIG from "../utils/sms-config"
+import BookingService from "./booking.service"
 import OtpService from "./otp.service"
 
 export default class Notify {

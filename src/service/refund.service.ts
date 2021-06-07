@@ -1,20 +1,23 @@
-import { sqsWalletTransaction, SQSWalletTransactionI } from "../aws";
 import BookingController from "../controller/booking.controller";
 import mongoose from "../database";
 import { BookingSI } from "../interfaces/booking.interface";
 import RefundSI, { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
+import { WalletTransactionI } from "../interfaces/wallet-transaction.interface";
 import ErrorResponse from "../utils/error-response";
 import BaseService from "./base.service";
 import BookingService from "./booking.service";
 import RazorPayService from "./razorpay.service";
+import WalletTransactionService from "./wallet-transaction.service";
 export default class RefundService extends BaseService {
 
     static ZATTIRE_REFUND_COMMISION = 35
 
     bookingService: BookingService
-    constructor(model: mongoose.Model<any, any>, bookingService: BookingService) {
+    walletTransactionService: WalletTransactionService
+    constructor(model: mongoose.Model<any, any>, bookingService: BookingService, walletTransactionService: WalletTransactionService) {
         super(model)
         this.bookingService = bookingService
+        this.walletTransactionService = walletTransactionService
     }
 
     createRefund = async (refundType: RefundTypeEnum, bookingId: string, userId: string): Promise<RefundSI> => {
@@ -87,11 +90,17 @@ export default class RefundService extends BaseService {
                 booking_id: booking._id,
             }
             const refundSI = await this.model.create(refund) as RefundSI
-            const sqsWalletTransactionData: SQSWalletTransactionI = {
-                transaction_type: "Refund",
-                refund_id: refundSI._id.toString()
+
+            const walletTransactionI: WalletTransactionI = {
+                amount: amountToRefund,
+                user_id: userId,
+                reference_model: 'rufunds',
+                reference_id: refundSI._id.toString(),
+                transaction_type: "",
+                transaction_owner: "ALGO",
+                comment: "Refund"
             }
-            sqsWalletTransaction(sqsWalletTransactionData)
+            await this.walletTransactionService.post(walletTransactionI)
             booking.status = 'Refunded'
             booking.refund_id = refundSI._id
             await booking.save()

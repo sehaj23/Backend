@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
     },
     signin_from: {
         type: String,
-        default:"Normal"
+        default: "Normal"
     },
     profile_pic: {
         type: mongoose.Schema.Types.ObjectId,
@@ -95,6 +95,10 @@ const UserSchema = new mongoose.Schema({
             },
 
         }]
+    },
+    balance: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
