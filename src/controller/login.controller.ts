@@ -48,7 +48,7 @@ export default class LoginController extends BaseController {
     const v = await Vendor.findOne({ email, password: encryptData(password) })
     if (v === null) throw new Error("Email id password does not match")
     v.password = undefined
-    const token = await jwt.sign(v.toJSON(), CONFIG.VENDOR_JWT, {
+    const token = await jwt.sign({_id: v._id.toString() }, CONFIG.VENDOR_JWT, {
       expiresIn: this.jwtValidity,
     })
     res.send({ token })
@@ -93,7 +93,7 @@ export default class LoginController extends BaseController {
       if (!user.blocked) {
         UserRedis.remove('Login', { email })
         user.password = ''
-        const token = await jwt.sign(user.toJSON(), this.jwtKey, {
+        const token = await jwt.sign({_id: user._id.toString() }, this.jwtKey, {
           expiresIn: this.jwtValidity,
         })
         return res.status(200).send({
@@ -191,7 +191,7 @@ export default class LoginController extends BaseController {
 
     }
     console.log(createUser.email)
-    const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({ _id: createUser._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
 
@@ -226,7 +226,7 @@ export default class LoginController extends BaseController {
       createUser.password = ''
      
 
-      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+      const token = await jwt.sign( {_id: createUser._id.toString() }, this.jwtKey, {
         expiresIn: this.jwtValidity,
       })
       const queueData = {
@@ -238,7 +238,7 @@ export default class LoginController extends BaseController {
       })
     }
     getUser.password = ''
-    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({_id: getUser._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
@@ -264,7 +264,7 @@ export default class LoginController extends BaseController {
       }
       createUser.password = ''
 
-      const token = await jwt.sign(createUser.toJSON(), this.jwtKey, {
+      const token = await jwt.sign({_id: createUser._id.toString() }, this.jwtKey, {
         expiresIn: this.jwtValidity,
       })
       const queueData = {
@@ -276,7 +276,7 @@ export default class LoginController extends BaseController {
       })
     }
     getUser.password = ''
-    const token = await jwt.sign(getUser.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({_id: getUser._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
@@ -318,7 +318,7 @@ export default class LoginController extends BaseController {
     if (user === null) throw new ErrorResponse({ message: `User not found with phone ${phone}` })
     await this.otpService.verifyUserOtp(phone, otp, user._id.toString())
     user.password = ''
-    const token = await jwt.sign(user.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({_id: user._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
@@ -332,7 +332,7 @@ export default class LoginController extends BaseController {
     if (user === null) throw new ErrorResponse({ message: `User not found with phone ${email}` })
     await this.otpService.emailVerifyUserOtp(email, otp, user._id.toString())
     user.password = ''
-    const token = await jwt.sign(user.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({_id: user._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     return res.status(200).send({
