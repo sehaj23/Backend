@@ -676,7 +676,7 @@ export default class BookingController extends BaseController {
                         user_id: referal.referred_to.toString(),
                         reference_model: 'referal',
                         reference_id: referal._id.toString(),
-                        transaction_type: "",
+                        transaction_type: "Refferal Bonus Added",
                         transaction_owner: "ALGO",
                         comment: "Refferal Bonus Added"
                     }
@@ -1010,7 +1010,7 @@ export default class BookingController extends BaseController {
         const data: FeedbackI = req.body
         data.booking_id = bookingId
         //@ts-ignore
-        data.user_id =  req.userId
+        data.user_id = req.userId
         const feedback = await this.feedbackService.post(data)
         res.send(feedback)
     })
