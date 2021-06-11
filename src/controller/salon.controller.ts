@@ -405,7 +405,7 @@ export default class SalonController extends BaseController {
         const reviewsReq = this.service.getSalonReviews(salonId, q)
         const promoCodeReq = this.promoCodeService.getPromoBySalon(salonId)
 
-        const userReq = this.userService.getFavourites(id)
+        const userReq = this.userService.getFavourites(id,q)
 
         const [salon, reviews, user, promocodes] = await Promise.all([salonReq, reviewsReq, userReq, promoCodeReq])
         const services = salon.services

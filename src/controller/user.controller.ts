@@ -205,8 +205,8 @@ export default class UserController extends BaseController {
     getFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-
-        const user = await this.service.getFavourites(id)
+        const q =  req.query
+        const user = await this.service.getFavourites(id,q)
         if (user === null) {
             logger.error(`No Favourites`)
             res.status(400)
