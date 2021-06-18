@@ -36,7 +36,7 @@ export default class WalletRazorpayController extends BaseController {
                 user_id: walletRazorpay.user_id,
                 reference_model: 'walletRazorpay',
                 reference_id: walletRazorpay._id.toString(),
-                transaction_type: "",
+                transaction_type: "Credits Added",
                 transaction_owner: "ALGO",
                 comment: "Credits Added"
             }

@@ -96,7 +96,7 @@ export default class RefundService extends BaseService {
                 user_id: userId,
                 reference_model: 'rufunds',
                 reference_id: refundSI._id.toString(),
-                transaction_type: "",
+                transaction_type: "Refund",
                 transaction_owner: "ALGO",
                 comment: "Refund"
             }

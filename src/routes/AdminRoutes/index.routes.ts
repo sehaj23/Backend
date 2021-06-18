@@ -18,6 +18,7 @@ import reportsSalonRouter from "./salon-reports.router";
 import salonRouter from "./salon.router";
 import userRouter from "./user.router";
 import vendorRouter from "./vendor.router";
+import walletTransactionRouter from "./wallte-transaction.router";
 import zattireServiceRouter from "./zattire-services.router";
 
 /**
@@ -39,15 +40,16 @@ router.use("/user", userRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
-router.use("/reviews",reviewsSalonRouter)
+router.use("/reviews", reviewsSalonRouter)
 router.use("/revenue", revenueRouter)
 router.use("/promo-code", promoCodeRouter)
 router.use("/report-app", reportAppRouter)
-router.use("/report-salon",reportsSalonRouter)
-router.use("/referrals",referralRouter)
-router.use("/banner",bannerRouter)
-router.use("/promo-home",promoHomeRouter)
-router.use("/promo-user",promoUserRouter)
+router.use("/report-salon", reportsSalonRouter)
+router.use("/referrals", referralRouter)
+router.use("/banner", bannerRouter)
+router.use("/promo-home", promoHomeRouter)
+router.use("/promo-user", promoUserRouter)
 router.use("/zattire-services", zattireServiceRouter)
+router.use("/wallte-transaction", walletTransactionRouter)
 
 export default router
