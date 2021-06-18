@@ -1,7 +1,7 @@
 
 import { Router } from "express";
 import WalletTransactionController from "../../controller/wallet-transaction.controller";
-import UserverifyToken from "../../middleware/User.jwt";
+import verifyToken from "../../middleware/jwt";
 import Booking from "../../models/booking.model";
 import User from "../../models/user.model";
 import WalletTransaction from "../../models/wallet-transaction.model";
@@ -16,5 +16,5 @@ const userService = new UserService(User, Booking)
 const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)
 const walletRazorpayController = new WalletTransactionController(walletTransactionService)
 
-walletTransactionRouter.get("/", UserverifyToken, walletRazorpayController.getWithPagination)
+walletTransactionRouter.get("/", verifyToken, walletRazorpayController.getWithPagination)
 export default walletTransactionRouter
