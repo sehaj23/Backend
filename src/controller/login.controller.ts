@@ -206,11 +206,60 @@ export default class LoginController extends BaseController {
   loginwithGoogle = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid, email } = req.body
-
+    let refferallCode
     const getUser = await this.service.getbyUIDandEmail(uid, email) as UserSI
     if (getUser === null) {
       user.approved = true
       const createUser = await this.service.create(user)
+      if (req.body.rfcode) {
+        const rfCode = req.body.rfcode
+        refferallCode = await this.service.getOne({ referral_code: rfCode })
+        if (refferallCode != null) {
+          const referalData: ReferralI = {
+            referred_by: refferallCode._id,
+            referred_to: {
+              status: "Used",
+              referral_code: rfCode,
+              user: createUser._id,
+            }
+          }
+          try {
+            const referral = await this.referralService.post(referalData) as ReferralSI
+          } catch (error) {
+            console.log(error)
+          }
+          try {
+            const getRefferal = await this.referralService.countDocumnet({ referred_by: refferallCode._id, "referred_to.status": "Used" })
+            console.log(refferallCode._id)
+            if (getRefferal === 4) {
+              const promoCode = {
+                promo_code: "REFBONUS" + refferallCode._id.toString().substring(1, 4),
+                user_ids: [refferallCode._id],
+                description: "refer your 4 friends and get your first haircut free",
+                active: true,
+                salon_ids: [],
+                categories: ["HAIRCUT"],
+                time_type: 'All Day',
+                visiblity: "User",
+                payment_mode: "Both",
+                minimum_bill: 100,
+                discount_type: "Discount Percentage",
+                discount_percentage: 60,
+                discount_cap: 600,
+                usage_time_difference: 1,
+                max_usage: 1,
+                start_date_time: moment().toDate(),
+                expiry_date_time: moment("2021-05-30").toDate()
+              }
+              const promo = await this.promoCodeService.post(promoCode) as PromoCodeSI
+              PromoCodeRedis.removeAll()
+            }
+          } catch (error) {
+            console.log(error)
+          }
+  
+        }
+      }
       try {
         SendEmail.signupUser(createUser.email,createUser.name)
       } catch (error) {
@@ -251,10 +300,60 @@ export default class LoginController extends BaseController {
   loginwithFacebook = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     const { uid } = req.body
+    let refferallCode
     const getUser = await this.service.getbyUID(uid) as UserSI
     if (getUser === null) {
       user.approved = true
       const createUser = await this.service.create(user)
+      if (req.body.rfcode) {
+        const rfCode = req.body.rfcode
+        refferallCode = await this.service.getOne({ referral_code: rfCode })
+        if (refferallCode != null) {
+          const referalData: ReferralI = {
+            referred_by: refferallCode._id,
+            referred_to: {
+              status: "Used",
+              referral_code: rfCode,
+              user: createUser._id,
+            }
+          }
+          try {
+            const referral = await this.referralService.post(referalData) as ReferralSI
+          } catch (error) {
+            console.log(error)
+          }
+          try {
+            const getRefferal = await this.referralService.countDocumnet({ referred_by: refferallCode._id, "referred_to.status": "Used" })
+            console.log(refferallCode._id)
+            if (getRefferal === 4) {
+              const promoCode = {
+                promo_code: "REFBONUS" + refferallCode._id.toString().substring(1, 4),
+                user_ids: [refferallCode._id],
+                description: "refer your 4 friends and get your first haircut free",
+                active: true,
+                salon_ids: [],
+                categories: ["HAIRCUT"],
+                time_type: 'All Day',
+                visiblity: "User",
+                payment_mode: "Both",
+                minimum_bill: 100,
+                discount_type: "Discount Percentage",
+                discount_percentage: 60,
+                discount_cap: 600,
+                usage_time_difference: 1,
+                max_usage: 1,
+                start_date_time: moment().toDate(),
+                expiry_date_time: moment("2021-06-15").toDate()
+              }
+              const promo = await this.promoCodeService.post(promoCode) as PromoCodeSI
+              PromoCodeRedis.removeAll()
+            }
+          } catch (error) {
+            console.log(error)
+          }
+  
+        }
+      }
       if (createUser == null) {
         const errMsg = `unable to create User`;
         logger.error(errMsg);

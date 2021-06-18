@@ -673,7 +673,7 @@ export default class SalonService extends BaseService {
                                         profile_pic: 1,
                                         rating: 1,
                                         area: 1,
-                                        temporary_closed:1
+                                        // temporary_closed:1
                                         // service: { $addToSet: "$services" },
 
 
