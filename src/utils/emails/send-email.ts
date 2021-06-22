@@ -51,13 +51,13 @@ export default class SendEmail {
         const mail = new MailComposer(mailOptions);
     }
 
-    static bookingConfirm = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string, emp_name: string, location: string, payments: BookingPaymentI[], amount: string, promo: string, services: BookingServiceI[], userName: string) => {
+    static bookingConfirm = async (userEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string, emp_name: string, location: string, payments: BookingPaymentI[], amount: string, promo: string, services: BookingServiceI[], userName: string) => {
         const serviceList = services.map(s => { return s.service_name + " <br>" })
 
 
         fs.readFile(`${__dirname}/booking-confirmed.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
-                SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
+                SendEmail.logEmailStatus(false, 'booking confirmed', 'user', userEmail, err.message)
                 return
             }
             data = data.replaceAll("[Customer Name]", userName)
@@ -80,6 +80,7 @@ export default class SendEmail {
                         'kashish@zattire.com',
                         'pushaan@zattire.com',
                         'developers@zattire.com',
+                        userEmail
                         //  salonEmail
                         /* more items */
                     ]
@@ -113,10 +114,10 @@ export default class SendEmail {
             // Handle promise's fulfilled/rejected states
             sendPromise.then(
                 function (data) {
-                    SendEmail.logEmailStatus(true, 'booking confirmed', 'salon', salonEmail, data.MessageId)
+                    SendEmail.logEmailStatus(true, 'booking confirmed', 'user', userEmail, data.MessageId)
                 }).catch(
                     function (err) {
-                        SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
+                        SendEmail.logEmailStatus(false, 'booking confirmed', 'user', userEmail, err.message)
                     });
         })
 
