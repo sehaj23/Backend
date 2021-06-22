@@ -76,10 +76,9 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
                         'developers@zattire.com',
+                        salonEmail,
                         
                         //  salonEmail
                         /* more items */
@@ -135,11 +134,9 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
                         'developers@zattire.com',
-                        //    salonEmail
+                            salonEmail,
                         /* more items */
                     ]
                 },
@@ -194,13 +191,11 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [
-                        'preetsc27@gmail.com',
+                    ToAddresses: [  
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
                         'developers@zattire.com',
 
-                        userEmail
+                        userEmail,
                         /* more items */
                     ]
                 },
