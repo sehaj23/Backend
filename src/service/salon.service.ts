@@ -407,7 +407,8 @@ export default class SalonService extends BaseService {
                 const filter = {
                         pageNumber,
                         pageLength,
-                        skipCount
+                        skipCount,
+                        getDistance
                 }
                
                
@@ -489,7 +490,8 @@ export default class SalonService extends BaseService {
                 const filter = {
                         pageNumber,
                         pageLength,
-                        skipCount
+                        skipCount,
+                        getDistance
                 }
                 const redisKey = "getHomeSalon"
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
@@ -573,10 +575,15 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
+                let getDistance=false
+                if(q.latitude != null && q.longitude !=null){
+                        getDistance=true
+                }
                 const filter = {
                         pageNumber,
                         pageLength,
-                        skipCount
+                        skipCount,
+                        getDistance
                 }
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
@@ -595,7 +602,48 @@ export default class SalonService extends BaseService {
                                         }
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
+                        if (getDistance) {
+                                console.log(salons.coordinates)
 
+                                try {
+                                        const salonCoordinates: string[] = salons.map((e) => {
+                                                return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
+        
+                                        })
+                                        const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
+                                                console.log(userLocation)
+                                        //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                        const newSalon = await new Promise<any>((resolve, reject) => {
+        
+                                                distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
+                                                return distance.get(
+                                                        {
+                                                                origins: userLocation,
+                                                                destinations: salonCoordinates
+                                                        },
+                                                        function (err, data) {
+                                                                if (err) { console.log(err) 
+                                                                 return reject(salons)
+                                                                }
+                                                                console.log(data);
+                                                                
+                                                                for (var i = 0; i < data.length; i++) {
+                                                                        salons[i].distance = data[i]
+                                                                }
+                                                                //   salon.map((e)=>{
+                                                                //           e.distance=data
+                                                                //   })
+                                                               return  resolve( salons)
+                                                              
+                                                        });
+                                        })
+                                        return newSalon
+                                } catch (e) {
+                                        console.log(e)
+                                        return salons
+                                }
+                              
+                }
                         return salons
                 }
                 return cahceGetSalon
