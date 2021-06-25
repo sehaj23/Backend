@@ -505,7 +505,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 10000000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").lean()
 
                         if (getDistance) {
                                 console.log(salons.coordinates)
@@ -601,7 +601,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 100000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic")
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").lean()
                         if (getDistance) {
                                 console.log(salons.coordinates)
 
