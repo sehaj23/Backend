@@ -1,5 +1,7 @@
 import { RazorpayPaymentData } from "../interfaces/booking.interface";
 import { WalletRazorpayI, WalletRazorpaySI, WalletRazorpayStatus } from "../interfaces/walletRazorpay.interface";
+import { UserRedis } from "../redis/index.redis";
+import REDIS_CONFIG from "../utils/redis-keys";
 import BaseService from "./base.service";
 import RazorPayService from "./razorpay.service";
 
@@ -21,6 +23,7 @@ export default class WalletRazorpayService extends BaseService {
         if (!order.id) throw new Error("Razorpay order id not found")
         walletRazorpay.razorpay_order_id = order.id
         await walletRazorpay.save()
+        await UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
         return walletRazorpay
     }
 

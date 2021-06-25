@@ -43,6 +43,9 @@ export default class BaseService {
     getOne = async (filters = {}): Promise<any> => {
         return await this.model.findOne(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")
     }
+    getOnewithlean = async (filters = {}): Promise<any> => {
+        return await this.model.findOne(filters).lean().select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id")
+    }
 
     /**
      * This is to find by multipleIds
