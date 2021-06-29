@@ -128,7 +128,7 @@ export default class UserService extends BaseService {
         return user
 
     }
-    getFavourites = async (id: string,q:any) => {
+    getFavourites = async (id: string, q: any) => {
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
@@ -143,7 +143,7 @@ export default class UserService extends BaseService {
                 populate: {
                     path: 'profile_pic'
                 }
-            }) 
+            })
             UserRedis.set(id, JSON.stringify(user), { type: "favourites" })
             return user
         }
@@ -221,6 +221,7 @@ export default class UserService extends BaseService {
         const floatAmount = parseFloat(strAmount)
         user.balance += floatAmount
         await user.save()
+        UserRedis.set(userId, user, { type: "info" })
         return user
     }
 
@@ -236,6 +237,7 @@ export default class UserService extends BaseService {
         if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
         user.balance += floatAmount
         await user.save()
+        UserRedis.set(userId, user, { type: "info" })
         return user
     }
     createRefferal = async (name: string, id: string) => {

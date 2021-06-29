@@ -1,0 +1,3 @@
+@baseUrl = http://localhost:8082
+
+GET {{baseUrl}}/main-server/api/u/wallet-transaction/user

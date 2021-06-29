@@ -19,6 +19,8 @@ const WalletRazorpaySchema = new mongoose.Schema({
     },
     razorpay_payment_data: Object,
     error_message: String
+}, {
+    timestamps: true
 })
 const WalletRazorpay = mongoose.model("wallet_razorpays", WalletRazorpaySchema)
 

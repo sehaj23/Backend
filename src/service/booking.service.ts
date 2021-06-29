@@ -108,7 +108,7 @@ export default class BookingService extends BaseService {
                     user_id: b.user_id.toString(),
                     reference_model: 'bookings',
                     reference_id: b._id.toString(),
-                    transaction_type: "",
+                    transaction_type: "Used Credits",
                     transaction_owner: "ALGO",
                     comment: "Used Credits"
                 }
