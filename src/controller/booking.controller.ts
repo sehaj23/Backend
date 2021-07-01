@@ -1037,6 +1037,30 @@ export default class BookingController extends BaseController {
         res.send(bookings)
     })
 
+     employeeSlots =controllerErrorHandler ( async (req: Request, res: Response)=>{
+        const id = req.params.id
+        let gotSlotsDate =   req.query.slots_date
+        //TODO:validator
+        if (!gotSlotsDate) {
+            const msg = "Something went wrong"
+            logger.error(msg)
+            res.status(400).send({ success: false, message: msg });
+            return
+        }
+        const slotsDate = new Date(gotSlotsDate.toString())
+        
+        const slots = await this.employeeService.employeeSlots(id, slotsDate)
+        
+        if(slots==null){
+            logger.error(`No Slots Found`)
+            res.status(400)
+            res.send({ message: `No Slots Found` })
+            return
+        }
+        res.send(slots)
+
+    })
+
 
 
 }

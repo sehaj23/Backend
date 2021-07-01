@@ -57,7 +57,10 @@ const bookingController = new BookingController(bookingService, salonService, em
 bookingRouter.post("/", verifyToken, bookingController.post)
 bookingRouter.get("/", verifyToken, bookingController.getBookingsAdmin)
 bookingRouter.get("/info/:id", verifyToken, bookingController.getbookingbyId)
+bookingRouter.get("/reschedule/:id", verifyToken, bookingController.rescheduleSlots)
+bookingRouter.patch("/reschedule/:id", verifyToken, bookingController.reschedulebooking)
 bookingRouter.get("/status", verifyToken, bookingController.bookingStatus)
+bookingRouter.get("/employee-slots/:id",verifyToken,bookingController.employeeSlots)
 bookingRouter.patch("/update-status/:id", verifyToken, bookingController.updateStatusBookings)
 bookingRouter.put("/:id", verifyToken, bookingController.put)
 /**
