@@ -3,8 +3,10 @@ import mongoose from "../database";
 import { UserSI } from "../interfaces/user.interface";
 import { UserRedis } from "../redis/index.redis";
 import encryptData from "../utils/password-hash";
+import REDIS_CONFIG from "../utils/redis-keys";
 import sendNotificationToDevice from "../utils/send-notification";
 import BaseService from "./base.service";
+
 
 export default class UserService extends BaseService {
     bookingModel: mongoose.Model<any, any>
@@ -14,10 +16,10 @@ export default class UserService extends BaseService {
     }
 
     getId = async (id: string) => {
-        const redisUser = await UserRedis.get(id, { type: "info" })
+        const redisUser = await UserRedis.get(id, { type: REDIS_CONFIG.userinfo })
         if (redisUser === null) {
             const user = await this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").lean()
-            UserRedis.set(id, user, { type: "info" })
+            UserRedis.set(id, user, { type:REDIS_CONFIG.userinfo})
             return user
         }
         return JSON.parse(redisUser)
@@ -32,9 +34,9 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
-        const redisUser = await UserRedis.remove(id, { type: "info" })
+        const redisUser = await UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
         const user = await this.model.findOneAndUpdate({ _id: _id }, d, { new: true })
-        UserRedis.set(id, user, { type: "info" })
+        UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo})
         return user
     }
     updatePass = async (id: string, password: string, newpassword: String) => {
@@ -221,7 +223,7 @@ export default class UserService extends BaseService {
         const floatAmount = parseFloat(strAmount)
         user.balance += floatAmount
         await user.save()
-        UserRedis.set(userId, user, { type: "info" })
+        UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
 
@@ -237,7 +239,7 @@ export default class UserService extends BaseService {
         if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
         user.balance += floatAmount
         await user.save()
-        UserRedis.set(userId, user, { type: "info" })
+        UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
     createRefferal = async (name: string, id: string) => {
