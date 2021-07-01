@@ -198,7 +198,7 @@ export default class LoginController extends BaseController {
     const queueData = {
       "user_id": createUser._id
     }
-    sqsNewUser(JSON.stringify(queueData))
+    
 
     res.status(201).send({ token })
   })

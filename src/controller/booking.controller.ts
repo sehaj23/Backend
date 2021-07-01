@@ -114,7 +114,7 @@ export default class BookingController extends BaseController {
             }
         ]
         const paymentModes = booking.payments.map((m: BookingPaymentI) => m.mode)
-        if (paymentModes.length === 1 && paymentModes[0] === BookingPaymentMode.RAZORPAY) {
+        if (paymentModes.length === 1 && paymentModes[0] === BookingPaymentMode.WALLET) {
             refundOptions = [refundOptions[0]]
         }
         bookingJson['refundOptions'] = refundOptions
