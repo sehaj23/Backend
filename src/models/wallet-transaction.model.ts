@@ -16,7 +16,6 @@ const WalletTransactionSchema = new mongoose.Schema({
     },
     amount: {
         type: Number,
-        min: 1,
         required: true
     },
     reference_model: {

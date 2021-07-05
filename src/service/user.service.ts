@@ -241,7 +241,8 @@ export default class UserService extends BaseService {
         const floatAmount = parseFloat(strAmount)
         if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
         user.balance += floatAmount
-        await user.save()
+        const redisUser =  UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
+        await  Promise.all([user.save(),redisUser])
         UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
