@@ -222,8 +222,11 @@ export default class UserService extends BaseService {
         const strAmount = amount.toFixed(2)
         const floatAmount = parseFloat(strAmount)
         user.balance += floatAmount
-        await user.save()
-        UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
+       
+      
+       const redisUser = await UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
+         await  Promise.all([user.save(),redisUser])
+         UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
 

@@ -675,21 +675,28 @@ export default class BookingController extends BaseController {
                 } else {
                     const walletTransactionI: WalletTransactionI = {
                         amount: 50,
-                        user_id: referal.referred_to.toString(),
+                        user_id: referal.referred_to.user.toString(),
                         reference_model: 'referal',
-                        reference_id: referal._id.toString(),
+                        reference_id: referal._id,
                         transaction_type: "Refferal Bonus Added",
                         transaction_owner: "ALGO",
                         comment: "Refferal Bonus Added"
                     }
                     await this.walletTransactionService.post(walletTransactionI)
                     // changing the id olny
-                    walletTransactionI.user_id = referal.referred_by.toString()
-                    await this.walletTransactionService.post(walletTransactionI)
+                    walletTransactionI.user_id = referal.referred_by.toString() 
+                  
+                    const transaction =  await this.walletTransactionService.post(walletTransactionI)
+                    
                     const referred_by_req = this.userService.getId(referal.referred_by.toString())
-                    const referred_to_req = this.userService.getId(referal.referred_to.toString())
+                    const referred_to_req = this.userService.getId(referal.referred_to.user.toString())
                     const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
-                    const notify = Notify.referralComplete(referred_by, referred_to)
+                    try{
+                        const notify = Notify.referralComplete(referred_by, referred_to)
+                    }catch(e){
+                        console.log(e)
+                    }
+                   
                 }
             }
         }
