@@ -7,6 +7,7 @@ import eventRouter from "./event.router";
 import loginRouter from "./login.router";
 import makeupArtistRouter from "./makeupArtist.route";
 import offerRouter from "./offer.router";
+import photoRouter from "./photo.router";
 import promoCodeRouter from "./promo-code.router";
 import promoHomeRouter from "./promo-home.router";
 import promoUserRouter from "./promo-user.routes";
@@ -37,6 +38,7 @@ router.use("/login", loginRouter);
 router.use("/vendor", vendorRouter);
 router.use("/makeupArtist", makeupArtistRouter)
 router.use("/user", userRouter)
+router.use('/photo',photoRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
