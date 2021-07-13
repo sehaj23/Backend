@@ -96,12 +96,10 @@ export default class UserService extends BaseService {
             //@ts-ignore
             if (add._id.toString() === addressId) {
                 for (let key of Object.keys(d)) add[key] = d[key]
-                const redisUser = UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
-                 await  Promise.all([user.save(),redisUser])
-                 UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
-               
+                await user.save()
                 return user.address
-            }
+            }     
+       UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         }
         throw new Error("Address not found. Hence, not updated")
     }
