@@ -82,8 +82,11 @@ export default class UserService extends BaseService {
     addAddress = async (id: string, d: any) => {
         const user = await this.model.findOne({ _id: id }) as UserSI
         user.address.push(d)
-        await user.save()
-        return user.address
+
+       const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
+       await  Promise.all([user.save(),redisUser])
+       UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
+      return user.address
     }
 
     updateAddress = async (userId: string, addressId: string, d: Object) => {
@@ -93,7 +96,10 @@ export default class UserService extends BaseService {
             //@ts-ignore
             if (add._id.toString() === addressId) {
                 for (let key of Object.keys(d)) add[key] = d[key]
-                await user.save()
+                const redisUser = UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
+                 await  Promise.all([user.save(),redisUser])
+                 UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
+               
                 return user.address
             }
         }
