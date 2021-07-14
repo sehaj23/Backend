@@ -148,7 +148,7 @@ runAllCrons()
 app.get(`${URL_PREFIX}/r/clr`, async (req: express.Request, res: express.Response) => {
   try {
     redisClient.flushdb();
-    res.status(200).send({ msg: 'Redis store  cleared' })
+    res.status(200).send({ msg: 'Redis storeCleared' })
   } catch (e) {
     res.status(400).send(e)
   }
