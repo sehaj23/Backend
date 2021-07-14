@@ -1049,7 +1049,7 @@ export default class SalonService extends BaseService {
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
                         console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
-                                if (i.utcOffset("+5:30").hours() > moment().hours()) {
+                                if (i.hours() > moment().hours()) {
                                         console.log(i.hours())
                                         console.log(moment().hours())
                                         const slot = moment(i).utcOffset("+5:30").add(30, 'minutes').format('hh:mm a')
