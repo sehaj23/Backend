@@ -82,8 +82,11 @@ export default class UserService extends BaseService {
     addAddress = async (id: string, d: any) => {
         const user = await this.model.findOne({ _id: id }) as UserSI
         user.address.push(d)
-        await user.save()
-        return user.address
+
+       const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
+       await  Promise.all([user.save(),redisUser])
+       UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
+      return user.address
     }
 
     updateAddress = async (userId: string, addressId: string, d: Object) => {
@@ -95,7 +98,8 @@ export default class UserService extends BaseService {
                 for (let key of Object.keys(d)) add[key] = d[key]
                 await user.save()
                 return user.address
-            }
+            }     
+       UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         }
         throw new Error("Address not found. Hence, not updated")
     }
@@ -222,8 +226,11 @@ export default class UserService extends BaseService {
         const strAmount = amount.toFixed(2)
         const floatAmount = parseFloat(strAmount)
         user.balance += floatAmount
-        await user.save()
-        UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
+       
+      
+       const redisUser = await UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
+         await  Promise.all([user.save(),redisUser])
+         UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
 
@@ -238,7 +245,8 @@ export default class UserService extends BaseService {
         const floatAmount = parseFloat(strAmount)
         if (floatAmount > user.balance) throw new Error(`User balance is less: ${user.balance}`)
         user.balance += floatAmount
-        await user.save()
+        const redisUser =  UserRedis.remove(userId, { type: REDIS_CONFIG.userinfo })
+        await  Promise.all([user.save(),redisUser])
         UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }

@@ -427,11 +427,14 @@ export default class SalonService extends BaseService {
                                 totalPageNumber = pageNo[0].count
                         }
                         const totalPages = Math.ceil(totalPageNumber / pageLength)
+                        console.log(getDistance)
                         if (getDistance) {
-                                console.log(salon.coordinates)
-
+                               
+                              
                                 try {
                                         const salonCoordinates: string[] = salon.map((e) => {
+                                                console.log(e.name)
+                                                console.log(e.coordinates)
                                                 return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
         
                                         })
@@ -450,7 +453,7 @@ export default class SalonService extends BaseService {
                                                                 if (err) { console.log(err) 
                                                                  return reject(salon)
                                                                 }
-                                                                console.log(data);
+                                                               
                                                                 
                                                                 for (var i = 0; i < data.length; i++) {
                                                                         salon[i].distance = data[i]
@@ -464,7 +467,7 @@ export default class SalonService extends BaseService {
                                         })
                                         return newSalon
                                 } catch (e) {
-                                        console.log(e)
+                                       console.log(e)
                                         return salon
                                 }
                         }
@@ -478,7 +481,7 @@ export default class SalonService extends BaseService {
         getHomeServiceSalon = async (q) => {
                 let getDistance=false
                 const pageNumber: number = parseInt(q.page_number || 1)
-                let pageLength: number = parseInt(q.page_length || 8)
+                let pageLength: number = parseInt(q.page_length || 2)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 if(q.latitude != null && q.longitude !=null){
@@ -530,7 +533,7 @@ export default class SalonService extends BaseService {
                                                                 if (err) { console.log(err) 
                                                                  return reject(salons)
                                                                 }
-                                                                console.log(data);
+                                                            
                                                                 
                                                                 for (var i = 0; i < data.length; i++) {
                                                                         salons[i].distance = data[i]
@@ -625,7 +628,7 @@ export default class SalonService extends BaseService {
                                                                 if (err) { console.log(err) 
                                                                  return reject(salons)
                                                                 }
-                                                                console.log(data);
+                                                            
                                                                 
                                                                 for (var i = 0; i < data.length; i++) {
                                                                         salons[i].distance = data[i]
@@ -1136,7 +1139,7 @@ export default class SalonService extends BaseService {
                                                 },
                                                 function (err, data) {
                                                         if (err) return console.log(err);
-                                                        console.log(data);
+                                                    
                                                         for (var i = 0; i < data.length; i++) {
                                                                 salon[i].distance = data[i]
                                                         }
@@ -1168,7 +1171,7 @@ export default class SalonService extends BaseService {
                                 },
                                 function (err, data) {
                                         if (err) return console.log(err);
-                                        console.log(data);
+                                   
                                         return resolve(data)
                                 });
                         return newSalon
