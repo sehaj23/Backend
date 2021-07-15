@@ -129,6 +129,11 @@ const SalonSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+
+    book_service: {
+        type: Boolean,
+        default: true
+    },
     photo_ids: {
         type: [{
             type: mongoose.Schema.Types.ObjectId,

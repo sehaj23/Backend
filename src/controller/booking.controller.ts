@@ -450,10 +450,12 @@ export default class BookingController extends BaseController {
         }
         const rs = new RazorPayService()
         const bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
-        if(process.env.NODE_ENV.toString()  !='production'){
+       try{
         const capture = await rs.capture(payment_id, bookingTotalPrice)
         console.log("CAPTURE Razor Pay")
         console.log(capture)
+        }catch(e){
+            console.log(e)
         }
         booking.razorpay_payment_data = razorpayPaymentData
         await booking.save()
