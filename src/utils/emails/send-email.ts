@@ -251,10 +251,9 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                       
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
 
                         userEmail
                         /* more items */
@@ -322,10 +321,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                     
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                       
+                        'sehaj@zattire.com',
                         userEmail
                         /* more items */
                     ]
@@ -380,10 +379,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                       
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                       
+                        'sehaj@zattire.com',
                         userEmail
                         /* more items */
                     ]
@@ -441,10 +440,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                        
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                       
+                        'sehaj@zattire.com',
                         userEmail
                         /* more items */
                     ]
@@ -512,10 +511,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                       
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                        
+                        'sehaj@zattire.com',
                         salonEmail
                         /* more items */
                     ]
@@ -583,10 +582,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                      
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                      
+                        'sehaj@zattire.com',
                         salonEmail
                         /* more items */
                     ]
@@ -643,10 +642,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                       
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                       
+                        'sehaj@zattire.com',
                         userEmail
                         /* more items */
                     ]
@@ -703,10 +702,10 @@ export default class SendEmail {
             const params = {
                 Destination: { /* required */
                     ToAddresses: [
-                        'preetsc27@gmail.com',
+                       
                         'kashish@zattire.com',
-                        'pushaan@zattire.com',
-                        'developers@zattire.com',
+                       
+                        'sehaj@zattire.com',
                         salonEmail
                         /* more items */
                     ]
