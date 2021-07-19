@@ -646,6 +646,7 @@ export default class BookingController extends BaseController {
         const userData = this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
+        
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         let refundToWallet = false
 
