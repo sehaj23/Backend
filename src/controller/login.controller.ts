@@ -451,6 +451,17 @@ export default class LoginController extends BaseController {
 
   })
 
+  checkMobileUnique =  controllerErrorHandler(async (req: Request, res: Response) => {
+    const {phone}= req.body
+    const unique = await this.service.get({phone})
+    if(unique){
+      return res.status(400).send({message:"Phone number already in user"})
+    }
+    await  this.otpService.sendUserOtp(phone)
+    res.send({ message: "Otp sent" })
+    
+  })
+
 
 
 }

@@ -1,25 +1,28 @@
 
 import moment = require("moment")
+import { AdminSI } from "../interfaces/admin.interface"
 import { BookingSI } from "../interfaces/booking.interface"
 import EmployeeSI, { EmployeeI } from "../interfaces/employee.interface"
 import SalonSI, { SalonI } from "../interfaces/salon.interface"
 import UserI, { UserSI } from "../interfaces/user.interface"
 import { VendorI } from "../interfaces/vendor.interface"
+import Admin from "../models/admin.model"
 import SendEmail from "../utils/emails/send-email"
 import testEmail from "../utils/emails/test-email"
 import sendNotificationToDevice from "../utils/send-notification"
 import SMSCONFIG from "../utils/sms-config"
+import AdminService from "./admin.service"
 import BookingService from "./booking.service"
 import OtpService from "./otp.service"
 
 export default class Notify {
 
   //TODO: Null check for params because booking fails
-  static referralComplete = async (user: UserSI,userReferred:UserSI) => {
-    
+  static referralComplete = async (user: UserSI, userReferred: UserSI) => {
+
     // TODO: Add notification data and the route
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each as your ${userReferred.name} has made their first booking through ZATTIRE.` }, data: {  click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each as your ${userReferred.name} has made their first booking through ZATTIRE.` }, data: { click_action: "FLUTTER_NOTIFICATION_CLICK" } })
     } catch (error) {
       console.log(error)
     }
@@ -42,8 +45,8 @@ export default class Notify {
     // TODO: Add notification data and the route
     try {
       console.log((booking._id).toString())
-    sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
-    
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+
     } catch (error) {
       console.log(error)
     }
@@ -52,10 +55,17 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const userText = `Your booking for ${bookingTime} has been accepted by ${salon.name}, CHEERS`
-      OtpService.sendMessage(user.phone, userText,SMSCONFIG.BOOKING_ACCEPTED)
+      OtpService.sendMessage(user.phone, userText, SMSCONFIG.BOOKING_ACCEPTED)
     } catch (error) {
-
+      console.log(error)
     }
+    //sending notification to admin app
+    try {
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
+
 
     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
     //if required
@@ -83,6 +93,12 @@ export default class Notify {
     } catch (error) {
       console.log(error)
     }
+    try {
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
+
 
 
     //check
@@ -90,11 +106,15 @@ export default class Notify {
     try {
       const vendorText = `Received a new booking for ${bookingTime}`
       console.log("sending message")
-      OtpService.sendMessage(vendor.contact_number, vendorText,SMSCONFIG.NEW_BOOKING)
+      OtpService.sendMessage(vendor.contact_number, vendorText, SMSCONFIG.NEW_BOOKING)
     } catch (error) {
       console.log(error)
     }
-
+    try {
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
 
     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
     //if required
@@ -112,12 +132,17 @@ export default class Notify {
     } catch (error) {
 
     }
+    try {
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Rescheduled", body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open` }, data: { booking_id: bookingId, status: "Rescheduled and Pending", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+    } catch (error) {
+      console.log(error)
+    }
 
 
     //TODO: change the text of the uszer text 
     try {
       const userText = `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open`
-      OtpService.sendMessage(userPhone, userText,SMSCONFIG.RESCHEDULE)
+      OtpService.sendMessage(userPhone, userText, SMSCONFIG.RESCHEDULE)
     } catch (error) {
 
     }
@@ -159,7 +184,7 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const vendorText = `The rescheduled booking by ${employee.name} for ${bookingTime} has been accepted`
-      OtpService.sendMessage(vendor.contact_number, vendorText,SMSCONFIG.RESCHEDULE_ACCEPT)
+      OtpService.sendMessage(vendor.contact_number, vendorText, SMSCONFIG.RESCHEDULE_ACCEPT)
 
 
     } catch (error) {
@@ -181,7 +206,7 @@ export default class Notify {
 
     try {
       const vendorText = `The rescheduled booking has been cancelled by the user`
-      OtpService.sendMessage(vendorPhone, vendorText,SMSCONFIG.RESCHEDULE_CANCEL)
+      OtpService.sendMessage(vendorPhone, vendorText, SMSCONFIG.RESCHEDULE_CANCEL)
     } catch (error) {
 
     }
@@ -264,6 +289,12 @@ export default class Notify {
       console.log(error)
     }
 
+    try {
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "" } })
+    } catch (error) {
+      console.log(error)
+    }
+
     // const salonText = `Sorry!,Your booking for ${dateTime} has been cancelled by ${user.name}`
     // OtpService.sendMessage(salon.contact_number, salonText)
     //TODO: add other stakeholders like - salon owners, employees or admins to send message to 
@@ -277,7 +308,7 @@ export default class Notify {
       const getDetails = Notify.getTotalPromo(booking)
       const gst = getDetails.total * 18 / 100
       const totalwithGst = getDetails.total + gst
-      testEmail(booking.booking_numeric_id.toString(), moment(booking.services[0].service_time).format("DD/mm/yyyy"), moment(booking.services[0].service_time).format("hh:mm:a"), user.name, booking.address.address ?? "", salon.name, salon.location, employee.name, getDetails.total.toString(), booking.payments, gst.toString(), totalwithGst.toString(),booking.services,user.email)
+      testEmail(booking.booking_numeric_id.toString(), moment(booking.services[0].service_time).format("DD/mm/yyyy"), moment(booking.services[0].service_time).format("hh:mm:a"), user.name, booking.address.address ?? "", salon.name, salon.location, employee.name, getDetails.total.toString(), booking.payments, gst.toString(), totalwithGst.toString(), booking.services, user.email)
     } catch (error) {
       console.log(error)
     }
@@ -315,5 +346,18 @@ export default class Notify {
     return bookingTime
   }
 
+  public static sendNotificationtoAdmin = async (message) => {
+    const adminService = new AdminService(Admin)
+    const admins = await adminService.get() as AdminSI[]
+    let token = []
+    admins.map((e) => {
+      token.concat(e.fcm_token)
+    })
+    try {
+      sendNotificationToDevice(token, message)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
 }

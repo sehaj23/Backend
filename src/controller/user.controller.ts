@@ -338,4 +338,9 @@ export default class UserController extends BaseController {
         res.status(200).send({message:"Valid Referral",success:true})
     })
 
+    getWithPaginationtemp = controllerErrorHandler(async (req: Request, res: Response) => {
+        const resource = await this.service.getWithPaginationtemp(req.query)
+        res.send(resource)
+    })
+
 }

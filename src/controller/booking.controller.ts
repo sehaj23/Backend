@@ -450,10 +450,12 @@ export default class BookingController extends BaseController {
         }
         const rs = new RazorPayService()
         const bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
-        if(process.env.NODE_ENV.toString()  !='production'){
+       try{
         const capture = await rs.capture(payment_id, bookingTotalPrice)
         console.log("CAPTURE Razor Pay")
         console.log(capture)
+        }catch(e){
+            console.log(e)
         }
         booking.razorpay_payment_data = razorpayPaymentData
         await booking.save()
@@ -644,6 +646,7 @@ export default class BookingController extends BaseController {
         const userData = this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
+        
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
         let refundToWallet = false
 

@@ -822,6 +822,7 @@ export default class SalonService extends BaseService {
                                         "services.category": {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
                                         },
+                                        "book_service":true,
 
 
                                 }
