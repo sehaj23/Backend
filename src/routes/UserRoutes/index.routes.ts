@@ -3,6 +3,7 @@ import bannerRouter from "./banner.router"
 import bookingRouter from './booking.router'
 import cartRouter from "./cart.router"
 import deviceInfoRouter from "./device-info.router"
+import linkdeviceRouter from "./link-device.router"
 import loginRouter from "./login.router"
 import otpAppRouter from "./otp.route"
 import promoCodeRouter from "./promo-code.router"
@@ -36,6 +37,7 @@ Userrouter.use("/user", userRouter)
 Userrouter.use("/cart", cartRouter)
 Userrouter.use("/report-app", reportAppRouter)
 Userrouter.use("/otp", otpAppRouter)
+Userrouter.use("/link-device",linkdeviceRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
