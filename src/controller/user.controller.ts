@@ -12,6 +12,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import { PhotoI } from "../interfaces/photo.interface";
 
 
 export default class UserController extends BaseController {
@@ -342,5 +343,19 @@ export default class UserController extends BaseController {
         const resource = await this.service.getWithPaginationtemp(req.query)
         res.send(resource)
     })
+
+    updateProfilePic = async (req: Request, res: Response) => {
+        try {
+            const photoData: PhotoI = req.body
+            //@ts-ignore
+            const _id =  req.userId 
+            const newEvent = await this.service.updateUserphoto(photoData,_id)
+           
+            res.send(newEvent)
+        } catch (e) {
+            logger.error(`User Put Photo ${e.message}`)
+            res.status(403).send(`${e.message}` )
+        }
+    }
 
 }

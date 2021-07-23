@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 import mongoose from "../database";
+import { PhotoI } from "../interfaces/photo.interface";
 import { UserSI } from "../interfaces/user.interface";
+import Photo from "../models/photo.model";
 import { UserRedis } from "../redis/index.redis";
 import encryptData from "../utils/password-hash";
 import REDIS_CONFIG from "../utils/redis-keys";
@@ -34,7 +36,7 @@ export default class UserService extends BaseService {
     }
     update = async (id: string, d: any) => {
         const _id = mongoose.Types.ObjectId(id)
-        const redisUser = await UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
+     
         const user = await this.model.findOneAndUpdate({ _id: _id }, d, { new: true })
         UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo})
         return user
@@ -97,9 +99,10 @@ export default class UserService extends BaseService {
             if (add._id.toString() === addressId) {
                 for (let key of Object.keys(d)) add[key] = d[key]
                 await user.save()
+                UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
                 return user.address
             }     
-       UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
+      
         }
         throw new Error("Address not found. Hence, not updated")
     }
@@ -113,8 +116,10 @@ export default class UserService extends BaseService {
             if (add._id.toString() === addressId) {
                 user.address.splice(i, 1)
                 await user.save()
+                UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
                 return user.address
             }
+          
         }
         throw new Error("Address not found. Hence, not deleted")
     }
@@ -276,7 +281,14 @@ export default class UserService extends BaseService {
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { resource, totalPages, pageNumber, pageLength }
     }
-
+    updateUserphoto = async (photoData: PhotoI, _id: string) => {
+        // saving photos 
+        const photo = await Photo.create(photoData)
+        // adding it to event
+        const newEvent = await this.model.findByIdAndUpdate({ _id }, { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+        UserRedis.set(_id, newEvent, { type: REDIS_CONFIG.userinfo })
+        return newEvent
+    }
 
 
 }
