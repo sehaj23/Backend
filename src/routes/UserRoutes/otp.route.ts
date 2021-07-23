@@ -23,6 +23,6 @@ const otpService = new OtpService(Otp, userService, employeeService)
 const otpController = new OtpController(otpService)
 
 otpAppRouter.post("/send", UserverifyToken, otpController.sendUserOtp)
-otpAppRouter.post("/verify", UserverifyToken, otpController.verifyUserOtp)
+otpAppRouter.post("/verify", otpController.verifyUserOtp)
 
 export default otpAppRouter
