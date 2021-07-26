@@ -702,6 +702,7 @@ export default class BookingService extends BaseService {
         const skipCount = (pageNumber - 1) * pageLength
         console.log(pageLength)
         console.log(skipCount)
+        console.log(pageNumber)
 
         const keys = Object.keys(q)
         const filters = {}
@@ -748,9 +749,11 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
+            if(q.start_date && q.end_date){
             filters["services.service_time"] = {
                 "$gte": dateFilter["start_date"],
                 "$lt": dateFilter["end_date"]
+            }
             }
             //  filters["createdAt"] = {
             //      "$gte": dateFilter["start_date"],
@@ -760,6 +763,7 @@ export default class BookingService extends BaseService {
 
         }
         console.log(filters)
+  
 
 
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
