@@ -1,3 +1,4 @@
+import moment = require("moment");
 import { Types } from "mongoose";
 import mongoose from "../database";
 import { UserSI } from "../interfaces/user.interface";
@@ -277,6 +278,49 @@ export default class UserService extends BaseService {
         return { resource, totalPages, pageNumber, pageLength }
     }
 
+    getUserswithFilters = async (q)=>{
 
+    const keys = Object.keys(q)
+        const filters = {}
+        const dateFilter = {}
+        dateFilter["start_date"] = moment().format("YYYY-MM-DD")
+        dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
+        for (const k of keys) {
+            switch (k) { 
+                case "gender":
+                    filters["gender"] = q[k]
+                    break;
+                case "start_date":
+                    dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
+                    break
+                case "end_date":
+                    if (moment(q[k]).isValid()) {
+                        dateFilter["end_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T23:59:59.000Z")
+                    }
+                    break
+                case "location":
+                    filters["location"] = q[k]
+                    break
+                default:
+                    filters[k] = q[k]
+            }
+            filters["createdAt"] = {
+                "$gte": dateFilter["start_date"],
+                "$lt": dateFilter["end_date"]
+            }
+            //  filters["createdAt"] = {
+            //      "$gte": dateFilter["start_date"],
+            //      "$lt": dateFilter["end_date"]
+            // // }
+
+
+        }
+       
+       
+        const users  = await this.model.find(filters).select("fcm_token")
+        console.log(users)
+        return users
+
+    }
 
 }

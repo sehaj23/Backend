@@ -12,6 +12,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import sendNotificationToDevice from "../utils/send-notification";
 
 
 export default class UserController extends BaseController {
@@ -341,6 +342,34 @@ export default class UserController extends BaseController {
     getWithPaginationtemp = controllerErrorHandler(async (req: Request, res: Response) => {
         const resource = await this.service.getWithPaginationtemp(req.query)
         res.send(resource)
+    })
+
+
+    sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
+       const q = req.query
+        const {title,body} = req.body
+        const getUser =  await this.service.getUserswithFilters(q) 
+        
+        const message = {
+            "notification": {
+                "title": title,
+                "body": body
+            }
+        }
+        let tokenList = []
+          getUser.map((e)=>{
+         tokenList =    tokenList.concat(e.fcm_token)
+           
+        })
+       
+        try {
+            const sendNotifcation =  sendNotificationToDevice(tokenList,message)
+            
+        } catch (error) {
+            console.log(error)
+            return res.status(400).send(error)
+        }
+        return res.status(200).send({message:"Notifcation sent"})
     })
 
 }
