@@ -806,5 +806,10 @@ export default class BookingService extends BaseService {
         }
     }
 
+    checkCOD =async (filter:any,limit:number) => {
+        const bookings  = await this.model.find(filter).limit(limit).sort({createdAt:-1})
+        return bookings
+    }
+
 
 }

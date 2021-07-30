@@ -124,14 +124,22 @@ export default class BookingController extends BaseController {
     checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        const codBookingReq = this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
-        const onlineBookingReq = this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
-        const [codBooking, onlineBooking] = await Promise.all([codBookingReq, onlineBookingReq])
-        if (codBooking.length > onlineBooking.length) {
-            res.status(400).send({ message: "COD not allowed", success: false })
-        } else {
-            res.status(200).send({ message: "COD allowed", success: true })
+        const filter = {
+            user_id: id, "payments.mode": "COD"
         }
+        const codBooking = await  this.service.checkCOD(filter,3) as BookingSI[]
+        let bookingList = []
+        codBooking.map((e)=>{
+            if(e.status == "Customer Cancelled After Confirmed" || e.status == 'No Show'){
+                bookingList.push(e)
+            }
+        })  
+        if(bookingList.length >=2){
+            return res.status(400).send({message:"COD not allowed"})
+        }
+        return res.status(200).send({message:"COD allowed"})
+       
+       
     })
 
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
