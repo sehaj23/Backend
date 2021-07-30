@@ -127,7 +127,7 @@ export default class BookingController extends BaseController {
         const filter = {
             user_id: id, "payments.mode": "COD"
         }
-        const codBooking = await  this.service.checkCOD(filter,3) as BookingSI[]
+        const codBooking = await  this.service.checkCOD(filter,2) as BookingSI[]
         let bookingList = []
         codBooking.map((e)=>{
             if(e.status == "Customer Cancelled After Confirmed" || e.status == 'No Show'){
