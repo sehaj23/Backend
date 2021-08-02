@@ -679,7 +679,7 @@ export default class SalonController extends BaseController {
 
 
 
-    getSearchservice = controllerErrorHandler(async (req: Request, res: Response) => {
+    getSalonCategory= controllerErrorHandler(async (req: Request, res: Response) => {
         const phrase = req.query.phrase as string
         let home: boolean
         if (req.query.home) {
@@ -689,7 +689,26 @@ export default class SalonController extends BaseController {
         if (!phrase)
             return res.status(400).send({ message: 'Provide search phrase' })
 
-        const result = await this.service.getSalonService(phrase)
+        const result = await this.service.getSalonCategory(phrase)
+        const userSearch: UserSearchI = {
+            term: phrase,
+            result: result
+        }
+        await this.userSearchService.post(userSearch)
+        res.send(result)
+    })
+
+    getSearchedService = controllerErrorHandler(async (req: Request, res: Response) => {
+        const phrase = req.query.phrase as string
+        let home: boolean
+        if (req.query.home) {
+            home = (req.query.home === "true")
+        }
+
+        if (!phrase)
+            return res.status(400).send({ message: 'Provide search phrase' })
+
+        const result = await this.service. getSearchservice(phrase)
         const userSearch: UserSearchI = {
             term: phrase,
             result: result
