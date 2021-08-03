@@ -1150,9 +1150,9 @@ export default class SalonService extends BaseService {
                                                         return resolve({ salon, pages })
                                                 });
                                 })
-                                return newSalon
+                                return { salon, pages }
                         } catch (e) {
-                                return salon
+                                return { salon, pages }
                         }
                 }
                 out = { salon, pages }
