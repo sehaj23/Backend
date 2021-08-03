@@ -130,7 +130,7 @@ export default class BookingController extends BaseController {
         const codBooking = await  this.service.checkCOD(filter,2) as BookingSI[]
         let bookingList = []
         codBooking.map((e)=>{
-            if(e.status == "Customer Cancelled After Confirmed" || e.status == 'No Show'){
+            if(e.status == "Customer Cancelled After Confirmed" || e.status == 'No Show' || e.status=="Customer Cancelled"){
                 bookingList.push(e)
             }
         })  
