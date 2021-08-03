@@ -11,7 +11,7 @@ const BannerSchema = new mongoose.Schema({
     },
     type:{
         type:String,
-        enum:["DEALS","PROMOCODE","COVID","PROMOTION"],
+        enum:["DEALS","PROMOCODE","COVID","PROMOTION","REFER"],
         required:true
     },
     photo_id: {
