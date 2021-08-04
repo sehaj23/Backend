@@ -1022,12 +1022,16 @@ export default class BookingController extends BaseController {
                 await this.walletTransactionService.post(walletTransactionI)
             }
         }
+        try{
         const userReq = this.userService.getId(userId)
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const [user, salon] = await Promise.all([userReq, salonReq])
         if(status=="Customer Cancelled"){
         const notify = Notify.userCancelled(user, salon, booking)
         }
+    }catch(e){
+        console.log(e)
+    }
         res.send(booking)
     })
 
