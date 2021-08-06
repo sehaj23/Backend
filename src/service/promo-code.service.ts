@@ -30,7 +30,7 @@ export default class PromoCodeService extends BaseService {
     promoCodesByUserId = async (userId: string, salonIds: string[], categories: string[]) => {
         const today = moment()
         //@ts-ignore { $and: [ { $or : [ { salon_ids: []} , {salon_ids: {$in: []}} ] }, {$or : [ { categories: []} , {categories: {$in: []}} ]}] }
-        const promoCodes = await this.get({
+        const promoCodes = await this.model.get({
             "$and": [
                 { "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonIds } }] },
                 { "$or": [{ "categories": [] }, { "categories": { "$in": categories } }] },
