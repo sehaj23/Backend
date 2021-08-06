@@ -17,9 +17,6 @@ export default class PromoUserService extends BaseService {
                         'user_id': mongoose.Types.ObjectId(userId),
                         'promo_code_id': {
                             '$in': promoCodeObjectIds
-                        },
-                        'status':{
-                            '$in':["In-use",'Completed']
                         }
                     }
                 }, {
