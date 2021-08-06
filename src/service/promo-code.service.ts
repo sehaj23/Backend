@@ -30,14 +30,14 @@ export default class PromoCodeService extends BaseService {
     promoCodesByUserId = async (userId: string, salonIds: string[], categories: string[]) => {
         const today = moment()
         //@ts-ignore { $and: [ { $or : [ { salon_ids: []} , {salon_ids: {$in: []}} ] }, {$or : [ { categories: []} , {categories: {$in: []}} ]}] }
-        const promoCodes = await this.model.get({
+        const promoCodes = await this.model.find({
             "$and": [
-                { "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonIds } }] },
-                { "$or": [{ "categories": [] }, { "categories": { "$in": categories } }] },
+                 { "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonIds } }] },
+                 { "$or": [{ "categories": [] }, { "categories": { "$in": categories } }] },
                 { "$or": [{ "user_ids": [] }, { "user_ids": { "$in": [userId] } }] },
                 { "$or": [{ "start_date_time": { "$exists": false } }, { "start_date_time": { "$lte": today.startOf('day').toDate() } }] }
             ],
-            "expiry_date_time": { "$gte": today.endOf('day').toDate() },
+             "expiry_date_time": { "$gte": today.endOf('day').toDate() },
             "active": true
         })
         return promoCodes
