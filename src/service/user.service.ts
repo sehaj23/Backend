@@ -282,10 +282,6 @@ export default class UserService extends BaseService {
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { resource, totalPages, pageNumber, pageLength }
     }
-<<<<<<< HEAD
-
-    getUserswithFilters = async (q)=>{
-=======
     updateUserphoto = async (photoData: PhotoI, _id: string) => {
         // saving photos 
         const photo = await Photo.create(photoData)
@@ -294,7 +290,8 @@ export default class UserService extends BaseService {
         UserRedis.set(_id, newEvent, { type: REDIS_CONFIG.userinfo })
         return newEvent
     }
->>>>>>> master
+    getUserswithFilters = async (q)=>{
+   
 
     const keys = Object.keys(q)
         const filters = {}

@@ -12,11 +12,8 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
-<<<<<<< HEAD
 import sendNotificationToDevice from "../utils/send-notification";
-=======
 import { PhotoI } from "../interfaces/photo.interface";
->>>>>>> master
 
 
 export default class UserController extends BaseController {
@@ -348,7 +345,6 @@ export default class UserController extends BaseController {
         res.send(resource)
     })
 
-<<<<<<< HEAD
 
     sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
        const q = req.query
@@ -376,7 +372,6 @@ export default class UserController extends BaseController {
         }
         return res.status(200).send({message:"Notifcation sent"})
     })
-=======
     updateProfilePic = async (req: Request, res: Response) => {
         try {
             const photoData: PhotoI = req.body
@@ -390,6 +385,5 @@ export default class UserController extends BaseController {
             res.status(403).send(`${e.message}` )
         }
     }
->>>>>>> master
 
 }
