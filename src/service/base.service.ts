@@ -82,6 +82,7 @@ export default class BaseService {
         const photo = await Photo.create(photoData)
         // adding it to event
         const newEvent = await this.model.findByIdAndUpdate({ _id }, { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
+       
         return newEvent
     }
 
