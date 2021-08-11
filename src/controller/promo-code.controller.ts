@@ -70,7 +70,7 @@ export default class PromoCodeController extends BaseController {
         if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
             if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
         }
-        const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id.toString(), user_id: userId,status:{$in:["Completed","In-use"]} }) as PromoUserSI[]
+        const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id, user_id: userId,status:{$in:["In-use","Completed"]} }) as PromoUserSI[]
         // if  max_usage is -1 it means unlimited times
         if ((promoCode.max_usage !== -1) && promoCode.max_usage <= promoUserCount?.length) throw new Error(`You have exceeded the max usage: ${promoCode.max_usage}`)
         // check for the salon

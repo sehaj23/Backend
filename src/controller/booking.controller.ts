@@ -994,6 +994,12 @@ export default class BookingController extends BaseController {
         const booking = await this.service.cancelBooking(userId, bookingId, reason) as BookingSI
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(booking.status)) {
+            if(booking.services[0].service_discount_code != null){
+               
+                const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
+                 getPromoStatus.status = promoUsedStatus.DISCARDED
+                 await getPromoStatus.save()
+            }
             const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
             if (walletPaymentIndex > -1) {
                 let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
