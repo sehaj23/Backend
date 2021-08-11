@@ -78,8 +78,9 @@ export default class PromoCodeController extends BaseController {
         // minimum bill check
         if (cart.total < promoCode.minimum_bill) throw new Error(`You cannot apply this coupon code. Minimum bill should be ${promoCode.minimum_bill}`)
         if (promoCode.salon_ids && promoCode.salon_ids?.length > 0) {
+          
             //@ts-ignore
-            if (!promoCode.salon_ids.includes(cart.salon_id._id)) throw new Error(`This coupon code is not applied on this salon`)
+            if (promoCode.salon_ids.includes(cart.salon_id._id.toString())==false) throw new Error(`This coupon code is not applied on this salon`)
         }
         let totalDiscountGiven = 0
         const salon = await this.salonService.getId(salonId) as SalonSI
