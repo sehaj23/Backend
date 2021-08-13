@@ -28,6 +28,9 @@ export default class AdminController extends BaseController{
         //@ts-ignore
         const id =  req.userId
         const fcm = req.body.fcm_token
+        console.log("****")
+        console.log(id)
+        console.log(fcm)
         const user = await this.service.updateFCM(id, fcm)
         if (user == null) {
             logger.error(`Unable to fetch info. Please Login again`)
