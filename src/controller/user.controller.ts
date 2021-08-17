@@ -354,24 +354,31 @@ export default class UserController extends BaseController {
             return res.status(400).send("title,body and type are required")
         }
         let message
+
         if(id==undefined || status==undefined){
         message = {
             "notification": {
                 "title": title,
                 "body": body,
-                "type":type
+             
                 
-            }
+            },
+            "data":{
+                "type":type,
+                click_action: "FLUTTER_NOTIFICATION_CLICK"
+            },
         }
     }else{
         message = {
             "notification": {
                 "title": title,
                 "body": body,
+            },
+            "data":{
                 "type":type,
                 "id":id,
-                "status":status
-                
+                "status":status,
+                click_action: "FLUTTER_NOTIFICATION_CLICK"
             }
         }
     }
