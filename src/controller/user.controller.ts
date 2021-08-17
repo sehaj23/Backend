@@ -350,15 +350,16 @@ export default class UserController extends BaseController {
        const q = req.query
         const {title,body,type,id} = req.body
         const getUser =  await this.service.getUserswithFilters(q) 
-        if(!title || !body){
+        if(!title || !body || !type){
             return res.status(400).send("title and body are required")
         }
         let message
-        if(!type || !id){
+        if(!id){
         message = {
             "notification": {
                 "title": title,
                 "body": body,
+                "type":type
                 
             }
         }
