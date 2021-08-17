@@ -12,7 +12,7 @@ import userRouter from "./user.router";
 import vendorRouter from "./vendor.router";
 import bookingRouter from "./booking.router";
 import employeeRouter from "./employee.router";
-import zattireServiceRouter from "../AdminRoutes/zattire-services.router";
+import zattireServiceRouter from "./zattire-services.router";
 
 const Vendorrouter = Router();
 
