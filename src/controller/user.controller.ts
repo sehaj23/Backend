@@ -348,15 +348,31 @@ export default class UserController extends BaseController {
 
     sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
        const q = req.query
-        const {title,body} = req.body
+        const {title,body,type,id} = req.body
         const getUser =  await this.service.getUserswithFilters(q) 
-        
-        const message = {
+        if(!title || !body){
+            return res.status(400).send("title and body are required")
+        }
+        let message
+        if(!type || !id){
+        message = {
             "notification": {
                 "title": title,
-                "body": body
+                "body": body,
+                
             }
         }
+    }else{
+        message = {
+            "notification": {
+                "title": title,
+                "body": body,
+                "type":type,
+                "id":id
+                
+            }
+        }
+    }
         let tokenList = []
           getUser.map((e)=>{
          tokenList =    tokenList.concat(e.fcm_token)
