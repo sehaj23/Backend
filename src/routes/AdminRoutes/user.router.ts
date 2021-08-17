@@ -30,6 +30,5 @@ userRouter.put("/:id", verifyToken, userController.put)
 userRouter.get("/search",userController.searchUsersByEmail)
 userRouter.put("/:id/photo", verifyToken, userController.putPhoto)
 userRouter.get("/:id/photo", verifyToken, userController.getPhoto)
-userRouter.post("/send-notification",verifyToken,userController.sendNotificationToUsers)
 
 export default userRouter

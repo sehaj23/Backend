@@ -354,7 +354,7 @@ export default class UserController extends BaseController {
             return res.status(400).send("title,body and type are required")
         }
         let message
-        if(!id && !status){
+        if(id==undefined || status==undefined){
         message = {
             "notification": {
                 "title": title,
