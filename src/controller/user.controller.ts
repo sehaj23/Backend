@@ -348,13 +348,13 @@ export default class UserController extends BaseController {
 
     sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
        const q = req.query
-        const {title,body,type,id} = req.body
+        const {title,body,type,id,status} = req.body
         const getUser =  await this.service.getUserswithFilters(q) 
         if(!title || !body || !type){
-            return res.status(400).send("title  body and type are required")
+            return res.status(400).send("title,body and type are required")
         }
         let message
-        if(!id){
+        if(!id && !status){
         message = {
             "notification": {
                 "title": title,
@@ -369,7 +369,8 @@ export default class UserController extends BaseController {
                 "title": title,
                 "body": body,
                 "type":type,
-                "id":id
+                "id":id,
+                "status":status
                 
             }
         }
