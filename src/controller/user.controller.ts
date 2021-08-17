@@ -351,7 +351,7 @@ export default class UserController extends BaseController {
         const {title,body,type,id} = req.body
         const getUser =  await this.service.getUserswithFilters(q) 
         if(!title || !body || !type){
-            return res.status(400).send("title and body are required")
+            return res.status(400).send("title  body and type are required")
         }
         let message
         if(!id){
