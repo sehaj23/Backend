@@ -355,7 +355,7 @@ export default class UserController extends BaseController {
         }
         let message
 
-        if(id==undefined || status==undefined){
+        if(id==undefined){
         message = {
             "notification": {
                 "title": title,
