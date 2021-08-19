@@ -6,7 +6,7 @@ import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
 import { FeedbackI } from "../interfaces/feedback.interface";
 import { PromoCodeSI, PromoDiscountResult } from "../interfaces/promo-code.interface";
-import { PromoUserSI } from "../interfaces/promo-user.inderface";
+import { promoUsedStatus, PromoUserSI } from "../interfaces/promo-user.inderface";
 import { ReferralSI } from "../interfaces/referral.interface";
 import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -124,14 +124,22 @@ export default class BookingController extends BaseController {
     checkCod = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        const codBookingReq = this.service.get({ user_id: id, "payments.mode": "'COD", status: { $in: ['Customer Cancelled', 'No Show'] } })
-        const onlineBookingReq = this.service.get({ user_id: id, "payments.mode": "'RAZORPAY", status: 'Completed' })
-        const [codBooking, onlineBooking] = await Promise.all([codBookingReq, onlineBookingReq])
-        if (codBooking.length > onlineBooking.length) {
-            res.status(400).send({ message: "COD not allowed", success: false })
-        } else {
-            res.status(200).send({ message: "COD allowed", success: true })
+        const filter = {
+            user_id: id, "payments.mode": "COD"
         }
+        const codBooking = await  this.service.checkCOD(filter,2) as BookingSI[]
+        let bookingList = []
+        codBooking.map((e)=>{
+            if(e.status == "Customer Cancelled After Confirmed" || e.status == 'No Show' || e.status=="Customer Cancelled"){
+                bookingList.push(e)
+            }
+        })  
+        if(bookingList.length >=2){
+            return res.status(400).send({message:"COD not allowed"})
+        }
+        return res.status(200).send({message:"COD allowed"})
+       
+       
     })
 
     getRazorpayOrderId = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -212,7 +220,7 @@ export default class BookingController extends BaseController {
             if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
                 if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
             }
-            const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id.toString(), user_id: userId }) as PromoUserSI[]
+            const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id.toString(), user_id: userId,status:{$in:["Completed","In-use"]} }) as PromoUserSI[]
             // if  max_usage is -1 it means unlimited times
             if ((promoCode.max_usage !== -1) && promoCode.max_usage <= promoUserCount?.length) throw new Error(`You have exceeded the max usage: ${promoCode.max_usage}`)
             // check for the salon
@@ -374,7 +382,7 @@ export default class BookingController extends BaseController {
         const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
         //  if promocode applied then add to database that user used the promocode
         if (totalDiscountGiven > 0 && promoCode) {
-            await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId })
+            await this.promoUserService.post({ promo_code_id: promoCode._id.toString(), user_id: userId,status:promoUsedStatus.INUSE,booking_id:booking._id.toString() })
         }
         try {
             const notify = Notify.bookingRequest(vendor, employee, salon, booking, user)
@@ -702,10 +710,22 @@ export default class BookingController extends BaseController {
                    
                 }
             }
+           if(booking.services[0].service_discount_code != null){
+               
+               const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
+                getPromoStatus.status = promoUsedStatus.COMPLETED
+                await getPromoStatus.save()
+           }
         }
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(status)) {
             refundToWallet = true
+        }
+        if(booking.services[0].service_discount_code != null){
+               
+            const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
+             getPromoStatus.status = promoUsedStatus.DISCARDED
+             await getPromoStatus.save()
         }
         if (refundToWallet === true) {
             const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
@@ -974,6 +994,12 @@ export default class BookingController extends BaseController {
         const booking = await this.service.cancelBooking(userId, bookingId, reason) as BookingSI
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(booking.status)) {
+            if(booking.services[0].service_discount_code != null){
+               
+                const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
+                 getPromoStatus.status = promoUsedStatus.DISCARDED
+                 await getPromoStatus.save()
+            }
             const walletPaymentIndex = booking.payments.map(p => p.mode).indexOf(BookingPaymentMode.WALLET)
             if (walletPaymentIndex > -1) {
                 let bookingTotalPrice = BookingController.getRazorPayPayableAmount(booking)
@@ -1002,11 +1028,16 @@ export default class BookingController extends BaseController {
                 await this.walletTransactionService.post(walletTransactionI)
             }
         }
+        try{
         const userReq = this.userService.getId(userId)
         const salonReq = this.salonService.getId(booking.salon_id.toString())
         const [user, salon] = await Promise.all([userReq, salonReq])
-
+        if(status=="Customer Cancelled"){
         const notify = Notify.userCancelled(user, salon, booking)
+        }
+    }catch(e){
+        console.log(e)
+    }
         res.send(booking)
     })
 

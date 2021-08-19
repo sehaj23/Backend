@@ -11,6 +11,7 @@ import ErrorResponse from '../utils/error-response';
 //import Error from '../utils/error-response';
 import BaseController from "./base.controller";
 import moment = require('moment');
+import { PromoUserSI } from '../interfaces/promo-user.inderface';
 
 export default class PromoCodeController extends BaseController {
 
@@ -31,6 +32,7 @@ export default class PromoCodeController extends BaseController {
         const { promo_code, cart_id } = req.body
         const result: PromoDiscountResult[] = []
         let cart: CartSI
+     
         if (cart_id)
             cart = await this.cartService.getId(cart_id)
         else {
@@ -46,9 +48,39 @@ export default class PromoCodeController extends BaseController {
         console.log(optionIds);
 
         const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
-        const promoCode = await this.service.getByPromoCode(promo_code, userId, [salonId], categories) as PromoCodeSI
+       // let promoCode = await this.service.getOne({ promo_code: promo_code }) as PromoCodeSI
+         const promoCode = await this.service.getByPromoCode(promo_code, userId, [salonId], categories) as PromoCodeSI
         if (promoCode === null) {
             throw new ErrorResponse({ message: "Promo code not applicable" })
+        }
+        
+      
+
+        if (promoCode.active === false) throw new Error(`Promo code not active anymore`)
+        const currentDateTime = moment(Date.now())
+        // time check
+        if (!currentDateTime.isBefore(promoCode.expiry_date_time)) throw new Error(`Promo code is expired`)
+        if (promoCode.time_type === 'Custom') {
+
+            const currentDay = currentDateTime.day()
+            const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            if (!promoCode.custom_time_days.includes(currentDay)) throw new Error(`This promo code is not valid on ${DAYS[currentDay]}`)
+            if (!currentDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
+        }
+        if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
+            if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
+        }
+        const promoUserCount = await this.promoUserService.get({ promo_code_id: promoCode._id, user_id: userId,status:{$in:["In-use","Completed"]} }) as PromoUserSI[]
+        // if  max_usage is -1 it means unlimited times
+        if ((promoCode.max_usage !== -1) && promoCode.max_usage <= promoUserCount?.length) throw new Error(`You have exceeded the max usage: ${promoCode.max_usage}`)
+        // check for the salon
+        
+        // minimum bill check
+        if (cart.total < promoCode.minimum_bill) throw new Error(`You cannot apply this coupon code. Minimum bill should be ${promoCode.minimum_bill}`)
+        if (promoCode.salon_ids && promoCode.salon_ids?.length > 0) {
+          
+            //@ts-ignore
+            if (promoCode.salon_ids.includes(cart.salon_id._id.toString())==false) throw new Error(`This coupon code is not applied on this salon`)
         }
         let totalDiscountGiven = 0
         const salon = await this.salonService.getId(salonId) as SalonSI

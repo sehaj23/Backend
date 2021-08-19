@@ -12,6 +12,7 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import sendNotificationToDevice from "../utils/send-notification";
 import { PhotoI } from "../interfaces/photo.interface";
 
 
@@ -344,6 +345,58 @@ export default class UserController extends BaseController {
         res.send(resource)
     })
 
+
+    sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
+       const q = req.query
+        const {title,body,type,id,status} = req.body
+        const getUser =  await this.service.getUserswithFilters(q) 
+        if(!title || !body || !type){
+            return res.status(400).send("title,body and type are required")
+        }
+        let message
+
+        if(id==undefined){
+        message = {
+            "notification": {
+                "title": title,
+                "body": body,
+             
+                
+            },
+            "data":{
+                "type":type,
+                click_action: "FLUTTER_NOTIFICATION_CLICK"
+            },
+        }
+    }else{
+        message = {
+            "notification": {
+                "title": title,
+                "body": body,
+            },
+            "data":{
+                "type":type,
+                "id":id,
+                "status":status,
+                click_action: "FLUTTER_NOTIFICATION_CLICK"
+            }
+        }
+    }
+        let tokenList = []
+          getUser.map((e)=>{
+         tokenList =    tokenList.concat(e.fcm_token)
+           
+        })
+       
+        try {
+            const sendNotifcation =  sendNotificationToDevice(tokenList,message)
+            
+        } catch (error) {
+            console.log(error)
+            return res.status(400).send(error)
+        }
+        return res.status(200).send({message:"Notifcation sent"})
+    })
     updateProfilePic = async (req: Request, res: Response) => {
         try {
             const photoData: PhotoI = req.body

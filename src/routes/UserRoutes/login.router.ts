@@ -112,4 +112,6 @@ loginRouter.post(
   loginController.loginwithFacebook
 )
 
+loginRouter.post("/unique-phone",loginController.checkMobileUnique)
+
 export default loginRouter

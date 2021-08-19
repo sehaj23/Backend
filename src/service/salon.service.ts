@@ -4,7 +4,7 @@ import OptionI from "../interfaces/options.interface";
 import { ReviewI } from "../interfaces/review.interface";
 import SalonSI, { SalonI } from "../interfaces/salon.interface";
 import ServiceI from "../interfaces/service.interface";
-import { SalonRedis } from "../redis/index.redis";
+import { SalonRedis, SalonSearchRedis } from "../redis/index.redis";
 import BaseService from "../service/base.service";
 import { arePointsNear } from "../utils/location";
 import distance = require('google-distance');
@@ -789,15 +789,46 @@ export default class SalonService extends BaseService {
         }
 
         getSearchservice = async (phrase: string) => {
+                console.log("Services")
+                const data = await SalonSearchRedis.get(phrase)
+                if(data==null){
+                const data2 = await this.model.aggregate([
+                       
+                        {
+                                $lookup:
+                                {
+                                        from: "photos",
+                                        localField: "profile_pic",
+                                        foreignField: "_id",
+                                        as: "profile_pic",
+                                },
+                        },
+                        {
+                                $unwind: "$services"
+                        },
+                        { $match:  {"services.name":phrase} },
+                        {
+                                $group: {
+                                        "_id": "$_id",
+                                        name: { $first: "$name" },
+                                        profile_pic: { $first: "$profile_pic" },
+                                        rating: { $first: "$rating" },
+                                        service: { $first: "$services" },
+                                        
 
-                const data = await this.model.find(
-                        { $text: { $search: phrase } },
-                        { score: { $meta: 'textScore' } }
-                ).sort({ score: { $meta: 'textScore' } })
-                return data
 
+
+
+                                }
+                        },
+                ])
+                SalonSearchRedis.set(phrase, data2)
+              
+                return data2
         }
-        getSalonService = async (phrase: string) => {
+        return data
+        }
+        getSalonCategory = async (phrase: string) => {
 
 
                 var result1 = await this.model.aggregate([

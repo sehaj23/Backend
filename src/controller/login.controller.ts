@@ -177,6 +177,7 @@ export default class LoginController extends BaseController {
       return
     }
     // sending the user email to confirm email id
+    // sending the user email otp to confirm the email id
     // if (createUser.phone != null) {
     //   const number = await this.otpService.sendUserOtpEmail(createUser.email)
     //   try {
@@ -186,6 +187,7 @@ export default class LoginController extends BaseController {
     //   }
 
     //}
+    // }
     try {
       SendEmail.signupUser(createUser.email, createUser.name)
     } catch (error) {
@@ -199,7 +201,7 @@ export default class LoginController extends BaseController {
     const queueData = {
       "user_id": createUser._id
     }
-    sqsNewUser(JSON.stringify(queueData))
+    
 
     res.status(201).send({ token })
   })
@@ -450,6 +452,17 @@ export default class LoginController extends BaseController {
     SendEmail.forgotPasswordUser(email, number.otp)
     res.send({ success: true, message: "Email Sent" })
 
+  })
+
+  checkMobileUnique =  controllerErrorHandler(async (req: Request, res: Response) => {
+    const {phone}= req.body
+    const unique = await this.service.get({phone})
+    if(unique.length > 0){
+      return res.status(400).send({message:"Phone number already in user"})
+    }
+    await  this.otpService.sendUserOtp(phone)
+    res.send({ message: "Otp sent" })
+    
   })
 
 

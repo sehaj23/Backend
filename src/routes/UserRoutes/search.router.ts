@@ -24,6 +24,7 @@ const promoCodeService = new PromoCodeService(PromoCode)
 const salonController = new SalonController(salonService, userSearch,userService,promoCodeService)
 searchRouter.get("/", salonController.getSearchResult)
 searchRouter.get("/salon",salonController.searchFilter)
-searchRouter.get("/service",salonController.getSearchservice)
+searchRouter.get("/category",salonController.getSalonCategory)
+searchRouter.get("/service",salonController.getSearchedService)
 
 export default searchRouter
