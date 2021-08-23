@@ -351,7 +351,7 @@ export default class Notify {
     const admins = await adminService.get() as AdminSI[]
     let token = []
     admins.map((e) => {
-      token.concat(e.fcm_token)
+    token =   token.concat(e.fcm_token)
     })
     try {
       sendNotificationToDevice(token, message)

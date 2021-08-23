@@ -29,7 +29,7 @@ export default class PromoCodeController extends BaseController {
     discountApplicable = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
-        const { promo_code, cart_id } = req.body
+        const { promo_code, cart_id,booking_time } = req.body
         const result: PromoDiscountResult[] = []
         let cart: CartSI
      
@@ -65,7 +65,9 @@ export default class PromoCodeController extends BaseController {
             const currentDay = currentDateTime.day()
             const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
             if (!promoCode.custom_time_days.includes(currentDay)) throw new Error(`This promo code is not valid on ${DAYS[currentDay]}`)
-            if (!currentDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
+             const bookingHours  = parseInt(booking_time.split(":")[0])
+         //    if(bookingHours>=parseInt(promoCode.custom_time_start_time.split(":")[0])==false && bookingHours<=parseInt(promoCode.custom_time_end_time.split(":")[0])==false ) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
+             if (!currentDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
         }
         if (promoCode.user_ids && promoCode?.user_ids?.length > 0) {
             if (!promoCode.user_ids.includes(userId)) throw new Error(`Current user doe not support this coupon code`)
