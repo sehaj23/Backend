@@ -61,7 +61,7 @@ export default class Notify {
     }
     //sending notification to admin app
     try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING"  } })
     } catch (error) {
       console.log(error)
     }
@@ -94,7 +94,7 @@ export default class Notify {
       console.log(error)
     }
     try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
     } catch (error) {
       console.log(error)
     }
@@ -111,7 +111,7 @@ export default class Notify {
       console.log(error)
     }
     try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested",click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
     } catch (error) {
       console.log(error)
     }
@@ -133,7 +133,7 @@ export default class Notify {
 
     }
     try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Rescheduled", body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open` }, data: { booking_id: bookingId, status: "Rescheduled and Pending", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Rescheduled", body: `To make up for the current unavailability ${salonName} has sent you new time slots, click here to open` }, data: { booking_id: bookingId, status: "Rescheduled and Pending", click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
     } catch (error) {
       console.log(error)
     }
@@ -237,7 +237,7 @@ export default class Notify {
     // TODO: Add notification data and the route
 
     try {
-      sendNotificationToDevice(userFCM, { notification: { title: "Service end", body: `We hope you enjoyed the Service` }, data: { booking_id: bookingId, status: "Completed" } })
+      sendNotificationToDevice(userFCM, { notification: { title: "Service end", body: `We hope you enjoyed the Service` }, data: { booking_id: bookingId, status: "Completed" ,type:"BOOKING" } })
       //TODO: change the text of the uszer text 
     } catch (error) {
       console.log(error)
@@ -260,7 +260,7 @@ export default class Notify {
     // TODO: Add notification data and the route
 
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "Vendor Cancelled" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "Vendor Cancelled",type:"BOOKING"  } })
       //TODO: change the text of the uszer text 
     } catch (error) {
       console.log(error)
@@ -283,14 +283,14 @@ export default class Notify {
     // TODO: Add notification data and the route
 
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "" ,click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
       //TODO: change the text of the uszer text 
     } catch (error) {
       console.log(error)
     }
 
     try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "" } })
+      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Cancelled", body: `Sorry Booking has been cancelled` }, data: { booking_id: (booking._id).toString(), status: "",click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
     } catch (error) {
       console.log(error)
     }
