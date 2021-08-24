@@ -29,7 +29,11 @@ export default class PromoCodeController extends BaseController {
     discountApplicable = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const userId = req.userId
-        const { promo_code, cart_id,booking_time } = req.body
+        const { promo_code, cart_id,} = req.body
+        let booking_time = req.body
+        if(booking_time == null || booking_time == undefined){
+            booking_time=moment(Date.now())
+        }
         const result: PromoDiscountResult[] = []
         let cart: CartSI
      
