@@ -413,10 +413,11 @@ export default class SalonService extends BaseService {
                
                
                         //TODO: send salon with rating 5
-                        const salons = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        const salons = this.model.find({approved:true}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                         const salonPage = this.model.aggregate([
+                                {$match:{approved:true}},
                                 { "$count": "count" }
                         ])
 
@@ -500,6 +501,7 @@ export default class SalonService extends BaseService {
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
+                                "approved":true,
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
@@ -596,6 +598,7 @@ export default class SalonService extends BaseService {
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
+                                approved:true,
                                 coordinates: {
                                         $near:
                                         {
@@ -663,7 +666,7 @@ export default class SalonService extends BaseService {
                 //@ts-ignore
                 centerPoint.lng = req.query.longitude
 
-                const salon = await this.model.find({}).populate("photo_ids").populate("profile_pic").lean()
+                const salon = await this.model.find({approved:true}).populate("photo_ids").populate("profile_pic").lean()
                 for (var a = 0; a < salon.length; a++) {
                         if (salon[a].longitude != null && salon[a].latitude != null) {
                                 //@ts-ignore
@@ -759,6 +762,7 @@ export default class SalonService extends BaseService {
 
                         {
                                 $match: {
+                                        approved:true,
                                         name: { $regex: `.*${phrase}.*`, $options: 'i' }
                                 }
                         },
@@ -806,7 +810,9 @@ export default class SalonService extends BaseService {
                         {
                                 $unwind: "$services"
                         },
-                        { $match:  {"services.name":phrase} },
+                        { $match:  {
+                                approved:true,
+                                "services.name":phrase} },
                         {
                                 $group: {
                                         "_id": "$_id",
@@ -854,6 +860,7 @@ export default class SalonService extends BaseService {
                                                 $regex: `.*${phrase}.*`, $options: 'i'
                                         },
                                         "book_service":true,
+                                        approved:true,
 
 
                                 }
@@ -921,7 +928,9 @@ export default class SalonService extends BaseService {
                 console.log(skipCount)
 
                 const keys = Object.keys(q)
-                const filters = {}
+                const filters = {
+                        "approved":true,
+                }
 
                 for (const k of keys) {
                         switch (k) {
@@ -1141,9 +1150,9 @@ export default class SalonService extends BaseService {
                 let salonReq
                 let out
                 if (ids.length != 0) {
-                        salonReq = this.model.find({ _id: { $in: ids } }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        salonReq = this.model.find({ _id: { $in: ids },approved:true }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                 } else {
-                        salonReq = this.model.find({}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        salonReq = this.model.find({approved:true}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
                 }
                 // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                 // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
