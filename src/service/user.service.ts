@@ -317,10 +317,10 @@ export default class UserService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["createdAt"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
+            // filters["createdAt"] = {
+            //     "$gte": dateFilter["start_date"],
+            //     "$lt": dateFilter["end_date"]
+            // }
             //  filters["createdAt"] = {
             //      "$gte": dateFilter["start_date"],
             //      "$lt": dateFilter["end_date"]

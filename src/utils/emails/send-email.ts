@@ -75,9 +75,11 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [
+                    BccAddresses:[
                         'kashish@zattire.com',
                         'developers@zattire.com',
+                    ],
+                    ToAddresses: [
                         salonEmail,
                         
                         //  salonEmail
@@ -133,9 +135,12 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [
+                    BccAddresses:[
                         'kashish@zattire.com',
                         'developers@zattire.com',
+                    ],
+                    ToAddresses: [
+                        
                             salonEmail,
                         /* more items */
                     ]
@@ -191,9 +196,12 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [  
+                    BccAddresses:[
                         'kashish@zattire.com',
                         'developers@zattire.com',
+                    ],
+                    ToAddresses: [  
+                      
 
                         userEmail,
                         /* more items */
@@ -250,10 +258,12 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [
-                       
+                    BccAddresses:[
                         'kashish@zattire.com',
-                        'sehaj@zattire.com',
+                        'developers@zattire.com',
+                    ],
+                    ToAddresses: [
+                      
 
                         userEmail
                         /* more items */
@@ -320,11 +330,13 @@ export default class SendEmail {
             console.log("sending emailll")
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                      
-                        'kashish@zattire.com',
-                       
-                        'sehaj@zattire.com',
+                      
                         userEmail
                         /* more items */
                     ]
@@ -378,11 +390,13 @@ export default class SendEmail {
             console.log("sending emailll")
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                        
-                        'kashish@zattire.com',
-                       
-                        'sehaj@zattire.com',
+                      
                         userEmail
                         /* more items */
                     ]
@@ -439,11 +453,12 @@ export default class SendEmail {
             console.log("sending emailll")
             const params = {
                 Destination: { /* required */
-                    ToAddresses: [
-                        
+                    BccAddresses:[
                         'kashish@zattire.com',
-                       
-                        'sehaj@zattire.com',
+                        'developers@zattire.com',
+                    ],
+                    ToAddresses: [
+                    
                         userEmail
                         /* more items */
                     ]
@@ -510,11 +525,13 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                        
-                        'kashish@zattire.com',
-                        
-                        'sehaj@zattire.com',
+                       
                         salonEmail
                         /* more items */
                     ]
@@ -581,11 +598,13 @@ export default class SendEmail {
 
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                       
-                        'kashish@zattire.com',
                       
-                        'sehaj@zattire.com',
                         salonEmail
                         /* more items */
                     ]
@@ -641,11 +660,13 @@ export default class SendEmail {
             console.log("sending emailll")
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                        
-                        'kashish@zattire.com',
-                       
-                        'sehaj@zattire.com',
+                     
                         userEmail
                         /* more items */
                     ]
@@ -701,11 +722,13 @@ export default class SendEmail {
             console.log("sending emailll")
             const params = {
                 Destination: { /* required */
+                    BccAddresses:[
+                        'kashish@zattire.com',
+                        'developers@zattire.com',
+                    ],
                     ToAddresses: [
                        
-                        'kashish@zattire.com',
                        
-                        'sehaj@zattire.com',
                         salonEmail
                         /* more items */
                     ]
