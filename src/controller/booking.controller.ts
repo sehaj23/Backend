@@ -32,6 +32,10 @@ import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
 import moment = require("moment");
+import { CashBackI } from "../interfaces/cashback.interface";
+import CashbackRangeService from "../service/cashback-range.service";
+import { CashBackRangeSI } from "../interfaces/cashbackRange.interface";
+import cashbackRange from "../utils/cashback-range";
 
 
 export default class BookingController extends BaseController {
@@ -50,8 +54,9 @@ export default class BookingController extends BaseController {
     promoCodeService: PromoCodeService
     referralService: ReferralService
     refundService: RefundService
+    cashbackRangeService:CashbackRangeService
     walletTransactionService: WalletTransactionService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService) {
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService,cashbackRangeService:CashbackRangeService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -66,6 +71,7 @@ export default class BookingController extends BaseController {
         this.refundService = refundService
         this.promoCodeService = promoCodeService
         this.walletTransactionService = walletTransactionService
+        this.cashbackRangeService=cashbackRangeService
     }
 
 
@@ -624,21 +630,21 @@ export default class BookingController extends BaseController {
             return
         }
         //@ts-ignore
-        if (!req.userId) {
+        if (req.userId) {
             authorName = "User"
             //@ts-ignore
             id = req.userId
 
         }
         //@ts-ignore
-        if (!req.vendorId) {
+        if (req.vendorId) {
             authorName = "Vendor"
             //@ts-ignore
             id = req.vendorId
 
         }
         //@ts-ignore
-        if (!req.adminId) {
+        if (req.adminId) {
             authorName = "Admin"
             //@ts-ignore
             id = req.adminId
@@ -716,6 +722,54 @@ export default class BookingController extends BaseController {
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
            }
+           if(completedBooking.length>1){
+               let total= 0
+                booking.services.map((e)=>{
+                    total = total + e.service_total_price
+               })
+               const getRangeofCashback = await this.cashbackRangeService.getOne({start_amount:{$gt:total},end_amount:{$lt:total}}) as CashBackRangeSI
+               let cashbackAmount
+               if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
+                    if((getRangeofCashback.count + 1)/25 == 0){
+                        //range given by pushaan
+                        cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,90)
+                    }else if(getRangeofCashback.count + 1== 100){
+                        cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(99,101)
+                    }else{
+                        cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                    }
+               }else if(getRangeofCashback.range_name == cashbackRange.MEDIUMRANGE){
+                if((getRangeofCashback.count + 1)/15 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,100)
+                }else if((getRangeofCashback.count + 1)/20==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.MAXRANGE){
+                if((getRangeofCashback.count + 1)/5 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(150,200)
+                 } else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(100,150)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.SUPERMAXRANGE){
+                if((getRangeofCashback.count + 1)/10==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else if((getRangeofCashback.count +1)/25==0){
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(250,500)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(150,200)
+                }
+               }
+               const cashbackData:CashBackI={
+                    user_id:booking.user_id.toString(),
+                    amount:cashbackAmount,
+                    opened:false         
+               }
+
+           }
         }
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(status)) {
@@ -759,6 +813,7 @@ export default class BookingController extends BaseController {
         }
         res.send({ message: "Booking status changed", success: true })
     })
+   
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
@@ -1101,6 +1156,7 @@ export default class BookingController extends BaseController {
         res.send(slots)
 
     })
+    
 
 
 

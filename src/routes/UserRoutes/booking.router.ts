@@ -4,6 +4,7 @@ import UserverifyToken from "../../middleware/User.jwt"
 import Booking from "../../models/booking.model"
 import Brand from "../../models/brands.model"
 import Cart from "../../models/cart.model"
+import Cashbackrange from "../../models/cashbackRange.model"
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
 import Employee from "../../models/employees.model"
 import Event from "../../models/event.model"
@@ -23,6 +24,7 @@ import Vendor from "../../models/vendor.model"
 import WalletTransaction from "../../models/wallet-transaction.model"
 import BookingService from "../../service/booking.service"
 import CartService from "../../service/cart.service"
+import CashbackRangeService from "../../service/cashback-range.service"
 import EmployeeAbsenteesmService from "../../service/employee-absentism.service"
 import EmployeeService from "../../service/employee.service"
 import FeedbackService from "../../service/feedback.service"
@@ -51,9 +53,9 @@ const empAbsenteesimService = new EmployeeAbsenteesmService(EmployeeAbsenteeism)
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
 const promoUserService = new PromoUserService(PromoUserCode)
 const promoCodeService = new PromoCodeService(PromoCode)
-
+const cashbackRangeService =  new CashbackRangeService(Cashbackrange)
 const refundService = new RefundService(Refund, bookingService, walletTransactionService)
-const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService, walletTransactionService)
+const bc = new BookingController(bookingService, salonService, empAbsenteesimService, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService, walletTransactionService,cashbackRangeService)
 
 const bookingRouter = Router()
 
