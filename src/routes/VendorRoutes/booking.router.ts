@@ -4,6 +4,7 @@ import VendorverifyToken from "../../middleware/VendorJwt";
 import Booking from "../../models/booking.model";
 import Brand from "../../models/brands.model";
 import Cart from "../../models/cart.model";
+import Cashbackuser from "../../models/cashback.model";
 import Cashbackrange from "../../models/cashbackRange.model";
 import Cashback from "../../models/cashbackRange.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
@@ -26,6 +27,7 @@ import WalletTransaction from "../../models/wallet-transaction.model";
 import BookingService from "../../service/booking.service";
 import CartService from "../../service/cart.service";
 import CashbackRangeService from "../../service/cashback-range.service";
+import CashbackService from "../../service/cashback.service";
 import EmployeeAbsentismService from "../../service/employee-absentism.service";
 import EmployeeService from "../../service/employee.service";
 import FeedbackService from "../../service/feedback.service";
@@ -56,7 +58,8 @@ const promoUserService = new PromoUserService(PromoUserCode)
 const refundService = new RefundService(Refund, bookingService, walletTransactionService)
 const promoCodeService = new PromoCodeService(PromoCode)
 const cashbackRangeService =  new CashbackRangeService(Cashbackrange)
-const bookingController = new BookingController(bookingService, salonService, employeeAbsenteeism, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService, walletTransactionService, cashbackRangeService)
+const cashbackService =  new CashbackService(Cashbackuser)
+const bookingController = new BookingController(bookingService, salonService, employeeAbsenteeism, cartService, feedbackService, userService, employeeService, vendorService, promoUserService, referralService, refundService, promoCodeService, walletTransactionService, cashbackRangeService,cashbackService)
 
 
 

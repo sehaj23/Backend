@@ -36,6 +36,7 @@ import { CashBackI } from "../interfaces/cashback.interface";
 import CashbackRangeService from "../service/cashback-range.service";
 import { CashBackRangeSI } from "../interfaces/cashbackRange.interface";
 import cashbackRange from "../utils/cashback-range";
+import CashbackService from "../service/cashback.service";
 
 
 export default class BookingController extends BaseController {
@@ -56,7 +57,8 @@ export default class BookingController extends BaseController {
     refundService: RefundService
     cashbackRangeService:CashbackRangeService
     walletTransactionService: WalletTransactionService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService,cashbackRangeService:CashbackRangeService) {
+    cashbackService:CashbackService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService,cashbackRangeService:CashbackRangeService, cashbackService:CashbackService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -72,6 +74,7 @@ export default class BookingController extends BaseController {
         this.promoCodeService = promoCodeService
         this.walletTransactionService = walletTransactionService
         this.cashbackRangeService=cashbackRangeService
+        this.cashbackService=cashbackService
     }
 
 
@@ -659,6 +662,7 @@ export default class BookingController extends BaseController {
         }
         const userData = this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
+        
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -722,12 +726,12 @@ export default class BookingController extends BaseController {
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
            }
-           if(completedBooking.length>1){
+        //    if(completedBooking.length>1){
                let total= 0
                 booking.services.map((e)=>{
                     total = total + e.service_total_price
                })
-               const getRangeofCashback = await this.cashbackRangeService.getOne({start_amount:{$gt:total},end_amount:{$lt:total}}) as CashBackRangeSI
+               const getRangeofCashback = await this.cashbackRangeService.getOne({ "start_amount": { "$lte": total},"end_amount" : { "$gte": total }}) as CashBackRangeSI
                let cashbackAmount
                if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
                     if((getRangeofCashback.count + 1)/25 == 0){
@@ -768,9 +772,14 @@ export default class BookingController extends BaseController {
                     amount:cashbackAmount,
                     opened:false         
                }
+               getRangeofCashback.count = getRangeofCashback.count +1 
+
+               const cashbackReq =  this.cashbackService.post(cashbackData)
+               await Promise.all([cashbackReq,getRangeofCashback.save()])
+               
 
            }
-        }
+  //      }
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(status)) {
             refundToWallet = true

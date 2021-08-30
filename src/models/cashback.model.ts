@@ -17,6 +17,11 @@ user_id: {
 opened:{
     type:Boolean,
     default:false
+},
+wallet_transaction:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'wallet_transactions',
+  
 }
 })
 
