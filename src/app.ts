@@ -84,7 +84,7 @@ https.globalAgent.maxSockets = Infinity;
 app.use(compression())
 app.use(bodyParser({ limit: '50mb' }));
 app.use(cors({
-  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688","https://zattire-vendor-app.web.app"," https://zattire-vendor-app--dev-fno83aco.web.app","http://localhost:55007/"],
+  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688","https://zattire-vendor-app.web.app"," https://zattire-vendor-app--dev-fno83aco.web.app","http://localhost:55007/"," https://app.zattire.com"," https://www.zattire.com"],
   credentials: true
 }));
 
