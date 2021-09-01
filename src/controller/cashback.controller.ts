@@ -22,14 +22,14 @@ export default class CashbackController extends BaseController{
 
     availCashback =  controllerErrorHandler( async (req: Request, res: Response) => {
         const id = req.params.id
-        const cashback =  await this.service.getOne({_id:mongoose.Types.ObjectId(id)}) as CashBackSI
+        const cashback =  await this.service.getOneNoPopulate({_id:mongoose.Types.ObjectId(id)}) as CashBackSI
         if(!cashback) throw new ErrorResponse({message:"No cashback found"})
         if(cashback.opened == true && cashback.wallet_transaction != null ){
             throw new ErrorResponse({message:"Cashback already availed"})
         }else{
             try{
 
-          
+          console.log(cashback.user_id.toString())
             const walletTransactionI: WalletTransactionI = {
                 amount: cashback.amount,
                 user_id:cashback.user_id.toString(),
@@ -39,14 +39,15 @@ export default class CashbackController extends BaseController{
                 transaction_owner: "ALGO",
                 comment: "Cashback given"
             }
-            console.log(this.walletTransactionService)
             const wallet = await this.walletTransactionService.post(walletTransactionI) as WalletTransactionSI
+         
             cashback.wallet_transaction = wallet._id
             cashback.opened =  true
             await cashback.save()
             return res.status(200).send({message:"Money will be added into your wallet"})
         }catch(e){
-                res.status(400).send({message:"unexpected error occurred"})
+            console.log(e)
+                res.status(400).send({message:"Unexpected error occured"})
         }
         }
 
@@ -54,7 +55,7 @@ export default class CashbackController extends BaseController{
 
 
     getUnavailedCashback =  controllerErrorHandler( async (req: Request, res: Response) => {
-        const cashback = await this.service.get({opened:false})
+        const cashback = await this.service.getOneNoPopulate({opened:false})
         res.status(200).send(cashback)
     })
 
