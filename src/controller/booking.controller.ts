@@ -687,9 +687,9 @@ export default class BookingController extends BaseController {
         if (status === "Completed") {
             const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
             const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
-
+                let referal: ReferralSI
             if (completedBooking.length === 1) {
-                const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+                referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
                 console.log(referal)
                 if (!referal) {
                     console.log("no referral")
@@ -726,7 +726,7 @@ export default class BookingController extends BaseController {
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
            }
-        //    if(completedBooking.length>1){
+            if(!referal){
                let total= 0
                 booking.services.map((e)=>{
                     total = total + e.service_total_price
@@ -779,7 +779,7 @@ export default class BookingController extends BaseController {
                
 
            }
-  //      }
+       }
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(status)) {
             refundToWallet = true
