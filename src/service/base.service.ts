@@ -19,6 +19,9 @@ export default class BaseService {
     get = async (filters = {}): Promise<any[]> => {
         return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo")
     }
+    getNopopulate = async (filters = {}): Promise<any[]> => {
+        return await this.model.find(filters).select("-password")
+    }
 
     getWithPagination = async (q: any): Promise<any> => {
         const pageNumber: number = parseInt(q.page_number || 1)
