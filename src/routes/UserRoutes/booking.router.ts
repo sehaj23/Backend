@@ -70,6 +70,7 @@ bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)
 bookingRouter.get("/razorpay-orderid/:id", UserverifyToken, bc.getRazorpayOrderId)
 bookingRouter.post("/razorpay-verify-payment/:bookingId", [...BookingValidator.verifyRazorPayPayment, UserverifyToken], bc.verifyRazorPayPayment)
 bookingRouter.patch("/update-status/:id", UserverifyToken, bc.updateStatusBookings)
+bookingRouter.post("/complete/:id",UserverifyToken, bc.completeBooking)
 bookingRouter.patch("/rescheduled/:id", UserverifyToken, bc.confirmRescheduleSlot)
 // create a booking
 bookingRouter.post("/", UserverifyToken, bc.bookAppointment)

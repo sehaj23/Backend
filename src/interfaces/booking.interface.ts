@@ -50,6 +50,26 @@ export interface RazorpayPaymentData {
     verified: boolean
 }
 
+export enum bookingStatus{
+   
+   start= 'Start' ,
+   done= 'Done' ,
+   refund='Refunded' ,
+   onlinePaymentFailed= 'Online Payment Failed' ,
+   onlinePyamentRequested= 'Online Payment Requested' , 
+   requested ='Requested',
+   confirmed = 'Confirmed' , 
+   vendorCancelled = 'Vendor Cancelled' ,
+   customerCancelled =  'Customer Cancelled' , 
+   completed = 'Completed' , 
+   vendorCancelledAferConfirmed =   'Vendor Cancelled After Confirmed' , 
+   customerCancelledAfterConfirmed = 'Customer Cancelled After Confirmed' , 
+   redcheduledCanceled = 'Rescheduled Canceled' ,
+   rescheduled = 'Rescheduled' ,
+  noShow = 'No Show' ,
+  lowFundBalance =  'Low Funds Canceled'
+}
+
 
 export enum BookingPaymentMode {
     COD = "COD",
