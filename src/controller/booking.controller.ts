@@ -833,7 +833,7 @@ export default class BookingController extends BaseController {
         //@ts-ignore
         const userId = req.userId
         const status=bookingStatus.completed
-        const getbooking = await this.service.getOneNoPopulate({_id:bookingId,salon_id: salon_id}) as BookingSI
+        const getbooking = await this.service.getOneNoPopulate({_id:bookingId,salon_id: salon_id,user_id:userId}) as BookingSI
         if(!getbooking) throw new ErrorResponse({message:"Booking not found"})
         
         if(getbooking.status == bookingStatus.start || getbooking.status == bookingStatus.confirmed || getbooking.status == bookingStatus.done ){
