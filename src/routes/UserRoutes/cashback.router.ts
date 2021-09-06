@@ -17,5 +17,5 @@ const cashbackController = new CashbackController(cashbackService,walletTransact
 
 
 cashbackRouter.get("/avail/:id",UserverifyToken,cashbackController.availCashback)
-cashbackRouter.get("/unavailed",UserverifyToken,cashbackController.getUnavailedCashback)
+cashbackRouter.get("/user",UserverifyToken,cashbackController.getCashbackUserList)
 export default cashbackRouter

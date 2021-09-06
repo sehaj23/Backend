@@ -54,11 +54,11 @@ export default class CashbackController extends BaseController{
     })
 
 
-    getUnavailedCashback =  controllerErrorHandler( async (req: Request, res: Response) => {
+    getCashbackUserList =  controllerErrorHandler( async (req: Request, res: Response) => {
      
            //@ts-ignore
            const userId = req.userId
-        const cashback = await this.service.getNopopulate({ opened:false})
+        const cashback = await this.service.getNopopulate({ user_id:mongoose.Types.ObjectId(userId)})
         res.status(200).send(cashback)
     })
 
