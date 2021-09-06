@@ -827,13 +827,16 @@ export default class BookingController extends BaseController {
 
     completeBooking= controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
-        const salon_id=req.body
+        const {salon_id}=req.body
+        console.log(bookingId)
+        console.log(salon_id)
         //@ts-ignore
         const userId = req.userId
         const status=bookingStatus.completed
-        const getbooking = await this.service.getOne({_id:mongoose.Types.ObjectId( bookingId),salon_id: mongoose.Types.ObjectId(salon_id),userId:mongoose.Types.ObjectId( userId)}) as BookingSI
+        const getbooking = await this.service.getOneNoPopulate({_id:bookingId,salon_id: salon_id}) as BookingSI
         if(!getbooking) throw new ErrorResponse({message:"Booking not found"})
-        if(getbooking.status == bookingStatus.start ||getbooking.status == bookingStatus.confirmed || getbooking.status == bookingStatus.done ){
+        
+        if(getbooking.status == bookingStatus.start || getbooking.status == bookingStatus.confirmed || getbooking.status == bookingStatus.done ){
             getbooking.status =  status
             getbooking.history.push({ status_changed_to: status, last_status: getbooking.status, changed_by:'User' })
           
@@ -942,6 +945,8 @@ export default class BookingController extends BaseController {
                res.status(200).send({message:"Status updated"})
 
            }
+        }else{
+            res.status(400).send({message:"your booking has not been started yet"})
         }
     })
    
