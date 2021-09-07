@@ -41,7 +41,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         const mailOptions: Mail.Options = {
             from: 'info@zattire.com',
             replyTo: 'info@zattire.com',
-            to: ['sehaj@zattire.com', 'preetsc27@gmail.com',userEmail],
+            to: ['sehaj@zattire.com',userEmail],
             subject: `Invoice for your Booking ${orderId}`,
             html: data,
             attachments: [
