@@ -22,6 +22,10 @@ wallet_transaction:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'wallet_transactions',
   
+},
+booking_id:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'booking',
 }
 })
 

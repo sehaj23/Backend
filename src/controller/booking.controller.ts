@@ -771,6 +771,7 @@ export default class BookingController extends BaseController {
                const cashbackData:CashBackI={
                     user_id:booking.user_id.toString(),
                     amount:cashbackAmount,
+                    booking_id:booking._id.toString(),
                     opened:false         
                }
                getRangeofCashback.count = getRangeofCashback.count +1 
@@ -936,6 +937,7 @@ export default class BookingController extends BaseController {
                const cashbackData:CashBackI={
                     user_id:getbooking.user_id.toString(),
                     amount:cashbackAmount,
+                    booking_id:getbooking._id.toString(),
                     opened:false         
                }
                getRangeofCashback.count = getRangeofCashback.count +1 

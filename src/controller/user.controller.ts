@@ -387,15 +387,15 @@ export default class UserController extends BaseController {
          tokenList =    tokenList.concat(e.fcm_token)
            
         })
-       
+       let sendNotifcation
         try {
-            const sendNotifcation =  sendNotificationToDevice(tokenList,message)
+             sendNotifcation =  await sendNotificationToDevice(tokenList,message)
             
         } catch (error) {
             console.log(error)
             return res.status(400).send(error)
         }
-        return res.status(200).send({message:"Notifcation sent"})
+        return res.status(200).send(sendNotifcation)
     })
     updateProfilePic = async (req: Request, res: Response) => {
         try {
