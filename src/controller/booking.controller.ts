@@ -732,51 +732,51 @@ export default class BookingController extends BaseController {
                 booking.services.map((e)=>{
                     total = total + e.service_total_price
                })
-        //        const getRangeofCashback = await this.cashbackRangeService.getOne({ "start_amount": { "$lte": total},"end_amount" : { "$gte": total }}) as CashBackRangeSI
-        //        let cashbackAmount
-        //        if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
-        //             if((getRangeofCashback.count + 1)/25 == 0){
-        //                 //range given by pushaan
-        //                 cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,90)
-        //             }else if(getRangeofCashback.count + 1== 100){
-        //                 cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(99,101)
-        //             }else{
-        //                 cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
-        //             }
-        //        }else if(getRangeofCashback.range_name == cashbackRange.MEDIUMRANGE){
-        //         if((getRangeofCashback.count + 1)/15 == 0){
-        //             //range given by pushaan
-        //             cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,100)
-        //         }else if((getRangeofCashback.count + 1)/20==0){
-        //             cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
-        //         }else{
-        //             cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
-        //         }
-        //        }else if(getRangeofCashback.range_name == cashbackRange.MAXRANGE){
-        //         if((getRangeofCashback.count + 1)/5 == 0){
-        //             //range given by pushaan
-        //             cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(150,200)
-        //          } else{
-        //             cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(100,150)
-        //         }
-        //        }else if(getRangeofCashback.range_name == cashbackRange.SUPERMAXRANGE){
-        //         if((getRangeofCashback.count + 1)/10==0){
-        //             cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
-        //         }else if((getRangeofCashback.count +1)/25==0){
-        //             cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(250,500)
-        //         }else{
-        //             cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(150,200)
-        //         }
-        //        }
-        //        const cashbackData:CashBackI={
-        //             user_id:booking.user_id.toString(),
-        //             amount:cashbackAmount,
-        //             opened:false         
-        //        }
-        //        getRangeofCashback.count = getRangeofCashback.count +1 
+               const getRangeofCashback = await this.cashbackRangeService.getOne({ "start_amount": { "$lte": total},"end_amount" : { "$gte": total }}) as CashBackRangeSI
+               let cashbackAmount
+               if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
+                    if((getRangeofCashback.count + 1)/25 == 0){
+                        //range given by pushaan
+                        cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,90)
+                    }else if(getRangeofCashback.count + 1== 100){
+                        cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(99,101)
+                    }else{
+                        cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                    }
+               }else if(getRangeofCashback.range_name == cashbackRange.MEDIUMRANGE){
+                if((getRangeofCashback.count + 1)/15 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,100)
+                }else if((getRangeofCashback.count + 1)/20==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.MAXRANGE){
+                if((getRangeofCashback.count + 1)/5 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(150,200)
+                 } else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(100,150)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.SUPERMAXRANGE){
+                if((getRangeofCashback.count + 1)/10==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else if((getRangeofCashback.count +1)/25==0){
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(250,500)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(150,200)
+                }
+               }
+               const cashbackData:CashBackI={
+                    user_id:booking.user_id.toString(),
+                    amount:cashbackAmount,
+                    opened:false         
+               }
+               getRangeofCashback.count = getRangeofCashback.count +1 
 
-        //        const cashbackReq =  this.cashbackService.post(cashbackData)
-        //        await Promise.all([cashbackReq,getRangeofCashback.save()])
+               const cashbackReq =  this.cashbackService.post(cashbackData)
+               await Promise.all([cashbackReq,getRangeofCashback.save()])
                
 
             }
