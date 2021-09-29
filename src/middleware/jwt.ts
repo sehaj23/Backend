@@ -45,9 +45,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) =>  
       }
       // @ts-ignore
       req.adminId = decoded._id;
-      console.log("***")
-      //@ts-ignore
-      console.log(decoded._id)
+    
       next();
     } catch (err) {
       res.status(401).send({ auth: false, message: err });
