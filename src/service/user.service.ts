@@ -225,7 +225,7 @@ export default class UserService extends BaseService {
 
     // this is to add balance to wallet
     addBalance = async (userId: string, amount: number) => {
-        const user: UserSI = await this.model.findOne({ _id: Types.ObjectId(userId) })
+        const user: UserSI = await this.model.findOne({ _id: mongoose.Types.ObjectId(userId) })
         if (user.balance === undefined) {
             user.balance = 0
         }

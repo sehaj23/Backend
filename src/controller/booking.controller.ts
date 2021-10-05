@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "../database";
-import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus, RazorpayPaymentData } from "../interfaces/booking.interface";
+import { BookingPaymentI, BookingPaymentMode, BookingServiceI, BookingSI, BookinStatus, RazorpayPaymentData ,bookingStatus} from "../interfaces/booking.interface";
 import { CartSI } from "../interfaces/cart.interface";
 import EmployeeSI from "../interfaces/employee.interface";
 import EmployeeAbsenteeismSI from "../interfaces/employeeAbsenteeism.interface";
@@ -31,7 +31,13 @@ import WalletTransactionService from "../service/wallet-transaction.service";
 import ErrorResponse from "../utils/error-response";
 import logger from "../utils/logger";
 import BaseController from "./base.controller";
+
 import moment = require("moment");
+import { CashBackI } from "../interfaces/cashback.interface";
+import CashbackRangeService from "../service/cashback-range.service";
+import { CashBackRangeSI } from "../interfaces/cashbackRange.interface";
+import cashbackRange from "../utils/cashback-range";
+import CashbackService from "../service/cashback.service";
 
 
 export default class BookingController extends BaseController {
@@ -50,8 +56,10 @@ export default class BookingController extends BaseController {
     promoCodeService: PromoCodeService
     referralService: ReferralService
     refundService: RefundService
+    cashbackRangeService:CashbackRangeService
     walletTransactionService: WalletTransactionService
-    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService) {
+    cashbackService:CashbackService
+    constructor(service: BookingService, salonService: SalonService, employeeAbsentismService: EmployeeAbsenteesmService, cartService: CartService, feedbackService: FeedbackService, userService: UserService, employeeService: EmployeeService, vendorService: VendorService, promoUserService: PromoUserService, referralService: ReferralService, refundService: RefundService, promoCodeService: PromoCodeService, walletTransactionService: WalletTransactionService,cashbackRangeService:CashbackRangeService, cashbackService:CashbackService) {
         super(service)
         this.service = service
         this.salonService = salonService
@@ -66,6 +74,8 @@ export default class BookingController extends BaseController {
         this.refundService = refundService
         this.promoCodeService = promoCodeService
         this.walletTransactionService = walletTransactionService
+        this.cashbackRangeService=cashbackRangeService
+        this.cashbackService=cashbackService
     }
 
 
@@ -624,24 +634,24 @@ export default class BookingController extends BaseController {
             return
         }
         //@ts-ignore
-        if (!req.userId) {
+        if (req.userId) {
             authorName = "User"
             //@ts-ignore
             id = req.userId
 
         }
         //@ts-ignore
-        if (!req.vendorId) {
+        if (req.vendorId) {
             authorName = "Vendor"
             //@ts-ignore
             id = req.vendorId
 
         }
         //@ts-ignore
-        if (!req.adminId) {
+        if (req.adminId) {
             authorName = "Admin"
             //@ts-ignore
-            id = req.adminId
+            id = req.adminId 
         }
         const booking = await this.service.updateStatusBookings(bookingid, status, authorName, id)
         if (!booking) {
@@ -653,6 +663,7 @@ export default class BookingController extends BaseController {
         }
         const userData = this.userService.getId(booking.user_id.toString())
         const salonData = this.salonService.getId(booking.salon_id.toString())
+        
         const employeeData = this.employeeService.getId(booking.services[0].employee_id.toString())
         
         const [user, salon, employee] = await Promise.all([userData, salonData, employeeData])
@@ -677,9 +688,9 @@ export default class BookingController extends BaseController {
         if (status === "Completed") {
             const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
             const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
-
+                let referal: ReferralSI
             if (completedBooking.length === 1) {
-                const referal: ReferralSI = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+                referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
                 console.log(referal)
                 if (!referal) {
                     console.log("no referral")
@@ -716,7 +727,61 @@ export default class BookingController extends BaseController {
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
            }
-        }
+            if(!referal){
+               let total= 0
+                booking.services.map((e)=>{
+                    total = total + e.service_total_price
+               })
+               const getRangeofCashback = await this.cashbackRangeService.getOne({ "start_amount": { "$lte": total},"end_amount" : { "$gte": total }}) as CashBackRangeSI
+               let cashbackAmount
+               if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
+                    if((getRangeofCashback.count + 1)/25 == 0){
+                        //range given by pushaan
+                        cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,90)
+                    }else if(getRangeofCashback.count + 1== 100){
+                        cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(99,101)
+                    }else{
+                        cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                    }
+               }else if(getRangeofCashback.range_name == cashbackRange.MEDIUMRANGE){
+                if((getRangeofCashback.count + 1)/15 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,100)
+                }else if((getRangeofCashback.count + 1)/20==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.MAXRANGE){
+                if((getRangeofCashback.count + 1)/5 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(150,200)
+                 } else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(100,150)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.SUPERMAXRANGE){
+                if((getRangeofCashback.count + 1)/10==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else if((getRangeofCashback.count +1)/25==0){
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(250,500)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(150,200)
+                }
+               }
+               const cashbackData:CashBackI={
+                    user_id:booking.user_id.toString(),
+                    amount:cashbackAmount,
+                    booking_id:booking._id.toString(),
+                    opened:false         
+               }
+               getRangeofCashback.count = getRangeofCashback.count +1 
+
+               const cashbackReq =  this.cashbackService.post(cashbackData)
+               await Promise.all([cashbackReq,getRangeofCashback.save()])
+               
+
+            }
+       }
         const cancelledStatuses: BookinStatus[] = ['Customer Cancelled', 'Customer Cancelled After Confirmed', 'No Show', 'Online Payment Failed', 'Rescheduled Canceled', 'Vendor Cancelled After Confirmed', 'Vendor Cancelled']
         if (cancelledStatuses.includes(status)) {
             refundToWallet = true
@@ -759,6 +824,134 @@ export default class BookingController extends BaseController {
         }
         res.send({ message: "Booking status changed", success: true })
     })
+
+
+    completeBooking= controllerErrorHandler(async (req: Request, res: Response) => {
+        const bookingId = req.params.id
+        const {salon_id}=req.body
+        console.log(bookingId)
+        console.log(salon_id)
+        //@ts-ignore
+        const userId = req.userId
+        const status=bookingStatus.completed
+        const getbooking = await this.service.getOneNoPopulate({_id:bookingId,salon_id: salon_id,user_id:userId}) as BookingSI
+        if(!getbooking) throw new ErrorResponse({message:"Booking not found"})
+        
+        if(getbooking.status == bookingStatus.start || getbooking.status == bookingStatus.confirmed || getbooking.status == bookingStatus.done ){
+            getbooking.status =  status
+            getbooking.history.push({ status_changed_to: status, last_status: getbooking.status, changed_by:'User' })
+          
+            try {
+                const userData = this.userService.getId(getbooking.user_id.toString())
+                const salonData = this.salonService.getId(getbooking.salon_id.toString())
+                
+                const employeeData = this.employeeService.getId(getbooking.services[0].employee_id.toString())
+                
+                const [user, salon, employee] = await Promise.all([userData, salonData, employeeData,getbooking.save()])
+                const notify = Notify.bookingCompletedInvoice(user, salon, getbooking, employee)
+            } catch (error) {
+                console.log(error)
+            }
+         
+            const completedBooking = await this.service.get({ user_id: getbooking.user_id.toString(), status: "Completed" })
+                let referal: ReferralSI
+            if (completedBooking.length === 1) {
+                referal = await this.referralService.getReferralByUserIdAndUpdate(getbooking.user_id.toString(), { "referred_to.booking_id": getbooking._id, "referred_to.booking_status": status })
+                console.log(referal)
+                if (!referal) {
+                    console.log("no referral")
+                } else {
+                    const walletTransactionI: WalletTransactionI = {
+                        amount: 50,
+                        user_id: referal.referred_to.user.toString(),
+                        reference_model: 'referal',
+                        reference_id: referal._id,
+                        transaction_type: "Refferal Bonus Added",
+                        transaction_owner: "ALGO",
+                        comment: "Refferal Bonus Added"
+                    }
+                    await this.walletTransactionService.post(walletTransactionI)
+                    // changing the id olny
+                    walletTransactionI.user_id = referal.referred_by.toString() 
+                  
+                    const transaction =  await this.walletTransactionService.post(walletTransactionI)
+                    
+                    const referred_by_req = this.userService.getId(referal.referred_by.toString())
+                    const referred_to_req = this.userService.getId(referal.referred_to.user.toString())
+                    const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+                    try{
+                        const notify = Notify.referralComplete(referred_by, referred_to)
+                    }catch(e){
+                        console.log(e)
+                    }
+                   
+                }
+            }
+           if(getbooking.services[0].service_discount_code != null){
+               
+               const getPromoStatus =  await this.promoUserService.getOne({booking_id:getbooking._id.toString()}) as PromoUserSI
+                getPromoStatus.status = promoUsedStatus.COMPLETED
+                await getPromoStatus.save()
+           }
+            if(!referal){
+               let total= 0
+                getbooking.services.map((e)=>{
+                    total = total + e.service_total_price
+               })
+               const getRangeofCashback = await this.cashbackRangeService.getOne({ "start_amount": { "$lte": total},"end_amount" : { "$gte": total }}) as CashBackRangeSI
+               let cashbackAmount
+               if(getRangeofCashback.range_name == cashbackRange.LOWRANGE){
+                    if((getRangeofCashback.count + 1)/25 == 0){
+                        //range given by pushaan
+                        cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,90)
+                    }else if(getRangeofCashback.count + 1== 100){
+                        cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(99,101)
+                    }else{
+                        cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                    }
+               }else if(getRangeofCashback.range_name == cashbackRange.MEDIUMRANGE){
+                if((getRangeofCashback.count + 1)/15 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(50,100)
+                }else if((getRangeofCashback.count + 1)/20==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(20,30)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.MAXRANGE){
+                if((getRangeofCashback.count + 1)/5 == 0){
+                    //range given by pushaan
+                    cashbackAmount  =   this.cashbackRangeService.randomIntFromInterval(150,200)
+                 } else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(100,150)
+                }
+               }else if(getRangeofCashback.range_name == cashbackRange.SUPERMAXRANGE){
+                if((getRangeofCashback.count + 1)/10==0){
+                    cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(101,150)
+                }else if((getRangeofCashback.count +1)/25==0){
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(250,500)
+                }else{
+                    cashbackAmount =     this.cashbackRangeService.randomIntFromInterval(150,200)
+                }
+               }
+               const cashbackData:CashBackI={
+                    user_id:getbooking.user_id.toString(),
+                    amount:cashbackAmount,
+                    booking_id:getbooking._id.toString(),
+                    opened:false         
+               }
+               getRangeofCashback.count = getRangeofCashback.count +1 
+
+               const cashbackReq =  this.cashbackService.post(cashbackData)
+               await Promise.all([cashbackReq,getRangeofCashback.save()])
+               res.status(200).send({message:"Status updated"})
+
+           }
+        }else{
+            res.status(400).send({message:"your booking has not been started yet"})
+        }
+    })
+   
 
     confirmRescheduleSlot = controllerErrorHandler(async (req: Request, res: Response) => {
         const bookingId = req.params.id
@@ -1101,6 +1294,7 @@ export default class BookingController extends BaseController {
         res.send(slots)
 
     })
+    
 
 
 

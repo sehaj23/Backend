@@ -26,7 +26,7 @@ export default class AdminController extends BaseController{
 
     updateFCM = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id =  req.userId
+        const id =  req.adminId 
         const fcm = req.body.fcm_token
         console.log("****")
         console.log(id)
@@ -43,7 +43,7 @@ export default class AdminController extends BaseController{
 
     deleteFcm = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id =  req.userId
+        const id =  req.adminId 
         const fcm = req.body.fcm_token
         const user = await this.service.deleteFCM(id, fcm)
         if (user == null) {

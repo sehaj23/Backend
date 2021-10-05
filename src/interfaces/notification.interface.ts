@@ -1,5 +1,5 @@
 
-export type notificationType= "DEALS"|"COUPON CODE"|"BOOKING"|"APP"
+export type notificationType= "DEALS"|"COUPON CODE"|"BOOKING"|"APP"|"CASHBACK"
 export interface NotificationI{
     title:string,
     body:string,

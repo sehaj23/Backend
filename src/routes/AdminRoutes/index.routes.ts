@@ -2,6 +2,7 @@ import { Router } from "express";
 import adminRouter from "./admin.router";
 import bannerRouter from "./banner.router";
 import bookingRouter from "./booking.router";
+import cashbackRangeRouter from "./cashback-range.router";
 import designerRouter from "./designer.router";
 import eventRouter from "./event.router";
 import loginRouter from "./login.router";
@@ -42,6 +43,7 @@ router.use('/photo',photoRouter)
 router.use("/booking", bookingRouter)
 router.use("/salon", salonRouter)
 router.use("/offer", offerRouter)
+router.use("/cashback",cashbackRangeRouter)
 router.use("/reviews", reviewsSalonRouter)
 router.use("/revenue", revenueRouter)
 router.use("/promo-code", promoCodeRouter)

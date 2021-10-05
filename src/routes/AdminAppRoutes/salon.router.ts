@@ -24,7 +24,7 @@ const userSearchService = new UserSearchService(UserSearch)
 const userService = new UserService(User, Booking)
 const promoCodeService = new PromoCodeService(PromoCode)
 const salonController = new SalonController(salonService, userSearchService,userService,promoCodeService)
-salonRouter.get("/", verifyToken, salonController.get)
+
 /**
  * @swagger
  * /api/salon/names:
@@ -37,7 +37,10 @@ salonRouter.get("/", verifyToken, salonController.get)
  *              description: Salon names and _ids
  */
 salonRouter.get("/names", verifyToken, salonController.getNameandId)
-
+salonRouter.get("/info/:id",verifyToken,salonController.getId)
+salonRouter.put("/update/:id",verifyToken,salonController.put)
+salonRouter.get("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
+salonRouter.get("/", verifyToken, salonController.get)
 
 
 export default salonRouter
