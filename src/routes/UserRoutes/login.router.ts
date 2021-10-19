@@ -28,7 +28,7 @@ const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon
 const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
-const loginController = new LoginController(loginService, CONFIG.USER_JWT, '30 days', otpService,referralService,promoCodeService)
+const loginController = new LoginController(loginService, CONFIG.USER_JWT, '365 days', otpService,referralService,promoCodeService)
 
 /**
  * @swagger
