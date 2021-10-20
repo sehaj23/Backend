@@ -12,6 +12,7 @@ export default interface ServiceI{
     duration: number
     reviews?: ReviewI[],
     gender:string
+    description?:string
 }
 
 export interface ServiceSI extends ServiceI, mongoose.Document{}
