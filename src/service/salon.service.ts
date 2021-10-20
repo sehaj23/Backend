@@ -220,6 +220,7 @@ export default class SalonService extends BaseService {
                                 const service: ServiceI = {
                                         name: gotService?.service_name ?? da.category_name ?? "Some Service",
                                         price: 0,
+                                        description:da.description??"",
                                         category: da.category_name,
                                         duration: 15,
                                         gender: 'men',
