@@ -14,6 +14,7 @@ export interface ServicesI{
     service_name:string,
     hsn_code:string,
     service_loaction:string,
+    description:string,
     options:OptionI[]
 }
 export interface OptionI{
