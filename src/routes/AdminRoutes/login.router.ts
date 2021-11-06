@@ -12,12 +12,14 @@ import Referral from "../../models/referral.model";
 import ReportVendor from "../../models/reportVendor.model";
 import Salon from "../../models/salon.model";
 import User from "../../models/user.model";
+import WalletTransaction from "../../models/wallet-transaction.model";
 import EmployeeService from "../../service/employee.service";
 import LoginService from "../../service/login.service";
 import OtpService from "../../service/otp.service";
 import PromoCodeService from "../../service/promo-code.service";
 import ReferralService from "../../service/referral.service";
 import UserService from "../../service/user.service";
+import WalletTransactionService from "../../service/wallet-transaction.service";
 
 const loginRouter = Router()
 const loginService = new LoginService(Admin)
@@ -27,7 +29,8 @@ const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon
 const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
-const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '30 days', otpService,referralService,promoCodeService)
+const walletTransactionService = new WalletTransactionService(WalletTransaction, userService)
+const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '30 days', otpService,referralService,promoCodeService,walletTransactionService)
 
 loginRouter.post("/create", loginController.create)
 /**

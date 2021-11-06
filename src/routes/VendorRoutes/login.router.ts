@@ -21,6 +21,8 @@ import ReferralService from "../../service/referral.service";
 import Referral from "../../models/referral.model";
 import PromoCodeService from "../../service/promo-code.service";
 import PromoCode from "../../models/promo-code.model";
+import WalletTransactionService from "../../service/wallet-transaction.service";
+import WalletTransaction from "../../models/wallet-transaction.model";
 
 // const ls = new  LoginService()
 
@@ -33,7 +35,8 @@ const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon
 const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
-const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService,referralService,promoCodeService)
+const walletTransactionService = new WalletTransactionService(WalletTransaction, userService)
+const loginController = new LoginController(loginService, CONFIG.VENDOR_JWT, '7 days', otpService,referralService,promoCodeService,walletTransactionService)
 
 loginRouter.post("/", loginController.loginVendor)
 loginRouter.post("/create", loginController.create)

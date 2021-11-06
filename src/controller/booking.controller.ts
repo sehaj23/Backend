@@ -689,38 +689,38 @@ export default class BookingController extends BaseController {
             const notify = Notify.bookingCompletedInvoice(user, salon, booking, employee)
             const completedBooking = await this.service.get({ user_id: booking.user_id.toString(), status: "Completed" })
                 let referal: ReferralSI
-            if (completedBooking.length === 1) {
-                referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
-                console.log(referal)
-                if (!referal) {
-                    console.log("no referral")
-                } else {
-                    const walletTransactionI: WalletTransactionI = {
-                        amount: 50,
-                        user_id: referal.referred_to.user.toString(),
-                        reference_model: 'referal',
-                        reference_id: referal._id,
-                        transaction_type: "Refferal Bonus Added",
-                        transaction_owner: "ALGO",
-                        comment: "Refferal Bonus Added"
-                    }
-                    await this.walletTransactionService.post(walletTransactionI)
-                    // changing the id olny
-                    walletTransactionI.user_id = referal.referred_by.toString() 
+            // if (completedBooking.length === 1) {
+            //     referal = await this.referralService.getReferralByUserIdAndUpdate(booking.user_id.toString(), { "referred_to.booking_id": booking._id, "referred_to.booking_status": status })
+            //     console.log(referal)
+            //     if (!referal) {
+            //         console.log("no referral")
+            //     } else {
+            //         const walletTransactionI: WalletTransactionI = {
+            //             amount: 50,
+            //             user_id: referal.referred_to.user.toString(),
+            //             reference_model: 'referal',
+            //             reference_id: referal._id,
+            //             transaction_type: "Refferal Bonus Added",
+            //             transaction_owner: "ALGO",
+            //             comment: "Refferal Bonus Added"
+            //         }
+            //         await this.walletTransactionService.post(walletTransactionI)
+            //         // changing the id olny
+            //         walletTransactionI.user_id = referal.referred_by.toString() 
                   
-                    const transaction =  await this.walletTransactionService.post(walletTransactionI)
+            //         const transaction =  await this.walletTransactionService.post(walletTransactionI)
                     
-                    const referred_by_req = this.userService.getId(referal.referred_by.toString())
-                    const referred_to_req = this.userService.getId(referal.referred_to.user.toString())
-                    const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
-                    try{
-                        const notify = Notify.referralComplete(referred_by, referred_to)
-                    }catch(e){
-                        console.log(e)
-                    }
+            //         const referred_by_req = this.userService.getId(referal.referred_by.toString())
+            //         const referred_to_req = this.userService.getId(referal.referred_to.user.toString())
+            //         const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+            //         try{
+            //             const notify = Notify.referralComplete(referred_by, referred_to)
+            //         }catch(e){
+            //             console.log(e)
+            //         }
                    
-                }
-            }
+            //     }
+            // }
            if(booking.services[0].service_discount_code != null){
                
                const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
