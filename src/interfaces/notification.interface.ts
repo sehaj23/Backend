@@ -4,5 +4,5 @@ export interface NotificationI{
     title:string,
     body:string,
     type: notificationType,
-    id:string
+    id?:string
 }

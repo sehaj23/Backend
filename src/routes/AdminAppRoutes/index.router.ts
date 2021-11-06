@@ -17,7 +17,7 @@ AdminApprouter.use("/promocode",promoCodeRouter)
 AdminApprouter.use("/wallet",walletTransactionRouter)
 AdminApprouter.use("/salon", salonRouter);
 AdminApprouter.use('/user', userRouter)
-AdminApprouter.use("/zattire-service",zattireServiceRouter)
+AdminApprouter.use("/zattire-services",zattireServiceRouter)
 
 
 export default AdminApprouter
