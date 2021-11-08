@@ -30,6 +30,9 @@ const SalonSchema = new mongoose.Schema({
     },
     services: {
         type: [{
+            description:{
+                type:String
+            },
             category: {
                 type: String,
                 required: true,

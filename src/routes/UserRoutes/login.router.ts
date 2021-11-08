@@ -13,22 +13,25 @@ import Referral from '../../models/referral.model'
 import ReportVendor from '../../models/reportVendor.model'
 import Salon from '../../models/salon.model'
 import User from '../../models/user.model'
+import WalletTransaction from '../../models/wallet-transaction.model'
 import EmployeeService from '../../service/employee.service'
 import LoginService from '../../service/login.service'
 import OtpService from '../../service/otp.service'
 import PromoCodeService from '../../service/promo-code.service'
 import ReferralService from '../../service/referral.service'
 import UserService from '../../service/user.service'
+import WalletTransactionService from '../../service/wallet-transaction.service'
 import { loginChecks, signupChecks } from '../../validators/login-validator'
 
 const loginRouter = Router()
 const loginService = new LoginService(User)
 const userService = new UserService(User, Booking)
+const walletTransactionService = new WalletTransactionService(WalletTransaction, userService)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
 const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
-const loginController = new LoginController(loginService, CONFIG.USER_JWT, '365 days', otpService,referralService,promoCodeService)
+const loginController = new LoginController(loginService, CONFIG.USER_JWT, '365 days', otpService,referralService,promoCodeService,walletTransactionService)
 
 /**
  * @swagger

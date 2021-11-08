@@ -8,6 +8,7 @@ import { PromoCodeSI, PromoCodeTimeType } from "../interfaces/promo-code.interfa
 import { PromoCodeI } from '../interfaces/promo-code.interface'
 import { ReferralI, ReferralSI } from '../interfaces/referral.interface'
 import { UserSI } from '../interfaces/user.interface'
+import { WalletTransactionI } from '../interfaces/wallet-transaction.interface'
 import controllerErrorHandler from '../middleware/controller-error-handler.middleware'
 import Vendor from '../models/vendor.model'
 import { PromoCodeRedis, UserRedis } from '../redis/index.redis'
@@ -16,6 +17,7 @@ import Notify from '../service/notify.service'
 import OtpService from '../service/otp.service'
 import PromoCodeService from '../service/promo-code.service'
 import ReferralService from '../service/referral.service'
+import WalletTransactionService from '../service/wallet-transaction.service'
 import SendEmail from '../utils/emails/send-email'
 import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
@@ -29,7 +31,8 @@ export default class LoginController extends BaseController {
   otpService: OtpService
   referralService: ReferralService
   promoCodeService: PromoCodeService
-  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService, promoCodeService: PromoCodeService) {
+  walletTransactionService: WalletTransactionService
+  constructor(service: LoginService, jwtKey: string, jwtValidity: string, otpService: OtpService, referralService: ReferralService, promoCodeService: PromoCodeService,walletTransactionService: WalletTransactionService) {
     super(service)
     this.service = service
     this.jwtKey = jwtKey
@@ -37,6 +40,7 @@ export default class LoginController extends BaseController {
     this.otpService = otpService
     this.referralService = referralService
     this.promoCodeService = promoCodeService
+    this.walletTransactionService=walletTransactionService
   }
 
   getEncryptedPass = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -134,6 +138,32 @@ export default class LoginController extends BaseController {
         }
         try {
           const referral = await this.referralService.post(referalData) as ReferralSI
+              const walletTransactionI: WalletTransactionI = {
+                        amount: 50,
+                        user_id: referral.referred_to.user.toString(),
+                        reference_model: 'referal',
+                        reference_id: referral._id,
+                        transaction_type: "Refferal Bonus Added",
+                        transaction_owner: "ALGO",
+                        comment: "Refferal Bonus Added"
+                    }
+                    await this.walletTransactionService.post(walletTransactionI)
+                    // changing the id olny
+                    walletTransactionI.user_id = referral.referred_by.toString() 
+                  
+                    const transaction =  await this.walletTransactionService.post(walletTransactionI)
+                    
+                    const referred_by_req = this.service.getId(referral.referred_by.toString())
+                    const referred_to_req = this.service.getId(referral.referred_to.user.toString())
+                    const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+                    try{
+                        const notify = Notify.referralComplete(referred_by, referred_to)
+                    }catch(e){
+                        console.log(e)
+                    }
+                   
+                
+            
         } catch (error) {
           console.log(error)
         }
@@ -198,10 +228,6 @@ export default class LoginController extends BaseController {
       expiresIn: this.jwtValidity,
     })
 
-    const queueData = {
-      "user_id": createUser._id
-    }
-    
 
     res.status(201).send({ token })
   })

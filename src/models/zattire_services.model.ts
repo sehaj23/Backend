@@ -21,6 +21,9 @@ const ZattireServiceSchema = new mongoose.Schema({
             service_loaction:{
                 type: String, 
             },
+            description:{
+                type:String
+            },
             options: {
                 type:[{
                     option_checked:{
