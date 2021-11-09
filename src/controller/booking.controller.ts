@@ -852,49 +852,15 @@ export default class BookingController extends BaseController {
                 const notify = Notify.bookingCompletedInvoice(user, salon, getbooking, employee)
             } catch (error) {
                 console.log(error)
-            }
-         
-            const completedBooking = await this.service.get({ user_id: getbooking.user_id.toString(), status: "Completed" })
-                let referal: ReferralSI
-            if (completedBooking.length === 1) {
-                referal = await this.referralService.getReferralByUserIdAndUpdate(getbooking.user_id.toString(), { "referred_to.booking_id": getbooking._id, "referred_to.booking_status": status })
-                console.log(referal)
-                if (!referal) {
-                    console.log("no referral")
-                } else {
-                    const walletTransactionI: WalletTransactionI = {
-                        amount: 50,
-                        user_id: referal.referred_to.user.toString(),
-                        reference_model: 'referal',
-                        reference_id: referal._id,
-                        transaction_type: "Refferal Bonus Added",
-                        transaction_owner: "ALGO",
-                        comment: "Refferal Bonus Added"
-                    }
-                    await this.walletTransactionService.post(walletTransactionI)
-                    // changing the id olny
-                    walletTransactionI.user_id = referal.referred_by.toString() 
-                  
-                    const transaction =  await this.walletTransactionService.post(walletTransactionI)
-                    
-                    const referred_by_req = this.userService.getId(referal.referred_by.toString())
-                    const referred_to_req = this.userService.getId(referal.referred_to.user.toString())
-                    const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
-                    try{
-                        const notify = Notify.referralComplete(referred_by, referred_to)
-                    }catch(e){
-                        console.log(e)
-                    }
-                   
-                }
-            }
+            }   
+        
            if(getbooking.services[0].service_discount_code != null){
                
                const getPromoStatus =  await this.promoUserService.getOne({booking_id:getbooking._id.toString()}) as PromoUserSI
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
            }
-            if(!referal){
+           
                let total= 0
                 getbooking.services.map((e)=>{
                     total = total + e.service_total_price
@@ -925,7 +891,7 @@ export default class BookingController extends BaseController {
                 }else{
                     cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(44,111)
                 }
-               }
+               
                
                
                const cashbackData:CashBackI={
