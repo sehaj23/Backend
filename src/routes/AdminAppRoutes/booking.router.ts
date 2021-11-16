@@ -13,6 +13,7 @@ import Feedback from "../../models/feedback.model";
 import MongoCounter from "../../models/mongo-counter.model";
 import Offer from "../../models/offer.model";
 import PromoCode from "../../models/promo-code.model";
+import PromoUserCode from "../../models/promo-user.model";
 import Referral from "../../models/referral.model";
 import Refund from "../../models/refund.model";
 import ReportSalon from "../../models/reportSalon.model";
@@ -52,7 +53,7 @@ const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon
 const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
 const employeeAbsenteesimService = new EmployeeAbsentismService(employeeAbsenteeism)
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
-const promoUserService = new PromoUserService(PromoCode)
+const promoUserService = new PromoUserService(PromoUserCode)
 const refundService = new RefundService(Refund, bookingService, walletTransactionService)
 const promoCodeService = new PromoCodeService(PromoCode)
 const cashbackRangeService =  new CashbackRangeService(Cashbackrange)

@@ -166,7 +166,7 @@ export default class BookingController extends BaseController {
         const order = await rp.createOrderId(booking._id.toString(), totalAmountWithTax)
         const order_id = order['id']
         logger.info(`order_id ${order_id}`)
-        console.log(order)
+
         booking.razorpay_order_id = order_id
         await booking.save()
         res.send({ order_id })
@@ -788,7 +788,9 @@ export default class BookingController extends BaseController {
         }
         if(booking.services[0].service_discount_code != null){
                
-            const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
+            const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id}) as PromoUserSI
+            console.log("***")
+            console.log(getPromoStatus)
              getPromoStatus.status = promoUsedStatus.DISCARDED
              await getPromoStatus.save()
         }
