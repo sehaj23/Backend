@@ -893,6 +893,7 @@ export default class BookingController extends BaseController {
                 }else{
                     cashbackAmount =  this.cashbackRangeService.randomIntFromInterval(44,111)
                 }
+            }
                
                
                
@@ -908,7 +909,7 @@ export default class BookingController extends BaseController {
                
                res.status(200).send({message:"Status updated"})
 
-           }
+           
         }else{
             res.status(400).send({message:"your booking has not been started yet"})
         }
