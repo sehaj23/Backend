@@ -15,6 +15,7 @@ export interface ServicesI{
     hsn_code:string,
     service_loaction:string,
     description:string,
+    photo?: mongoose.Schema.Types.ObjectId | String
     options:OptionI[]
 }
 export interface OptionI{

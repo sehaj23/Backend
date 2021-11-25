@@ -24,6 +24,10 @@ const ZattireServiceSchema = new mongoose.Schema({
             description:{
                 type:String
             },
+            photo:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "photos",
+            },
             options: {
                 type:[{
                     option_checked:{

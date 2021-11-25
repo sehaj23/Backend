@@ -11,7 +11,8 @@ export default interface ServiceI{
     category:string,
     duration: number
     reviews?: ReviewI[],
-    gender:string
+    gender:string,
+    photo?:mongoose.Schema.Types.ObjectId | String, 
     description?:string
 }
 

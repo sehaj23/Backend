@@ -8,7 +8,6 @@ export default interface OptionI{
     price:number,
     duration:number,
     gender:String,
-    photo?: mongoose.Schema.Types.ObjectId | String
     offers?: OfferI[]
     at_home?: boolean
 }
