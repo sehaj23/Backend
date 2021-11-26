@@ -71,8 +71,7 @@ const SalonSchema = new mongoose.Schema({
                     required: true
                 },
                 photo: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "photos"
+                    type:String
                 },
                 offers: {
                     type: [{
