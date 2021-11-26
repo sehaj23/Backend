@@ -21,7 +21,7 @@ if (process.env.DB_URI) {
   uri = `${process.env.DB_URI}`
 }
 else {
-  uri = `mongodb+srv://zattire_dev:zattire_dev_password@production.8kbli.mongodb.net/zattire_pro?authSource=admin&replicaSet=atlas-27r88k-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`
+  uri = `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`
 }
 
 
