@@ -38,6 +38,9 @@ const SalonSchema = new mongoose.Schema({
                 required: true,
 
             },
+            photo: {
+                type:String
+            },
             name: {
                 type: String,
                 required: true,
@@ -69,9 +72,6 @@ const SalonSchema = new mongoose.Schema({
                     type: String,
                     enum: ["men", "women", "both"],
                     required: true
-                },
-                photo: {
-                    type:String
                 },
                 offers: {
                     type: [{
