@@ -22,7 +22,7 @@ export default class Notify {
 
     // TODO: Add notification data and the route
     try {
-      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each as your ${userReferred.name} has made their first booking through ZATTIRE.` }, data: { click_action: "FLUTTER_NOTIFICATION_CLICK" } })
+      sendNotificationToDevice(user.fcm_token, { notification: { title: "Referral Complete", body: `Congratulations you and your friend have earned Rs. 50 each.` }, data: { click_action: "FLUTTER_NOTIFICATION_CLICK" } })
     } catch (error) {
       console.log(error)
     }
