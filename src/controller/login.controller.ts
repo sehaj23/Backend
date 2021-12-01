@@ -254,6 +254,32 @@ export default class LoginController extends BaseController {
           }
           try {
             const referral = await this.referralService.post(referalData) as ReferralSI
+                const walletTransactionI: WalletTransactionI = {
+                          amount: 50,
+                          user_id: referral.referred_to.user.toString(),
+                          reference_model: 'referal',
+                          reference_id: referral._id,
+                          transaction_type: "Refferal Bonus Added",
+                          transaction_owner: "ALGO",
+                          comment: "Refferal Bonus Added"
+                      }
+                      await this.walletTransactionService.post(walletTransactionI)
+                      // changing the id olny
+                      walletTransactionI.user_id = referral.referred_by.toString() 
+                    
+                      const transaction =  await this.walletTransactionService.post(walletTransactionI)
+                      
+                      const referred_by_req = this.service.getId(referral.referred_by.toString())
+                      const referred_to_req = this.service.getId(referral.referred_to.user.toString())
+                      const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+                      try{
+                          const notify = Notify.referralComplete(referred_by, referred_to)
+                      }catch(e){
+                          console.log(e)
+                      }
+                     
+                  
+              
           } catch (error) {
             console.log(error)
           }
@@ -348,6 +374,32 @@ export default class LoginController extends BaseController {
           }
           try {
             const referral = await this.referralService.post(referalData) as ReferralSI
+                const walletTransactionI: WalletTransactionI = {
+                          amount: 50,
+                          user_id: referral.referred_to.user.toString(),
+                          reference_model: 'referal',
+                          reference_id: referral._id,
+                          transaction_type: "Refferal Bonus Added",
+                          transaction_owner: "ALGO",
+                          comment: "Refferal Bonus Added"
+                      }
+                      await this.walletTransactionService.post(walletTransactionI)
+                      // changing the id olny
+                      walletTransactionI.user_id = referral.referred_by.toString() 
+                    
+                      const transaction =  await this.walletTransactionService.post(walletTransactionI)
+                      
+                      const referred_by_req = this.service.getId(referral.referred_by.toString())
+                      const referred_to_req = this.service.getId(referral.referred_to.user.toString())
+                      const [referred_by, referred_to] = await Promise.all([referred_by_req, referred_to_req])
+                      try{
+                          const notify = Notify.referralComplete(referred_by, referred_to)
+                      }catch(e){
+                          console.log(e)
+                      }
+                     
+                  
+              
           } catch (error) {
             console.log(error)
           }
@@ -372,7 +424,7 @@ export default class LoginController extends BaseController {
           //       usage_time_difference: 1,
           //       max_usage: 1,
           //       start_date_time: moment().toDate(),
-          //       expiry_date_time: moment("2021-06-15").toDate()
+          //       expiry_date_time: moment("2021-05-30").toDate()
           //     }
           //     const promo = await this.promoCodeService.post(promoCode) as PromoCodeSI
           //     PromoCodeRedis.removeAll()
