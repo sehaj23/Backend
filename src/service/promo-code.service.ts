@@ -83,5 +83,9 @@ export default class PromoCodeService extends BaseService {
     getPromoById = async (id: string) => {
         return this.model.findOne({ _id: mongoose.Types.ObjectId(id),active:true })
     }
+    getNameandId = async () => {
+        const promo = await this.model.find({active:true}).select({ "_id": 1, "promo_code": 1 })
+        return promo
+}
 
 }
