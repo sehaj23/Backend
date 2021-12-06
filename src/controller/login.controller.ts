@@ -138,6 +138,9 @@ export default class LoginController extends BaseController {
         }
         try {
           const referral = await this.referralService.post(referalData) as ReferralSI
+          const getRefferalCount = await this.referralService.countDocumnet({referred_by:refferallCode._id})
+          if(getRefferalCount<=10){
+
               const walletTransactionI: WalletTransactionI = {
                         amount: 50,
                         user_id: referral.referred_to.user.toString(),
@@ -162,7 +165,7 @@ export default class LoginController extends BaseController {
                         console.log(e)
                     }
                    
-                
+                  } 
             
         } catch (error) {
           console.log(error)
