@@ -15,6 +15,9 @@ const promoHomeController = new PromoHomeController(promoHomeService)
 
 promoHomeRouter.get("/active",verifyToken,promoHomeController.getActivePromo)
 promoHomeRouter.post("/create",verifyToken,promoHomeController.post)
+promoHomeRouter.get("/",verifyToken,promoHomeController.get)
+promoHomeRouter.put("/",verifyToken,promoHomeController.put)
+promoHomeRouter.delete("/",verifyToken,promoHomeController.delete)
 promoHomeRouter.get("/redis",verifyToken,promoHomeController.clearActivePromo)
 
 export default promoHomeRouter

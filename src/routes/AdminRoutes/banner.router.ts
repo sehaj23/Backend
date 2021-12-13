@@ -14,6 +14,9 @@ const bannerController = new BannerController(bannerService)
 
 bannerRouter.get("/active",verifyToken,bannerController.getActiveBanners)
 bannerRouter.post("/create",verifyToken,bannerController.post)
+bannerRouter.get("/",verifyToken,bannerController.get)
+bannerRouter.put("/",verifyToken,bannerController.put)
+bannerRouter.delete("/",verifyToken,bannerController.delete)
 bannerRouter.get("/redis",verifyToken,bannerController.clearRedisBanner)
 
 
