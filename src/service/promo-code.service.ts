@@ -35,11 +35,12 @@ export default class PromoCodeService extends BaseService {
                  { "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonIds } }] },
                  { "$or": [{ "categories": [] }, { "categories": { "$in": categories } }] },
                 { "$or": [{ "user_ids": [] }, { "user_ids": { "$in": [userId] } }] },
-                { "$or": [{ "start_date_time": { "$exists": false } }, { "start_date_time": { "$lte": today.startOf('day').toDate() } }] }
+                { "$or": [{ "start_date_time": { "$exists": false } }, { "start_date_time": { "$lte": today.add(330,"minutes").toDate()} }] }
             ],
-             "expiry_date_time": { "$gte": today.endOf('day').toDate() },
+             "expiry_date_time": { "$gte": today.toDate() },
             "active": true
         })
+        
         return promoCodes
     }
 
