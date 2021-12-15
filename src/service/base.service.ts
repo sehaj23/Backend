@@ -17,7 +17,7 @@ export default class BaseService {
     }
 
     get = async (filters = {}): Promise<any[]> => {
-        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo")
+        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id")
     }
     getNopopulate = async (filters = {}): Promise<any[]> => {
         return await this.model.find(filters).select("-password")
