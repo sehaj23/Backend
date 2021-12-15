@@ -9,16 +9,16 @@ export default class PromoCodeService extends BaseService {
     getByPromoCode = async (promoCode: string, userId: string, salonIds: string[], categories: string[]) => {
         const promoCodeRedis = await PromoCodeRedis.get(promoCode, { userId, salonIds, categories })
         if (promoCodeRedis === null) {
-
+            const today = moment()
             const promo = await this.model.findOne({
                 "promo_code": promoCode,
                 "$and": [
                     { "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonIds } }] },
                     { "$or": [{ "categories": [] }, { "categories": { "$in": categories } }] },
                     { "$or": [{ "user_ids": [] }, { "user_ids": { "$in": [userId] } }] },
-                    { "$or": [{ "start_date_time": { "$exists": false } }, { "start_date_time": { "$lte": Date.now() } }] }
+                    { "$or": [{ "start_date_time": { "$exists": false } }, { "start_date_time": { "$lte": today.add(330,"minutes").toDate() } }] }
                 ],
-                "expiry_date_time": { "$gte": Date.now() },
+                "expiry_date_time": { "$gte":  today.toDate() },
                 "active": true
             })
             PromoCodeRedis.set(promoCode, promo, { userId, salonIds, categories })
