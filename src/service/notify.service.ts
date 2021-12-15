@@ -98,20 +98,12 @@ export default class Notify {
     } catch (error) {
       console.log(error)
     }
-
-
-
     //check
     //TODO: change the text of the uszer text 
     try {
       const vendorText = `Received a new booking for ${bookingTime}`
       console.log("sending message")
       OtpService.sendMessage(vendor.contact_number, vendorText, SMSCONFIG.NEW_BOOKING)
-    } catch (error) {
-      console.log(error)
-    }
-    try {
-      Notify.sendNotificationtoAdmin({ notification: { title: "Booking Request", body: `You have received a new booking for ${bookingTime}` }, data: { booking_id: (booking._id).toString(), status: "Requested",click_action: "FLUTTER_NOTIFICATION_CLICK",type:"BOOKING" } })
     } catch (error) {
       console.log(error)
     }
