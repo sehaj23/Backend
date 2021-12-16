@@ -77,6 +77,11 @@ export default class BaseService {
         //@ts-ignore
         return await this.model.findByIdAndUpdate({ _id }, { $push: { photo_ids: photo._id } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
     }
+    removePhoto = async (_id: string, photoId:string) => {
+      
+        //@ts-ignore
+        return await this.model.findByIdAndUpdate({ _id }, { $pull: { photo_ids: photoId } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+    }
 
     getPhoto = async (_id: string) => {
 

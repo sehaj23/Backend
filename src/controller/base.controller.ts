@@ -78,6 +78,17 @@ export default class BaseController {
         }
     }
 
+    removePhoto = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id
+           const photoId = req.params.photoID
+            const resource = await this.service.removePhoto(id, photoId)
+            res.send(resource)
+        } catch (e) {
+            res.status(403).send({ message: e.message })
+        }
+    }
+
     getPhoto = async (req: Request, res: Response) => {
         try {
             const id = req.params.id
