@@ -41,7 +41,7 @@ salonRouter.get("/info/:id",verifyToken,salonController.getId)
 salonRouter.put("/update/:id",verifyToken,salonController.put)
 salonRouter.get("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
 salonRouter.put("/:id/add/photo", verifyToken, salonController.putPhoto)
-salonRouter.put("/:id/remove/photo/:photoID", verifyToken, salonController.removePhoto)
+salonRouter.delete("/:id/remove/photo/:photoID", verifyToken, salonController.removePhoto)
 salonRouter.get("/", verifyToken, salonController.get)
 
 
