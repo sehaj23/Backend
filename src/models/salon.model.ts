@@ -111,9 +111,10 @@ const SalonSchema = new mongoose.Schema({
     location: {
         type: String
     },
-    area:{
-        type: String
-    },
+   location_id:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "location"
+   },
     insta_link: {
         type: String
     },

@@ -30,6 +30,6 @@ const LocationSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Photo = mongoose.model<LocationSI>("location", LocationSchema)
+const Location = mongoose.model<LocationSI>("location", LocationSchema)
 
-export default Photo
+export default Location
