@@ -9,10 +9,10 @@ const locationRouter = Router()
 const locationService = new LocationService(Location)
 const locationController = new LocationController(locationService)
 
-locationRouter.put("/",verifyToken,locationController.put)
+locationRouter.put("/:id",verifyToken,locationController.put)
 locationRouter.post("/",verifyToken,locationController.post)
 locationRouter.get("/",verifyToken,locationController.get)
-locationRouter.delete("/",verifyToken,locationController.delete)
+locationRouter.delete("/:id",verifyToken,locationController.delete)
 
 
 export default locationRouter
