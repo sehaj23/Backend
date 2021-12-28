@@ -1,11 +1,16 @@
 import { Mongoose } from "mongoose";
 import mongoose from "../database";
 import SalonSI from "../interfaces/salon.interface";
-
+const typeEnum = ["salon","mua"]
 const SalonSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+    },
+    type:{
+        type:String,
+        enum:typeEnum,
+        default:"salon"
     },
     description: {
         type: String,
@@ -38,6 +43,9 @@ const SalonSchema = new mongoose.Schema({
                 required: true,
 
             },
+            photo: {
+                type:String
+            },
             name: {
                 type: String,
                 required: true,
@@ -69,10 +77,6 @@ const SalonSchema = new mongoose.Schema({
                     type: String,
                     enum: ["men", "women", "both"],
                     required: true
-                },
-                photo: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "photos"
                 },
                 offers: {
                     type: [{
@@ -107,9 +111,10 @@ const SalonSchema = new mongoose.Schema({
     location: {
         type: String
     },
-    area:{
-        type: String
-    },
+   location_id:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "location"
+   },
     insta_link: {
         type: String
     },
@@ -173,6 +178,7 @@ const SalonSchema = new mongoose.Schema({
 })
 
 SalonSchema.index({ coordinates: '2dsphere' });
+SalonSchema.index({ type:1 });
 SalonSchema.index({ 'name': 'text', 'services.name': 'text'  });
 
 

@@ -346,19 +346,12 @@ export default class BookingController extends BaseController {
                     const mongooseDateTime = service_time.toISOString()
                     const empBookings = await this.service.get({ "services.employee_id": mongoose.Types.ObjectId(empId), "services.service_time": mongooseDateTime })
                     if (empBookings.length > 0) continue
-                    console.log("empBookings")
-                    console.log(empBookings)
-
                     const empAbs = await this.employeeAbsentismService.get({ "employee_id": mongoose.Types.ObjectId(empId), absenteeism_date: service_time.format(moment.HTML5_FMT.DATE) }) as EmployeeAbsenteeismSI[]
                     if (empAbs.length > 0) {
-                        console.log("empAbs")
-                        console.log(empAbs)
                         for (let j = 0; j < empAbs.length; j++) {
                             const empAb = empAbs[j]
                             let absent = false
                             for (let empAbTime of empAb.absenteeism_times) {
-                                console.log("empAbTime", empAbTime)
-                                console.log("dateTime.format('h:mm A')", service_time.format('h:mm A'))
                                 if (empAbTime === service_time.format('h:mm A')) {
                                     absent = true
                                     break

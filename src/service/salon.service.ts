@@ -220,7 +220,8 @@ export default class SalonService extends BaseService {
                                 const service: ServiceI = {
                                         name: gotService?.service_name ?? da.category_name ?? "Some Service",
                                         price: 0,
-                                        description:da.description??"",
+                                        description:gotService?.description??"",
+                                        photo:gotService?.photo??"",
                                         category: da.category_name,
                                         duration: 15,
                                         gender: 'men',
@@ -403,6 +404,10 @@ export default class SalonService extends BaseService {
         getSalon = async (q: any,getDistance:boolean=false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
                 let pageLength: number = parseInt(q.page_length || 8)
+                let type= "salon"
+                if(q.type){
+                        type=q.type
+                }
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 const filter = {
@@ -414,11 +419,11 @@ export default class SalonService extends BaseService {
                
                
                         //TODO: send salon with rating 5
-                        const salons = this.model.find({approved:true}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        const salons = this.model.find({approved:true,type:type}, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").select("coordinates").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
                         // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                         // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
                         const salonPage = this.model.aggregate([
-                                {$match:{approved:true}},
+                                {$match:{approved:true,type:type}},
                                 { "$count": "count" }
                         ])
 
@@ -489,6 +494,10 @@ export default class SalonService extends BaseService {
                 if(q.latitude != null && q.longitude !=null){
                         getDistance=true
                 }
+                let type = "salon"
+                if(q.type){
+                        type=q.type
+                }
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
         
@@ -503,6 +512,7 @@ export default class SalonService extends BaseService {
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 "approved":true,
+                                "type":type,
                                 "services.options.at_home": true, coordinates: {
                                         $near:
                                         {
@@ -585,6 +595,10 @@ export default class SalonService extends BaseService {
                 if(q.latitude != null && q.longitude !=null){
                         getDistance=true
                 }
+                let type="salon"
+                if(q.type){
+                        type=q.type
+                }
                 const filter = {
                         pageNumber,
                         pageLength,
@@ -600,6 +614,7 @@ export default class SalonService extends BaseService {
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
                                 approved:true,
+                                type:type,
                                 coordinates: {
                                         $near:
                                         {
@@ -927,9 +942,13 @@ export default class SalonService extends BaseService {
                 const skipCount = (pageNumber - 1) * pageLength
                 console.log(pageLength)
                 console.log(skipCount)
-
+                let type="salon"
+                if(q.type){
+                        type=q.type
+                }
                 const keys = Object.keys(q)
                 const filters = {
+                        type:type,
                         "approved":true,
                 }
 
@@ -1220,6 +1239,7 @@ export default class SalonService extends BaseService {
 
                 })
         }
+
 
 
 

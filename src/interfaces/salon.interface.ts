@@ -11,7 +11,8 @@ export interface LocationI {
 }
 export interface SalonI{
     name: string
-    description?: string
+    description?: string,
+    type?:string
     contact_number: string
     email: string
     start_price?: number

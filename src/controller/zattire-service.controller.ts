@@ -48,7 +48,9 @@ export default class ZattireServiceController extends BaseController {
     const category_id = req.params.cid
     const service_id = req.params.sid
     const data = req.body
+
     const edit = await this.service.editServiceFromCategory(category_id, service_id, data)
+    console.log(edit)
     if (!edit) {
       return res.status(400).send({ success: false, message: "error updating" })
     }

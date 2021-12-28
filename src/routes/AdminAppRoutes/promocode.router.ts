@@ -128,6 +128,7 @@ const postPromoCodeValidator = [
  */
 promoCodeRouter.post("/", verifyToken, promoCodeController.post)
 promoCodeRouter.get("/", verifyToken, promoCodeController.get)
+promoCodeRouter.get("/names", verifyToken, promoCodeController.getNames)
 promoCodeRouter.put("/:id", verifyToken, promoCodeController.put)
 promoCodeRouter.delete("/:id",verifyToken,promoCodeController.delete)
 promoCodeRouter.get("/salon/:id",verifyToken,promoCodeController.getPromoBySalon)

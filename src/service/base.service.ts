@@ -17,7 +17,7 @@ export default class BaseService {
     }
 
     get = async (filters = {}): Promise<any[]> => {
-        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo")
+        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id")
     }
     getNopopulate = async (filters = {}): Promise<any[]> => {
         return await this.model.find(filters).select("-password")
@@ -64,7 +64,7 @@ export default class BaseService {
     }
 
     getId = async (id: string) => {
-        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo") //.populate({
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo").populate("photo_ids") //.populate({
     }
 
     put = async (_id: string, data: any) => {
@@ -76,6 +76,11 @@ export default class BaseService {
         const photo = await Photo.create(photoData)
         //@ts-ignore
         return await this.model.findByIdAndUpdate({ _id }, { $push: { photo_ids: photo._id } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
+    }
+    removePhoto = async (_id: string, photoId:string) => {
+      
+        //@ts-ignore
+        return await this.model.findByIdAndUpdate({ _id }, { $pull: { photo_ids: photoId } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
     }
 
     getPhoto = async (_id: string) => {

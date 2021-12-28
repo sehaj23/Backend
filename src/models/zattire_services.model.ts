@@ -24,6 +24,9 @@ const ZattireServiceSchema = new mongoose.Schema({
             description:{
                 type:String
             },
+            photo:{
+                type:String,
+            },
             options: {
                 type:[{
                     option_checked:{

@@ -71,4 +71,5 @@ salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
 
 
-export default salonInfoRouter
+
+export default salonInfoRouter 
