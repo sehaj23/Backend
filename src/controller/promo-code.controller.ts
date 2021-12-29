@@ -45,9 +45,6 @@ export default class PromoCodeController extends BaseController {
         if (cart === null || !cart) throw new ErrorResponse({ message: "Cart not found" })
         //@ts-ignore
         const salonId = cart?.salon_id?._id ?? cart?.salon_id
-        console.log(cart);
-
-        console.log(cart.options)
         const optionIds = cart?.options?.map((o: CartOption) => o.option_id)
         console.log(optionIds);
 

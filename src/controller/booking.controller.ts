@@ -666,7 +666,7 @@ export default class BookingController extends BaseController {
         if (status === "Confirmed") {
 
             const notify = Notify.bookingConfirm(user, salon, employee, booking)
-            console.log(notify)
+           
         }
         if (status === "Start") {
             const notify = Notify.serviceStart(user.phone, user.email, user.fcm_token, salon.contact_number, salon.email, salon.name, employee.phone, employee.fcm_token, booking.id, booking.booking_numeric_id.toString(), bookingTime)
@@ -715,7 +715,6 @@ export default class BookingController extends BaseController {
             //     }
             // }
            if(booking.services[0].service_discount_code != null){
-               
                const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id.toString()}) as PromoUserSI
                 getPromoStatus.status = promoUsedStatus.COMPLETED
                 await getPromoStatus.save()
@@ -779,7 +778,7 @@ export default class BookingController extends BaseController {
         if (cancelledStatuses.includes(status)) {
             refundToWallet = true
         }
-        if(booking.services[0].service_discount_code != null){
+        if(booking.services[0].service_discount_code != null && refundToWallet==true){
                
             const getPromoStatus =  await this.promoUserService.getOne({booking_id:booking._id}) as PromoUserSI
             console.log("***")
