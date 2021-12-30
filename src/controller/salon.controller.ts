@@ -785,6 +785,7 @@ export default class SalonController extends BaseController {
         const q: any = req.query
         let getDistance = false
         const pageNumber: number = parseInt(q.page_number || 1)
+        //TODO: remove the static length from here switch to default
         let pageLength = 20
         //number = parseInt(q.page_length || 8)
         pageLength = (pageLength > 100) ? 100 : pageLength

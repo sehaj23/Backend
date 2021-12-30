@@ -1164,7 +1164,9 @@ export default class SalonService extends BaseService {
 
         getSalonByIds = async (ids: string[], q: any, getDistance: boolean = false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
-                let pageLength: number = parseInt(q.page_length || 8)
+                //TODO:remove this static length from here this is only till 2nd jan
+                let pageLength=20
+                //number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 let salonReq
