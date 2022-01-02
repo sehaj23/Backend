@@ -1160,7 +1160,7 @@ export default class SalonService extends BaseService {
                 return salonPhoto
 
         }
-
+//check to redeploy
 
         getSalonByIds = async (ids: string[], q: any, getDistance: boolean = false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
