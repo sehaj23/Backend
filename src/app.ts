@@ -159,6 +159,10 @@ app.get(`${URL_PREFIX}`, (req, res) => {
   res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} main-servers.`)
 })
 
+app.get("/", (req, res) => {
+
+  res.status(200).send(`Hello!  Welcome to Zattire`)
+})
 
 
 // this is for 404
