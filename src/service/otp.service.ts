@@ -42,7 +42,6 @@ export default class OtpService extends BaseService {
         try {
             const url = `http://nimbusit.biz/api/SmsApi/SendSingleApi?UserID=Zattire&Password=qtir6656QT&SenderID=ZATTRE&Phno=${phone}&Msg=${text}&EntityID=1701159826650719034&TemplateID=${template_id}`
             const res = await axios.get(url)
-            console.log(res.data)
             if (res.status === 200) {
                 return res.data
             }
@@ -116,7 +115,6 @@ export default class OtpService extends BaseService {
 
     public async signupUserWithPhoneSendOtp(phone: string): Promise<OtpSI> {
         const user = await this.userService.getOne({ phone })
-        console.log("user", user)
         if (user !== null) throw new Error(`User already registered with this phone number`)
         const otpNumber: string = this.getRandomInt().toString()
         const text: string = `Your otp is ${otpNumber} ZATTIRE ENTERPRISES`

@@ -59,11 +59,8 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             const sendPromise = new aws.SES({ apiVersion: '2010-12-01' }).sendRawEmail({ RawMessage: { Data: message } }).promise();
             sendPromise.then(
                 function (data) {
-                    console.log('email sent')
-                    console.log(data)
                 }).catch(
                     function (err) {
-                        console.log('email sent error')
                         console.log(err)
                     });
         });
@@ -77,14 +74,12 @@ export default testEmail
 //             console.log(err)
 //             return
 //         }
-//         console.log("1")
 
 //      pdf.create(data).toStream((err: Error, stream: fs.ReadStream) => {
 //          if(err){
 //              console.log(err)
 //              return
 //          }
-//          console.log("2")
 //             const s3 = new aws.S3()
 //             var params: PutObjectRequest = {Bucket: `zattire-images/invoices`, Key: `${Date.now()}_i.pdf`,  Body: stream, ACL: 'public-read'};
 //             s3.upload(params, function(err, s3data) {
@@ -114,11 +109,9 @@ export default testEmail
 //                     const sendPromise = new aws.SES({ apiVersion: '2010-12-01' }).sendRawEmail({RawMessage: {Data: message}}).promise();
 //                     sendPromise.then(
 //                         function (data) {
-//                             console.log('email sent')
-//                             console.log(data)
+
 //                         }).catch(
 //                             function (err) {
-//                                 console.log('email sent error')
 //                             console.log(err)
 //                             });
 //                   });

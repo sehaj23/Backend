@@ -12,10 +12,9 @@ beforeAll(async (done) => {
 
 
 // test('Add Services', async done => {
-//     console.log(options)
 //     const res2 = await request(app).post("/api/zattire-services/").send(options)
 //     expect(res2.status).toEqual(201)
-//     console.log(res2.body)
+
 //     done()
 
 // },TIME)

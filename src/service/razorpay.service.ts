@@ -23,7 +23,6 @@ export default class RazorPayService {
             currency: "INR",
             receipt: bookingId
         };
-        console.log(options)
         try {
             const order = await this.instance.orders.create(options);
             return order

@@ -75,8 +75,6 @@ export default class OfferService extends BaseService{
             const offer = await this.model.findById(offerid)
 
             const odate = offer.start_date.toLocaleDateString()
-            console.log(odate)
-            console.log(date.toLocaleDateString())
             if (offer.start_date.valueOf() > date.valueOf()) {
                 const offer = await Offer.findByIdAndUpdate({ _id: offerid }, { s }, { new: true })
                 return 

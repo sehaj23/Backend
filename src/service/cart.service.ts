@@ -32,7 +32,6 @@ export default class CartService extends BaseService {
             for (let option of service.options) {
                 if (option._id.toString() === optionId) {
                     //@ts-ignore
-                    console.log(service._id)
                     //@ts-ignore
                     return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id,salon_name:salon.name }
                 }
@@ -168,10 +167,8 @@ export default class CartService extends BaseService {
     }
     // getLastCartByUserId = async (userId: string) => {
     //     const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
-    //     console.log(cart)
     //     if(cart != null){
     //         cart.status='Abandoned'
-    //         console.log(cart)
     //        await cart.save()
 
     //     }

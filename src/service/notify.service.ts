@@ -34,7 +34,7 @@ export default class Notify {
 
 
   static bookingConfirm = async (user: UserSI, salon: SalonSI, employee: EmployeeSI, booking: BookingSI) => {
-    console.log(booking._id.toString())
+
     const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
     try {
       const getDetails = Notify.getTotalPromo(booking)
@@ -44,7 +44,6 @@ export default class Notify {
     }
     // TODO: Add notification data and the route
     try {
-      console.log((booking._id).toString())
       sendNotificationToDevice(user.fcm_token, { notification: { title: "Booking Confirmed", body: `Your booking for ${bookingTime} has been accepted by ${salon.name}` }, data: { booking_id: (booking._id).toString(), status: "Confirmed", click_action: "FLUTTER_NOTIFICATION_CLICK" } })
 
     } catch (error) {
@@ -76,9 +75,9 @@ export default class Notify {
     const getDetails = Notify.getTotalPromo(booking)
     const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
     try {
-      console.log("1")
+
       SendEmail.bookingRequestVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime, employee.name, booking.location, booking.payments, getDetails.total.toString(), getDetails.promo_code, booking.services, user.name, vendor.name)
-      console.log("2")
+
     } catch (error) {
       console.log(error)
     }
@@ -102,7 +101,6 @@ export default class Notify {
     //TODO: change the text of the uszer text 
     try {
       const vendorText = `Received a new booking for ${bookingTime}`
-      console.log("sending message")
       OtpService.sendMessage(vendor.contact_number, vendorText, SMSCONFIG.NEW_BOOKING)
     } catch (error) {
       console.log(error)

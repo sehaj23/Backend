@@ -243,9 +243,6 @@ export default class BookingService extends BaseService {
     getSalonEmployees = async (salonId: string, dateTime, employee: EmployeeSI[]) => {
         const dateTimeAdd = moment(dateTime).add(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
         const dateTimeSub = moment(dateTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss").concat(".000+00:00")
-        console.log("*****")
-        console.log(dateTimeAdd)
-        console.log(dateTimeSub)
 
         let busyEmployeesIds = [];
         let busy = [];
@@ -262,8 +259,6 @@ export default class BookingService extends BaseService {
         //     }
         // }).exec();
         const [bookings] = await Promise.all([bookingsDbReq])
-        console.log("*****")
-        console.log(bookings)
         if (bookings !== null) {
             for (let i = 0; i < bookings.length; i++) {
                 const booking = bookings[i]
@@ -386,16 +381,11 @@ export default class BookingService extends BaseService {
     }
 
     getbookings = async (q) => {
-
-        console.log(q)
-
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         //TODO:remove page length for cron 
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
@@ -445,8 +435,6 @@ export default class BookingService extends BaseService {
 
 
         }
-        console.log(filters);
-        console.log("page_length", pageLength)
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort({ 'createdAt': -1 }).populate({ path: "user_id", fcm_token: 1, populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
         const bookingPagesReq = this.model.count(filters)
         // const bookingStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
@@ -466,7 +454,6 @@ export default class BookingService extends BaseService {
     reschedulebooking = async (id: string, date_time: Array<Date>, current_time: Date) => {
         //@ts-ignore
         const booking = await this.model.findByIdAndUpdate(id, { rescheduled_available_slots: date_time, status: "Rescheduled and Pending", rescheduled_request_datetime: current_time }, { new: true })
-        console.log(booking)
         return booking
     }
     getAllSalonBookings = async (salonId: string, q: any) => {
@@ -474,13 +461,11 @@ export default class BookingService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
         const keys = Object.keys(q)
         const filters = {
             salon_id: salonId
         }
-        console.log(filters)
+
         const dateFilter = {}
         dateFilter["start_date"] = moment().subtract(28, "days").format("YYYY-MM-DD")
         dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
@@ -526,12 +511,9 @@ export default class BookingService extends BaseService {
             "$gte": dateFilter["start_date"],
             "$lt": dateFilter["end_date"]
         }
-        console.log(pageLength)
-        console.log(filters)
         const bookingsReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate("user_id").populate("services.employee_id").sort({ "createdAt": -1 }).exec()
         const bookingPagesReq = this.model.countDocuments(filters)
         const [bookingDetails, bookingPages] = await Promise.all([bookingsReq, bookingPagesReq])
-        console.log(bookingPages)
         return ({ bookingDetails, bookingPages })
 
 
@@ -556,14 +538,12 @@ export default class BookingService extends BaseService {
         var start_time = starting_hours.map(function (val) {
             return moment(val).format('YYYY-MM-DD hh:mm a');;
         })
-        console.log(start_time)
         const end_hours = salon.end_working_hours
         var end_time = end_hours.map(function (val) {
             return moment(val).format('YYYY-MM-DD hh:mm a');;
         })
         const slots = []
         var time1 = start_time[date.day()]
-        console.log(date)
         var time2 = end_time[date.day()]
         for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
             slots.push(m.format('hh:mm a'));
@@ -588,8 +568,6 @@ export default class BookingService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
 
         const keys = Object.keys(q)
         const filters = {}
@@ -643,7 +621,6 @@ export default class BookingService extends BaseService {
         filters["services.employee_id"] = {
             "$in": empId
         }
-        console.log(filters);
 
 
         const bookingDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt').populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").exec()
@@ -674,7 +651,6 @@ export default class BookingService extends BaseService {
         const booking = await this.model.findOne({ _id: mongoose.Types.ObjectId(bookingId) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("services.employee_id") as BookingSI
         const json: BookingI = booking.toJSON()
         const salons: SalonSI[] = await this.salonModel.find({ "services.options._id": json.services.map((s: BookingServiceI) => s.option_id) }).lean()
-        console.log(`Salons ${salons.length}`)
         // for(let bookingService of json.services){
         //     for(let salon of salons){
         //         for(let salonService of salon.services){
@@ -700,9 +676,6 @@ export default class BookingService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
-        console.log(pageNumber)
 
         const keys = Object.keys(q)
         const filters = {}
@@ -723,7 +696,6 @@ export default class BookingService extends BaseService {
                     break
                 case "status":
                     filters["status"] = { "$in": q[k] }
-                    console.log(q[k])
                     break;
                 case "start_date":
                     dateFilter["start_date"] = moment(q[k]).format("YYYY-MM-DD").concat("T00:00:00.000Z")
@@ -762,7 +734,6 @@ export default class BookingService extends BaseService {
 
 
         }
-        console.log(filters)
   
 
 

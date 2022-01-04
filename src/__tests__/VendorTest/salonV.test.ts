@@ -91,7 +91,6 @@ describe('Salon service test', () => {
             name: "hello12345",
             location: "OZARK"
         }
-        console.log(salonid)
 
         const res = await request(app).patch("/api/v/salon/settings/" + salonid).set('authorization',"Bearer "+token).send(salon)
 

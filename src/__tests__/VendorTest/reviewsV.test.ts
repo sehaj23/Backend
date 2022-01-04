@@ -100,7 +100,6 @@ describe('Designer service test', () => {
     }
     test("Review post", async done => {
         const res = await request(app).post("/api/v/reviews").set('authorization',"Bearer "+token).send(i)
-        console.log(res.body)
         expect(res.body._id).toBeDefined()
         expect(res.status).toBe(201)
         reviewid = res.body._id

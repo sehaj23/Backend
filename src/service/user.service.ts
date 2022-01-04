@@ -31,7 +31,6 @@ export default class UserService extends BaseService {
     getUser = async (userId) => {
         //@ts-ignore
         const user = await this.model.findOne({ _id: userId })
-        console.log(user)
         user.password = ""
         return user
     }
@@ -206,7 +205,6 @@ export default class UserService extends BaseService {
                     filters[k] = q[k]
             }
         }
-        console.log(filters)
         const userDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
         const userPagesReq = this.model.count(filters)
         //const userStatsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
@@ -331,7 +329,6 @@ export default class UserService extends BaseService {
        
        
         const users  = await this.model.find(filters).select("fcm_token")
-        console.log(users)
         return users
 
     }

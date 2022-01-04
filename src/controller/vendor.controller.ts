@@ -25,7 +25,6 @@ export default class VendorController extends BaseController {
   }
 //   vendorLogin =controllerErrorHandler( async (req: Request, res: Response) => {
 //     const { email, password } = req.body
-//     console.log(req.body)
 //     if (!email || !password) {
 
 //         res.status(400)
@@ -61,7 +60,6 @@ export default class VendorController extends BaseController {
 
   checkIfEmployeeAbsent=controllerErrorHandler( async (req: Request, res: Response) => {
     const {employee_id ,absenteeism_date} =req.body 
-    console.log(employee_id)
     const absent = await  this.employeeAbsentism.checkIfEmployeeAbsent(employee_id,absenteeism_date)
     res.send(absent)
   })
@@ -83,7 +81,6 @@ export default class VendorController extends BaseController {
     vendorInfo =controllerErrorHandler( async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.vendorId
-        console.log(id)
         const vendor = await this.service.getVendor(id)
         
         if(vendor==null){

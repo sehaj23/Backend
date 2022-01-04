@@ -30,7 +30,6 @@ export default class UserController extends BaseController {
     getUser = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        console.log(id)
         // const redisUser = await UserRedis.remove(id, {type: "info"})
         const user = await this.service.getId(id) as UserSI
         if (user === null) {
@@ -40,7 +39,6 @@ export default class UserController extends BaseController {
             return
         }
         if (user.referral_code == undefined) {
-            console.log("creating")
             const referral = await this.service.createRefferal(user.name ?? "ZATT", user._id.toString())
             const update = await this.service.update(user._id, { referral_code: referral })
             return res.send(update)

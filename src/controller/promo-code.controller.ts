@@ -45,12 +45,7 @@ export default class PromoCodeController extends BaseController {
         if (cart === null || !cart) throw new ErrorResponse({ message: "Cart not found" })
         //@ts-ignore
         const salonId = cart?.salon_id?._id ?? cart?.salon_id
-        console.log(cart);
-
-        console.log(cart.options)
         const optionIds = cart?.options?.map((o: CartOption) => o.option_id)
-        console.log(optionIds);
-
         const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
        // let promoCode = await this.service.getOne({ promo_code: promo_code }) as PromoCodeSI
          const promoCode = await this.service.getByPromoCode(promo_code, userId, [salonId], categories) as PromoCodeSI
@@ -69,8 +64,6 @@ export default class PromoCodeController extends BaseController {
             const currentDay = bookingDateTime.day()
             const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
             if (!promoCode.custom_time_days.includes(currentDay)) throw new Error(`This promo code is not valid on ${DAYS[currentDay]}`)
-           console.log(bookingDateTime.format("HH"))
-           console.log(promoCode.custom_time_start_time.split(":")[0])
              if(parseInt(bookingDateTime.format("HH")) >=parseInt(promoCode.custom_time_start_time.split(":")[0])==false && parseInt(bookingDateTime.format("HH")) <=parseInt(promoCode.custom_time_end_time.split(":")[0])==false ) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
             // if (!bookingDateTime.isBetween(promoCode.custom_time_start_time, promoCode.custom_time_end_time)) throw new Error(`This promo code is valid between ${promoCode.custom_time_start_time} and ${promoCode.custom_time_end_time}`)
         }
@@ -163,7 +156,6 @@ export default class PromoCodeController extends BaseController {
             while (i < promoCodesArr.length) {
                 const promoCode = promoCodesArr[i]
                 const promoCodesUsedIndex = promoCodesUsedCountArr.map(p => p._id.toString()).indexOf(promoCode._id.toString())
-                console.log(cart[0].total)
                 if ( promoCode.minimum_bill > cart[0].total || promoCodesUsedIndex > -1 && promoCode.max_usage <= promoCodesUsedCountArr[promoCodesUsedIndex]?.count ) {
                     promoCodesArr.splice(i, 1)
                 } else {

@@ -36,36 +36,28 @@ export default class EmployeeService extends BaseService {
     // ovveride getId to populate the services
     getByIdWithService = async (employeeId: string) => {
         const employee = await this.model.findOne({_id: mongoose.Types.ObjectId(employeeId)}).lean()
-        console.log("employee getId employee:", employee)
         if(employee === null) throw new Error(`Employee not found with id: ${employeeId}`)
         if(employee.services && employee.services.length > 0){
             const salon = await this.salonModel.findOne({'services._id': { $in:  employee.services }}).lean()
             if(salon === null) throw new Error(`Salon not found with service ids: ${employee.services}`)
-            console.log("employee getId salon:", salon)
             const populatedEmployeeService = salon.services.filter((s: any) => {
                 for(let es of employee.services){
-                    console.log("es", es)
-                    console.log("s._id", s._id)
-                    console.log("(es === s._id)", (es.toString() === s._id.toString()))
                     if(es.toString() === s._id.toString()) return true
                 }
                 return false
             })
-            console.log("populatedEmployeeService:", populatedEmployeeService)
             //@ts-ignore
             employee.services = []
             populatedEmployeeService.forEach((s: any) => {
                 //@ts-ignore
                 employee.services.push(s)
             })
-            console.log("employee.services:", employee.services)
         }
         
         return employee
     }
 
     employeeLogin = async (phone: string, otp: string) => {
-        console.log(phone)
         const employee = await this.model.findOne({ phone: phone })
     
         return employee
@@ -110,9 +102,6 @@ export default class EmployeeService extends BaseService {
             }
         }
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
-        console.log(salon)
-        console.log(employeesAbsenteeism)
-        console.log(empBookings)
         
         const starting_hours = salon.start_working_hours
 
@@ -203,12 +192,10 @@ export default class EmployeeService extends BaseService {
         const salon = await this.salonModel.findOne({_id: mongoose.Types.ObjectId(salonId) }) as SalonSI
         if(salon === null) throw new Error(`Salon not found with this id: ${salonId}`)
         const services = salon.services.filter((s: ServiceI) => selectedCategoryNames.includes(s.category))
-        console.log("addServicesByCatgoryNames servies:", services)
         employee.services = []
         services.forEach((s: any) => {
             employee.services.push(s._id)
         })
-        console.log("employee.services", employee.services)
         await employee.save()
         return employee
     }
@@ -253,12 +240,10 @@ export default class EmployeeService extends BaseService {
 
     }
     report = async (data:ReportVendorI)=>{
-        console.log(data)
         const report = await this.reportVendorModel.create(data)
         return report
     }
     feedback = async (data:FeedbackI)=>{
-        console.log(data)
         const report = await this.feedbackVendorModel.create(data)
         return report
     }

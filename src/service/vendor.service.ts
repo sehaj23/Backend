@@ -95,7 +95,6 @@ export default class VendorService extends BaseService {
 
         //@ts-ignore
         const empId = mongoose.Types.ObjectId(id)
-        console.log(empId)
 
 
         // getting the date from the frontend for which he needs the slots for
@@ -109,7 +108,7 @@ export default class VendorService extends BaseService {
         //@ts-ignore
         const employeesAbsenteeismReq = EmployeeAbsenteeism.findOne({ employee_id: empId, absenteeism_date: timeSlots })
         const [salon, employeesAbsenteeism] = await Promise.all([salonReq, employeesAbsenteeismReq])
-        console.log(employeesAbsenteeism)
+
         const starting_hours = salon.start_working_hours
         var slots = starting_hours.map(function (val) {
             const storeDate = moment(val).format('hh:mm a')
@@ -148,14 +147,13 @@ export default class VendorService extends BaseService {
         var start_time = starting_hours.map(function (val) {
             return moment(val).format('YYYY-MM-DD hh:mm a');;
         })
-        console.log(start_time)
+
         const end_hours = salon.end_working_hours
         var end_time = end_hours.map(function (val) {
             return moment(val).format('YYYY-MM-DD hh:mm a');;
         })
         const slots = []
         var time1 = start_time[date.day()]
-        console.log(date)
         var time2 = end_time[date.day()]
         for (var m = moment(time1); m.isBefore(time2); m.add(30, 'minutes')) {
             slots.push(m.format('hh:mm a'));
@@ -170,12 +168,11 @@ export default class VendorService extends BaseService {
 
 
     report = async (data: ReportVendorI) => {
-        console.log(data)
+
         const report = await this.reportVendorModel.create(data)
         return report
     }
     feedback = async (data: FeedbackI) => {
-        console.log(data)
         const report = await this.feedbackVendorModel.create(data)
         return report
     }
