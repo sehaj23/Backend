@@ -83,7 +83,7 @@ export default class UserService extends BaseService {
     }
     addAddress = async (id: string, d: any) => {
         const user = await this.model.findOne({ _id: id }) as UserSI
-        user.address.push(d)
+        user?.address.push(d)
 
        const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
        await  Promise.all([user.save(),redisUser])
