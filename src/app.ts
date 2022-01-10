@@ -101,7 +101,6 @@ const upload = multer({
     bucket: "zattire-images/all-images",
     acl: "public-read",
     key: function (request, file, cb) {
-      console.log(file);
       cb(null, `images/${Date.now()}_${file.originalname}`);
     },
   }),
@@ -109,7 +108,6 @@ const upload = multer({
 app.post(`${URL_PREFIX}/upload`, function (request, response, next) {
   upload(request, response, function (error) {
     if (error) {
-      console.log(error);
       return response.send(`/error/${error}`);
     }
     const location = request.files[0].location
@@ -141,7 +139,6 @@ app.use(`${URL_PREFIX}/api/u`, Userrouter)
 app.use(`${URL_PREFIX}/api/vendorapp`, VendorApprouter)
 app.use(`${URL_PREFIX}/api/adminapp`, AdminApprouter)
 app.use(`${URL_PREFIX}`, MicroserviceAuth)
-console.log("running all crons")
 runAllCrons()
 
 // TEMP: to clear redis

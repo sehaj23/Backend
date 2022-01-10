@@ -26,7 +26,6 @@ export default class MakeupArtistController extends BaseController {
                //@ts-ignore
         ma.vendor_id = req.vendorId
         }
-        console.log(ma)
         
         const makeupArtist = await this.service.postMua(ma)
         if (makeupArtist === null) {

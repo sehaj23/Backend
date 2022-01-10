@@ -23,8 +23,6 @@ db.connectt().then(async () => {
         const userId = process.env.USER_ID
         const user = await User.findOne({ _id: userId })
         if (user === null) throw new Error(`User not found with this id: ${userId}`)
-        console.log(user)
-        console.log("You are logged in as current user above^:")
     }
 
     if (cluster.isMaster && process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'test-api') {

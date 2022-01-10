@@ -58,9 +58,6 @@ export default class SalonController extends BaseController {
 
         //@ts-ignore
         const vendor_id = req.vendorId
-        console.log(vendor_id)
-        console.log(id)
-
 
         const salon = await this.service.patchSalon(id, vendor_id, d)
         if (salon === null) {
@@ -80,7 +77,6 @@ export default class SalonController extends BaseController {
         const d = req.body
         const allowedupates = ["name", "location", "start_working_hours", "insta_link", "fb_link", "end_working_hours"]
         const isvalid = updates.every((update) => allowedupates.includes(update))
-        console.log(isvalid)
         if (!isvalid) {
             const errMsg = `Sorry ${updates} cannot be updated!`
             logger.error(errMsg)
@@ -101,7 +97,6 @@ export default class SalonController extends BaseController {
     addSalonService = controllerErrorHandler(async (req: Request, res: Response) => {
         const d = req.body
         const salon_id = req.params.id
-        console.log(d)
         const newSalon = await this.service.addSalonService(salon_id, d)
         if (newSalon === null) {
             const errMsg = `Add Services: no data with this _id and service was found`
@@ -564,7 +559,6 @@ export default class SalonController extends BaseController {
 
         const _id = req.params.id
         const post: ReviewI = req.body
-        console.log(req.body)
         //@ts-ignore
         post.user_id = req.userId
         post.salon_id = _id
@@ -591,7 +585,6 @@ export default class SalonController extends BaseController {
         const user_id = req.userId
         //@ts-ignore
         const check = await this.service.checkpostReview(user_id, _id)
-        console.log(check)
         if (check == null) {
             res.status(400)
             res.send({ message: `User Cant Post Review,No Previous Bookings Found`, success: "false" })
@@ -785,8 +778,7 @@ export default class SalonController extends BaseController {
         const q: any = req.query
         let getDistance = false
         const pageNumber: number = parseInt(q.page_number || 1)
-        let pageLength=30
-        //: number = parseInt(q.page_length || 8)
+        let pageLength:number = parseInt(q.page_length || 8)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         if (q.latitude && q.longitude) {

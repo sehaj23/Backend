@@ -85,7 +85,6 @@ export default class EmployeeController extends BaseController {
 
         // getting the date from the frontend for which he needs the slots for
         let gotSlotsDate = req.query.date
-        console.log(gotSlotsDate)
         if (!gotSlotsDate) {
             const msg = "Something went wrong"
             logger.error(msg)
@@ -145,9 +144,6 @@ export default class EmployeeController extends BaseController {
     addServicesByCatgoryNames = controllerErrorHandler(async (req: Request, res: Response) => {
         const {salonId, employeeId} = req.params
         const {selectedCategoryNames} = req.body
-        console.log("employeeId", employeeId)
-        console.log("selectedCategoryNames", selectedCategoryNames)
-        console.log("salonId", salonId)
         const employee = await this.service.addServicesByCatgoryNames(salonId, employeeId, selectedCategoryNames)
         res.send(employee)
     })
@@ -155,9 +151,6 @@ export default class EmployeeController extends BaseController {
     updateServiceByServiceIds = controllerErrorHandler(async (req: Request, res: Response) => {
         const {salonId, employeeId} = req.params
         const {selectedServiceIds} = req.body
-        console.log("employeeId", employeeId)
-        console.log("selectedCategoryNames", selectedServiceIds)
-        console.log("salonId", salonId)
         const employee = await this.service.updateServiceByServiceIds(salonId, employeeId, selectedServiceIds)
         res.send(employee)
     })

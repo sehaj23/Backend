@@ -74,8 +74,6 @@ export default class LoginController extends BaseController {
       const email = req.body.email
       const password = encryptData(req.body.password)
       const user = await this.service.login(email, password)
-      console.log(this.jwtKey)
-      console.log('USER', user)
 
       if (user == null) {
         let count: number = 1
@@ -226,7 +224,6 @@ export default class LoginController extends BaseController {
     } catch (error) {
 
     }
-    console.log(createUser.email)
     const token = await jwt.sign({ _id: createUser._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
@@ -408,7 +405,6 @@ export default class LoginController extends BaseController {
           }
           // try {
           //   const getRefferal = await this.referralService.countDocumnet({ referred_by: refferallCode._id, "referred_to.status": "Used" })
-          //   console.log(refferallCode._id)
           //   if (getRefferal === 4) {
           //     const promoCode = {
           //       promo_code: "REFBONUS" + refferallCode._id.toString().substring(1, 4),
@@ -529,7 +525,6 @@ export default class LoginController extends BaseController {
     const user = await this.service.getOne({ email }) as UserSI
     if (!user) res.status(400).send({ sucess: false, message: "User not found with phone ${email}" })
     const number = await this.otpService.sendUserOtpEmail(email)
-    console.log(number)
     SendEmail.forgotPasswordUser(email, number.otp)
     res.send({ success: true, message: "Email Sent" })
 

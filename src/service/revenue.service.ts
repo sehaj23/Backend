@@ -301,9 +301,6 @@ export default class RevenueService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        console.log(pageLength)
-        console.log(skipCount)
-
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
@@ -403,9 +400,6 @@ export default class RevenueService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        // console.log(pageLength)
-        // console.log(skipCount)
-
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
@@ -441,8 +435,7 @@ export default class RevenueService extends BaseService {
             "$gte": dateFilter["start_date"],
             "$lt": dateFilter["end_date"]
         }
-        // console.log(filters);
-        // console.log(pageLength)
+
 
 
         const revenueDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')

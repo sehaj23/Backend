@@ -21,7 +21,6 @@ var CronJob = require('cron').CronJob;
 
 var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
 
-    console.log("running cron function")
     const cartService = new CartService(Cart, Salon)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
@@ -29,7 +28,6 @@ var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
     const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral, walletTransactionService)
     const todayDateMoment = moment(Date.now())
     const todayDate = todayDateMoment.date()
-    console.log(todayDate)
     const q = {
         start_date: todayDateMoment,
         end_date: todayDateMoment,
@@ -41,12 +39,8 @@ var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
     booking.bookingDetails.forEach(element => {
         const service_time = moment(element.services[0].service_time, format)
         const before_time = moment(service_time).subtract(30, 'minute')
-        console.log("serviceTime", service_time)
-        console.log("before time", before_time)
         //adding 5:30 hours here
         var time = moment(moment().add(330, 'minutes'), format)
-        console.log("time", time)
-        console.log(booking.bookingDetails.length)
         if (time.isBetween(before_time, service_time)) {
             tokens = tokens.concat(element.user_id.fcm_token)
         }
@@ -59,7 +53,6 @@ var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
             body: 'Hi! You have a booking today. Please reach 5 minutes earlier.'
         },
     };
-    console.log(tokens)
     if (tokens.length != 0) {
         const notify = sendNotificationToDevice(tokens, message)
     }
@@ -68,7 +61,6 @@ var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
 
 var morningNotificationJob = new CronJob('0 8 * * *', async function () {
     //runs everydat at 8 am
-    console.log("running cron function")
     const cartService = new CartService(Cart, Salon)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
@@ -76,7 +68,6 @@ var morningNotificationJob = new CronJob('0 8 * * *', async function () {
     const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral, walletTransactionService)
     const todayDateMoment = moment(Date.now())
     const todayDate = todayDateMoment.date()
-    console.log(todayDate)
     const q = {
         start_date: todayDateMoment,
         end_date: todayDateMoment,
@@ -88,7 +79,6 @@ var morningNotificationJob = new CronJob('0 8 * * *', async function () {
 
         tokens = tokens.concat(element.user_id.fcm_token)
     });
-    console.log(tokens)
     var message = {
         notification: {
             title: 'ZATTIRE BOOKING',
@@ -103,7 +93,6 @@ var morningNotificationJob = new CronJob('0 8 * * *', async function () {
 
 var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
 
-    console.log("running vendor 10 mins crons")
     const cartService = new CartService(Cart, Salon)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
@@ -112,7 +101,6 @@ var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
     const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
     const todayDateMoment = moment(Date.now())
     const todayDate = todayDateMoment.date()
-    console.log(todayDate)
     const q = {
         start_date: todayDateMoment,
         end_date: todayDateMoment,
@@ -124,15 +112,10 @@ var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
     booking.bookingDetails.forEach(async element => {
         const service_time = moment(element.services[0].service_time, format)
         const after_time = moment(service_time).add(15, 'minute')
-        console.log("serviceTime", service_time)
-        console.log("before time", after_time)
         //adding 5:30 hours here
         var time = moment(moment().add(330, 'minutes'), format)
-        console.log("time", time)
-        console.log(booking.bookingDetails.length)
         if (time.isBetween(service_time, after_time)) {
             const vendor = await vendorService.getId(element.vendor_id)
-            console.log(vendor)
             tokens.concat(vendor)
 
         }
@@ -145,7 +128,6 @@ var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
             body: 'Hi has the booking started yet?'
         },
     };
-    console.log(tokens)
     if (tokens.length != 0) {
         const notify = sendNotificationToDevice(tokens, message)
     }

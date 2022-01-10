@@ -59,10 +59,8 @@ export default class SalonService extends BaseService {
         }
 
         addSalonService = async (_id: string, da: any) => {
-                console.log("_id", _id)
                 const salon = await this.model.findOne({ _id }) as SalonSI
                 if (salon === null) throw new Error("Salon not found")
-                console.log("data", da)
                 const data = da.services as any[]
                 for (let di = 0; di < data.length; di++) {
                         // this is getting the data
@@ -72,29 +70,19 @@ export default class SalonService extends BaseService {
 
                         for (let i = 0; i < salon.services.length; i++) {
                                 const service = salon.services[i]
-                                console.log("service.category", service.category)
-                                console.log("da.category_name", da.category_name)
                                 if (service.category === da.category_name) {
                                         categoryFound = i
-                                        console.log("gotService.service_name", gotService.service_name)
-                                        console.log("service.name", service.name)
                                         const newSercies = service
                                         if (gotService.service_name === service.name) {
                                                 serviceFound = i
                                                 if (gotService.service_checked === false) {
-                                                        console.log('*****************');
-                                                        console.log(`Deleting the service at ${i} ${service.name}`)
-                                                        console.log('*****************');
-                                                        console.log(salon.services[i])
                                                         salon.services.splice(i, 1)
                                                         break
                                                 }
                                                 // if service is checked
-                                                console.log("Changing the location of the options")
                                                 for (let opts of service.options) {
                                                         opts.at_home = gotService.service_loaction === "Home Only" ? true : false
                                                 }
-                                                console.log("Adding/ updating options")
                                                 for (let gotOpt of gotService.options) {
                                                         let found = false
                                                         let menFound = -1
@@ -103,8 +91,6 @@ export default class SalonService extends BaseService {
                                                         const removeOptsIndexes = []
                                                         for (let o = 0; o < service.options.length; o++) {
                                                                 const opt = service.options[o]
-                                                                console.log("opt.option_name", opt.option_name)
-                                                                console.log("gotOpt.option_name", gotOpt.option_name)
                                                                 if (opt.option_name === gotOpt.option_name) {
                                                                         if (gotOpt.option_checked === false) {
                                                                                 found = true
@@ -128,16 +114,11 @@ export default class SalonService extends BaseService {
                                                         }
 
                                                         // removing the gender
-                                                        console.log("gotOpt.option_gender", gotOpt.option_gender)
-                                                        console.log("menFound", menFound)
-                                                        console.log("womenFound", womenFound)
                                                         if (gotOpt.option_gender === "Women" && menFound > -1) {
-                                                                console.log("Removing men")
                                                                 if (!removeOptsIndexes.includes(menFound))
                                                                         removeOptsIndexes.push(menFound)
                                                         }
                                                         if (gotOpt.option_gender === "Men" && womenFound > -1) {
-                                                                console.log("Removing women")
                                                                 if (!removeOptsIndexes.includes(womenFound))
                                                                         removeOptsIndexes.push(womenFound)
                                                         }
@@ -145,20 +126,13 @@ export default class SalonService extends BaseService {
                                                         // filtering the options
                                                         service.options = service.options.filter((v: OptionI, i: number) => {
                                                                 if (removeOptsIndexes.includes(i)) {
-                                                                        console.log(`****************`)
-                                                                        console.log(`Removing option at index ${i} ${v.option_name} ${v.gender}`)
-                                                                        console.log(`****************`)
                                                                         return false
                                                                 }
-                                                                console.log(`****************`)
-                                                                console.log(`Adding option at index ${i} ${v.option_name} ${v.gender}`)
-                                                                console.log(`****************`)
+
                                                                 return true
                                                         })
 
                                                         // adding the missing gender
-                                                        console.log("gotOpt.option_gender", gotOpt.option_gender)
-                                                        console.log("menFound", menFound)
                                                         if ((gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") && menFound === -1 && gotOpt.option_checked) {
                                                                 const option: OptionI = {
                                                                         option_name: gotOpt.option_name,
@@ -183,9 +157,8 @@ export default class SalonService extends BaseService {
 
 
 
-                                                        console.log("Found:", found)
+
                                                         if (found === false && gotOpt.option_checked === true) {
-                                                                console.log("Adding the option")
                                                                 if (gotOpt.option_gender === "Men" || gotOpt.option_gender === "Both") {
                                                                         const option: OptionI = {
                                                                                 option_name: gotOpt.option_name,
@@ -209,13 +182,10 @@ export default class SalonService extends BaseService {
                                         }
                                 }
                         }
-                        console.log("serviceFound", serviceFound)
-                        console.log("categoryFound", categoryFound)
                         // if(serviceFound === -1 && categoryFound > -1){
-                        //         console.log("Service not found category found")
                         //         this.getTheOptions(gotService, salon.services[categoryFound])
                         // }
-                        console.log("da.category_name", da.category_name)
+
                         if ((categoryFound === -1 || serviceFound === -1) && gotService.service_checked === true) {
                                 const service: ServiceI = {
                                         name: gotService?.service_name ?? da.category_name ?? "Some Service",
@@ -312,7 +282,6 @@ export default class SalonService extends BaseService {
         deleteSalonEmployee = async (_id: string, eid: string, vendorId: string) => {
 
                 const emp = await this.employeeModel.findByIdAndDelete(eid)
-                // console.log(emp)
                 //@ts-ignore
                 const newSalon = await Salon.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { employees: eid } }, { new: true }).populate("employees").exec()
                 //  const salon = await this.model.findOneAndUpdate({ _id: _id, vendor_id: vendorId }, { $pull: { services: { _id: sid } } }, { new: true })
@@ -363,15 +332,12 @@ export default class SalonService extends BaseService {
         //TODO:ask preet to reduce data sent here certain field of employees onllyy
         getSalonInfo = async (salonId: string, centerPoint: any,getDistance:boolean) => {
                 distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
-                const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).lean().exec()
+                const salon = await this.model.findById(salonId).populate("photo_ids").populate({ path: "employees", name: "employees.name", populate: { path: 'photo' } }).populate("location_id").lean().exec()
                 try {
                 if (salon.coordinates != null && getDistance==true) {
                         if (salon.coordinates["coordinates"][0] != null && salon.coordinates["coordinates"][1] != null) {
                                 const userLocation = `${centerPoint.lat}` + `,` + `${centerPoint.lng}`
                                 const salonCoordinates = `${salon.coordinates["coordinates"][0].toString() + `,` + salon.coordinates["coordinates"][1].toString()}`
-                                console.log("******")
-                                console.log(userLocation)
-                                console.log(salonCoordinates)
                                 const newSalon = await new Promise<any>((resolve, reject) => {
                                         distance.get(
                                                 {
@@ -383,9 +349,7 @@ export default class SalonService extends BaseService {
                                                                 reject(salon);
                                                                 return
                                                         }
-                                                        console.log(data)
-                                                        salon.distance = data
-                                                        console.log(salon.distance)
+                                                        salon.distance = data           
                                                         resolve(salon)
                                                 });
                                 })
@@ -428,25 +392,21 @@ export default class SalonService extends BaseService {
                         ])
 
                         const [salon, pageNo] = await Promise.all([salons, salonPage])
-                        console.log(pageNo)
                         let totalPageNumber = 0
                         if (pageNo.length > 0) {
                                 totalPageNumber = pageNo[0].count
                         }
                         const totalPages = Math.ceil(totalPageNumber / pageLength)
-                        console.log(getDistance)
                         if (getDistance) {
                                
                               
                                 try {
                                         const salonCoordinates: string[] = salon.map((e) => {
-                                                console.log(e.name)
-                                                console.log(e.coordinates)
                                                 return `${e.coordinates.coordinates[0]}` + `,` + `${e.coordinates.coordinates[1]}`
         
                                         })
                                         const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                                console.log(userLocation)
+
                                         //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                         const newSalon = await new Promise<any>((resolve, reject) => {
         
@@ -532,7 +492,6 @@ export default class SalonService extends BaseService {
         
                                         })
                                         const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                                console.log(userLocation)
                                         //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                         const newSalon = await new Promise<any>((resolve, reject) => {
         
@@ -608,8 +567,6 @@ export default class SalonService extends BaseService {
                 const redisKey = "getSalonNearby"
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
-                console.log(`latitude: ${latitude}`)
-                console.log(`longitude: ${longitude}`)
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
@@ -625,7 +582,6 @@ export default class SalonService extends BaseService {
                                 }
                         }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").lean()
                         if (getDistance) {
-                                console.log(salons.coordinates)
 
                                 try {
                                         const salonCoordinates: string[] = salons.map((e) => {
@@ -633,7 +589,6 @@ export default class SalonService extends BaseService {
         
                                         })
                                         const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                                console.log(userLocation)
                                         //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                         const newSalon = await new Promise<any>((resolve, reject) => {
         
@@ -766,13 +721,11 @@ export default class SalonService extends BaseService {
         }
         // Search by salon
         getSearchResult = async (phrase: string) => {
-                console.log(phrase)
                 // const data = await this.model.find(
                 //         { $text: { $search: phrase, $caseSensitive: false } },
                 //         { score: { $meta: 'textScore' } }
                 // ).populate("profile_pic").sort({ score: { $meta: 'textScore' } })
                 //   const data =  await this.model.find({name:{$regex: `.*${phrase}.*`, $options: 'i'}}).populate("profile_pic")
-                console.log("searching")
                 var result1 = await this.model.aggregate([
 
 
@@ -809,7 +762,7 @@ export default class SalonService extends BaseService {
         }
 
         getSearchservice = async (phrase: string) => {
-                console.log("Services")
+
                 const data = await SalonSearchRedis.get(phrase)
                 if(data==null){
                 const data2 = await this.model.aggregate([
@@ -940,8 +893,6 @@ export default class SalonService extends BaseService {
                 let pageLength: number = parseInt(q.page_length || 25)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
-                console.log(pageLength)
-                console.log(skipCount)
                 let type="salon"
                 if(q.type){
                         type=q.type
@@ -976,11 +927,9 @@ export default class SalonService extends BaseService {
                                         filters["brand"] = q[k]
                                         break
                                 case "time":
-                                        // console.log(q[k])
                                         // var day =  moment(q[k]).set({hour:0,minute:0,second:1,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")
                                         //   var endDay =   moment(q[k]).set({hour:23,minute:59,second:59,millisecond:0}).format("YYYY-MM-DD, h:mm:ss a")  
                                         // var dayofweek =moment(day).day()
-                                        // console.log(dayofweek)  
                                         // filters[`start_working_hours.[${dayofweek}]`]={
                                         //              $gt:day,
                                         //              $lt:endDay        
@@ -998,7 +947,6 @@ export default class SalonService extends BaseService {
                         }
                 }
 
-                console.log(filters);
 
 
 
@@ -1092,8 +1040,6 @@ export default class SalonService extends BaseService {
         salonSlots = async (id: any, slotsDate: Date) => {
                 //  const redisKey = "slots"
                 // const cahceGetSalon = await SalonRedis.get(redisKey, {id,slotsDate})
-                // console.log("****")
-                // console.log(cahceGetSalon)
                 // if(cahceGetSalon!=null){
                 //       return cahceGetSalon  
                 // }
@@ -1108,7 +1054,6 @@ export default class SalonService extends BaseService {
                 const selectedEndHour = moment(salon.end_working_hours[day])
                 const slots = []
                 for (let i = selectedStartingHour; i.isBefore(selectedEndHour); i.add(30, 'minutes')) {
-                        console.log(moment().format("DD/MM/YYYY"))
                         if (moment().format("DD/MM/YYYY") == moment(slotsDate).format("DD/MM/YYYY")) {
                                 if (parseInt(i.format("HH")) > parseInt(moment().utcOffset(330).format("HH"))) {
                                       
@@ -1164,8 +1109,7 @@ export default class SalonService extends BaseService {
 
         getSalonByIds = async (ids: string[], q: any, getDistance: boolean = false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
-                let pageLength = 30 
-                //: number = parseInt(q.page_length || 8)
+                let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 let salonReq
@@ -1189,7 +1133,6 @@ export default class SalonService extends BaseService {
 
                                 })
                                 const userLocation = [`${q.latitude}` + `,` + `${q.longitude}`]
-                                console.log(salonCoordinates)
                                 //  distance.apiKey = 'AIzaSyBQajUkgso9uGXbVrmbRxkMAkl8Z9mq0Q8';
                                 const newSalon = await new Promise<any>((resolve, reject) => {
 

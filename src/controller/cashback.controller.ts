@@ -29,7 +29,6 @@ export default class CashbackController extends BaseController{
         }else{
             try{
 
-          console.log(cashback.user_id.toString())
             const walletTransactionI: WalletTransactionI = {
                 amount: cashback.amount,
                 user_id:cashback.user_id.toString(),

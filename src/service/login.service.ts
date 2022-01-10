@@ -11,14 +11,12 @@ export default class LoginService extends BaseService {
 
   loginAdmin = async (username: string, password: string) => {
     // this.model is coming from the base service class
-    console.log(this.modelName)
     return await this.model.findOne({ username, password })
   }
 
   // Login
   login = async (email: string, password: string) => {
     // this.model is coming from the base service class
-    console.log(this.modelName)
     return await this.model.findOne({ email, password })
   }
 

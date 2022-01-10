@@ -16,7 +16,6 @@ export default class SendEmail {
      */
     static bookingComplete = async () => {
         fs.readFile(`${__dirname}/vendor-invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-            console.log(data)
         })
         const mailOptions: Mail.Options = {
             from: 'source@example.com',
@@ -34,7 +33,6 @@ export default class SendEmail {
     }
     static bookingInvoice = async () => {
         fs.readFile(`${__dirname}/invoice.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
-            console.log(data)
         })
         const mailOptions: Mail.Options = {
             from: 'info@zattire.com',
@@ -327,7 +325,6 @@ export default class SendEmail {
 
             data = data.replaceAll("[[OTP]]", otp)
             // TODO: string interpolation for the html content
-            console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     BccAddresses:[
@@ -387,7 +384,6 @@ export default class SendEmail {
                 return
             }
             // TODO: string interpolation for the html content
-            console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     BccAddresses:[
@@ -450,7 +446,6 @@ export default class SendEmail {
             }
             data = data.replaceAll("[Customer Name]", userName)
             // TODO: string interpolation for the html content
-            console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     BccAddresses:[
@@ -576,7 +571,6 @@ export default class SendEmail {
 
     static bookingRequestVendor = async (salonEmail: string, salonName: string, bookingId: string, bookingIdNumeric: string, dateTime: string, emp_name: string, location: string, payments: BookingPaymentI[], amount: string, promo: string, services: BookingServiceI[], userName: string, vendorName: string) => {
         const loop = services.map(s => { return s.service_name + " <br>" })
-        console.log("seending mail; to vendor")
 
         fs.readFile(`${__dirname}/booking-request-vendor.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
@@ -657,7 +651,6 @@ export default class SendEmail {
             data = data.replaceAll("[user Name]", userName)
             data = data.replaceAll("[salon name]", salonName)
             // TODO: string interpolation for the html content
-            console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     BccAddresses:[
@@ -719,7 +712,6 @@ export default class SendEmail {
             data = data.replaceAll("[user Name]", userName)
             data = data.replaceAll("[customer name]", vendorName)
             // TODO: string interpolation for the html content
-            console.log("sending emailll")
             const params = {
                 Destination: { /* required */
                     BccAddresses:[

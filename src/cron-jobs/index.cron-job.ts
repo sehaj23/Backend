@@ -21,13 +21,11 @@ var CronJob = require('cron').CronJob;
 //             "$gt": todayDate
 //         }
 //     })
-//     console.log(carts)
 // }, null, true);
 // job.start();
 
 
 const runAllCrons =()=>{
-    console.log("starting All crons")
     morningNotificationJob.start()
     thirtyMinsNotificationCron.start()
     tenMinsNotificationCron.start()
