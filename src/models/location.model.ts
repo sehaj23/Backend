@@ -9,10 +9,10 @@ const LocationSchema = new mongoose.Schema({
         required: true
     },
     state: {
-        type: String,
+        type: String, 
     },
     city:{
-        type: String,
+        type: String,      
     },
     subarea:{
         type: String,   
