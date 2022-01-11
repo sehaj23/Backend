@@ -10,17 +10,12 @@ const LocationSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        required: true
     },
     city:{
         type: String,
-        required: true
     },
     subarea:{
         type: String,   
-    },
-    address:{
-        type:String
     },
     pincode: {
         type: Number,   
