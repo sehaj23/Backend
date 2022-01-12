@@ -452,7 +452,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 if(q.latitude != null && q.longitude !=null){
-                        getDistance=true
+                        getDistance=false
                 }
                 let type = "salon"
                 if(q.type){
@@ -552,7 +552,7 @@ export default class SalonService extends BaseService {
                 const skipCount = (pageNumber - 1) * pageLength
                 let getDistance=false
                 if(q.latitude != null && q.longitude !=null){
-                        getDistance=true
+                        getDistance=false
                 }
                 let type="salon"
                 if(q.type){
