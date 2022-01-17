@@ -481,7 +481,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 10000000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").lean()
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("location_id").populate("location_id").select("coordinates").lean()
 
                         if (getDistance) {
                                 console.log(salons.coordinates)
@@ -580,7 +580,7 @@ export default class SalonService extends BaseService {
                                                 $maxDistance: 100000
                                         }
                                 }
-                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").lean()
+                        }, {}, { skip: skipCount, limit: pageLength }).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("location_id").populate("location_id").select("coordinates").lean()
                         if (getDistance) {
 
                                 try {
@@ -1115,9 +1115,9 @@ export default class SalonService extends BaseService {
                 let salonReq
                 let out
                 if (ids.length != 0) {
-                        salonReq = this.model.find({ _id: { $in: ids },approved:true }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        salonReq = this.model.find({ _id: { $in: ids },approved:true }).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").select("coordinates").select("area").populate("profile_pic").select("location_id").populate("location_id").sort([['rating', -1], ['createdAt', -1]]).lean()
                 } else {
-                        salonReq = this.model.find({approved:true}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").sort([['rating', -1], ['createdAt', -1]]).lean()
+                        salonReq = this.model.find({approved:true}).skip(skipCount).limit(pageLength).select("name").select("rating").select("location").select("start_price").populate("profile_pic").select("coordinates").select("area").select("location_id").populate("location_id").sort([['rating', -1], ['createdAt', -1]]).lean()
                 }
                 // const salons = this.model.find().skip(skipCount).limit(pageLength).populate("photo_ids").populate("profile_pic").sort([['rating', -1], ['createdAt', -1]])
                 // const reviewsAll = this.reviewModel.find({ salon_id: _id }).skip(skipCount).limit(pageLength).sort('-createdAt').populate("user_id")
