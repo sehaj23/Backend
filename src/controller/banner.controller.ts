@@ -3,6 +3,7 @@ import BannerService from "../service/banner.service";
 import BaseController from "./base.controller";
 import { Request, Response } from "express";
 import { BannerRedis } from "../redis/index.redis";
+import REDIS_CONFIG from "../utils/redis-keys";
 
 export default class BannerController extends BaseController {
   service: BannerService;
@@ -13,7 +14,7 @@ export default class BannerController extends BaseController {
 
   getActiveBanners = controllerErrorHandler(
     async (req: Request, res: Response) => {
-      const key = "bannerForHomePage";
+      const key =REDIS_CONFIG.bannerForHomePage;
       let out;
       const getBanner = await BannerRedis.get(key);
       if (getBanner == null) {

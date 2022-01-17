@@ -54,6 +54,7 @@ salonRouter.post("/:id/offer/:sid", verifyToken, salonController.createOffer)
 salonRouter.post("/brand", verifyToken, salonController.addBrand)
 salonRouter.get("/reviews/:id",verifyToken,salonController.getSalonReviews)
 salonRouter.post("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
-
+salonRouter.get("/redis/:id",verifyToken,salonController.clearASalonRedisById)
+salonRouter.get("/redis/salon-by-promo",verifyToken,salonController.clearRedisSalonByPromo)
 
 export default salonRouter

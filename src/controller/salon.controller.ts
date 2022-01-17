@@ -20,6 +20,7 @@ import moment = require("moment");
 import PromoCodeService from "../service/promo-code.service";
 import { PromoCodeSI } from "../interfaces/promo-code.interface";
 import mongoose from "../database";
+import REDIS_CONFIG from "../utils/redis-keys";
 
 
 export default class SalonController extends BaseController {
@@ -429,6 +430,10 @@ export default class SalonController extends BaseController {
         SalonRedis.set(salonId, { salon, reviews, user, promocodes }, filter)
         res.status(200).send({ salon, reviews, user, promocodes })
     })
+    clearASalonRedisById=controllerErrorHandler(async (req: Request, res: Response) => {
+    await SalonRedis.remove(req.params.id)
+      res.status(200).send({message:"Redis clear  for the salon"})
+    })
 
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
@@ -772,7 +777,11 @@ export default class SalonController extends BaseController {
         res.status(200).send(salon)
     })
 
-
+    clearRedisSalonByPromo =  controllerErrorHandler(async(req:Request,res:Response)=>{
+        const key  = REDIS_CONFIG.getSalonByPromoCodes
+        await SalonRedis.remove(key)
+        res.status(200).send({message:"Redis clear for salons by promocode"})
+    })
     getSalonByPromo = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.params.id
         const q: any = req.query
@@ -797,7 +806,7 @@ export default class SalonController extends BaseController {
             getDistance
         }
 
-        const redisKey = `getSalonByPromoCodes`
+        const redisKey = REDIS_CONFIG.getSalonByPromoCodes
         const promoGetSalon = await SalonRedis.get(redisKey, filter)
         let out
         let salonReq
