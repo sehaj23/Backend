@@ -14,5 +14,4 @@ locationRouter.post("/",verifyToken,locationController.post)
 locationRouter.get("/",verifyToken,locationController.get)
 locationRouter.delete("/:id",verifyToken,locationController.delete)
 
-
 export default locationRouter

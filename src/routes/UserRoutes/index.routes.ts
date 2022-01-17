@@ -1,4 +1,5 @@
 import { Router } from "express"
+import locationRouter from "./location.router"
 import bannerRouter from "./banner.router"
 import bookingRouter from './booking.router'
 import cartRouter from "./cart.router"
@@ -47,4 +48,5 @@ Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
 Userrouter.use("/promo-home", promoHomeRouter)
 Userrouter.use("/banner", bannerRouter)
 Userrouter.use("/wallet-transaction", walletTransactionRouter)
+Userrouter.use("/location",locationRouter)
 export default Userrouter
