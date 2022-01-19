@@ -1186,7 +1186,14 @@ export default class SalonService extends BaseService {
                 })
         }
 
-
+        getSalonbyLocation = async (subarea)=>{
+                const salon = await this.model.findOne({}).populate({
+                        path: 'location_id',
+                        match: { city: "i" },
+                        // Explicitly exclude `_id`, see http://bit.ly/2aEfTdB'
+                      }).exec()
+                      return salon
+        }
 
 
 }

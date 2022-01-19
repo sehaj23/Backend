@@ -831,6 +831,12 @@ export default class SalonController extends BaseController {
         res.send(getDistance)
     })
 
+    searchSalonOnLocation = controllerErrorHandler(async(req:Request,res:Response)=>{
+       
+            const getSalon = await this.service.getSalonbyLocation("Noida")
+            res.status(200).send({getSalon})
+    })
+
 
 
 
