@@ -409,4 +409,23 @@ export default class UserController extends BaseController {
         }
     }
 
+    deleteUser = async (req: Request, res: Response) => {
+    try {
+        let deleteUser
+        const q = req.query
+        if(!q){
+            res.send({message:"please send email in query"})
+        }
+        if(q.email){
+            deleteUser=await this.service.deleteByFilter({email:q.email})
+        }else if(q.phone){
+            deleteUser = await this.service.deleteByFilter({phone:q.phone})
+        }
+        res.send(deleteUser)
+       
+    } catch (error) {
+        res.status(400).send(error)
+    }
+    }
+
 }

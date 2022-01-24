@@ -101,6 +101,10 @@ export default class BaseService {
         return this.model.deleteOne({ _id: id })
     }
 
+    deleteByFilter = async (filter: any) => {
+        return this.model.deleteOne(filter)
+    }
+
     countDocumnet = async (filter: any) => {
         return this.model.countDocuments(filter)
     }
