@@ -10,6 +10,7 @@ import Cashbackrange from "../../models/cashbackRange.model";
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model";
 import Employee from "../../models/employees.model";
 import Event from "../../models/event.model";
+import Explore from "../../models/explore.model";
 import Feedback from "../../models/feedback.model";
 import MongoCounter from "../../models/mongo-counter.model";
 import Offer from "../../models/offer.model";
@@ -42,7 +43,7 @@ import WalletTransactionService from "../../service/wallet-transaction.service";
 
 
 const bookingRouter = Router()
-const cartService = new CartService(Cart, Salon)
+const cartService = new CartService(Cart, Salon,Explore)
 const feedbackService = new FeedbackService(Feedback)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const referralService = new ReferralService(Referral)

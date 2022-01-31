@@ -3,13 +3,16 @@ import CartI, { CartOption, CartSI } from "../interfaces/cart.interface";
 import SalonSI from "../interfaces/salon.interface";
 import { CartRedis } from "../redis/index.redis";
 import BaseService from "./base.service";
-
+import {serviceType} from "../interfaces/cart.interface"
+import { ExploreSI } from "../interfaces/explore.interface";
 export default class CartService extends BaseService {
 
     salonModel: mongoose.Model<any, any>
-    constructor(cartModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>) {
+    exploreModel:mongoose.Model<any,any>
+    constructor(cartModel: mongoose.Model<any, any>, salonModel: mongoose.Model<any, any>, exploreModel:mongoose.Model<any,any>) {
         super(cartModel)
         this.salonModel = salonModel
+        this.exploreModel=exploreModel
     }
 
     bookCartByUserId: (userId: string) => Promise<CartSI> = async (userId: string) => {
@@ -26,7 +29,20 @@ export default class CartService extends BaseService {
     }
 
     getPriceByOptionId: (optionId: string) => Promise<{ price: number, service_name: string, option_name, category_name: string, service_id: string,salon_name:string }> = async (optionId: string) => {
-        const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
+        let salon 
+        salon= await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
+        if(!salon){
+         const explore = await this.exploreModel.findOne({"options._id":mongoose.Types.ObjectId(optionId)}) as ExploreSI
+          salon = await this.salonModel.findById(explore.salon_id)
+            for(let option of explore.options){
+                
+                //@ts-ignore
+                if(option._id.toString()===optionId){
+                    //@ts-ignore
+                    return {price:option.price.valueOf(),service_name:explore.service_name,option_name:"EXPLORE",category_name:"EXPLORE",service_id:explore._id,salon_name:salon.name}
+                }
+            }
+        }
         if (salon === null || !salon) throw new Error("Salon not found")
         for (let service of salon.services) {
             for (let option of service.options) {
@@ -76,6 +92,7 @@ export default class CartService extends BaseService {
     addOptionToCart = async (cartId: string, option_id: string) => {
 
         const cart = await this.getId(cartId) as CartSI
+
         const { options } = cart
         // const exist = await this.model.findOne({"options.option_id": option_id, "user_id": userId}
         let optionFound = false
@@ -96,7 +113,7 @@ export default class CartService extends BaseService {
                 category_name: optionPrice.category_name,
                 option_name: optionPrice.option_name,
                 service_id: optionPrice.service_id,
-
+               
 
             })
         }

@@ -34,6 +34,8 @@ export default class CartController extends BaseController{
     addOptionToCart =controllerErrorHandler( async (req: Request, res: Response) => {
         const {cartId} = req.params
         const {option_id} = req.body
+        console.log(cartId)
+        console.log(option_id)
         const data = await this.cartService.addOptionToCart(cartId, option_id)
         res.send(data)
     })

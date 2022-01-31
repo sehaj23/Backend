@@ -4,10 +4,24 @@ const exploreSchema = new mongoose.Schema({
         required: true,
         type: String,
     },
-    gender: {
-        required: true,
-        type: String,
-    },
+    options:[{
+        price: {
+            type: Number,
+            required: true,
+            min: 0
+        },
+        duration: {
+            type: Number,
+            default: 15,
+            required: true,
+            min: 15
+        },
+        gender: {
+            type: String,
+            enum: ["men", "women", "both"],
+            required: true
+        },
+    }],
     color: [{
         required: true,
         type: String,
@@ -15,10 +29,6 @@ const exploreSchema = new mongoose.Schema({
     photo: {
         type: String,
        required: true
-    },
-    price:{
-        type:Number,
-        required:true
     },
     salon_id: {
         type:  mongoose.Schema.Types.ObjectId,

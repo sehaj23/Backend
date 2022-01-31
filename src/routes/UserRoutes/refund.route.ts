@@ -3,6 +3,7 @@ import RefundController from "../../controller/refund.controller";
 import UserverifyToken from "../../middleware/User.jwt";
 import Booking from "../../models/booking.model";
 import Cart from "../../models/cart.model";
+import Explore from "../../models/explore.model";
 import MongoCounter from "../../models/mongo-counter.model";
 import Referral from "../../models/referral.model";
 import Refund from "../../models/refund.model";
@@ -19,7 +20,7 @@ import { RefundValidator } from "../../validators/refund.validator";
 
 
 const refundRouter = Router()
-const cartService = new CartService(Cart, Salon)
+const cartService = new CartService(Cart, Salon,Explore)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const userService = new UserService(User, Booking)
 const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)

@@ -2,6 +2,7 @@ import moment = require("moment");
 import Booking from "../models/booking.model";
 import Cart from "../models/cart.model";
 import EmployeeAbsenteeism from "../models/employeeAbsenteeism.model";
+import Explore from "../models/explore.model";
 import Feedback from "../models/feedback.model";
 import MongoCounter from "../models/mongo-counter.model";
 import Referral from "../models/referral.model";
@@ -21,7 +22,7 @@ var CronJob = require('cron').CronJob;
 
 var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
 
-    const cartService = new CartService(Cart, Salon)
+    const cartService = new CartService(Cart, Salon,Explore)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
     const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)
@@ -61,7 +62,7 @@ var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
 
 var morningNotificationJob = new CronJob('0 8 * * *', async function () {
     //runs everydat at 8 am
-    const cartService = new CartService(Cart, Salon)
+    const cartService = new CartService(Cart, Salon,Explore)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
     const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)
@@ -93,7 +94,7 @@ var morningNotificationJob = new CronJob('0 8 * * *', async function () {
 
 var tenMinsNotificationCron = new CronJob('*/10 * * * *', async function () {
 
-    const cartService = new CartService(Cart, Salon)
+    const cartService = new CartService(Cart, Salon,Explore)
     const mongoCounterService = new MongoCounterService(MongoCounter)
     const userService = new UserService(User, Booking)
     const walletTransactionService: WalletTransactionService = new WalletTransactionService(WalletTransaction, userService)
