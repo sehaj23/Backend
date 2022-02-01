@@ -11,4 +11,16 @@ export default class ExploreController extends BaseController {
     this.service = service;
   }
 
+
+  getExploreBySalonId = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+        if(!req.params.salonID){
+            return res.status(400).send({message:"Please send salonID"})
+        }
+        const salonID = req.params.salonID
+      const explore = await this.service.getExploreBySalonId({salon_id:salonID});
+      res.send({data:explore});
+    }
+  );
+
 }

@@ -9,9 +9,12 @@ const exploreRouter = Router()
 const exploreService = new ExploreService(Explore)
 const exploreController = new ExploreController(exploreService)
 
-exploreRouter.put("/:id",verifyToken,exploreController.put)
+
 exploreRouter.post("/",verifyToken,exploreController.post)
 exploreRouter.get("/",verifyToken,exploreController.get)
+exploreRouter.put("/:id",verifyToken,exploreController.put)
 exploreRouter.delete("/:id",verifyToken,exploreController.delete)
+exploreRouter.get("/:id",verifyToken,exploreController.getId)
+exploreRouter.get("/salon/:salonID",verifyToken,exploreController.getExploreBySalonId)
 
 export default exploreRouter
