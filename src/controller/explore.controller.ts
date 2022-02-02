@@ -22,5 +22,13 @@ export default class ExploreController extends BaseController {
       res.send({data:explore});
     }
   );
+  getExploreByCreatedAt = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q = req.query
+      const explore = await this.service.getWithPagination(q)
+      res.send({data:explore});
+    }
+  );
+
 
 }

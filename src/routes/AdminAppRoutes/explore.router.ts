@@ -11,7 +11,7 @@ const exploreController = new ExploreController(exploreService)
 
 
 exploreRouter.post("/",verifyToken,exploreController.post)
-exploreRouter.get("/",verifyToken,exploreController.get)
+exploreRouter.get("/",verifyToken,exploreController.getWithPagination)
 exploreRouter.put("/:id",verifyToken,exploreController.put)
 exploreRouter.delete("/:id",verifyToken,exploreController.delete)
 exploreRouter.get("/:id",verifyToken,exploreController.getId)
