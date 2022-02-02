@@ -19,6 +19,7 @@ import serviceRouter from "./service.router"
 import userRouter from "./user.router"
 import walletTransactionRouter from "./wallet-transactions.route"
 import walletRazorpayRouter from "./walletRazorpay.router"
+import exploreRouter from "./explore.router"
 
 /**
  * @swagger
@@ -44,6 +45,7 @@ Userrouter.use("/cashback",cashbackRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
+Userrouter.use("/explore",exploreRouter)
 Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
 Userrouter.use("/promo-home", promoHomeRouter)
 Userrouter.use("/banner", bannerRouter)

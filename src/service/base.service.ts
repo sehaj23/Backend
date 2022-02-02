@@ -29,7 +29,7 @@ export default class BaseService {
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         
-        const resourceQuery = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").sort([['rating', -1], ['createdAt', -1]]).lean()
+        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").sort([['rating', -1], ['createdAt', -1]]).lean()
         const resourceCountQuery = this.model.aggregate([
             { "$count": "count" }
         ])
