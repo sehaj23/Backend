@@ -11,8 +11,8 @@ const exploreController = new ExploreController(exploreService)
 
 
 
-exploreRouter.get("/:id",verifyToken,exploreController.getId)
-exploreRouter.get("/salon/:salonID",verifyToken,exploreController.getExploreBySalonId)
-exploreRouter.get("/all",verifyToken,exploreController.getExploreByCreatedAt)
+exploreRouter.get("/:id",exploreController.getId)
+exploreRouter.get("/salon/:salonID",exploreController.getExploreBySalonId)
+exploreRouter.get("/all",exploreController.getExploreByCreatedAt)
 
 export default exploreRouter
