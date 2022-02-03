@@ -101,6 +101,7 @@ export default class BookingService extends BaseService {
                 booking_numeric_id,
                 status
             }
+            console.log(booking)
             const b = await this.model.create(booking) as BookingSI
             if (usedWalletAmount > -1) {
                 const walletTransactionI: WalletTransactionI = {

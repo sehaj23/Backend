@@ -28,7 +28,7 @@ export default class CartService extends BaseService {
         return salon
     }
 
-    getPriceByOptionId: (optionId: string) => Promise<{ price: number, service_name: string, option_name, category_name: string, service_id: string,salon_name:string }> = async (optionId: string) => {
+    getPriceByOptionId: (optionId: string) => Promise<{ service_type: string, price: number, service_name: string, option_name, category_name: string, service_id: string,salon_name:string }> = async (optionId: string) => {
         let salon 
         salon= await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if(!salon){
@@ -39,7 +39,7 @@ export default class CartService extends BaseService {
                 //@ts-ignore
                 if(option._id.toString()===optionId){
                     //@ts-ignore
-                    return {price:option.price.valueOf(),service_name:explore.service_name,option_name:"EXPLORE",category_name:"EXPLORE",service_id:explore._id,salon_name:salon.name}
+                    return {price:option.price.valueOf(),service_name:explore.service_name,option_name:"EXPLORE",category_name:"EXPLORE",service_id:explore._id,salon_name:salon.name,service_type:"EXPLORE"}
                 }
             }
         }
@@ -49,7 +49,7 @@ export default class CartService extends BaseService {
                 if (option._id.toString() === optionId) {
                     //@ts-ignore
                     //@ts-ignore
-                    return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id,salon_name:salon.name }
+                    return { price: option.price.valueOf(), service_name: service.name, option_name: option.option_name, category_name: service.category, service_id: service._id,salon_name:salon.name,service_type:"ZATTIRESERVICE" }
                 }
             }
         }
@@ -230,7 +230,7 @@ export default class CartService extends BaseService {
             user_id: userId,
             salon_id: salonId,
             salon_name:optionPrice.salon_name,
-            options: [{ option_id: optionId, quantity: 1, service_name: optionPrice.service_name, option_name: optionPrice.option_name, category_name: optionPrice.category_name, service_id: optionPrice.service_id }],
+            options: [{service_type:optionPrice.service_type, option_id: optionId, quantity: 1, service_name: optionPrice.service_name, option_name: optionPrice.option_name, category_name: optionPrice.category_name, service_id: optionPrice.service_id }],
             total: optionPrice.price
         }
 

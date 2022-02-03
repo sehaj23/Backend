@@ -52,6 +52,8 @@ import CashbackRangeService from "../service/cashback-range.service";
 import { CashBackRangeSI } from "../interfaces/cashbackRange.interface";
 import cashbackRange from "../utils/cashback-range";
 import CashbackService from "../service/cashback.service";
+import Explore from "../models/explore.model";
+import { ExploreSI } from "../interfaces/explore.interface";
 
 export default class BookingController extends BaseController {
   ZATTIRE_COMMISSION_PECENT = 20;
@@ -271,12 +273,11 @@ export default class BookingController extends BaseController {
       // const employees =  await this.employeeService.getEmpbyService()
 
       let totalDiscountGiven = 0;
-      let promoCode: PromoCodeSI;
-
+      let promoCode;
       if (promo_code !== null) {
-        promoCode = (await this.promoCodeService.getOne({
+        promoCode = await this.promoCodeService.getOne({
           promo_code: promo_code,
-        })) as PromoCodeSI;
+        }) as PromoCodeSI;
 
         if (promoCode.active === false)
           throw new Error(`Promo code not active anymore`);
@@ -424,7 +425,22 @@ export default class BookingController extends BaseController {
       // } else {
       //     status = "Requested"
       // }
+      const getExplore = await Explore.find({salon_id:salon_id}) as ExploreSI[]
       for (let o of options) {
+       
+        if(o.service_type=="EXPLORE"){
+          for(let salonService of getExplore){
+            console.log(salonService)
+            //@ts-ignore
+            const optionIndex = salonService.options.map((e)=>e._id?.toString()).indexOf(o.option_id)
+            if(optionIndex >-1){
+              o.service_name=salonService.service_name,
+              o.category_name = "EXPLORE";
+              o.gender = salonService.options[optionIndex].gender;
+            }
+          }
+        
+        }else{
         for (let salonService of salon.services) {
           const salonOptionIndex = salonService.options
             .map((o) => o._id?.toString())
@@ -441,7 +457,7 @@ export default class BookingController extends BaseController {
             break;
           }
         }
-
+      }
         const totalTime = o.quantity * o.duration;
         const convertedDateTime = moment(date_time);
 
@@ -502,6 +518,7 @@ export default class BookingController extends BaseController {
           //      throw new ErrorResponse(`No employee found at this time for the service`)
         }
       }
+      console.log(options)
       const booking = await this.service.bookAppointment(
         userId,
         payment_method,

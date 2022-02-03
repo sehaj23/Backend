@@ -5,6 +5,9 @@ const exploreSchema = new mongoose.Schema({
         type: String,
     },
     options:[{
+        name: {
+            type: String,
+        },
         price: {
             type: Number,
             required: true,

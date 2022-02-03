@@ -2,7 +2,7 @@ import mongoose from "../database";
 
 export interface CartOption {
     option_id: string,
-    service_type?:serviceType
+    service_type?:string,
     service_id?: string,
     quantity: number,
     service_name: string,

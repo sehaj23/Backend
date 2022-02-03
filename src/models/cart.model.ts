@@ -27,8 +27,8 @@ const CartSchema = new mongoose.Schema({
             },
             service_type:{
                 type: String,
-               default:"ZattireService",
-                enum: ["ZattireService", "Explore"]
+               default:"ZATTIRESERVICE",
+                enum: ["ZATTIRESERVICE", "EXPLORE"]
             }
         }
     ],
