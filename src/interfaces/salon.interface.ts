@@ -22,6 +22,7 @@ export interface SalonI{
     speciality?: string[]
     profile_pic?:number,
     location?: string
+    location_id?:string,
     insta_link?: string
     fb_link?: string
     rating?:number,

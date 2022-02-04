@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { ExploreSI } from "../interfaces/explore.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import ExploreService from "../service/explore.service";
 import logger from "../utils/logger";
@@ -27,6 +28,22 @@ export default class ExploreController extends BaseController {
       const q = req.query
       const explore = await this.service.getWithPagination(q)
       res.send({data:explore});
+    }
+  );
+
+  getExploreProductByIDwithSimilarProducts= controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const id = req.params.id
+      const q:any= req.query
+      const pageNumber: number = parseInt(q.page_number || 1)
+      let pageLength: number = parseInt(q.page_length || 25)
+      pageLength = (pageLength > 100) ? 100 : pageLength
+      const skipCount = (pageNumber - 1) * pageLength
+      const explore = await this.service.getId(id) as ExploreSI
+      const multipleKeyWords = explore.service_name.split("")
+      const getSimilarProduct = await this.service.getSimilarProducts(q,explore.salon_id,multipleKeyWords)
+      
+      res.send({explore:explore,similarProducts:getSimilarProduct});
     }
   );
 
