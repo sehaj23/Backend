@@ -5,6 +5,7 @@ import { CartRedis } from "../redis/index.redis";
 import BaseService from "./base.service";
 import {serviceType} from "../interfaces/cart.interface"
 import { ExploreSI } from "../interfaces/explore.interface";
+import Explore from "../models/explore.model";
 export default class CartService extends BaseService {
 
     salonModel: mongoose.Model<any, any>
@@ -58,7 +59,19 @@ export default class CartService extends BaseService {
 
     getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number, service_name: string, service_id: string }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
-        if (salon === null || !salon) throw new Error("Salon not found")
+        if (salon === null ){
+            const exploreService = await  Explore.findOne({"options._id":optionId}) as ExploreSI
+            for(let option of exploreService.options){
+                //@ts-ignore
+                if(option._id.toString()=== optionId){
+                  return{  name:option.name,
+                    price:option.price,
+                    service_name:"EXPLORE",
+                    service_id:exploreService._id
+                  }
+                }
+            }
+        }
         for (let service of salon.services) {
             for (let option of service.options) {
                 if (option._id.toString() === optionId) return {

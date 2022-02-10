@@ -9,6 +9,7 @@ export default interface ExploreI {
     
 }
 interface Options{
+    name:string,
         price: number,
         duration: number,
         gender: string
