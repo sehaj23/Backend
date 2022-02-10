@@ -8,7 +8,8 @@ export interface CartOption {
     service_name: string,
     category_name?: string,
     option_name?: string
-    price?: number
+    price?: number,
+    duration?:number
 }
 export type cartStatus = 'In use' | 'Booked' | 'Abandoned'
 export type serviceType = "ZattireService"| "Explore"

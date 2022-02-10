@@ -57,17 +57,18 @@ export default class CartService extends BaseService {
         throw new Error("Option not found")
     }
 
-    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number, service_name: string, service_id: string }> = async (optionId: string) => {
+    getPriceAndNameByOptionId: (optionId: string) => Promise<{ name: string, price: number, service_name: string, service_id: string,duration:number }> = async (optionId: string) => {
         const salon = await this.salonModel.findOne({ "services.options._id": mongoose.Types.ObjectId(optionId) }) as SalonSI
         if (salon === null ){
             const exploreService = await  Explore.findOne({"options._id":optionId}) as ExploreSI
             for(let option of exploreService.options){
                 //@ts-ignore
                 if(option._id.toString()=== optionId){
-                  return{  name:option.name,
-                    price:option.price,
+                  return{  name:option.name.valueOf(),
+                    price:option.price.valueOf(),
                     service_name:"EXPLORE",
-                    service_id:exploreService._id
+                    service_id:exploreService._id.valueOf(),
+                    duration:option.duration.valueOf(),
                   }
                 }
             }
@@ -79,7 +80,8 @@ export default class CartService extends BaseService {
                     price: option.price.valueOf(),
                     service_name: service.name.valueOf(),
                     //@ts-ignore
-                    service_id: service._id.valueOf()
+                    service_id: service._id.valueOf(),
+                    duration:option.duration.valueOf(),
 
                 }
             }
@@ -219,11 +221,12 @@ export default class CartService extends BaseService {
                 for (let cc of cart) {
                     if (cc.status === 'Booked') return []
                     for (let c of cc.options) {
-                        const { name, price, service_name, service_id } = await this.getPriceAndNameByOptionId(c.option_id)
+                        const { name, price, service_name, service_id,duration } = await this.getPriceAndNameByOptionId(c.option_id)
                         c.option_name = name
                         c.price = price
                         c.service_name = service_name
                         c.service_id = service_id
+                        c.duration=duration
                     }
                 }
             }

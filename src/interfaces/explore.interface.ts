@@ -5,7 +5,8 @@ export default interface ExploreI {
     color:string[],
     photo:string,
     service_name:string,
-    tags:string[]
+    tags:string[],
+    description:string
     
 }
 interface Options{

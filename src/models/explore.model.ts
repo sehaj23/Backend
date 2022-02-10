@@ -39,7 +39,10 @@ const exploreSchema = new mongoose.Schema({
     },
     tags:[{
         type: String,
-    }]
+    }],
+    description:{
+        type:String
+    }
 })
 const Explore = mongoose.model("explore", exploreSchema)
 
