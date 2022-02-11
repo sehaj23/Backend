@@ -39,9 +39,9 @@ export default class ExploreController extends BaseController {
       let pageLength: number = parseInt(q.page_length || 25)
       pageLength = (pageLength > 100) ? 100 : pageLength
       const skipCount = (pageNumber - 1) * pageLength
-      const explore = await this.service.getId(id) as ExploreSI
-      const multipleKeyWords = explore.service_name.split("")
-      const getSimilarProduct = await this.service.getSimilarProducts(q,explore.salon_id,multipleKeyWords)
+      const explore = await this.service.getById(id) as ExploreSI
+      const multipleKeyWords = explore.service_name.split(" ")
+      const getSimilarProduct = await this.service.getSimilarProducts(q,explore.salon_id,multipleKeyWords,explore._id)
       
       res.send({explore:explore,similarProducts:getSimilarProduct});
     }

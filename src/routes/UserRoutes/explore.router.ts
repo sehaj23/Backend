@@ -11,7 +11,7 @@ const exploreController = new ExploreController(exploreService)
 
 
 exploreRouter.get("/all",exploreController.getExploreByCreatedAt)
-exploreRouter.get("/:id",exploreController.getExploreProductByIDwithSimilarProducts)
+exploreRouter.get("/info/:id",exploreController.getExploreProductByIDwithSimilarProducts)
 exploreRouter.get("/salon/:salonID",exploreController.getExploreBySalonId)
 
 

@@ -28,17 +28,21 @@ export default class ExploreService extends BaseService{
         return { explore, totalPages, pageNumber, pageLength }
     }
 
-    getSimilarProducts=async(q:any,salonID:any,multipleKeyWords)=>{
+    getSimilarProducts=async(q:any,salonID:any,multipleKeyWords,exploreID:string)=>{
         let getSimilar
+        console.log(multipleKeyWords)
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-         getSimilar = await Explore.find({salon_id:salonID, tags:{$inq:multipleKeyWords}}).skip(skipCount).limit(pageLength)
+       
+         getSimilar = await Explore.find({_id:{$ne:exploreID},salon_id:salonID, tags:{$in:multipleKeyWords}}).skip(skipCount).limit(pageLength)
         if(getSimilar.length===0){
             const getSalon = await Salon.findById(salonID)
-            const getSalonNearLocation = await Salon.findOne({location_id:getSalon?.location_id,_id:{$nin:getSalon._id}})
-            getSimilar =  await Explore.find({salon_id:getSalonNearLocation._id, tags:{$inq:multipleKeyWords}}).skip(skipCount).limit(pageLength)
+            const getSalonNearLocation = await Salon.findOne({location_id:getSalon?.location_id,_id:{$ne:getSalon._id}})
+            if(getSalonNearLocation !== null){
+            getSimilar =  await Explore.find({salon_id:getSalonNearLocation._id, tags:{$in:multipleKeyWords}}).skip(skipCount).limit(pageLength)
+            }
         }
         return getSimilar
     }

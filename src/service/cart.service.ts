@@ -128,6 +128,7 @@ export default class CartService extends BaseService {
                 category_name: optionPrice.category_name,
                 option_name: optionPrice.option_name,
                 service_id: optionPrice.service_id,
+                service_type:optionPrice.service_type
                
 
             })

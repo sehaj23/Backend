@@ -12,7 +12,7 @@ export interface CartOption {
     duration?:number
 }
 export type cartStatus = 'In use' | 'Booked' | 'Abandoned'
-export type serviceType = "ZattireService"| "Explore"
+export type serviceType = "ZATTIRESERVICE"| "EXPLORE"
 export default interface CartI {
     options: CartOption[] // option ids of the service
     total?: number
