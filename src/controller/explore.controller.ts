@@ -30,6 +30,13 @@ export default class ExploreController extends BaseController {
       res.send({data:explore});
     }
   );
+  searchExploreByServiceName = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const phrase = req.query.phrase
+      const explore = await this.service.searchInExplore(phrase)
+      res.send({data:explore});
+    }
+  )
 
   getExploreProductByIDwithSimilarProducts= controllerErrorHandler(
     async (req: Request, res: Response) => {

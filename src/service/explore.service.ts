@@ -46,4 +46,19 @@ export default class ExploreService extends BaseService{
         }
         return getSimilar
     }
+    searchInExplore=async(phrase)=>{
+        const explore = await Explore.aggregate([{
+
+            $match:
+            {
+                    "service_name": {
+                            $regex: `.*${phrase}.*`, $options: 'i'
+                    },
+
+
+            }
+
+    },])
+    return explore
+    }
 }

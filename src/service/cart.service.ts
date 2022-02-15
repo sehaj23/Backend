@@ -198,14 +198,14 @@ export default class CartService extends BaseService {
         if (cart === null || !cart) throw Error(`Cart not found for user with id ${userId}`)
         return cart
     }
-    // getLastCartByUserId = async (userId: string) => {
-    //     const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
-    //     if(cart != null){
-    //         cart.status='Abandoned'
-    //        await cart.save()
+    getLastCartByUserId = async (userId: string) => {
+        const cart = await this.model.findOne({ user_id: userId,status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
+        if(cart != null){
+            cart.status='Abandoned'
+           await cart.save()
 
-    //     }
-    //  }
+        }
+     }
 
     /**
      * Getting the cart by user id
@@ -217,7 +217,7 @@ export default class CartService extends BaseService {
         //  }
         const redisCart = await CartRedis.get(userId)
         if (redisCart === null) {
-            const cart = await this.model.find({ user_id: userId }).sort({ "createdAt": -1 }).limit(1).lean() as CartSI[]
+            const cart = await this.model.find({ user_id: userId,status:"In use" }).sort({ "createdAt": -1 }).limit(1).lean() as CartSI[]
             if (cart.length > 0) {
                 for (let cc of cart) {
                     if (cc.status === 'Booked') return []
@@ -239,7 +239,7 @@ export default class CartService extends BaseService {
 
     createCart = async (userId: string, salonId: string, optionId: string) => {
 
-        //  await this.getLastCartByUserId(userId)
+         await this.getLastCartByUserId(userId)
 
         const optionPrice = await this.getPriceByOptionId(optionId)
         

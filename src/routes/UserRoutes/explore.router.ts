@@ -13,6 +13,6 @@ const exploreController = new ExploreController(exploreService)
 exploreRouter.get("/all",exploreController.getExploreByCreatedAt)
 exploreRouter.get("/info/:id",exploreController.getExploreProductByIDwithSimilarProducts)
 exploreRouter.get("/salon/:salonID",exploreController.getExploreBySalonId)
-
+exploreRouter.get("/search",exploreController.searchExploreByServiceName)
 
 export default exploreRouter

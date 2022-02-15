@@ -44,6 +44,7 @@ const exploreSchema = new mongoose.Schema({
         type:String
     }
 })
+exploreSchema.index({ 'service_name': 'text' });
 const Explore = mongoose.model("explore", exploreSchema)
 
 export default Explore
