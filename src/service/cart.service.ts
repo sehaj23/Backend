@@ -220,7 +220,6 @@ export default class CartService extends BaseService {
             const cart = await this.model.find({ user_id: userId,status:"In use" }).sort({ "createdAt": -1 }).limit(1).lean() as CartSI[]
             if (cart.length > 0) {
                 for (let cc of cart) {
-                    if (cc.status === 'Booked') return []
                     for (let c of cc.options) {
                         const { name, price, service_name, service_id,duration } = await this.getPriceAndNameByOptionId(c.option_id)
                         c.option_name = name
