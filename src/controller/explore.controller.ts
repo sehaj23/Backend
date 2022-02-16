@@ -26,7 +26,7 @@ export default class ExploreController extends BaseController {
   getExploreByCreatedAt = controllerErrorHandler(
     async (req: Request, res: Response) => {
       const q = req.query
-      const explore = await this.service.getWithPagination(q)
+      const explore = await this.service.filterExplore(q)
       res.send({data:explore});
     }
   );
@@ -35,6 +35,13 @@ export default class ExploreController extends BaseController {
       const phrase = req.query.phrase
       const explore = await this.service.searchInExplore(phrase)
       res.send({data:explore});
+    }
+  )
+  filterExplore = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q = req.query
+      const explore = await this.service.filterExplore(q)
+      res.send(explore);
     }
   )
 
