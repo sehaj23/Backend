@@ -24,6 +24,12 @@ const LocationSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+LocationSchema.index({
+    city:1
+})
+LocationSchema.index({
+    subarea:1
+})
 
 const Location = mongoose.model<LocationSI>("location", LocationSchema)
 

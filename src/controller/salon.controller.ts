@@ -458,7 +458,11 @@ export default class SalonController extends BaseController {
             getDistance
 
         }
-        const redisKey = "getSalon"
+        let type= "salon"
+        if(q.type){
+                type=q.type
+        }
+        const redisKey = `get${type}`
         let out
         const cahceGetSalon = await SalonRedis.get(redisKey, filter)
         if (cahceGetSalon == null) {

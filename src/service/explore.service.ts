@@ -1,5 +1,7 @@
+import { filter } from "bluebird";
 import mongoose from "../database";
 import Explore from "../models/explore.model";
+import Location from "../models/location.model";
 import Salon from "../models/salon.model";
 import BaseService from "../service/base.service";
 
@@ -87,6 +89,21 @@ export default class ExploreService extends BaseService{
                     case "end_price":
                         filters["options.price"] = {$lte: q[k]}
                         break
+                        case "subarea":
+                            let locationIds =  []
+                            let salonIds = []
+                            const locations= await Location.find({subarea:q[k]}).limit(pageLength).skip(skipCount)
+                            locations.map((e)=>{
+                                locationIds.push(e._id)
+                            })
+                            const salon = await Salon.find({location_id:{$in:locationIds}}).limit(pageLength).skip(skipCount)
+                            salon.map((e)=>{
+                                salonIds.push(e._id)
+                            })
+                            filters["salon_id"]={
+                                $in:salonIds
+                            }
+                            break
                         case "service_name":
                             filters["service_name"] = {
                                 $regex: `.*${q[k]}.*`, $options: 'i'
@@ -97,6 +114,7 @@ export default class ExploreService extends BaseService{
             }
 
         }
+        console.log(filters)
         const exploreReq = this.model.find(filters).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
         model: 'salons',
         select: { '_id': 1,'temporary_closed':1,"book_service":1},}).sort({ "createdAt": -1 }).exec()

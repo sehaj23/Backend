@@ -467,7 +467,7 @@ export default class SalonService extends BaseService {
                         skipCount,
                         getDistance
                 }
-                const redisKey = "getHomeSalon"
+                const redisKey = `getHome${type}`
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
                 if (cahceGetSalon === null) {
                         const salons = await this.model.find({
@@ -564,7 +564,7 @@ export default class SalonService extends BaseService {
                         skipCount,
                         getDistance
                 }
-                const redisKey = "getSalonNearby"
+                const redisKey = `get${type}Nearby`
                 const latitude = q.latitude || 28.7041
                 const longitude = q.longitude || 77.1025
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
@@ -762,7 +762,7 @@ export default class SalonService extends BaseService {
         }
 
         getSearchservice = async (phrase: string) => {
-
+                console.log(phrase)
                 const data = await SalonSearchRedis.get(phrase)
                 if(data==null){
                 const data2 = await this.model.aggregate([
@@ -789,10 +789,6 @@ export default class SalonService extends BaseService {
                                         profile_pic: { $first: "$profile_pic" },
                                         rating: { $first: "$rating" },
                                         service: { $first: "$services" },
-                                        
-
-
-
 
                                 }
                         },
