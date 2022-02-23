@@ -92,10 +92,22 @@ export default class ExploreService extends BaseService{
                 case "start_price":
                     filters["options.price"]={$gte:q[k]}
                     projection["options"] = {$elemMatch:{price:{ $gte: q[k]}}}
+                    
                     break
                     case "end_price":
+                        //@ts-ignore
+                        if(filters["options.price"] !== undefined){
+                            
+                            //@ts-ignore
+                            filters["options.price"].$lte=q[k]
+                        }else{
                         filters["options.price"] = {$lte: q[k]}
-                        projection["options"] = {$elemMatch:{price:{ $lte: q[k]}}}
+                        }
+                        //@ts-ignore
+                        if(projection.options !== undefined){
+                             //@ts-ignore
+                        projection.options.$elemMatch.price.$lte=q[k]
+                        }
                         break
                         case "subarea":
                             let locationIds =  []
@@ -122,10 +134,12 @@ export default class ExploreService extends BaseService{
             }
 
         }
-        console.log(filters)
+       
+         
+       
         const exploreReq = this.model.find(filters,projection).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
         model: 'salons',
-        select: { '_id': 1,'temporary_closed':1,"book_service":1},}).sort({ "createdAt": -1 }).exec()
+        select: { '_id': 1,'temporary_closed':1,"book_service":1},}).select("service_name").select("tags").select("color").select("photo").sort({ "createdAt": -1 }).exec()
         const explorePagesReq = this.model.countDocuments(filters)
         const [explore, exploreCount] = await Promise.all([exploreReq, explorePagesReq])
         let totalPageNumber = 0
