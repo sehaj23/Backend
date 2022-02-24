@@ -139,7 +139,7 @@ export default class ExploreService extends BaseService{
        
         const exploreReq = this.model.find(filters,projection).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
         model: 'salons',
-        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1},}).select("service_name").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).exec()
+        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1},}).select("service_name").select("description").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).exec()
         const explorePagesReq = this.model.countDocuments(filters)
         const [explore, exploreCount] = await Promise.all([exploreReq, explorePagesReq])
         let totalPageNumber = 0
