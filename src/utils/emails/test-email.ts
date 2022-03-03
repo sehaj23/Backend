@@ -36,8 +36,6 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
             console.log(err)
             return
         }
-        console.log("data")
-        console.log(data)
         const mailOptions: Mail.Options = {
             from: 'info@zattire.com',
             replyTo: 'info@zattire.com',

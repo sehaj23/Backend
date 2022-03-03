@@ -32,7 +32,6 @@ export default class ExploreService extends BaseService{
 
     getSimilarProducts=async(q:any,salonID:any,multipleKeyWords,exploreID:string)=>{
         let getSimilar
-        console.log(multipleKeyWords)
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength

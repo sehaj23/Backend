@@ -430,7 +430,6 @@ export default class BookingController extends BaseController {
        
         if(o.service_type=="EXPLORE"){
           for(let salonService of getExplore){
-            console.log(salonService)
             //@ts-ignore
             const optionIndex = salonService.options.map((e)=>e._id?.toString()).indexOf(o.option_id)
             if(optionIndex >-1){
@@ -869,7 +868,6 @@ export default class BookingController extends BaseController {
       );
       if (status === "Confirmed") {
         const notify = Notify.bookingConfirm(user, salon, employee, booking);
-        console.log(notify);
       }
       if (status === "Start") {
         const notify = Notify.serviceStart(
