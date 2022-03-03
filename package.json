@@ -15,7 +15,7 @@
     "tscc": "tsc -v",
     "copy:emails": "cp -r src/utils/emails/*.html dist/utils/emails"
   },
-  "engines": { "node" : "14.17.0" },
+  
   "jest": {
     "testEnvironment": "node",
     "verbose": false,
