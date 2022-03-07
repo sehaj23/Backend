@@ -168,6 +168,8 @@ export default class UserController extends BaseController {
             return
         }
         res.send(address)
+
+        
     })
 
     addToFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
