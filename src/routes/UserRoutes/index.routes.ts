@@ -20,6 +20,7 @@ import userRouter from "./user.router"
 import walletTransactionRouter from "./wallet-transactions.route"
 import walletRazorpayRouter from "./walletRazorpay.router"
 import exploreRouter from "./explore.router"
+import exploreFavouriteRouter from "./explore-favourite.router"
 
 /**
  * @swagger
@@ -51,4 +52,5 @@ Userrouter.use("/promo-home", promoHomeRouter)
 Userrouter.use("/banner", bannerRouter)
 Userrouter.use("/wallet-transaction", walletTransactionRouter)
 Userrouter.use("/location",locationRouter)
+Userrouter.use("/exploreFavourite",exploreFavouriteRouter)
 export default Userrouter

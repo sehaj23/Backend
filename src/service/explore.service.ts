@@ -13,10 +13,10 @@ export default class ExploreService extends BaseService{
     getExploreBySalonId = async (q: any): Promise<any> => {
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
-        pageLength = (pageLength > 100) ? 100 : pageLength
+        pageLength = (pageLength > 100) ? 25 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         
-        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength })
+        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).lean()
         const resourceCountQuery = this.model.aggregate([
             { "$count": "count" }
         ])
@@ -40,7 +40,7 @@ export default class ExploreService extends BaseService{
          getSimilar = await Explore.find({_id:{$ne:exploreID},salon_id:salonID, tags:{$in:multipleKeyWords}}).skip(skipCount).limit(pageLength)
         if(getSimilar.length===0){
             const getSalon = await Salon.findById(salonID)
-            const getSalonNearLocation = await Salon.findOne({location_id:getSalon?.location_id,_id:{$ne:getSalon._id}})
+            const getSalonNearLocation = await Salon.findOne({location_id:getSalon?.location_id,_id:{$ne:salonID}})
             if(getSalonNearLocation !== null){
             getSimilar =  await Explore.find({salon_id:getSalonNearLocation._id, tags:{$in:multipleKeyWords}}).skip(skipCount).limit(pageLength)
             }
@@ -138,7 +138,7 @@ export default class ExploreService extends BaseService{
        
         const exploreReq = this.model.find(filters,projection).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
         model: 'salons',
-        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1},}).select("service_name").select("description").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).exec()
+        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1},}).select("service_name").select("description").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).lean().exec()
         const explorePagesReq = this.model.countDocuments(filters)
         const [explore, exploreCount] = await Promise.all([exploreReq, explorePagesReq])
         let totalPageNumber = 0
