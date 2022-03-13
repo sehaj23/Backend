@@ -7,7 +7,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as morgan from "morgan";
 import * as multer from "multer";
-import * as multerS3 from "multer-sharp-s3";
+import multerS3 = require("multer-sharp-s3");
 
 import './cron-jobs/index.cron-job';
 import runAllCrons from "./cron-jobs/index.cron-job";
@@ -105,8 +105,8 @@ const upload = multer({
       cb(null, `images/${Date.now()}_${file.originalname}`);
     },
     resize:{
-      width: 1200,
-      height: 800,
+      width: 1300,
+      height: 900,
     }
   }),
 }).array("upload", 1);
