@@ -3,6 +3,9 @@
     promoHomeRedis="promoHomeRedis",
     bannerForHomePage="bannerForHomePage",
     clearASalonRedisById="clearASalonRedisById",
-    getSalonByPromoCodes="getSalonByPromoCodes"
+    getSalonByPromoCodes="getSalonByPromoCodes",
+    getExplore = "getExplore",
+    getExploreByID = "getExploreByID",
+    exploreSearchPhrase = "exploreSearchPhrase"
 }
 export default REDIS_CONFIG

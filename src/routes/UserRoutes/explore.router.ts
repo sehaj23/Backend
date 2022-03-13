@@ -18,6 +18,9 @@ exploreRouter.get("/info/:id",exploreController.getExploreProductByIDwithSimilar
 exploreRouter.get("/salon/:salonID",exploreController.getExploreBySalonId)
 exploreRouter.get("/search",exploreController.searchExploreByServiceName)
 exploreRouter.get("/filter",exploreController.filterExplore)
+exploreRouter.get("/clear/createdAt",exploreController.clearExploreRedisCreatedAt)
+exploreRouter.get("/clear/phrase",exploreController.clearexploreSearchPhrase)
+exploreRouter.get("/clear/id",exploreController.clearexploreByID)
 
 
 export default exploreRouter

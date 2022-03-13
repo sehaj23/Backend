@@ -145,6 +145,7 @@ export default class ExploreService extends BaseService{
         if (exploreCount > 0) {
             totalPageNumber = exploreCount
         }
+        console.log(explore)
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { explore, totalPages, pageNumber, pageLength }
        
