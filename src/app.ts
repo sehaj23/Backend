@@ -7,7 +7,8 @@ import * as http from 'http';
 import * as https from 'https';
 import * as morgan from "morgan";
 import * as multer from "multer";
-import * as multerS3 from "multer-s3";
+// import * as multerS3 from "multer-sharp-s3";
+import multerS3 = require("multer-sharp-s3");
 import './cron-jobs/index.cron-job';
 import runAllCrons from "./cron-jobs/index.cron-job";
 import redisClient from './redis/redis';
@@ -98,11 +99,15 @@ const s3 = new aws.S3();
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "zattire-images/all-images",
-    acl: "public-read",
-    key: function (request, file, cb) {
+    Bucket: "zattire-images/all-images",
+    ACL: "public-read",
+    Key: function (request, file, cb) {
       cb(null, `images/${Date.now()}_${file.originalname}`);
     },
+    resize: {
+      width: 500,
+      height: 500,
+},
   }),
 }).array("upload", 1);
 app.post(`${URL_PREFIX}/upload`, function (request, response, next) {
@@ -110,7 +115,7 @@ app.post(`${URL_PREFIX}/upload`, function (request, response, next) {
     if (error) {
       return response.send(`/error/${error}`);
     }
-    const location = request.files[0].location
+    const location = request.files[0].Location
     response.send({
       location,
       success: true
