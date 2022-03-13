@@ -473,6 +473,8 @@ export default class SalonController extends BaseController {
         salons = await this.service.getHomeServiceSalon(q)
         res.status(200).send(salons)
 
+
+        
     })
     // getSalonsRw = controllerErrorHandler(async (req: Request, res: Response) => {
     //     const rating = req.query.rating
