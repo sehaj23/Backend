@@ -15,7 +15,6 @@
     "tscc": "tsc -v",
     "copy:emails": "cp -r src/utils/emails/*.html dist/utils/emails"
   },
-  
   "jest": {
     "testEnvironment": "node",
     "verbose": false,
@@ -66,6 +65,7 @@
     "mongoose": "^5.10.13",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
+    "multer-sharp-s3": "^0.2.5",
     "nodemailer": "^6.4.15",
     "normalize-date": "0.0.4",
     "rate-limit-redis": "^2.0.0",
