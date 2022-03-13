@@ -105,8 +105,8 @@ const upload = multer({
       cb(null, `images/${Date.now()}_${file.originalname}`);
     },
     resize: {
-      width: 500,
-      height: 500,
+      width: 1500,
+      height: 1000,
 },
   }),
 }).array("upload", 1);
