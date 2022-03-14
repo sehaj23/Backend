@@ -805,8 +805,8 @@ export default class SalonController extends BaseController {
 
     })
 
-    getNameandId = controllerErrorHandler(async (req: Request, res: Response) => {
-        const salon = await this.service.getNameandId()
+    getNameIDRatingProfile = controllerErrorHandler(async (req: Request, res: Response) => {
+        const salon = await this.service.getNameIDRatingProfile()
         res.status(200).send(salon)
     })
 

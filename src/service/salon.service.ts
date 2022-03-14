@@ -1071,8 +1071,8 @@ export default class SalonService extends BaseService {
                 return m.minutes() + m.hours() * 60;
         }
 
-        getNameandId = async () => {
-                const salon = await this.model.find({}).select({ "_id": 1, "name": 1 })
+        getNameIDRatingProfile = async () => {
+                const salon = await this.model.find({}).select({ "_id": 1, "name": 1, approved: 1,rating:1,profile_pic:1 }).populate("profile_pic")
                 return salon
         }
 
@@ -1082,7 +1082,7 @@ export default class SalonService extends BaseService {
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
 
-                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1, approved: 1, location: 1, createdAt: 1 })
+                const resourceQuery = this.model.find({ approved: false }, {}, { skip: skipCount, limit: pageLength }).select({ "_id": 1, "name": 1, approved: 1, location: 1, createdAt: 1,rating:1,profile_pic:1 }).populate("profile_pic")
                 const resourceCountQuery = this.model.aggregate([
                         { "$count": "count" }
                 ])

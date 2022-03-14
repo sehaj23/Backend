@@ -36,7 +36,7 @@ salonRouter.get("/", verifyToken, salonController.get)
  *          default:
  *              description: Salon names and _ids
  */
-salonRouter.get("/names", verifyToken, salonController.getNameandId)
+salonRouter.get("/names", verifyToken, salonController.getNameIDRatingProfile)
 salonRouter.get("/:id", verifyToken, salonController.getId)
 salonRouter.post("/", verifyToken, salonController.postSalon)
 salonRouter.put("/:id", verifyToken, salonController.put)
