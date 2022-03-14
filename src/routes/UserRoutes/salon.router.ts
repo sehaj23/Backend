@@ -35,6 +35,8 @@ salonInfoRouter.get(
   [salonInfoChecks, mySchemaValidator],
   salonController.getSalonInfo
 )
+// get all home page salons
+salonInfoRouter.get("/home-page",salonController.getHomePageSalon)
 // get names of recommended all salons
 salonInfoRouter.get('/names',salonController.getRecomendSalon)
 //get nearby salon range 30km
@@ -70,6 +72,6 @@ salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 
 salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
 
-salonInfoRouter.get("/search-location",salonController.searchSalonOnLocation)
+
 
 export default salonInfoRouter 

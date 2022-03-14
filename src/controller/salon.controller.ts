@@ -434,7 +434,48 @@ export default class SalonController extends BaseController {
     await SalonRedis.remove(req.params.id)
       res.status(200).send({message:"Redis clear  for the salon"})
     })
+    getHomePageSalon = controllerErrorHandler(async (req: Request, res: Response) => { 
+        let salons
+        let getDistance = false
+        //  const sr = await SalonRedis.get('Salons')
+        const q:any = req.query
+        if (q.latitude && q.longitude) {
+            getDistance = false
+        }
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 8)
+        const latitude = q.latitude
+        const longitude = q.longitude
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const filter = {
+            pageNumber,
+            pageLength,
+            skipCount,
+            longitude,
+            latitude,
+            getDistance
 
+        }
+        let type= "salon"
+        if(q.type){
+                type=q.type
+        }
+        const redisKey = `getHomePageData`
+        let out
+        const cahceGetSalon = await SalonRedis.get(redisKey, filter)
+        if (cahceGetSalon == null) {
+            const recommendedReq  =  this.service.getSalon(q, getDistance)
+            const nearbyReq =  this.service.getSalonNearby(q)
+            const homeReq =  this.service.getHomeServiceSalon(q)
+            const [recommended,nearby,home] = await Promise.all([recommendedReq,nearbyReq,homeReq])
+            SalonRedis.set(redisKey, {recommended,nearby,home}, filter)
+            out = {recommended,nearby,home}
+        } else {
+            out = JSON.parse(cahceGetSalon)
+        }
+        return res.status(200).send(out)
+    })
     getRecomendSalon = controllerErrorHandler(async (req: Request, res: Response) => {
         let salons
         let getDistance = false
@@ -835,11 +876,6 @@ export default class SalonController extends BaseController {
         res.send(getDistance)
     })
 
-    searchSalonOnLocation = controllerErrorHandler(async(req:Request,res:Response)=>{
-       
-            const getSalon = await this.service.getSalonbyLocation("Noida")
-            res.status(200).send({getSalon})
-    })
 
 
 
