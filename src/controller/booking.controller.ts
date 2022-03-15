@@ -21,6 +21,7 @@ import {
   promoUsedStatus,
   PromoUserSI,
 } from "../interfaces/promo-user.inderface";
+import { BookingRedis } from "../redis/index.redis";
 import { ReferralSI } from "../interfaces/referral.interface";
 import { RefundI, RefundTypeEnum } from "../interfaces/refund.interface";
 import SalonSI from "../interfaces/salon.interface";
@@ -107,12 +108,41 @@ export default class BookingController extends BaseController {
     this.cashbackRangeService = cashbackRangeService;
     this.cashbackService = cashbackService;
   }
-
+getHomePageData = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      let out
+       //@ts-ignore
+      const getHomeData =  await BookingRedis.get(req.userId,{ type: "homePageData" })
+     if(getHomeData==null){
+      //@ts-ignore
+      const bookingsReq =  this.service.getByUserId(req.userId);
+      //@ts-ignore
+     const userInfoReq  = this.userService.getById(req.userId.toString())
+     const [booking,userInfo] = await Promise.all([bookingsReq,userInfoReq])
+      out = {booking,userInfo}
+       //@ts-ignore
+      BookingRedis.set(req.userId, JSON.stringify(out), { type: "homePageData" })
+      return res.send(out);
+     }
+     return res.send(JSON.parse(getHomeData))
+    
+    
+     
+    }
+  );
   getAppointment = controllerErrorHandler(
     async (req: Request, res: Response) => {
+        //@ts-ignore
+      const getBooking =  await BookingRedis.get(req.userId,{ type: "getUserBookings" })
       //@ts-ignore
+      if(getBooking == null){
+        //@ts-ignore
       const bookings = await this.service.getByUserId(req.userId);
-      res.send(bookings);
+      //@ts-ignore
+      BookingRedis.set(req.userId,bookings,{ type: "getUserBookings" })
+      return res.sendStatus(bookings)
+      }
+      res.send(JSON.parse(getBooking));
     }
   );
 

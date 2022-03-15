@@ -359,13 +359,10 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        const bookingRedis = await BookingRedis.get(userId, { type: "getByUserId" })
-        if (bookingRedis === null) {
-            const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate({ path: "salon_id",  populate: { path: 'location_id' } }).populate("user_id").populate("services.employee_id", 'name').lean()
-            BookingRedis.set(userId, JSON.stringify(booking), { type: "getByUserId" })
+      
+            const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate({ path: "salon_id",select: { '_id': 1,'name':1,location_id:1},  populate: { path: 'location_id' } }).populate("user_id").populate("services.employee_id", 'name').lean()
+           
             return booking
-        }
-        return JSON.parse(bookingRedis)
     }
 
 //redploy

@@ -65,6 +65,7 @@ const bookingRouter = Router()
 
 // get available employees by date & time
 bookingRouter.get("/", UserverifyToken, bc.getAppointment)
+bookingRouter.get("/home-page",UserverifyToken,bc.getHomePageData)
 bookingRouter.get("/:id", UserverifyToken, bc.getId)
 bookingRouter.get("/online/cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
 bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)
