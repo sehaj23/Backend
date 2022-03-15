@@ -448,18 +448,20 @@ export default class SalonController extends BaseController {
         const longitude = q.longitude
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
+       
+        let type= "salon"
+        if(q.type){
+                type=q.type
+        }
         const filter = {
             pageNumber,
             pageLength,
             skipCount,
             longitude,
             latitude,
-            getDistance
+            getDistance,
+            type
 
-        }
-        let type= "salon"
-        if(q.type){
-                type=q.type
         }
         const redisKey = `getHomePageData`
         let out
@@ -490,18 +492,19 @@ export default class SalonController extends BaseController {
         const longitude = q.longitude
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
+       
+        let type= "salon"
+        if(q.type){
+                type=q.type
+        }
         const filter = {
             pageNumber,
             pageLength,
             skipCount,
             longitude,
             latitude,
-            getDistance
-
-        }
-        let type= "salon"
-        if(q.type){
-                type=q.type
+            getDistance,
+            type
         }
         const redisKey = `get${type}`
         let out

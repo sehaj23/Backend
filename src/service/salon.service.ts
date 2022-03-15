@@ -465,7 +465,8 @@ export default class SalonService extends BaseService {
                         pageNumber,
                         pageLength,
                         skipCount,
-                        getDistance
+                        getDistance,
+                        type
                 }
                 const redisKey = `getHome${type}`
                 const cahceGetSalon = await SalonRedis.get(redisKey, filter)
@@ -562,7 +563,8 @@ export default class SalonService extends BaseService {
                         pageNumber,
                         pageLength,
                         skipCount,
-                        getDistance
+                        getDistance,
+                        type
                 }
                 const redisKey = `get${type}Nearby`
                 const latitude = q.latitude || 28.7041
