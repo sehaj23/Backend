@@ -6,6 +6,7 @@
     getSalonByPromoCodes="getSalonByPromoCodes",
     getExplore = "getExplore",
     getExploreByID = "getExploreByID",
-    exploreSearchPhrase = "exploreSearchPhrase"
+    exploreSearchPhrase = "exploreSearchPhrase",
+    exploreFavourites ="exploreFavourites"
 }
 export default REDIS_CONFIG

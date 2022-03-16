@@ -1,29 +1,62 @@
 import { Request, Response } from "express";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
-import ExploreFavouriteService from "../service/explore-favourite.service"
-import BaseController from "./base.controller"
-
-
+import ExploreFavouriteService from "../service/explore-favourite.service";
+import UserService from "../service/user.service";
+import BaseController from "./base.controller";
 
 export default class ExploreFavouriteController extends BaseController {
-    service: ExploreFavouriteService
-    constructor(service: ExploreFavouriteService) {
-        super(service)
-        this.service = service    
+  service: ExploreFavouriteService;
+  userService: UserService;
+  constructor(service: ExploreFavouriteService, userService: UserService) {
+    super(service);
+    this.service = service;
+    this.userService = userService;
+  }
+
+  addToExploreFavourites = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const { explore_id } = req.body;
+     
+      const addToFavourites = await this.service.addToFavourites(
+           //@ts-ignore
+        req.userId,
+        explore_id
+      );
+      return res.status(200).send({ data: addToFavourites });
     }
+  );
 
-    addToExploreFavourites =  controllerErrorHandler(async (req: Request, res: Response)=>{
-        const {explore_id} = req.body
-        //@ts-ignore
-        const addToFavourites =  await this.service.addToFavourites(req.userId,explore_id)
-        return res.status(200).send({data:addToFavourites})
-    })
+  getExploreFavourites = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q = req.query;
+     
+      const getExploreFavourites = await this.service.getFavourites(
+           //@ts-ignore
+        req.userId,
+        q
+      );
+      return res.status(200).send({ data: getExploreFavourites });
+    }
+  );
 
-     getExploreFavourites =controllerErrorHandler(async (req: Request, res: Response)=>{
-         const q = req.query
-         //@ts-ignore
-        const getExploreFavourites = await this.service.getFavourites(req.userId,q)
-        return res.status(200).send({data:getExploreFavourites})
-    })
+  getExploreFavouritesAndSalonFavourites = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q = req.query;
 
+      //@ts-ignore
+      const getExploreFavouritesReq = this.service.getFavourites(req.userId, q);
+     
+      const getSalonfavoritesReq = this.userService.getFavourites(
+           //@ts-ignore
+        req.userId,
+        q
+      );
+      const [exploreFavourites, salonfavorites] = await Promise.all([
+        getExploreFavouritesReq,
+        getSalonfavoritesReq,
+      ]);
+      const out = { exploreFavourites, salonfavorites };
+      return res.status(200).send(out);
+    }
+  );
 }

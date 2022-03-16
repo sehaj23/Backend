@@ -21,6 +21,8 @@ import PromoCodeService from "../service/promo-code.service";
 import { PromoCodeSI } from "../interfaces/promo-code.interface";
 import mongoose from "../database";
 import REDIS_CONFIG from "../utils/redis-keys";
+import PromoHomeService from "../service/promo-home.service";
+import BannerService from "../service/banner.service";
 
 
 export default class SalonController extends BaseController {
@@ -29,12 +31,16 @@ export default class SalonController extends BaseController {
     userSearchService: UserSearchService
     userService: UserService
     promoCodeService: PromoCodeService
-    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService, promoCodeService: PromoCodeService) {
+    promoHomeService:PromoHomeService
+    bannerService:BannerService
+    constructor(service: SalonService, userSearchService: UserSearchService, userService: UserService, promoCodeService: PromoCodeService, promoHomeService:PromoHomeService,bannerService:BannerService) {
         super(service)
         this.service = service
         this.userSearchService = userSearchService
         this.userService = userService
-        this.promoCodeService = promoCodeService
+        this.promoCodeService = promoCodeService,
+        this.promoHomeService=promoHomeService,
+        this.bannerService=bannerService
     }
 
     postSalon = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -470,9 +476,11 @@ export default class SalonController extends BaseController {
             const recommendedReq  =  this.service.getSalon(q, getDistance)
             const nearbyReq =  this.service.getSalonNearby(q)
             const homeReq =  this.service.getHomeServiceSalon(q)
-            const [recommended,nearby,home] = await Promise.all([recommendedReq,nearbyReq,homeReq])
-            SalonRedis.set(redisKey, {recommended,nearby,home}, filter)
-            out = {recommended,nearby,home}
+            const bannerReq = this.bannerService.getActiveBanners()
+            const promoHomeReq = this.promoHomeService.get({active:true})
+            const [recommended,nearby,home,banner,promoHome] = await Promise.all([recommendedReq,nearbyReq,homeReq,bannerReq,promoHomeReq])
+            SalonRedis.set(redisKey, {recommended,nearby,home,banner,promoHome}, filter)
+            out = {recommended,nearby,home,banner,promoHome}
         } else {
             out = JSON.parse(cahceGetSalon)
         }
