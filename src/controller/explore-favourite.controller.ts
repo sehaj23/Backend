@@ -51,10 +51,16 @@ export default class ExploreFavouriteController extends BaseController {
         req.userId,
         q
       );
-      const [exploreFavourites, salonfavorites] = await Promise.all([
+      let [exploreFavourites, salonfavorites] = await Promise.all([
         getExploreFavouritesReq,
         getSalonfavoritesReq,
       ]);
+      if(typeof(exploreFavourites)==='string'){
+        exploreFavourites= JSON.parse(exploreFavourites)
+      }
+      if(typeof(salonfavorites)==='string'){
+        salonfavorites= JSON.parse(salonfavorites)
+      }
       const out = { exploreFavourites, salonfavorites };
       return res.status(200).send(out);
     }
