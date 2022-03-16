@@ -139,6 +139,27 @@ export default class UserService extends BaseService {
         return user
 
     }
+    getFavouritesOfUser = async (id: string, q: any) => {
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const redisUser = await UserRedis.get(id, { type: "favourites" })
+        if (redisUser === null) {
+            const user = await this.model.findOne({ _id: id }).limit(pageLength).skip(skipCount).select("favourites").populate({
+                path: "favourites", select: {
+                    name: 1, rating: 1, location: 1
+                    , profile_pic: 1
+                },
+                populate: {
+                    path: 'profile_pic'
+                }
+            })
+            UserRedis.set(id, JSON.stringify(user), { type: "favourites" })
+            return user
+        }
+        return JSON.parse(redisUser)
+    }
     getFavourites = async (id: string, q: any) => {
         const pageNumber: number = parseInt(q.page_number || 1)
         let pageLength: number = parseInt(q.page_length || 25)
