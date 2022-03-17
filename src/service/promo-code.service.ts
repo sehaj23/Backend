@@ -45,7 +45,7 @@ export default class PromoCodeService extends BaseService {
     }
 
     getPromoBySalon = async (salonId: string) => {
-        const salons = await this.model.find({ "$or": [{ "salon_ids": [] }, { "salon_ids": { "$in": salonId } }] },).limit(8);
+        const salons = await this.model.find({ "$or": [{ "salon_ids": [],visiblity:"All" }, { "salon_ids": { "$in": salonId },visiblity:"All" }] },).limit(8);
         return salons
     }
 
