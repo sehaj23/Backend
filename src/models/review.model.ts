@@ -64,7 +64,12 @@ const ReviewSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-
+ReviewSchema.index({
+    salon_id:1
+},{
+    name:"get_review_salon",
+    background:true
+})
 const Review = mongoose.model<ReviewSI>("reviews", ReviewSchema)
 
 export default Review
