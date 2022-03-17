@@ -41,6 +41,12 @@ salonInfoRouter.get(
   [salonInfoChecks, mySchemaValidator],
   salonController.getSalonInfo
 )
+//@ts-ignore
+salonInfoRouter.get(
+  '/information/:id',
+  [salonInfoChecks, mySchemaValidator],
+  salonController.getSalonInfoByID
+)
 // get all home page salons
 salonInfoRouter.get("/home-page",salonController.getHomePageSalon)
 // get names of recommended all salons

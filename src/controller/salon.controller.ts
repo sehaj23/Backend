@@ -23,6 +23,7 @@ import mongoose from "../database";
 import REDIS_CONFIG from "../utils/redis-keys";
 import PromoHomeService from "../service/promo-home.service";
 import BannerService from "../service/banner.service";
+import { userJWTVerification } from "../middleware/User.jwt";
 
 
 export default class SalonController extends BaseController {
@@ -357,7 +358,104 @@ export default class SalonController extends BaseController {
         res.status(201).send(salon)
 
     })
+    getSalonInfoByID = controllerErrorHandler(async (req: Request, res: Response) => {
+        //TODO:validator
+        const salonId = req.params.id;
+        const filter = {}
+        const q = req.query
+        let getDistance=false
+        //@ts-ignore
+        let id
 
+
+        //TODO: validator
+        if (!salonId) {
+            const errMsg = `id is missing from the params`
+            logger.error(errMsg)
+            res.status(400)
+            res.send({ message: errMsg })
+            return
+        }
+        if (req.query.gender) {
+            filter["gender"] = req.query.gender
+        }
+        let atHome: boolean
+        if (req.query.home) {
+            if (req.query.home === "true") {
+                atHome = true
+
+            }
+            filter["home"] = req.query.home
+        }
+        filter["page_number"] = req.query.page_number
+        filter["page_length"] = req.query.page_length
+        var centerPoint = {}
+        //TODO: store location of User
+        if (req.query.latitude != null && req.query.longitude != null) {
+
+            //@ts-ignore
+            centerPoint.lat = req.query.latitude
+            //@ts-ignore
+            centerPoint.lng = req.query.longitude
+            getDistance=true
+        }
+        const token =
+        req.headers?.authorization && req.headers?.authorization.split(" ")[1];
+      if (token) {
+        const decoded = await userJWTVerification(token);
+        //@ts-ignore
+        if (decoded?._id) {
+            //@ts-ignore
+            id=decoded._id      
+        }
+    }
+        filter["distance"] = getDistance
+        const sr: string = await SalonRedis.get(salonId, filter)
+        if (sr !== null) return res.send(JSON.parse(sr))
+        const salonReq = this.service.getSalonInfo(salonId, centerPoint,getDistance)
+        const reviewsReq = this.service.getSalonReviews(salonId, q)
+        const promoCodeReq = this.promoCodeService.getPromoBySalon(salonId)
+
+        const userReq = this.userService.getUser(id)
+
+        let [salon, reviews, user, promocodes] = await Promise.all([salonReq, reviewsReq, userReq, promoCodeReq])
+        const services = salon.services
+        const filterService = services.filter((service: ServiceI) => {
+            const { options } = service
+            const filterOptions = options.filter((opt: OptionI) => {
+                if (req.query.gender) {
+                    if (opt.gender !== req.query.gender && req.query.gender !== "both" && opt.gender !== "both") {
+                        return false
+                    }
+                }
+                if (atHome !== undefined) {
+                    if (opt.at_home !== atHome) {
+                        return false
+                    }
+                }
+                return true
+            })
+            if (filterOptions.length > 0) {
+                service.options = filterOptions
+                return true
+            }
+            return false
+        })
+        if(user){
+        if(typeof(user)==='string'){
+            user = JSON.parse(user)
+        }
+        user.favourites.map((e)=>{
+          
+            if(e.toString()===salonId.toString()){
+                salon.userFavourite=true
+            }
+        })
+    }
+        salon.services = filterService
+        SalonRedis.set(salonId, { salon, reviews, promocodes }, filter)
+        res.status(200).send({ salon, reviews, promocodes })
+    })
     getSalonInfo = controllerErrorHandler(async (req: Request, res: Response) => {
         //TODO:validator
         const salonId = req.params.id;
