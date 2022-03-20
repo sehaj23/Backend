@@ -25,6 +25,18 @@ export default class ExploreFavouriteController extends BaseController {
       return res.status(200).send({ data: addToFavourites });
     }
   );
+  deleteExploreFavourites = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const { explore_id } = req.body;
+     
+      const deleteFavourites = await this.service.deleteFavourites(
+           //@ts-ignore
+        req.userId,
+        explore_id
+      );
+      return res.status(200).send({ data: deleteFavourites });
+    }
+  );
 
   getExploreFavourites = controllerErrorHandler(
     async (req: Request, res: Response) => {
