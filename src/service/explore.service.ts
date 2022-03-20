@@ -10,21 +10,17 @@ export default class ExploreService extends BaseService{
         super(exploreModel);
     }
 
-    getExploreBySalonId = async (q: any): Promise<any> => {
+    getExploreBySalonId = async (salonID,q: any): Promise<any> => {
         const pageNumber: number = parseInt(q.page_number || 1)
-        let pageLength: number = parseInt(q.page_length || 25)
+        let pageLength: number = parseInt(q.page_length || 10)
         pageLength = (pageLength > 100) ? 25 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        
-        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).lean()
-        const resourceCountQuery = this.model.aggregate([
-            { "$count": "count" }
-        ])
-
+        const resourceQuery = this.model.find({salon_id:salonID}, {}, { skip: skipCount, limit: pageLength }).lean()
+        const resourceCountQuery = this.model.find({salon_id:salonID}).countDocuments()
         const [explore, pageNo] = await Promise.all([resourceQuery, resourceCountQuery])
-        let totalPageNumber = 0
+        let totalPageNumber = 1
         if (pageNo.length > 0) {
-            totalPageNumber = pageNo[0].count
+            totalPageNumber = pageNo
         }
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { explore, totalPages, pageNumber, pageLength }
@@ -127,13 +123,16 @@ export default class ExploreService extends BaseService{
                             filters["service_name"] = {
                                 $regex: `.*${q[k]}.*`, $options: 'i'
                         }
-                            break
+                        break
+                        case "page_number":
+                            delete q[k]
+                        case "page_length":
+                            delete q[k]
                 default:
                     filters[k] = q[k]
             }
 
         }
-       
          
        
         const exploreReq = this.model.find(filters,projection).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
@@ -145,7 +144,6 @@ export default class ExploreService extends BaseService{
         if (exploreCount > 0) {
             totalPageNumber = exploreCount
         }
-        console.log(explore)
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { explore, totalPages, pageNumber, pageLength }
        

@@ -27,10 +27,14 @@ export default class ExploreController extends BaseController {
         return res.status(400).send({ message: "Please send salonID" });
       }
       let getFavourites;
+      let explore
       const salonID = req.params.salonID;
-      const explore = await this.service.getExploreBySalonId({
-        salon_id: salonID,
-      });
+      const cachedExplore = await ExploreRedis.get(REDIS_CONFIG.getExplore, req.query);
+      if (cachedExplore == null) {
+       explore = await this.service.getExploreBySalonId(salonID,req.query);
+      }else{
+        explore  = JSON.parse(cachedExplore)
+      }
       const token =
         req.headers?.authorization && req.headers?.authorization.split(" ")[1];
       if (token) {
@@ -67,7 +71,6 @@ export default class ExploreController extends BaseController {
       let getFavourites;
       let explore;
       const q = req.query;
-      console.log(q)
       const cachedExplore = await ExploreRedis.get(REDIS_CONFIG.getExplore, q);
       if (cachedExplore == null) {
         console.log("not redis")

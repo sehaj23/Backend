@@ -28,7 +28,11 @@ export default class ExploreFavouriteService extends BaseService{
     }
 
     getFavouriteForExplore = async (user_id,exploreIds)=>{
+        const getFavourite =await  ExploreRedis.get(user_id,{type:REDIS_CONFIG.exploreFavourites})
+        if(getFavourite==null){
         const favourite = await FavouriteExplore.find({user_id:user_id,explore_id:{$in:exploreIds}})
         return favourite
+        }
+        return JSON.parse(getFavourite)
     }
 }
