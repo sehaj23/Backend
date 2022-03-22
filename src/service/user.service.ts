@@ -32,7 +32,7 @@ export default class UserService extends BaseService {
     getUser = async (userId) => {
         //@ts-ignore
         const user = await this.model.findOne({ _id: userId })
-        user.password = ""
+       // user.password = ""
         return user
     }
     update = async (id: string, d: any) => {
