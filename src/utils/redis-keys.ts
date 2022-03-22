@@ -7,6 +7,7 @@
     getExplore = "getExplore",
     getExploreByID = "getExploreByID",
     exploreSearchPhrase = "exploreSearchPhrase",
-    exploreFavourites ="exploreFavourites"
+    exploreFavourites ="exploreFavourites",
+    homePageData="homePageData"
 }
 export default REDIS_CONFIG

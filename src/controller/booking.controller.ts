@@ -55,6 +55,7 @@ import cashbackRange from "../utils/cashback-range";
 import CashbackService from "../service/cashback.service";
 import Explore from "../models/explore.model";
 import { ExploreSI } from "../interfaces/explore.interface";
+import REDIS_CONFIG from "../utils/redis-keys";
 
 export default class BookingController extends BaseController {
   ZATTIRE_COMMISSION_PECENT = 20;
@@ -112,7 +113,7 @@ getHomePageData = controllerErrorHandler(
     async (req: Request, res: Response) => {
       let out
        //@ts-ignore
-      const getHomeData =  await BookingRedis.get(req.userId,{ type: "homePageData" })
+      let getHomeData =  await BookingRedis.get(req.userId,{ type: REDIS_CONFIG.homePageData })
      if(getHomeData==null){
       //@ts-ignore
       const bookingsReq =  this.service.getByUserId(req.userId);
@@ -121,12 +122,14 @@ getHomePageData = controllerErrorHandler(
      const [booking,userInfo] = await Promise.all([bookingsReq,userInfoReq])
       out = {booking,userInfo}
        //@ts-ignore
-      BookingRedis.set(req.userId, JSON.stringify(out), { type: "homePageData" })
+      BookingRedis.set(req.userId, JSON.stringify(out), { type: REDIS_CONFIG.homePageData })
       return res.send(out);
      }
-     return res.send(JSON.parse(getHomeData))
-    
-    
+    if(typeof(getHomeData)==='string'){
+      getHomeData = JSON.parse(getHomeData)
+    }
+     res.type('application/json')
+     return res.send(getHomeData)
      
     }
   );
