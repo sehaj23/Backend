@@ -15,6 +15,7 @@ import WalletTransactionService from "./wallet-transaction.service";
 
 
 import moment = require("moment");
+import REDIS_CONFIG from "../utils/redis-keys";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -101,8 +102,9 @@ export default class BookingService extends BaseService {
                 booking_numeric_id,
                 status
             }
-            console.log(booking)
+       
             const b = await this.model.create(booking) as BookingSI
+             BookingRedis.remove(userId,{ type: REDIS_CONFIG.homePageData })
             if (usedWalletAmount > -1) {
                 const walletTransactionI: WalletTransactionI = {
                     amount: (usedWalletAmount*-1),
