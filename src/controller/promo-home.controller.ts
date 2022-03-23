@@ -19,8 +19,7 @@ getActivePromo = controllerErrorHandler(async (req: Request, res: Response) => {
     let out
     const promo = await PromoCodeRedis.get(REDIS_CONFIG.promoHomeRedis)
     if(promo == null){
-        const promoHome = await this.service.get({active:true})
-       
+         out = await this.service.get({active:true})
         PromoCodeRedis.set(REDIS_CONFIG.promoHomeRedis,out)
 }else{
     out = JSON.parse(promo)
@@ -31,12 +30,13 @@ getActivePromo = controllerErrorHandler(async (req: Request, res: Response) => {
 getHomePageBannerAndPromo = controllerErrorHandler(async (req: Request, res: Response) => {
     let out
     const data = await PromoCodeRedis.get(REDIS_CONFIG.promoHomeRedis)
+    
     if(data == null){
         const promoReq =  this.service.get({active:true})
         const bannerReq =   this.bannerService.getActiveBanners()
         const [promo,banner]= await Promise.all([promoReq,bannerReq])
         out ={promo,banner}
-        PromoCodeRedis.set(REDIS_CONFIG.promoHomeRedis,out)
+       await PromoCodeRedis.set(REDIS_CONFIG.promoHomeRedis,{promo,banner})
 }else{
     out = JSON.parse(data)
 }
