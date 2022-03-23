@@ -1,6 +1,7 @@
+import controllerErrorHandler from "../middleware/controller-error-handler.middleware"
 import PhotoService from "../service/photo.service"
 import BaseController from "./base.controller"
-
+import { Request, Response } from 'express';
 
 export default class PhotoController extends BaseController {
 
@@ -9,5 +10,9 @@ export default class PhotoController extends BaseController {
         super(service)
        
     }
+     updatePhoto =  controllerErrorHandler(async (req: Request, res: Response) => {
+         const updatePhoto = await this.service.getPhotoAndUpdateUrl()
+         res.send(updatePhoto)
+     })
 
 }
