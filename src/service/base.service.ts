@@ -17,7 +17,7 @@ export default class BaseService {
     }
 
     get = async (filters = {}): Promise<any[]> => {
-        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id")
+        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id").sort({'city':1})
     }
     getNopopulate = async (filters = {}): Promise<any[]> => {
         return await this.model.find(filters).select("-password")
@@ -29,7 +29,9 @@ export default class BaseService {
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
         
-        const resourceQuery = this.model.find({}, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").sort([['rating', -1], ['createdAt', -1]]).lean()
+        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").populate({ path: 'salon_id',
+        model: 'salons',
+        select: { '_id': 1,'temporary_closed':1,"book_service":1},}).sort([['rating', -1], ['createdAt', -1]]).lean()
         const resourceCountQuery = this.model.aggregate([
             { "$count": "count" }
         ])
@@ -66,7 +68,9 @@ export default class BaseService {
     getId = async (id: string) => {
         return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo").populate("photo_ids").populate("location_id") //.populate({
     }
-
+    getById = async (id: string) => {
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } })//.populate({
+    }
     put = async (_id: string, data: any) => {
         return await this.model.findByIdAndUpdate({ _id }, data, { new: true }) // to return the updated data do - returning: true
     }
@@ -99,6 +103,10 @@ export default class BaseService {
 
     delete = async (id: string) => {
         return this.model.deleteOne({ _id: id })
+    }
+
+    deleteByFilter = async (filter: any) => {
+        return this.model.deleteOne(filter)
     }
 
     countDocumnet = async (filter: any) => {

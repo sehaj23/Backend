@@ -85,7 +85,14 @@ const PromoCodeSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-
+PromoCodeSchema.index({
+    salon_ids:1,
+    visiblity:1
+},{
+    name:"get_promocode_by_salon",
+    background:true
+}
+)
 const PromoCode = mongoose.model<PromoCodeSI>("promoCodes", PromoCodeSchema)
 
 export default PromoCode

@@ -24,6 +24,11 @@ const CartSchema = new mongoose.Schema({
             },
             service_id:{
                 type:String
+            },
+            service_type:{
+                type: String,
+               default:"ZATTIRESERVICE",
+                enum: ["ZATTIRESERVICE", "EXPLORE"]
             }
         }
     ],
@@ -47,7 +52,8 @@ const CartSchema = new mongoose.Schema({
         type: String,
         default: 'In use',
         enum: ['In use', 'Booked', 'Abandoned']
-    }
+    },
+  
 }, {
     timestamps: true
 })

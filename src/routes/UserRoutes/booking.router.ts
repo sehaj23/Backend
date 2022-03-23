@@ -9,6 +9,7 @@ import Cashbackrange from "../../models/cashbackRange.model"
 import EmployeeAbsenteeism from "../../models/employeeAbsenteeism.model"
 import Employee from "../../models/employees.model"
 import Event from "../../models/event.model"
+import Explore from "../../models/explore.model"
 import Feedback from "../../models/feedback.model"
 import MongoCounter from "../../models/mongo-counter.model"
 import Offer from "../../models/offer.model"
@@ -42,7 +43,7 @@ import WalletTransactionService from "../../service/wallet-transaction.service"
 import { BookingValidator } from "../../validators/booking.validator"
 
 
-const cartService = new CartService(Cart, Salon)
+const cartService = new CartService(Cart, Salon,Explore)
 const feedbackService = new FeedbackService(Feedback)
 const mongoCounterService = new MongoCounterService(MongoCounter)
 const referralService = new ReferralService(Referral)
@@ -64,6 +65,7 @@ const bookingRouter = Router()
 
 // get available employees by date & time
 bookingRouter.get("/", UserverifyToken, bc.getAppointment)
+bookingRouter.get("/home-page",UserverifyToken,bc.getHomePageData)
 bookingRouter.get("/:id", UserverifyToken, bc.getId)
 bookingRouter.get("/online/cancelled", UserverifyToken, bc.getOnlineCancelledBookings)
 bookingRouter.post("/check-cod/", UserverifyToken, bc.checkCod)

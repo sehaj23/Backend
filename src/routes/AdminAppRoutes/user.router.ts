@@ -31,5 +31,5 @@ userRouter.get("/search",userController.searchUsersByEmail)
 userRouter.put("/:id/photo", verifyToken, userController.putPhoto)
 userRouter.get("/:id/photo", verifyToken, userController.getPhoto)
 userRouter.post("/send-notification/",verifyToken,userController.sendNotificationToUsers)
-
+userRouter.get("/delete",userController.deleteUser)
 export default userRouter

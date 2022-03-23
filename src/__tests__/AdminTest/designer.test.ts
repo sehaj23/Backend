@@ -103,7 +103,6 @@ describe('Designer service test', () => {
         }
        
         const res2 = await request(app).post("/api/designer/event").send(data)
-        console.log(res.body)
         expect(res2.status).toEqual(201)
         expect(res2.body.designers).toBeDefined()
         expect(Array.isArray(res2.body.designers)).toBeTruthy()

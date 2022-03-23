@@ -30,7 +30,7 @@ const otpService = new OtpService(Otp, userService, employeeService)
 const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
 const walletTransactionService = new WalletTransactionService(WalletTransaction, userService)
-const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '30 days', otpService,referralService,promoCodeService,walletTransactionService)
+const loginController = new LoginController(loginService, CONFIG.ADMIN_JWT_KEY, '365 days', otpService,referralService,promoCodeService,walletTransactionService)
 
 
 loginRouter.post("/", loginController.loginAdmin)

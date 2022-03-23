@@ -114,8 +114,6 @@ describe("Makeup Artist service test", () => {
         expect(res2.status).toEqual(200);
 
         const res = await request(app).get(`/api/makeupArtist/${makeupArtistId}`);
-        console.log("*********")
-        console.log(res.body)
         expect(res.status).toEqual(200);
         expect(Array.isArray(res.body.events)).toBeTruthy();
         const event: EventI = res.body.events[0];

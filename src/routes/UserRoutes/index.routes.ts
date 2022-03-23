@@ -1,4 +1,5 @@
 import { Router } from "express"
+import locationRouter from "./location.router"
 import bannerRouter from "./banner.router"
 import bookingRouter from './booking.router'
 import cartRouter from "./cart.router"
@@ -18,6 +19,8 @@ import serviceRouter from "./service.router"
 import userRouter from "./user.router"
 import walletTransactionRouter from "./wallet-transactions.route"
 import walletRazorpayRouter from "./walletRazorpay.router"
+import exploreRouter from "./explore.router"
+import exploreFavouriteRouter from "./explore-favourite.router"
 
 /**
  * @swagger
@@ -43,8 +46,11 @@ Userrouter.use("/cashback",cashbackRouter)
 Userrouter.use("/promo-code", promoCodeRouter)
 Userrouter.use("/salon-search", salonSearchRouter)
 Userrouter.use("/refund", refundRouter)
+Userrouter.use("/explore",exploreRouter)
 Userrouter.use("/wallet-razorpay", walletRazorpayRouter)
 Userrouter.use("/promo-home", promoHomeRouter)
 Userrouter.use("/banner", bannerRouter)
 Userrouter.use("/wallet-transaction", walletTransactionRouter)
+Userrouter.use("/location",locationRouter)
+Userrouter.use("/exploreFavourite",exploreFavouriteRouter)
 export default Userrouter

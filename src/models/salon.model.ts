@@ -178,6 +178,7 @@ const SalonSchema = new mongoose.Schema({
 })
 
 SalonSchema.index({ coordinates: '2dsphere' });
+SalonSchema.index({location_id:1})
 SalonSchema.index({ type:1 });
 SalonSchema.index({ 'name': 'text', 'services.name': 'text'  });
 

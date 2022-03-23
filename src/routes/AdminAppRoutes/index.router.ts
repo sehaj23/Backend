@@ -1,6 +1,7 @@
 import { Router } from "express";
 import adminRouter from "./admin.routes";
 import bookingRouter from "./booking.router";
+import exploreRouter from "./explore.router";
 import locationRouter from "./location.router";
 import loginRouter from "./login.router";
 import promoCodeRouter from "./promocode.router";
@@ -19,6 +20,7 @@ AdminApprouter.use("/wallet",walletTransactionRouter)
 AdminApprouter.use("/salon", salonRouter);
 AdminApprouter.use('/user', userRouter)
 AdminApprouter.use("/location",locationRouter)
+AdminApprouter.use('/explore',exploreRouter)
 AdminApprouter.use("/zattire-services",zattireServiceRouter)
 
 

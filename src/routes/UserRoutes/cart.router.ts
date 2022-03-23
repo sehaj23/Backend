@@ -4,9 +4,10 @@ import CartService from "../../service/cart.service";
 import Cart from "../../models/cart.model";
 import UserverifyToken from "../../middleware/User.jwt";
 import Salon from "../../models/salon.model";
+import Explore from "../../models/explore.model";
 
 const cartRouter = Router()
-const cartService = new CartService(Cart, Salon)
+const cartService = new CartService(Cart, Salon,Explore)
 const cartController = new CartController(cartService)
 cartRouter.post("/", UserverifyToken, cartController.post)
 cartRouter.get("/",UserverifyToken, cartController.getLastCartByUserId)

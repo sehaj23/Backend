@@ -204,7 +204,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId
         const q =  req.query
-        const user = await this.service.getFavourites(id,q)
+        const user = await this.service.getFavouritesOfUser(id,q)
         if (user === null) {
             logger.error(`No Favourites`)
             res.status(400)
@@ -405,6 +405,25 @@ export default class UserController extends BaseController {
             logger.error(`User Put Photo ${e.message}`)
             res.status(403).send(`${e.message}` )
         }
+    }
+
+    deleteUser = async (req: Request, res: Response) => {
+    try {
+        let deleteUser
+        const q = req.query
+        if(!q){
+            res.send({message:"please send email in query"})
+        }
+        if(q.email){
+            deleteUser=await this.service.deleteByFilter({email:q.email})
+        }else if(q.phone){
+            deleteUser = await this.service.deleteByFilter({phone:q.phone})
+        }
+        res.send(deleteUser)
+       
+    } catch (error) {
+        res.status(400).send(error)
+    }
     }
 
 }

@@ -15,6 +15,7 @@ import WalletTransactionService from "./wallet-transaction.service";
 
 
 import moment = require("moment");
+import REDIS_CONFIG from "../utils/redis-keys";
 
 export default class BookingService extends BaseService {
     salonModel: mongoose.Model<any, any>
@@ -101,7 +102,9 @@ export default class BookingService extends BaseService {
                 booking_numeric_id,
                 status
             }
+       
             const b = await this.model.create(booking) as BookingSI
+             BookingRedis.remove(userId,{ type: REDIS_CONFIG.homePageData })
             if (usedWalletAmount > -1) {
                 const walletTransactionI: WalletTransactionI = {
                     amount: (usedWalletAmount*-1),
@@ -358,16 +361,13 @@ export default class BookingService extends BaseService {
     }
 
     getByUserId = async (userId: string) => {
-        const bookingRedis = await BookingRedis.get(userId, { type: "getByUserId" })
-        if (bookingRedis === null) {
-            const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate("user_id").populate("services.employee_id", 'name').lean()
-            BookingRedis.set(userId, JSON.stringify(booking), { type: "getByUserId" })
+      
+            const booking = await this.model.find({ "user_id": userId }).populate("salon_id").populate({ path: "salon_id",select: { '_id': 1,'name':1,location_id:1},  populate: { path: 'location_id' } }).populate("user_id").populate("services.employee_id", 'name').lean()
+           
             return booking
-        }
-        return JSON.parse(bookingRedis)
     }
 
-
+//redploy
 
     getBookingByUserId = async (userId: string, q: any) => {
         const pageNumber: number = parseInt(q.page_number || 1)

@@ -3,13 +3,16 @@
 import { Router } from "express"
 import PromoHomeController from "../../controller/promo-home.controller"
 import verifyToken from "../../middleware/jwt"
+import Banner from "../../models/banner.model"
 import PromoHomeCode from "../../models/promo-home.model"
+import BannerService from "../../service/banner.service"
 import PromoHomeService from "../../service/promo-home.service"
 
 
 const promoHomeRouter = Router()
 const promoHomeService = new PromoHomeService(PromoHomeCode)
-const promoHomeController = new PromoHomeController(promoHomeService)
+const bannerService = new BannerService(Banner)
+const promoHomeController = new PromoHomeController(promoHomeService,bannerService)
 
 
 
