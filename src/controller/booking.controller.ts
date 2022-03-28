@@ -886,7 +886,7 @@ getHomePageData = controllerErrorHandler(
       const salonData = this.salonService.getId(booking.salon_id.toString());
 
       const employeeData = this.employeeService.getId(
-        booking.services[0].employee_id.toString()
+        booking.services[0]?.employee_id?.toString()
       );
 
       const [user, salon, employee] = await Promise.all([
