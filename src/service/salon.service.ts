@@ -738,7 +738,10 @@ export default class SalonService extends BaseService {
                                 }
                         },
                         { $lookup: { from: 'photos', localField: 'profile_pic', foreignField: '_id', as: 'profile_pic' } },
+                        { $lookup: { from: 'locations', localField: 'location_id', foreignField: '_id', as: 'location_id' } },
                         {$unwind:"$profile_pic"},
+                        {$unwind:"$location_id"},
+
                         {
                                 $project: {
                                         "_id": 1,
@@ -746,6 +749,7 @@ export default class SalonService extends BaseService {
                                         profile_pic: 1,
                                         rating: 1,
                                         area: 1,
+                                        location_id:1
                                         // temporary_closed:1
                                         // service: { $addToSet: "$services" },
 
