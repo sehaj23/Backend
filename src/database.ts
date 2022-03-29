@@ -17,12 +17,12 @@ const password: string = process.env.DB_PASS || "zattire_dev_password";
 
 
 let uri: string
-// if (process.env.DB_URI) {
-//   uri = `${process.env.DB_URI}`
-// }
-// else {
+if (process.env.DB_URI) {
+  uri = `${process.env.DB_URI}`
+}
+else {
   uri = `mongodb+srv://zattire_dev:zattire_dev_password@production.8kbli.mongodb.net/zattire_pro?authSource=admin&replicaSet=atlas-27r88k-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`
-//}
+}
 
 
 export const connectt = () => {
