@@ -137,7 +137,7 @@ export default class ExploreController extends BaseController {
       if (token) {
         const decoded = await userJWTVerification(token);
         //@ts-ignore
-        if (decoded._id) {
+        if (decoded?._id !== undefined) {
           const exploreId = [];
           explore.map((e) => {
             exploreId.push(e._id);
@@ -149,7 +149,7 @@ export default class ExploreController extends BaseController {
               decoded._id,
               exploreId
             );
-        }
+        
         if (getFavourites.length > 0) {
           let index;
           //@ts-ignore
@@ -162,6 +162,7 @@ export default class ExploreController extends BaseController {
           });
         }
       }
+    }
       res.send({ data: explore });
     }
   );
@@ -183,7 +184,7 @@ export default class ExploreController extends BaseController {
       if (token) {
         const decoded = await userJWTVerification(token);
         //@ts-ignore
-        if (decoded._id) {
+        if (decoded?._id !== undefined) {
           const exploreId = [];
           explore.explore.map((e) => {
             exploreId.push(e._id);
@@ -195,7 +196,7 @@ export default class ExploreController extends BaseController {
               decoded._id,
               exploreId
             );
-        }
+        
         if (getFavourites.length > 0) {
           let index;
           getFavourites.map((e) => {
@@ -206,6 +207,7 @@ export default class ExploreController extends BaseController {
           });
         }
       }
+    }
       res.send(explore);
     }
   );
@@ -241,7 +243,7 @@ export default class ExploreController extends BaseController {
         if (token) {
           const decoded = await userJWTVerification(token);
           //@ts-ignore
-          if (decoded._id) {
+          if (decoded?._id !== undefined) {
             const exploreId = [];
             exploreId.push(req.params.id);
           
@@ -251,13 +253,14 @@ export default class ExploreController extends BaseController {
                 decoded._id,
                 exploreId
               );
-          }
+          
           if (getFavourites.length > 0) {
             explore = explore.toObject();
             //@ts-ignore
             explore.favourite = true;
           }
         }
+      }
         await ExploreRedis.set(
           REDIS_CONFIG.getExploreByID,
           { explore, getSimilarProduct },
