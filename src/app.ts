@@ -83,7 +83,9 @@ http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
 
 app.use(compression())
-app.use(bodyParser({ limit: '50mb' }));
+app.use(bodyParser({limit: '50mb',
+parameterLimit: 100000,
+extended: true }))
 app.use(cors({
   origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688","https://zattire-vendor-app.web.app"," https://zattire-vendor-app--dev-fno83aco.web.app","http://localhost:55007/"," https://app.zattire.com"," https://www.zattire.com","https://zattire.com","https://zattire.com/home"],
   credentials: true
@@ -157,9 +159,9 @@ app.get(`${URL_PREFIX}`, (req, res) => {
   res.send(`Hello!  Welcome to Zattire's ${process.env.NODE_ENV} main-servers.`)
 })
 
-app.get(`/`, (req, res) => {
+app.get("/", (req, res) => {
 
-  res.status(200).send(`Hello!  Welcome to Zattire's prod serv er`)
+  res.status(200).send(`Hello!  Welcome to Zattire`)
 })
 
 

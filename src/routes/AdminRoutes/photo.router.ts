@@ -8,5 +8,6 @@ const photoRouter = Router()
 const photoService = new PhotoService(Photo)
 const photoController  = new PhotoController(photoService)
 photoRouter.post('/',verifyToken,photoController.post)
+photoRouter.get("/",photoController. updatePhoto)
 
 export default photoRouter

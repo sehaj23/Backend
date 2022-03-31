@@ -43,6 +43,8 @@ const exploreSchema = new mongoose.Schema({
     description:{
         type:String
     }
+}, {
+    timestamps: true
 })
 exploreSchema.index({ 'service_name': 'text' });
 exploreSchema.index({ 'service_name': 'text' ,tags:1,color:1,price:1});

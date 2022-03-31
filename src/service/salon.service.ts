@@ -553,7 +553,7 @@ export default class SalonService extends BaseService {
                 const skipCount = (pageNumber - 1) * pageLength
                 let getDistance=false
                 if(q.latitude != null && q.longitude !=null){
-                        getDistance=true
+                        getDistance=false
                 }
                 let type="salon"
                 if(q.type){
@@ -1105,13 +1105,11 @@ export default class SalonService extends BaseService {
                 return salonPhoto
 
         }
-
+//check to redeploy
 
         getSalonByIds = async (ids: string[], q: any, getDistance: boolean = false) => {
                 const pageNumber: number = parseInt(q.page_number || 1)
-                //TODO:remove this static length from here this is only till 2nd jan
-                let pageLength=20
-                //number = parseInt(q.page_length || 8)
+                let pageLength: number = parseInt(q.page_length || 8)
                 pageLength = (pageLength > 100) ? 100 : pageLength
                 const skipCount = (pageNumber - 1) * pageLength
                 let salonReq

@@ -19,7 +19,6 @@ const LocationSchema = new mongoose.Schema({
     },
     pincode: {
         type: Number,   
-        default: false
     }
 }, {
     timestamps: true
