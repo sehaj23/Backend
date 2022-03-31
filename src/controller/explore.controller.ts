@@ -40,19 +40,19 @@ export default class ExploreController extends BaseController {
       if (token) {
         const decoded = await userJWTVerification(token);
         //@ts-ignore
-        if (decoded._id) {
+        if (decoded?._id !== undefined) {
           const exploreId = [];
           explore.explore.map((e) => {
-            exploreId.push(e._id);
+            exploreId.push(e?._id);
           });
         
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
                 //@ts-ignore
-              decoded._id,
+              decoded?._id,
               exploreId
             );
-        }
+        
         if (getFavourites.length > 0) {
           let index;
           getFavourites.map((e) => {
@@ -63,6 +63,7 @@ export default class ExploreController extends BaseController {
           });
         }
       }
+    }
       res.send({ data: explore });
     }
   );
