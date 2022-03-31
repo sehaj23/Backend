@@ -106,10 +106,6 @@ const upload = multer({
     Key: function (request, file, cb) {
       cb(null, `images/${Date.now()}_${file.originalname}`);
     },
-    resize:{
-      width: 1200,
-      height: 800,
-    }
   }),
 }).array("upload", 1);
 app.post(`${URL_PREFIX}/upload`, function (request, response, next) {
