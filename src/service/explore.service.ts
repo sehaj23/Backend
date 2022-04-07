@@ -44,6 +44,7 @@ export default class ExploreService extends BaseService{
         return getSimilar
     }
     searchInExplore=async(phrase)=>{
+        console.log(phrase)
         const explore = await Explore.aggregate([{
 
             $match:
@@ -53,9 +54,26 @@ export default class ExploreService extends BaseService{
                     },
 
 
-            }
+            },
+           
 
-    },])
+    },
+    // {
+    //     $project: {
+    //         service_name: 1,
+    //         salon_id: 1,
+    //         color:1,
+    //         tags:1,
+    //         description:1,
+    //         photo:1,
+    //         options:1
+
+    //     }
+    // },
+    // { $unwind : "$salon_id" },
+
+])
+console.log(explore)
     return explore
     }
 
@@ -137,7 +155,9 @@ export default class ExploreService extends BaseService{
        
         const exploreReq = this.model.find(filters,projection).skip(skipCount).limit(pageLength).populate({ path: 'salon_id',
         model: 'salons',
-        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1},}).select("service_name").select("description").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).lean().exec()
+        select: { '_id': 1,'temporary_closed':1,"book_service":1,"name":1,"location_id":1},populate : {
+            path : 'location_id',model:"location"
+          }}).select("service_name").select("description").select("tags").select("color").select("photo").select("options").sort({ "createdAt": -1 }).lean().exec()
         const explorePagesReq = this.model.countDocuments(filters)
         const [explore, exploreCount] = await Promise.all([exploreReq, explorePagesReq])
         let totalPageNumber = 0
