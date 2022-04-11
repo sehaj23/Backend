@@ -81,6 +81,9 @@ const PromoCodeSchema = new mongoose.Schema({
         type:String,
         enum:["All","User"],
         default:"All"
+    },
+    message:{
+        type:String
     }
 }, {
     timestamps: true

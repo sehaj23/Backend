@@ -42,6 +42,7 @@ export default class PromoCodeController extends BaseController {
         else {
             cart = await this.cartService.getCartByUserId(userId)
         }
+        
         if (cart === null || !cart) throw new ErrorResponse({ message: "Cart not found" })
         //@ts-ignore
         const salonId = cart?.salon_id?._id ?? cart?.salon_id
@@ -49,6 +50,7 @@ export default class PromoCodeController extends BaseController {
         const categories = await this.cartService.getCategoriesByOptionIds(optionIds)
        // let promoCode = await this.service.getOne({ promo_code: promo_code }) as PromoCodeSI
          const promoCode = await this.service.getByPromoCode(promo_code, userId, [salonId], categories) as PromoCodeSI
+         
         if (promoCode === null) {
             throw new ErrorResponse({ message: "Promo code not applicable" })
         }
@@ -85,6 +87,7 @@ export default class PromoCodeController extends BaseController {
         let totalDiscountGiven = 0
         const salon = await this.salonService.getId(salonId) as SalonSI
         for (let salonService of salon.services) {
+         
             const salonOptionIds = salonService.options.map(o => o._id.toString())
             let i = 0
             while (i < cart.options.length && totalDiscountGiven < promoCode.discount_cap) {
@@ -93,6 +96,7 @@ export default class PromoCodeController extends BaseController {
                 if (salonOptionIndex > -1 && (promoCode.categories?.length === 0 || (promoCode.categories?.length > 0 && promoCode.categories?.includes(salonService.category)))) {
                     const salonOption = salonService.options[salonOptionIndex]
                     if (promoCode.discount_type === 'Flat Price') {
+                       
                         const { flat_price } = promoCode
                         // calculating the discount which we can give
                         let discountApplicable = (salonOption.price < flat_price) ? salonOption.price : flat_price
@@ -102,7 +106,8 @@ export default class PromoCodeController extends BaseController {
                             before_discount_price: salonOption.price,
                             discount: discountApplicable,
                             after_discount_price: salonOption.price - discountApplicable,
-                            category_name: salonService.category
+                            category_name: salonService.category,
+                            
                         }
                         totalDiscountGiven += discountApplicable
                         result.push(discount)
@@ -116,7 +121,8 @@ export default class PromoCodeController extends BaseController {
                             before_discount_price: salonOption.price,
                             discount: discountApplicable,
                             after_discount_price: salonOption.price - discountApplicable,
-                            category_name: salonService.category
+                            category_name: salonService.category,
+                           
                         }
                         totalDiscountGiven += discountApplicable
                         result.push(discount)
@@ -128,7 +134,7 @@ export default class PromoCodeController extends BaseController {
                 }
             }
         }
-        res.send(result)
+        res.send({result:result,message:promoCode?.message})
     })
 
     getByName = controllerErrorHandler(async (req: Request, res: Response) => {
