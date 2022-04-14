@@ -7,6 +7,7 @@ import loginRouter from "./login.router";
 import promoCodeRouter from "./promocode.router";
 import salonRouter from "./salon.router";
 import userRouter from "./user.router";
+import vendorRouter from "./vendor.routes";
 
 import walletTransactionRouter from "./wallet-trasanctionr.outer";
 import zattireServiceRouter from "./zattire-service.router";
@@ -21,6 +22,7 @@ AdminApprouter.use("/salon", salonRouter);
 AdminApprouter.use('/user', userRouter)
 AdminApprouter.use("/location",locationRouter)
 AdminApprouter.use('/explore',exploreRouter)
+AdminApprouter.use('/vendor',vendorRouter)
 AdminApprouter.use("/zattire-services",zattireServiceRouter)
 
 
