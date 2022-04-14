@@ -140,7 +140,7 @@ export default class LoginController extends BaseController {
           if(getRefferalCount<=10){
 
               const walletTransactionI: WalletTransactionI = {
-                        amount: 50,
+                        amount: 100,
                         user_id: referral.referred_to.user.toString(),
                         reference_model: 'referal',
                         reference_id: referral._id,
