@@ -311,7 +311,7 @@ export default class UserController extends BaseController {
 
     deleteRequest = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.userId
+        const id = req.userId || req.params.id
         const dataTime = moment()
         const deleteRequest = await this.service.update(id, { delete_request: dataTime })
         if (deleteRequest == null) {
