@@ -24,6 +24,4 @@ throw Error('Invalid signature: ' + sig + '. Expected ' + expected_sig);
 }
 return data;
 }
-module.exports = {
-    parseSignedRequest
-}
+export default parseSignedRequest

@@ -14,7 +14,7 @@ import BaseController from "./base.controller";
 import moment = require("moment");
 import sendNotificationToDevice from "../utils/send-notification";
 import { PhotoI } from "../interfaces/photo.interface";
-
+import parseSignedRequest from "../utils/facebook-delete"
 
 export default class UserController extends BaseController {
     service: UserService
@@ -312,12 +312,27 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const body = req.body
         const data =  parseSignedRequest(body,"6f9e89563e39d240a32faf0066a00b36")
-        return res.status(200).send({})
+        const updateUserData =  await this.service.updateOne({uid:data.user_id},{status:2})
+        if(updateUserData){
+        return res.status(200).send({url:"https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=",code:updateUserData._id})
+        }
+        return res.status(400).send({message:"Not able to delete"})
     })
 
+    getDeleteUserData = controllerErrorHandler(async (req: Request, res: Response) => {
+        const id = req.query.id
+        if(!id){
+            return res.status(400).send({message:"send id in query"})
+        }
+        const getUser = await this.service.getOne({_id:id}) as UserSI
+        if(getUser.status===2){
+            return res.status(200).send({message:"User deleted"})
+        }
+        return res.status(200).send({message:"deletion in progress"})
+    })
     deleteRequest = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.userId || req.params.id
+        const id = req.userId || req.params.id 
         const dataTime = moment()
         const deleteRequest = await this.service.update(id, { delete_request: dataTime })
         if (deleteRequest == null) {
@@ -434,8 +449,4 @@ export default class UserController extends BaseController {
     }
     }
 
-}
-
-function parseSignedRequest(body: any, arg1: string) {
-    throw new Error("Function not implemented.");
 }
