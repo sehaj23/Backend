@@ -308,6 +308,12 @@ export default class UserController extends BaseController {
     appVersion = controllerErrorHandler(async (req: Request, res: Response) => {
         res.status(200).send({ ios: "1.2.0", android: "1.0.0", success: true })
     })
+    deleteFB =  controllerErrorHandler(async (req: Request, res: Response) => {
+        //@ts-ignore
+        const body = req.body
+        const data =  parseSignedRequest(body,"6f9e89563e39d240a32faf0066a00b36")
+        return res.status(200).send({})
+    })
 
     deleteRequest = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
@@ -428,4 +434,8 @@ export default class UserController extends BaseController {
     }
     }
 
+}
+
+function parseSignedRequest(body: any, arg1: string) {
+    throw new Error("Function not implemented.");
 }
