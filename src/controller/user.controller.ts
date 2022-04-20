@@ -308,7 +308,10 @@ export default class UserController extends BaseController {
     appVersion = controllerErrorHandler(async (req: Request, res: Response) => {
         res.status(200).send({ ios: "1.2.0", android: "1.0.0", success: true })
     })
-    deleteFB =  controllerErrorHandler(async (req: Request, res: Response) => {
+    deleteFB =  async (req: Request, res: Response) => {
+        try {
+            
+       
         //@ts-ignore
         const body = req.body
         const data =  parseSignedRequest(body,"6f9e89563e39d240a32faf0066a00b36")
@@ -316,8 +319,11 @@ export default class UserController extends BaseController {
         if(updateUserData){
         return res.status(200).send({url:"https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=",code:updateUserData._id})
         }
-        return res.status(400).send({message:"Not able to delete"})
-    })
+        return res.status(200).send({message:"Not able to delete"})
+    } catch (error) {
+        return res.status(200).send({url:"https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=",code:error.message}) 
+    }
+    }
 
     getDeleteUserData = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.query.id
