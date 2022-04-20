@@ -10,7 +10,7 @@ export interface PromoDiscountResult {
     category_name: string
     before_discount_price: number
     discount: number
-    after_discount_price: number
+    after_discount_price: number,
 }
 
 export interface PromoCodeI{
@@ -70,7 +70,8 @@ export interface PromoCodeI{
     payment_mode: BookingPaymentType
     max_usage: number // this is how many times user can use the promo code
     usage_time_difference: number // this is the time difference between the usage of the coupon by the user. in minutes
-    active: boolean
+    active: boolean,
+    message?:string,
     visiblity:PromoCodeVisiblity // visiblity of promocodes
 }
 

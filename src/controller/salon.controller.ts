@@ -643,6 +643,7 @@ export default class SalonController extends BaseController {
         const homeReq = this.service.getHomeServiceSalon(q);
         const bannerReq = this.bannerService.getActiveBanners();
         const promoHomeReq = this.promoHomeService.get({ active: true });
+        const version = { ios: "1.2.0", android: "1.0.0",}
         const [recommended, nearby, home, banner, promoHome] =
           await Promise.all([
             recommendedReq,
@@ -653,10 +654,10 @@ export default class SalonController extends BaseController {
           ]);
         SalonRedis.set(
           redisKey,
-          { recommended, nearby, home, banner, promoHome },
+          { recommended, nearby, home, banner, promoHome,version },
           filter
         );
-        out = { recommended, nearby, home, banner, promoHome };
+        out = { recommended, nearby, home, banner, promoHome,version };
       } else {
         out = JSON.parse(cahceGetSalon);
       }

@@ -42,6 +42,11 @@ export default class UserService extends BaseService {
         UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo})
         return user
     }
+    updateOne = async (id: any, d: any) => {
+        const user = await this.model.findOneAndUpdate(id, d, { new: true })
+        UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo})
+        return user
+    }
     updatePass = async (id: string, password: string, newpassword: String) => {
         //@ts-ignore
         const _id = mongoose.Types.ObjectId(id)

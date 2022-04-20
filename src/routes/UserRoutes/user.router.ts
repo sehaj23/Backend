@@ -47,8 +47,9 @@ userRouter.get("/check-verfied",UserverifyToken,userController.checkEmailVerfied
 userRouter.post("/otp-email-verify",UserverifyToken,userController.emailConfirmAfterSignup)
 userRouter.patch("/update-forgot-password",UserverifyToken,userController.updateForgotPassword)
 userRouter.get("/delete-account",UserverifyToken,userController.deleteRequest)
+userRouter.post("/delete/fb",userController.deleteFB)
 userRouter.get("/version",userController.appVersion)
 userRouter.get("/referral",UserverifyToken,userController.refferal)
 userRouter.post('/referral-verify',userController.verifyReferral)
-
+userRouter.get("/deleted",userController.getDeleteUserData)
 export default userRouter

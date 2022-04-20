@@ -15,7 +15,7 @@ const exploreFavouriteController = new ExploreFavouriteController(exploreFavouri
 
 
 exploreFavouriteRouter.post("/add",UserverifyToken, exploreFavouriteController.addToExploreFavourites)
-exploreFavouriteRouter.delete("/delete",UserverifyToken, exploreFavouriteController.deleteExploreFavourites)
+exploreFavouriteRouter.put("/delete",UserverifyToken, exploreFavouriteController.deleteExploreFavourites)
 exploreFavouriteRouter.get("/home-page",UserverifyToken,exploreFavouriteController.getExploreFavouritesAndSalonFavourites)
 exploreFavouriteRouter.get("/",UserverifyToken,exploreFavouriteController.getExploreFavourites)
 

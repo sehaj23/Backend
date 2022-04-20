@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "../database";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import ExploreFavouriteService from "../service/explore-favourite.service";
 import UserService from "../service/user.service";
@@ -16,7 +17,11 @@ export default class ExploreFavouriteController extends BaseController {
   addToExploreFavourites = controllerErrorHandler(
     async (req: Request, res: Response) => {
       const { explore_id } = req.body;
-     
+      //@ts-ignore
+     const checkFavourite = await this.service.get({user_id:mongoose.Types.ObjectId(req.userId),explore_id:mongoose.Types.ObjectId(explore_id)})
+     if(checkFavourite.length>0){
+       return res.status(400).send({message:"already in favourites"})
+     }
       const addToFavourites = await this.service.addToFavourites(
            //@ts-ignore
         req.userId,

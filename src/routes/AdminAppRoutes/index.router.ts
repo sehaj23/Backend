@@ -24,6 +24,7 @@ AdminApprouter.use("/location",locationRouter)
 AdminApprouter.use('/explore',exploreRouter)
 AdminApprouter.use('/vendor',vendorRouter)
 AdminApprouter.use("/zattire-services",zattireServiceRouter)
+AdminApprouter.use("/vendor", vendorRouter);
 
 
 export default AdminApprouter
