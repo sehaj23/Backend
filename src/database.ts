@@ -22,7 +22,7 @@ if (process.env.DB_URI) {
 }
 else {
   uri = `mongodb+srv://${user}:${password}@dev-8kbli.mongodb.net/${db}?retryWrites=true&w=majority`
- }
+}
 
 
 export const connectt = () => {
