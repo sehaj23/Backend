@@ -1076,7 +1076,7 @@ export default class SalonService extends BaseService {
         }
 
         getNameIDRatingProfile = async () => {
-                const salon = await this.model.find({}).select({ "_id": 1, "name": 1, approved: 1,rating:1,profile_pic:1 }).populate("profile_pic")
+                const salon = await this.model.find({}).select({ "_id": 1, "name": 1, approved: 1,rating:1,profile_pic:1,location_id:1 }).populate("profile_pic").populate("location_id")
                 return salon
         }
 
