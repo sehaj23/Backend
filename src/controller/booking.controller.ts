@@ -904,14 +904,14 @@ getHomePageData = controllerErrorHandler(
       }
       if (status === "Start") {
         const notify = Notify.serviceStart(
-          user.phone,
-          user.email,
-          user.fcm_token,
-          salon.contact_number,
+          user?.phone,
+          user?.email,
+          user?.fcm_token,
+          salon?.contact_number,
           salon.email,
           salon.name,
-          employee.phone,
-          employee.fcm_token,
+          employee?.phone,
+          employee?.fcm_token,
           booking.id,
           booking.booking_numeric_id.toString(),
           bookingTime
@@ -919,14 +919,14 @@ getHomePageData = controllerErrorHandler(
       }
       if (status === "Done") {
         const notify = Notify.serviceEnd(
-          user.phone,
-          user.email,
+          user?.phone,
+          user?.email,
           user.fcm_token,
-          salon.contact_number,
+          salon?.contact_number,
           salon.email,
           salon.name,
-          employee.phone,
-          employee.fcm_token,
+          employee?.phone,
+          employee?.fcm_token,
           booking.id,
           booking.booking_numeric_id.toString(),
           bookingTime

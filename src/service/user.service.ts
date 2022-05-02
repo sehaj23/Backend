@@ -182,7 +182,7 @@ export default class UserService extends BaseService {
                     path: 'profile_pic'
                 }
             })
-            UserRedis.set(id, JSON.stringify(user.favourites), { type: "favourites" })
+            UserRedis.set(id, JSON.stringify(user?.favourites), { type: "favourites" })
             return user.favourites
         }
         return JSON.parse(redisUser)
