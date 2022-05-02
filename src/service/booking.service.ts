@@ -332,6 +332,7 @@ export default class BookingService extends BaseService {
         booking.history.push({ status_changed_to: status, last_status: booking.status, changed_by: author })
         booking.status = status as BookinStatus
         await booking.save()
+         BookingRedis.remove(booking.user_id.toString(),{ type: REDIS_CONFIG.homePageData })
         return booking
         // const booking = await this.model.findByIdAndUpdate({bookingId},{status:status,$push:{history:{status_changed_to:status,last_status:}}},{new:true})
     }
