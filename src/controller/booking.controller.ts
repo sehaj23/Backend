@@ -978,12 +978,15 @@ getHomePageData = controllerErrorHandler(
 
         //     }
         // }
-        if (booking.services[0].service_discount_code != null) {
+        if (booking.services[0]?.service_discount_code) {
           const getPromoStatus = (await this.promoUserService.getOne({
-            booking_id: booking._id.toString(),
+            booking_id: booking._id
           })) as PromoUserSI;
+          console.log(getPromoStatus)
+          if(getPromoStatus !== null){
           getPromoStatus.status = promoUsedStatus.COMPLETED;
           await getPromoStatus.save();
+          }
         }
         //         if(!referal){
         //            let total= 0
@@ -1055,8 +1058,10 @@ getHomePageData = controllerErrorHandler(
         const getPromoStatus = (await this.promoUserService.getOne({
           booking_id: booking._id.toString(),
         })) as PromoUserSI;
-        getPromoStatus.status = promoUsedStatus.DISCARDED;
-        await getPromoStatus.save();
+        if(getPromoStatus !== null){
+          getPromoStatus.status = promoUsedStatus.DISCARDED;
+          await getPromoStatus.save();
+          }
       }
       if (refundToWallet === true) {
         const walletPaymentIndex = booking.payments

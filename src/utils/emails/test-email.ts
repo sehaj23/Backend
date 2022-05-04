@@ -22,7 +22,7 @@ function testEmail(orderId: string, orderDate: string, orderTime: string, custom
         data = data.replaceAll("[Customer Address]", customerAddress.toString()??"N/A")
         data = data.replaceAll("[Salon Name]", salonName)
         data = data.replaceAll("[Salon Address]", salonAddress)
-        data = data.replaceAll("[Stylist]", stylist.toString())
+        data = data.replaceAll("[Stylist]", stylist?.toString())
         data = data.replaceAll("[amt_3]", subtotal)
         data = data.replaceAll("[payment]", payments.map((p: BookingPaymentI) => p.mode).join(","))
         data = data.replaceAll("[service_1]",serviceList.toString())
