@@ -183,7 +183,7 @@ export default class UserService extends BaseService {
                 }
             })
             UserRedis.set(id, JSON.stringify(user?.favourites), { type: "favourites" })
-            return user.favourites
+            return user?.favourites
         }
         return JSON.parse(redisUser)
     }
