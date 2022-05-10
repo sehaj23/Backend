@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ExploreController from "../../controller/explore.controller";
-import verifyToken from "../../middleware/jwt";
+import VendorverifyToken from "../../middleware/VendorJwt";
 
 import Explore from "../../models/explore.model";
 import FavouriteExplore from "../../models/favorite-explore.model";
@@ -13,11 +13,11 @@ const exploreFavouriteService =  new ExploreFavouriteService(FavouriteExplore)
 const exploreController = new ExploreController(exploreService,exploreFavouriteService)
 
 
-exploreRouter.post("/",verifyToken,exploreController.post)
-exploreRouter.get("/",verifyToken,exploreController.getWithPagination)
-exploreRouter.put("/:id",verifyToken,exploreController.put)
-exploreRouter.delete("/:id",verifyToken,exploreController.delete)
-exploreRouter.get("/:id",verifyToken,exploreController.getId)
-exploreRouter.get("/salon/:salonID",verifyToken,exploreController.getExploreBySalonId)
+exploreRouter.post("/",VendorverifyToken,exploreController.post)
+exploreRouter.get("/",VendorverifyToken,exploreController.getWithPagination)
+exploreRouter.put("/:id",VendorverifyToken,exploreController.put)
+exploreRouter.delete("/:id",VendorverifyToken,exploreController.delete)
+exploreRouter.get("/:id",VendorverifyToken,exploreController.getId)
+exploreRouter.get("/salon/:salonID",VendorverifyToken,exploreController.getExploreBySalonId)
 
 export default exploreRouter
