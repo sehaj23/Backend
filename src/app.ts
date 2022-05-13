@@ -87,7 +87,7 @@ app.use(bodyParser({limit: '50mb',
 parameterLimit: 100000,
 extended: true }))
 app.use(cors({
-  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688","https://zattire-vendor-app.web.app"," https://zattire-vendor-app--dev-fno83aco.web.app","http://localhost:55007/"," https://app.zattire.com"," https://www.zattire.com","https://zattire.com","https://zattire.com/home"],
+  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688","https://zattire-vendor-app.web.app"," https://zattire-vendor-app--dev-fno83aco.web.app","http://localhost:55007/"," https://app.zattire.com"," https://www.zattire.com","https://zattire.com","https://zattire.com/home","https://zattire-qr.web.app"],
   credentials: true
 }));
 
