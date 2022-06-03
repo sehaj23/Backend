@@ -128,6 +128,7 @@ getHomePageData = controllerErrorHandler(
      if (!userInfo?.referral_code) {
       const referral = await this.createRefferal(userInfo.name ?? "ZATT", userInfo._id.toString())
       const update = await this.userService.update(userInfo._id, { referral_code: referral })
+      userInfo.referral_code=referral
   }
       out = {booking,userInfo}
        //@ts-ignore
