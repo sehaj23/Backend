@@ -109,6 +109,10 @@ export default class BookingController extends BaseController {
     this.cashbackRangeService = cashbackRangeService;
     this.cashbackService = cashbackService;
   }
+  createRefferal = async (name: string, id: string) => {
+    const refferal = name.toUpperCase().substr(0, 4) + id.substr(0, 4)
+    return refferal
+}
 getHomePageData = controllerErrorHandler(
     async (req: Request, res: Response) => {
       let out
@@ -119,7 +123,12 @@ getHomePageData = controllerErrorHandler(
       const bookingsReq =  this.service.getByUserId(req.userId);
       //@ts-ignore
      const userInfoReq  = this.userService.getById(req.userId.toString())
+   
      const [booking,userInfo] = await Promise.all([bookingsReq,userInfoReq])
+     if (!userInfo?.referral_code) {
+      const referral = await this.createRefferal(userInfo.name ?? "ZATT", userInfo._id.toString())
+      const update = await this.userService.update(userInfo._id, { referral_code: referral })
+  }
       out = {booking,userInfo}
        //@ts-ignore
       BookingRedis.set(req.userId, JSON.stringify(out), { type: REDIS_CONFIG.homePageData })
