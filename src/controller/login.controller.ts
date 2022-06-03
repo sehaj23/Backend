@@ -115,13 +115,22 @@ export default class LoginController extends BaseController {
     }
   })
 
+  createRefferal = async (name: string, id: string) => {
+    const refferal = name.toUpperCase().substr(0, 4) + id.substr(0, 4)
+    return refferal
+}
   create = controllerErrorHandler(async (req: Request, res: Response) => {
     const user = req.body
     var password = encryptData(user.password)
     let refferallCode
-
+    
     user.password = password
+   
     const createUser: UserSI = await this.service.create(user)
+    if (!createUser?.referral_code) {
+      const referral = await this.createRefferal(user.name ?? "ZATT", user._id.toString())
+      const update = await this.service.put(user._id, { referral_code: referral })
+  }
     if (req.body.rfcode) {
       const rfCode = req.body.rfcode
       refferallCode = await this.service.getOne({ referral_code: rfCode })
