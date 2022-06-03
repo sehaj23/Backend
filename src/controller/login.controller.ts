@@ -23,7 +23,7 @@ import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
-
+import User from '../models/user.model'
 export default class LoginController extends BaseController {
   jwtKey: string
   jwtValidity: string
@@ -129,7 +129,7 @@ export default class LoginController extends BaseController {
     const createUser: UserSI = await this.service.create(user)
     if (!createUser?.referral_code) {
       const referral = await this.createRefferal(user.name ?? "ZATT", user._id.toString())
-      const update = await this.service.put(user._id, { referral_code: referral })
+      const update = await User.findByIdAndUpdate(user._id, { referral_code: referral })
   }
     if (req.body.rfcode) {
       const rfCode = req.body.rfcode
