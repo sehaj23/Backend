@@ -253,7 +253,7 @@ export default class UserService extends BaseService {
     // this is to add balance to wallet
     addBalance = async (userId: string, amount: number) => {
         const user: UserSI = await this.model.findOne({ _id: mongoose.Types.ObjectId(userId) })
-        if (user.balance === undefined) {
+        if (user?.balance === undefined) {
             user.balance = 0
         }
         const strAmount = amount.toFixed(2)
@@ -266,6 +266,7 @@ export default class UserService extends BaseService {
          UserRedis.set(userId, user, { type: REDIS_CONFIG.userinfo })
         return user
     }
+    
 
     // this is to minus balance to wallet
     minusBalance = async (userId: string, amount: number) => {
