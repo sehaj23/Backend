@@ -75,7 +75,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                         salonEmail,
@@ -126,6 +126,7 @@ export default class SendEmail {
 
         fs.readFile(`${__dirname}/vendor-signup.html`, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
             if (err) {
+               
                 SendEmail.logEmailStatus(false, 'signup', 'salon', salonEmail, err.message)
                 return
             }
@@ -135,7 +136,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                         
@@ -196,7 +197,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [  
                       
@@ -258,7 +259,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                       
@@ -296,9 +297,11 @@ export default class SendEmail {
             // Handle promise's fulfilled/rejected states
             sendPromise.then(
                 function (data) {
+                    console.log(data)
                     SendEmail.logEmailStatus(true, 'signup', 'user', userEmail, data.MessageId)
                 }).catch(
                     function (err) {
+                        console.log(err)
                         SendEmail.logEmailStatus(false, 'signup', 'user', userEmail, err.message)
                     });
 
@@ -329,7 +332,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                      
@@ -346,7 +349,7 @@ export default class SendEmail {
                         },
                         Text: {
                             Charset: "UTF-8",
-                            Data: "Hello!\n Welcome to Zattire. 33"
+                            Data: "Hello!\n Welcome to Zattire."
                         }
                     },
                     Subject: {
@@ -388,7 +391,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -450,7 +453,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                     
@@ -522,7 +525,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -594,7 +597,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                       
@@ -655,7 +658,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -716,7 +719,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
