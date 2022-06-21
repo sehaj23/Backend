@@ -3,8 +3,11 @@ import logger from "./utils/logger";
 require('dotenv').config()
 const activateAws = (activate: boolean = false) => {
   if (activate) {
+    console.log("activiing aws")
     AWS.config.getCredentials(function (err) {
-      if (err) { }
+      if (err) { 
+        console.log(err)
+      }
       //console.log(err.stack);
       // credentials not loaded
       else {

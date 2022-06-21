@@ -75,7 +75,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                         salonEmail,
@@ -116,6 +116,7 @@ export default class SendEmail {
                     SendEmail.logEmailStatus(true, 'booking confirmed', 'salon', salonEmail, data.MessageId)
                 }).catch(
                     function (err) {
+                        
                         SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                     });
         })
@@ -135,7 +136,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                         
@@ -196,7 +197,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [  
                       
@@ -258,7 +259,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                       
@@ -329,7 +330,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                      
@@ -388,7 +389,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -450,7 +451,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                     
@@ -522,7 +523,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -594,7 +595,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                       
@@ -655,7 +656,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        
@@ -716,7 +717,7 @@ export default class SendEmail {
                 Destination: { /* required */
                     BccAddresses:[
                         'kashish@zattire.com',
-                        'developers@zattire.com',
+                        'sehaj@zattire.com',
                     ],
                     ToAddresses: [
                        

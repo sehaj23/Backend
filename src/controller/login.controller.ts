@@ -23,7 +23,7 @@ import ErrorResponse from '../utils/error-response'
 import logger from '../utils/logger'
 import encryptData from '../utils/password-hash'
 import BaseController from './base.controller'
-
+import User from '../models/user.model'
 export default class LoginController extends BaseController {
   jwtKey: string
   jwtValidity: string
@@ -126,11 +126,10 @@ export default class LoginController extends BaseController {
     user.password = password
    
     const createUser: UserSI = await this.service.create(user)
-    if (!createUser?.referral_code) {
-      const referral = await this.createRefferal(user.name ?? "ZATT", user._id.toString())
-      const update = await this.service.put(user._id, { referral_code: referral })
-  }
-   // const referral = await this.createRefferal(createUser?.name ?? "ZATT", createUser._id.toString())
+  //   if (!createUser?.referral_code) {
+  //     const referral = await this.createRefferal(user.name ?? "ZATT", user._id.toString())
+  //     const update = await User.findByIdAndUpdate(user._id, { referral_code: referral })
+  // }
     if (req.body.rfcode) {
       const rfCode = req.body.rfcode
       refferallCode = await this.service.getOne({ referral_code: rfCode })
@@ -146,10 +145,10 @@ export default class LoginController extends BaseController {
         try {
           const referral = await this.referralService.post(referalData) as ReferralSI
           const getRefferalCount = await this.referralService.countDocumnet({referred_by:refferallCode._id})
-          if(getRefferalCount<=10){
+          if(getRefferalCount<=100){
 
               const walletTransactionI: WalletTransactionI = {
-                        amount: 100,
+                        amount: 50,
                         user_id: referral.referred_to.user.toString(),
                         reference_model: 'referal',
                         reference_id: referral._id,

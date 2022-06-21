@@ -4,8 +4,8 @@ import ErrorResponse from "../utils/error-response";
 dotenv.config()
 
 export default class RazorPayService {
-    protected key_id = process.env.razorpay_key_id ??  "rzp_test_FQZ0aievUO1R9u"
-    protected key_secret = process.env.razorpay_key_secret ?? "BXN2JjyiO81WIRxrICkWag7f"
+    protected key_id = process.env.razorpay_key_id ??  "rzp_live_Yoj4J6C5jQR4op"
+    protected key_secret = process.env.razorpay_key_secret ?? "9DpEIzbKxpJnMnUPIFYTkps7"
 
     protected instance: any
     constructor() {

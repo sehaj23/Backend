@@ -14,23 +14,6 @@ const salonSearchValidator = [
     mySchemaValidator
 ]
 
-/**
- * @swagger
- * tags:
- *  name: SalonSearch
- *  description: API to manage your SalonSearch.
- * /api/u/salon-search:
- *  get:
- *      tags: [SalonSearch]
- *      parameters:
- *          - name: service_name
- *            in: query
- *            required: true
- *            type: string
- *      responses:
- *          default:
- *              description: Services searched
- */
 salonSearchRouter.get("/", salonSearchValidator, salonSearchController.getServicesByName)
 
 export default salonSearchRouter

@@ -20,4 +20,6 @@ export default class WalletTransactionService extends BaseService {
         return await this.model.create(data)
     }
 
+
+
 }

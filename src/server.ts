@@ -13,7 +13,7 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
 const PORT = process.env.PORT || 8082;
-if (process.env.NODE_ENV !== 'locals' && process.env.NODE_ENV !== 'test-api') {
+if (process.env.NODE_ENV !== 'test-api') {
     activateAws(true)
 }
 db.connectt().then(async () => {

@@ -109,6 +109,10 @@ export default class BookingController extends BaseController {
     this.cashbackRangeService = cashbackRangeService;
     this.cashbackService = cashbackService;
   }
+  createRefferal = async (name: string, id: string) => {
+    const refferal = name.toUpperCase().substr(0, 4) + id.substr(0, 4)
+    return refferal
+}
 getHomePageData = controllerErrorHandler(
     async (req: Request, res: Response) => {
       let out
@@ -119,7 +123,13 @@ getHomePageData = controllerErrorHandler(
       const bookingsReq =  this.service.getByUserId(req.userId);
       //@ts-ignore
      const userInfoReq  = this.userService.getById(req.userId.toString())
+   
      const [booking,userInfo] = await Promise.all([bookingsReq,userInfoReq])
+     if (!userInfo?.referral_code) {
+      const referral = await this.createRefferal(userInfo.name ?? "ZATT", userInfo._id.toString())
+      const update = await this.userService.update(userInfo._id, { referral_code: referral })
+      userInfo.referral_code=referral
+  }
       out = {booking,userInfo}
        //@ts-ignore
       BookingRedis.set(req.userId, JSON.stringify(out), { type: REDIS_CONFIG.homePageData })
@@ -904,14 +914,14 @@ getHomePageData = controllerErrorHandler(
       }
       if (status === "Start") {
         const notify = Notify.serviceStart(
-          user.phone,
-          user.email,
-          user.fcm_token,
-          salon.contact_number,
+          user?.phone,
+          user?.email,
+          user?.fcm_token,
+          salon?.contact_number,
           salon.email,
           salon.name,
-          employee.phone,
-          employee.fcm_token,
+          employee?.phone,
+          employee?.fcm_token,
           booking.id,
           booking.booking_numeric_id.toString(),
           bookingTime
@@ -919,14 +929,14 @@ getHomePageData = controllerErrorHandler(
       }
       if (status === "Done") {
         const notify = Notify.serviceEnd(
-          user.phone,
-          user.email,
+          user?.phone,
+          user?.email,
           user.fcm_token,
-          salon.contact_number,
+          salon?.contact_number,
           salon.email,
           salon.name,
-          employee.phone,
-          employee.fcm_token,
+          employee?.phone,
+          employee?.fcm_token,
           booking.id,
           booking.booking_numeric_id.toString(),
           bookingTime
@@ -978,12 +988,15 @@ getHomePageData = controllerErrorHandler(
 
         //     }
         // }
-        if (booking.services[0].service_discount_code != null) {
+        if (booking.services[0]?.service_discount_code) {
           const getPromoStatus = (await this.promoUserService.getOne({
-            booking_id: booking._id.toString(),
+            booking_id: booking._id
           })) as PromoUserSI;
+          console.log(getPromoStatus)
+          if(getPromoStatus !== null){
           getPromoStatus.status = promoUsedStatus.COMPLETED;
           await getPromoStatus.save();
+          }
         }
         //         if(!referal){
         //            let total= 0
@@ -1055,8 +1068,10 @@ getHomePageData = controllerErrorHandler(
         const getPromoStatus = (await this.promoUserService.getOne({
           booking_id: booking._id.toString(),
         })) as PromoUserSI;
-        getPromoStatus.status = promoUsedStatus.DISCARDED;
-        await getPromoStatus.save();
+        if(getPromoStatus !== null){
+          getPromoStatus.status = promoUsedStatus.DISCARDED;
+          await getPromoStatus.save();
+          }
       }
       if (refundToWallet === true) {
         const walletPaymentIndex = booking.payments
