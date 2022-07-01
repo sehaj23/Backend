@@ -1240,8 +1240,9 @@ getHomePageData = controllerErrorHandler(
 
           const cashbackReq = await this.cashbackService.post(cashbackData);
 
-          res.status(200).send({ message: "Status updated" });
+          
         }
+        res.status(200).send({ message: "Status updated" });
       } else {
         res
           .status(400)
