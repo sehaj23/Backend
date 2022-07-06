@@ -768,7 +768,7 @@ export default class SalonService extends BaseService {
         getSearchservice = async (phrase: string) => {
                 console.log(phrase)
                 const data = await SalonSearchRedis.get(phrase)
-                if(data==null){
+                if(!data){
                 const data2 = await this.model.aggregate([
                        
                         {
