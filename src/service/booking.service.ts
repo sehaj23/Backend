@@ -105,6 +105,7 @@ export default class BookingService extends BaseService {
        
             const b = await this.model.create(booking) as BookingSI
              BookingRedis.remove(userId,{ type: REDIS_CONFIG.homePageData })
+             await BookingRedis.remove(userId,{ type: "getUserBookings" })
             if (usedWalletAmount > -1) {
                 const walletTransactionI: WalletTransactionI = {
                     amount: (usedWalletAmount*-1),
