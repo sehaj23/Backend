@@ -153,9 +153,9 @@ getHomePageData = controllerErrorHandler(
       const bookings = await this.service.getByUserId(req.userId);
       //@ts-ignore
       BookingRedis.set(req.userId,bookings,{ type: "getUserBookings" })
-      return res.sendStatus(bookings)
-      }
-      res.send(JSON.parse(getBooking));
+      return res.status(200).send(bookings)
+    }
+    res.status(200).send(JSON.parse(getBooking));
     }
   );
 
