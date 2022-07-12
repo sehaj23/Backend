@@ -247,9 +247,19 @@ export default class UserController extends BaseController {
         res.send(email)
     })
 
-    searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    // searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    //     const q = req.query
+       
+    //     const user = await this.service.searchUsersByEmail(q)
+    //     res.send(user)
+
+    // })
+    searchUsers = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
-        const user = await this.service.searchUsersByEmail(q)
+        if(!q.phrase){
+            return res.status(400).send({message:"please send search phrase"})
+        }
+        const user = await this.service.searchUser(q)
         res.send(user)
 
     })

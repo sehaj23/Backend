@@ -108,6 +108,9 @@ const UserSchema = new mongoose.Schema({
     timestamps: true
 })
 UserSchema.index({ "$**": `text` });
+UserSchema.index({ name:1 });
+UserSchema.index({ phone:1 });
+UserSchema.index({ email:1 });
 UserSchema.pre<UserSI>('save', () => {
     //@ts-ignore
     let { name } = this

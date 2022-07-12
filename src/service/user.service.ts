@@ -207,8 +207,34 @@ export default class UserService extends BaseService {
         const notification = sendNotificationToDevice(fcm_token, message)
         return notification
     }
+    searchUser = async (q)=>{
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const value = q.phrase
+        const filters = {
+            $or: [
+                {
+                  name: { $regex: '.*' + value + '.*',$options: 'i' } 
+                },
+                {
+                  email: { $regex: '.*' + value + '.*' ,$options: 'i'} 
+                },
+                {
+                    phone: { $regex: '.*' + value + '.*',$options: 'i' } 
+                }
+              ]
+        }
+        const userDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+        const userPagesReq = this.model.count(filters)
+       
 
 
+        const [userDetails, userPages] = await Promise.all([userDetailsReq, userPagesReq])
+        return ({ userDetails, userPages })
+    }
+    //not in use as of 12 july 2022
     searchUsersByEmail = async (q) => {
 
         const pageNumber: number = parseInt(q.page_number || 1)
