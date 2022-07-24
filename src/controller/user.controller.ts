@@ -340,7 +340,7 @@ export default class UserController extends BaseController {
         //@ts-ignore
         const id = req.userId || req.params.id 
         const dataTime = moment()
-        const deleteRequest = await this.service.update(id, { delete_request: dataTime })
+        const deleteRequest = await this.service.delete(id)
         if (deleteRequest == null) {
             return res.status(400).send({ success: false, message: "Something went Wrong" })
         }
