@@ -27,5 +27,9 @@ export default class ReferralController extends BaseController {
         res.status(200).send(referral)
     })
     
-
+    getRefferals= controllerErrorHandler(async (req: Request, res: Response) => {
+        const q=req.query
+        const referral = await this.service.getWithPagination(q)
+        res.status(200).send(referral)
+    })
 }

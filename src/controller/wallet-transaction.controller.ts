@@ -18,31 +18,26 @@ export default class WalletTransactionController extends BaseController {
 
     addMoneyInWallet = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const email = req.query?.email
+        const email = req.body?.email
         let user
         let phone
-        if(!email){
-            phone =  req.query?.phone
-        }
-        const amount = parseInt(req.query?.amount.toString())
+       
+        const amount = parseInt(req.body?.amount.toString())
         if(!amount){
             return res.status(400).send({message:"Please send amount"})
         }
-        if(!email && !phone){
-            return res.status(400).send({message:"Please send email or phone"})
+        if(!email){
+            return res.status(400).send({message:"Please send email"})
         }
         if(email){
             user =  await User.findOne({email:email.toString()})
-        }
-        if(phone){
-            user = await User.findOne({phone:phone})
         }
 
         const walletTransactionI: WalletTransactionI = {
             amount:amount,
             user_id: user._id,
             reference_model: 'No Reference Money Add for Promotion',
-            reference_id: "Amount Added By Open Link given to Kashish",
+            reference_id: "Amount Added By Admin",
             transaction_type: "Credits Added",
             transaction_owner: "ALGO",
             comment: "Credits Added"
