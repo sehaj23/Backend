@@ -1,5 +1,4 @@
 import Banner from "../../models/banner.model"
-
 import { Router } from "express"
 import BannerController from "../../controller/banner.controller"
 import BannerService from "../../service/banner.service"
@@ -12,6 +11,6 @@ const bannerController = new BannerController(bannerService)
 
 
 bannerRouter.get("/active",bannerController.getActiveBanners)
-
+bannerRouter.get("/info/:id",bannerController.getDeletedBanners)
 
 export default bannerRouter

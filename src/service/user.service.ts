@@ -31,6 +31,7 @@ export default class UserService extends BaseService {
 
     getUser = async (userId) => {
         //@ts-ignore
+        // const user2 = await this.getById(userId) 
         const user = await this.model.findOne({ _id: userId })
        // user.password = ""
         return user
@@ -90,11 +91,11 @@ export default class UserService extends BaseService {
     addAddress = async (id: string, d: any) => {
         const user = await this.model.findOne({ _id: id }) as UserSI
         user?.address.push(d)
-
-       const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
-       await  Promise.all([user.save(),redisUser])
-       UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
-      return user.address
+        
+        const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
+        await Promise.all([user.save(),redisUser])
+        UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
+        return user.address
     }
 
     updateAddress = async (userId: string, addressId: string, d: Object) => {
@@ -229,8 +230,6 @@ export default class UserService extends BaseService {
         const userDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
         const userPagesReq = this.model.count(filters)
        
-
-
         const [userDetails, userPages] = await Promise.all([userDetailsReq, userPagesReq])
         return ({ userDetails, userPages })
     }
