@@ -25,7 +25,7 @@ const userController= new UserController(userService,feedbackService,otpService)
 
 userRouter.post("/", verifyToken, userController.post)
 userRouter.get("/", verifyToken, userController.getWithPaginationtemp)
-userRouter.get("/info/:id", verifyToken, userController.getId)
+userRouter.get("/info/:id", verifyToken, userController.getUserAdmin)
 userRouter.put("/:id", verifyToken, userController.put)
 userRouter.get("/search",userController.searchUsers)
 userRouter.put("/:id/photo", verifyToken, userController.putPhoto)

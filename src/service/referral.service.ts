@@ -22,7 +22,8 @@ export default class ReferralService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        const referralReq = this.model.find({ referred_by: id }).populate("referred_to.user", "name", "email", "createdAt").skip(skipCount).limit(pageLength)
+        const referralReq = this.model.find({ referred_by: id }).populate("referred_to.user").skip(skipCount).limit(pageLength)
+        // const referralReq = this.model.find({ referred_by: id }).populate("referred_to.user", "name", "email", "createdAt").skip(skipCount).limit(pageLength)
         const countReq = this.model.count({ referred_by: id })
         const [referral, count] = await Promise.all([referralReq, countReq])
         return { referral, count }

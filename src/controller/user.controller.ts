@@ -465,4 +465,17 @@ export default class UserController extends BaseController {
     }
     }
 
+    getUserAdmin = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id
+            const getUser = await this.service.getId(id)
+            if(getUser === null){
+                return res.status(404).send({message:"User not found"})
+            }
+            res.send(getUser)
+        } catch (error) {
+            res.status(400).send(error)
+        }
+    }
+
 }

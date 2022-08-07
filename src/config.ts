@@ -1,4 +1,3 @@
-
 enum CONFIG {
     ADMIN_JWT_KEY = "expectopatronum4wy76t7fdvbxhsjwytd99saaxc99^7812skjhsgvcmkjhbvgqbwnjdhuqygvwb nju21y736tetdfgvbsnjfwgvqbhdr1t62yuhwjndytrewqasdfghjsdfghhbgvdft617y8usxnjbdfghiuywtfscvbnk,mnbvcxsqasdfghjop098765rgvcxcvbhujaserfcvgydsasdfghjk123edfgyuiijhgfdsdfhsbhbdxasskjnssnakjiouygtf",
     VENDOR_JWT_KEY = "thisisVendorBRO!@34532@!2",
@@ -11,15 +10,3 @@ enum CONFIG {
 }
 
 export default CONFIG
-
-
-
-
-/*import dotenv from 'dotenv';
-
-const envFound = dotenv.config();
-
-export default {
-    jwt_key: process.env.JWT_KEY,
-    res_error: process.env.RES_ERROR
-};*/

@@ -1,7 +1,6 @@
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import ReferralService from "../service/referral.service";
 import BaseController from "./base.controller";
-
 import { Request, Response } from "express";
 
 
