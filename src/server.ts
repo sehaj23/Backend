@@ -26,35 +26,34 @@ db.connectt().then(async () => {
     }
     
     // uncomment while merging to master
-    // if (cluster.isMaster && process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'test-api') {
-    //     console.log(`Master ${process.pid} is running`);
+    if (cluster.isMaster && process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'test-api') {
+        console.log(`Master ${process.pid} is running`);
 
-    //     for (let i = 0; i < numCPUs; i++) {
-    //         cluster.fork();
-    //     }
+        for (let i = 0; i < numCPUs; i++) {
+            cluster.fork();
+        }
 
-    //     cluster.on('exit', (worker, code, signal) => {
-    //         console.log(`worker ${worker.process.pid} died`);
-    //     });
-    // } else {
-    //     // Workers can share any TCP connection
-    //     // In this case it is an HTTP server
-    //     const server = httpApp.listen(PORT, async () => {
-    //         const name = firebase.name
-    //         console.log(`Server is running http://localhost:${PORT}`);
-    //         console.log(`Firebase app name: ${name}`);
-    //     });
+        cluster.on('exit', (worker, code, signal) => {
+            console.log(`worker ${worker.process.pid} died`);
+        });
+    } else {
+        // Workers can share any TCP connection
+        // In this case it is an HTTP server
+        const server = httpApp.listen(PORT, async () => {
+            const name = firebase.name
+            console.log(`Server is running http://localhost:${PORT}`);
+            console.log(`Firebase app name: ${name}`);
+        });
 
-    //     console.log(`Worker ${process.pid} started`);
-    // }
+        console.log(`Worker ${process.pid} started`);
+    }
 
     // comment while merging to master
-    const server = httpApp.listen(PORT, async () => {
-        const name = firebase.name
-        console.log(`Server is running http://localhost:${PORT}`);
-        console.log(`Firebase app name: ${name}`);
-    });
-
+    // const server = httpApp.listen(PORT, async () => {
+    //     const name = firebase.name
+    //     console.log(`Server is running http://localhost:${PORT}`);
+    //     console.log(`Firebase app name: ${name}`);
+    // });
 }).catch((e) => {
     console.error(`Db Error: ${e.message}`)
 })
