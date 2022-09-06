@@ -31,9 +31,9 @@ export default class ExploreController extends BaseController {
       const salonID = req.params.salonID;
       const cachedExplore = await ExploreRedis.get(REDIS_CONFIG.getExplore, req.query);
       if (cachedExplore == null) {
-       explore = await this.service.getExploreBySalonId(salonID,req.query);
-      }else{
-        explore  = JSON.parse(cachedExplore)
+        explore = await this.service.getExploreBySalonId(salonID, req.query);
+      } else {
+        explore = JSON.parse(cachedExplore)
       }
       const token =
         req.headers?.authorization && req.headers?.authorization.split(" ")[1];
@@ -45,25 +45,25 @@ export default class ExploreController extends BaseController {
           explore.explore.map((e) => {
             exploreId.push(e?._id);
           });
-        
+
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
-                //@ts-ignore
+              //@ts-ignore
               decoded?._id,
               exploreId
             );
-        
-        if (getFavourites.length > 0) {
-          let index;
-          getFavourites.map((e) => {
-            index = explore.explore.findIndex(
-              (o) => o._id.toString() === e.explore_id.toString()
-            );
-            explore.explore[index].favourite = true;
-          });
+
+          if (getFavourites.length > 0) {
+            let index;
+            getFavourites.map((e) => {
+              index = explore.explore.findIndex(
+                (o) => o._id.toString() === e.explore_id.toString()
+              );
+              explore.explore[index].favourite = true;
+            });
+          }
         }
       }
-    }
       res.send({ data: explore });
     }
   );
@@ -78,7 +78,7 @@ export default class ExploreController extends BaseController {
         explore = await this.service.filterExplore(q);
         await ExploreRedis.set(REDIS_CONFIG.getExplore, explore, q);
       } else {
-        explore = JSON.parse( cachedExplore);
+        explore = JSON.parse(cachedExplore);
       }
       const token =
         req.headers?.authorization && req.headers?.authorization.split(" ")[1];
@@ -90,25 +90,25 @@ export default class ExploreController extends BaseController {
           explore.explore.map((e) => {
             exploreId.push(e._id);
           });
-        
+
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
-                //@ts-ignore
+              //@ts-ignore
               decoded._id,
               exploreId
             );
-        
-        if (getFavourites.length > 0) {
-          let index;
-          getFavourites.map((e) => {
-            index = explore.explore.findIndex(
-              (o) => o._id.toString() === e.explore_id.toString()
-            );
-            explore.explore[index].favourite = true;
-          });
+
+          if (getFavourites.length > 0) {
+            let index;
+            getFavourites.map((e) => {
+              index = explore.explore.findIndex(
+                (o) => o._id.toString() === e.explore_id.toString()
+              );
+              explore.explore[index].favourite = true;
+            });
+          }
         }
       }
-    }
       res.send({ data: explore });
     }
   );
@@ -142,27 +142,27 @@ export default class ExploreController extends BaseController {
           explore.map((e) => {
             exploreId.push(e._id);
           });
-      
+
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
-                  //@ts-ignore
+              //@ts-ignore
               decoded._id,
               exploreId
             );
-        
-        if (getFavourites.length > 0) {
-          let index;
-          //@ts-ignore
-          getFavourites.map((e) => {
-            index = explore.findIndex(
-              (o) => o._id.toString() === e.explore_id.toString()
-            );
 
-            explore[index].favourite = true;
-          });
+          if (getFavourites.length > 0) {
+            let index;
+            //@ts-ignore
+            getFavourites.map((e) => {
+              index = explore.findIndex(
+                (o) => o._id.toString() === e.explore_id.toString()
+              );
+
+              explore[index].favourite = true;
+            });
+          }
         }
       }
-    }
       res.send({ data: explore });
     }
   );
@@ -176,7 +176,7 @@ export default class ExploreController extends BaseController {
         explore = await this.service.filterExplore(q);
         await ExploreRedis.set(REDIS_CONFIG.getExplore, explore, q);
       } else {
-        explore =  JSON.parse( cachedExplore);
+        explore = JSON.parse(cachedExplore);
       }
 
       const token =
@@ -189,25 +189,25 @@ export default class ExploreController extends BaseController {
           explore.explore.map((e) => {
             exploreId.push(e._id);
           });
-         
+
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
-               //@ts-ignore
+              //@ts-ignore
               decoded._id,
               exploreId
             );
-        
-        if (getFavourites.length > 0) {
-          let index;
-          getFavourites.map((e) => {
-            index = explore.explore.findIndex(
-              (o) => o._id.toString() === e.explore_id.toString()
-            );
-            explore.explore[index].favourite = true;
-          });
+
+          if (getFavourites.length > 0) {
+            let index;
+            getFavourites.map((e) => {
+              index = explore.explore.findIndex(
+                (o) => o._id.toString() === e.explore_id.toString()
+              );
+              explore.explore[index].favourite = true;
+            });
+          }
         }
       }
-    }
       res.send(explore);
     }
   );
@@ -246,28 +246,28 @@ export default class ExploreController extends BaseController {
           if (decoded?._id !== undefined) {
             const exploreId = [];
             exploreId.push(req.params.id);
-          
+
             getFavourites =
               await this.exploreFavouriteService.getFavouriteForExplore(
-                  //@ts-ignore
+                //@ts-ignore
                 decoded._id,
                 exploreId
               );
-          
-          if (getFavourites.length > 0) {
-            explore = explore.toObject();
-            //@ts-ignore
-            explore.favourite = true;
+
+            if (getFavourites.length > 0) {
+              explore = explore.toObject();
+              //@ts-ignore
+              explore.favourite = true;
+            }
           }
         }
-      }
         await ExploreRedis.set(
           REDIS_CONFIG.getExploreByID,
           { explore, getSimilarProduct },
           id
         );
       } else {
-        return res.status(200).send( JSON.parse( cachedExplore))
+        return res.status(200).send(JSON.parse(cachedExplore))
       }
       res.send({ explore: explore, similarProducts: getSimilarProduct });
     }
@@ -294,4 +294,12 @@ export default class ExploreController extends BaseController {
       res.status(200).send({ message: "Explore cleared ID" });
     }
   );
+
+  getExploreProductByID = controllerErrorHandler(
+    async (req: Request, res: Response) => { 
+      const out = await this.service.getById(req.params.id);
+      res.send(out);
+    }
+  );
+
 }

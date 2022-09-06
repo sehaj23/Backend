@@ -17,7 +17,7 @@ exploreRouter.post("/",VendorverifyToken,exploreController.post)
 exploreRouter.get("/",VendorverifyToken,exploreController.getWithPagination)
 exploreRouter.put("/:id",VendorverifyToken,exploreController.put)
 exploreRouter.delete("/:id",VendorverifyToken,exploreController.delete)
-exploreRouter.get("/:id",VendorverifyToken,exploreController.getId)
+exploreRouter.get("/:id",VendorverifyToken,exploreController.getExploreProductByID)
 exploreRouter.get("/salon/:salonID",VendorverifyToken,exploreController.getExploreBySalonId)
 
 export default exploreRouter

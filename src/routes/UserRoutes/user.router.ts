@@ -51,4 +51,5 @@ userRouter.get("/version",userController.appVersion)
 userRouter.get("/referral",UserverifyToken,userController.refferal)
 userRouter.post('/referral-verify',userController.verifyReferral)
 userRouter.get("/deleted",userController.getDeleteUserData)
+userRouter.get("/cart-notif",UserverifyToken, userController.cartNotif)
 export default userRouter
