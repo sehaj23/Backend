@@ -148,7 +148,7 @@ var fifteenMinsNotificationCron = new CronJob('*/15 * * * *', async function () 
         const minutes = Math.abs(currentDate.getTime() - cartDate.getTime()) / (1000 * 60);
         
         // high - low == cron_time
-        if(minutes >= 0 && minutes <= 3){
+        if(minutes >= 5 && minutes <= 20){
             try {
                 var userdata = cart.user_id as UserI
                 tokens = tokens.concat(userdata.fcm_token)
