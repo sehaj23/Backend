@@ -215,3 +215,7 @@ export {
     tenMinsNotificationCron,
     fifteenMinsNotificationCron
 };
+
+
+// TODO: Notifications are pushed thrice because all the instances are running crons
+// one solution is to check if cluster.isMaster then only run the crons

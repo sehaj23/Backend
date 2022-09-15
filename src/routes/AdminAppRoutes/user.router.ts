@@ -32,4 +32,5 @@ userRouter.put("/:id/photo", verifyToken, userController.putPhoto)
 userRouter.get("/:id/photo", verifyToken, userController.getPhoto)
 userRouter.post("/send-notification/",verifyToken,userController.sendNotificationToUsers)
 userRouter.get("/delete",userController.deleteUser)
+userRouter.get("/booking-list", verifyToken, userController.bookingList)
 export default userRouter

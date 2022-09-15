@@ -26,6 +26,7 @@ db.connectt().then(async () => {
     }
     
     // uncomment while merging to master
+    // tag: comment to work 
     if (cluster.isMaster && process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'test-api') {
         console.log(`Master ${process.pid} is running`);
 
@@ -48,7 +49,7 @@ db.connectt().then(async () => {
         console.log(`Worker ${process.pid} started`);
     }
 
-    // comment while merging to master
+    // tag: uncomment to work
     // const server = httpApp.listen(PORT, async () => {
     //     const name = firebase.name
     //     console.log(`Server is running http://localhost:${PORT}`);

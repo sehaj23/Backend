@@ -19,6 +19,8 @@ import User from "../models/user.model";
 import mongoose from "../database";
 import Cart from "../models/cart.model";
 import { CartSI } from "../interfaces/cart.interface";
+import Booking from "../models/booking.model";
+import BookingService from "../service/booking.service";
 
 export default class UserController extends BaseController {
     service: UserService
@@ -442,6 +444,11 @@ export default class UserController extends BaseController {
         res.send(resource)
     })
 
+    bookingList = controllerErrorHandler( async (req : Request, res: Response) => {
+        const output1 = await Booking.find().distinct('user_id')
+        const output2 = await User.find({_id : {$in : output1}})
+        res.send(output2)
+    })
 
     sendNotificationToUsers = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
