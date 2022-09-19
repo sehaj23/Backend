@@ -1,4 +1,3 @@
-console.log('server.ts, before import');
 import * as dotenv from "dotenv";
 import { httpApp } from "./app";
 import activateAws from "./aws";
@@ -7,7 +6,6 @@ import User from "./models/user.model";
 import firebase from "./utils/firebase";
 dotenv.config()
 
-console.log('server.ts, after import');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 const PORT = process.env.PORT || 8082;
@@ -49,12 +47,14 @@ db.connectt().then(async () => {
         console.log(`Worker ${process.pid} started`);
     }
 
+    //  ---------------------
     // tag: uncomment to work
     // const server = httpApp.listen(PORT, async () => {
     //     const name = firebase.name
     //     console.log(`Server is running http://localhost:${PORT}`);
     //     console.log(`Firebase app name: ${name}`);
     // });
+    //  ---------------------
 }).catch((e) => {
     console.error(`Db Error: ${e.message}`)
 })
