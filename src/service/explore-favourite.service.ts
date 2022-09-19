@@ -10,12 +10,12 @@ import BaseService from "./base.service";
 
 export default class ExploreFavouriteService extends BaseService{
     addToFavourites =async (user_id,explore_id)=>{
-        ExploreRedis.remove(user_id,{type:REDIS_CONFIG.exploreFavourites})
+       await ExploreRedis.remove(user_id,{type:REDIS_CONFIG.exploreFavourites})
         const favourite = await FavouriteExplore.create({user_id:user_id,explore_id:explore_id})
         return favourite
 }
 deleteFavourites =async (user_id,explore_id)=>{
-    ExploreRedis.remove(user_id,{type:REDIS_CONFIG.exploreFavourites})
+   await ExploreRedis.remove(user_id,{type:REDIS_CONFIG.exploreFavourites})
     const favourite = await FavouriteExplore.deleteOne({user_id:user_id,explore_id:explore_id})
     return favourite
 }

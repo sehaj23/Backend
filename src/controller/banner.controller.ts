@@ -4,6 +4,7 @@ import BaseController from "./base.controller";
 import { Request, Response } from "express";
 import { BannerRedis } from "../redis/index.redis";
 import REDIS_CONFIG from "../utils/redis-keys";
+import logger from "../utils/logger";
 
 export default class BannerController extends BaseController {
   service: BannerService;
@@ -14,7 +15,7 @@ export default class BannerController extends BaseController {
 
   getActiveBanners = controllerErrorHandler(
     async (req: Request, res: Response) => {
-      const key =REDIS_CONFIG.bannerForHomePage;
+      const key = REDIS_CONFIG.bannerForHomePage;
       let out;
       const getBanner = await BannerRedis.get(key);
       if (getBanner == null) {
@@ -33,4 +34,17 @@ export default class BannerController extends BaseController {
       res.status(200).send({ msg: "Redis store Banner cleared" });
     }
   );
+
+  // this is a dummy method to test the endpoint
+  getDeletedBanners = controllerErrorHandler(async (req: Request, res: Response) => { 
+    if(req.params.id === 'admin'){
+      // throw error
+      logger.error('error not admin')
+      res.status(400).send({msg : 'not admin'})
+      return
+    } else {
+      // const out = await this.service.getDeletedBanners();
+      res.status(200).send({id : req.params.id});
+    }
+  });
 }

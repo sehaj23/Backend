@@ -23,7 +23,6 @@ const employeeService = new  EmployeeService(Employee,EmployeeAbsenteeism,Salon,
 const otpService = new OtpService(Otp, userService, employeeService)
 const userController= new UserController(userService,feedbackService,otpService)
 
-
 userRouter.get("/info",UserverifyToken,userController.getUser)
 userRouter.patch("/update",UserverifyToken,userController.update)
 userRouter.put("/fcm-token",UserverifyToken,userController.updateFCM)
@@ -52,4 +51,5 @@ userRouter.get("/version",userController.appVersion)
 userRouter.get("/referral",UserverifyToken,userController.refferal)
 userRouter.post('/referral-verify',userController.verifyReferral)
 userRouter.get("/deleted",userController.getDeleteUserData)
+userRouter.get("/cart-notif",UserverifyToken, userController.cartNotif)
 export default userRouter

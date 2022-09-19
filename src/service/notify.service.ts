@@ -76,7 +76,7 @@ export default class Notify {
     const bookingTime = moment(booking.services[0].service_time).format('MMMM Do YYYY, h:mm a');
     try {
 
-      SendEmail.bookingRequestVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime, employee.name, booking.location, booking.payments, getDetails.total.toString(), getDetails.promo_code, booking.services, user.name, vendor.name)
+      SendEmail.bookingRequestVendor(salon.email, salon.name, booking._id, booking.booking_numeric_id.toString(), bookingTime, employee?.name, booking.location, booking.payments, getDetails.total.toString(), getDetails.promo_code, booking?.services, user?.name, vendor?.name)
 
     } catch (error) {
       console.log(error)

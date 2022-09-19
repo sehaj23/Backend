@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as jwt from 'jwt-then';
 import CONFIG from "../config";
 import { FeedbackI } from "../interfaces/feedback.interface";
-import { UserSI } from "../interfaces/user.interface";
+import UserI, { UserSI } from "../interfaces/user.interface";
 import controllerErrorHandler from "../middleware/controller-error-handler.middleware";
 import FeedbackService from "../service/feedback.service";
 import OtpService from "../service/otp.service";
@@ -15,6 +15,12 @@ import moment = require("moment");
 import sendNotificationToDevice from "../utils/send-notification";
 import { PhotoI } from "../interfaces/photo.interface";
 import parseSignedRequest from "../utils/facebook-delete"
+import User from "../models/user.model";
+import mongoose from "../database";
+import Cart from "../models/cart.model";
+import { CartSI } from "../interfaces/cart.interface";
+import Booking from "../models/booking.model";
+import BookingService from "../service/booking.service";
 
 export default class UserController extends BaseController {
     service: UserService
@@ -205,8 +211,8 @@ export default class UserController extends BaseController {
     getFavourites = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
         const id = req.userId
-        const q =  req.query
-        const user = await this.service.getFavouritesOfUser(id,q)
+        const q = req.query
+        const user = await this.service.getFavouritesOfUser(id, q)
         if (user === null) {
             logger.error(`No Favourites`)
             res.status(400)
@@ -242,14 +248,82 @@ export default class UserController extends BaseController {
         res.send(notification)
     })
 
+    cartNotif = controllerErrorHandler(async (req: any, res: Response) => {
+        var cartsOp = []
+        var tokens = []
+        const carts = await Cart.find({
+            createdAt: { $gte: new Date((new Date().getTime() - (1 * 24 * 60 * 60 * 1000))) },
+            status: "In use"
+        }).sort({ "createdAt": -1 }).populate('user_id');
+        const currentDate: Date = new Date()
+        console.log(`cron runnning, got carts ${carts.length}`);
+        carts.forEach(cart => {
+            const cartDate: Date = new Date(cart["updatedAt"])
+            const minutes = Math.abs(currentDate.getTime() - cartDate.getTime()) / (1000 * 60);
+            // high - low == cron_time
+            if (minutes >= 1 && minutes <= 3) {
+                cartsOp.push(cart)
+                try {
+                    var userdata = cart.user_id as UserI
+                    tokens = tokens.concat(userdata.fcm_token)
+                } catch (error) {
+                    console.log("ERROR!! while adding token to array")
+                }
+            }
+        })
+        console.log(tokens);
+
+        const message = {
+            "notification": {
+                "title": "Your services are waiting for you",
+                "body": "Looks like you have added some services to your cart. Please check your cart and proceed to checkout"
+            }
+        }
+        return res.send({tokens, len : carts.length, cartsOp})
+        // const user = await User.findOne({ _id: mongoose.Types.ObjectId(req.userId)})
+        // const cart = await Cart.findOne({ user_id: req.userId, status:"In use"}).sort({ "createdAt": -1 }).limit(1) as CartSI
+        // if(cart == null)
+        //     return res.status(400).send({message: "No cart found", success: false})
+
+        // const currentDate:Date = new Date()
+        // const cartDate:Date = new Date(cart["updatedAt"])
+        // const minutes = Math.abs(currentDate.getTime() - cartDate.getTime()) / (1000 * 60);
+        // if(minutes >= 1 && minutes <= 45){
+        //     var data = [];
+        //     const message = {
+        //         "notification": {
+        //             "title": "Your services are waiting for you",
+        //             "body": "Looks like you have added some services to your cart. Please check your cart and proceed to checkout"
+        //         }
+        //     }
+        //     user.fcm_token.forEach(async (fcm) => {
+        //         const op = await this.service.sendNotification(fcm, message)
+        //         data.push(op)
+        //     });    
+        //     return res.send({data, cartDate, currentDate, minutes, msg : "ready for notif", cart})
+        // } else {
+        //     return res.status(400).send({cartDate, currentDate, minutes, msg : "not ready for notif", cart})
+        // }
+    })
+
     sendEmail = controllerErrorHandler(async (req: Request, res: Response) => {
         const email = await SendEmail.emailConfirm("developers@zattire.com", "123", "sehaj")
         res.send(email)
     })
 
-    searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    // searchUsersByEmail = controllerErrorHandler(async (req: Request, res: Response) => {
+    //     const q = req.query
+
+    //     const user = await this.service.searchUsersByEmail(q)
+    //     res.send(user)
+
+    // })
+    searchUsers = controllerErrorHandler(async (req: Request, res: Response) => {
         const q = req.query
-        const user = await this.service.searchUsersByEmail(q)
+        if (!q.phrase) {
+            return res.status(400).send({ message: "please send search phrase" })
+        }
+        const user = await this.service.searchUser(q)
         res.send(user)
 
     })
@@ -308,37 +382,37 @@ export default class UserController extends BaseController {
     appVersion = controllerErrorHandler(async (req: Request, res: Response) => {
         res.status(200).send({ ios: "1.2.0", android: "1.0.0", success: true })
     })
-    deleteFB =  async (req: Request, res: Response) => {
+    deleteFB = async (req: Request, res: Response) => {
         try {
-            
-       
-        //@ts-ignore
-        const body = req.body
-        const data =  parseSignedRequest(body,"6f9e89563e39d240a32faf0066a00b36")
-        const updateUserData =  await this.service.updateOne({uid:data.user_id},{status:2})
-        if(updateUserData){
-        return res.status(200).send({url:"https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=",code:updateUserData._id})
+
+
+            //@ts-ignore
+            const body = req.body
+            const data = parseSignedRequest(body, "6f9e89563e39d240a32faf0066a00b36")
+            const updateUserData = await this.service.updateOne({ uid: data.user_id }, { status: 2 })
+            if (updateUserData) {
+                return res.status(200).send({ url: "https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=", code: updateUserData._id })
+            }
+            return res.status(200).send({ message: "Not able to delete" })
+        } catch (error) {
+            return res.status(200).send({ url: "https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=", code: error.message })
         }
-        return res.status(200).send({message:"Not able to delete"})
-    } catch (error) {
-        return res.status(200).send({url:"https://prodbackend.zattire.com/main-server/api/u/user/deleted?id=",code:error.message}) 
-    }
     }
 
     getDeleteUserData = controllerErrorHandler(async (req: Request, res: Response) => {
         const id = req.query.id
-        if(!id){
-            return res.status(400).send({message:"send id in query"})
+        if (!id) {
+            return res.status(400).send({ message: "send id in query" })
         }
-        const getUser = await this.service.getOne({_id:id}) as UserSI
-        if(getUser.status===2){
-            return res.status(200).send({message:"User deleted"})
+        const getUser = await this.service.getOne({ _id: id }) as UserSI
+        if (getUser.status === 2) {
+            return res.status(200).send({ message: "User deleted" })
         }
-        return res.status(200).send({message:"deletion in progress"})
+        return res.status(200).send({ message: "deletion in progress" })
     })
     deleteRequest = controllerErrorHandler(async (req: Request, res: Response) => {
         //@ts-ignore
-        const id = req.userId || req.params.id 
+        const id = req.userId || req.params.id
         const dataTime = moment()
         const deleteRequest = await this.service.delete(id)
         if (deleteRequest == null) {
@@ -356,13 +430,13 @@ export default class UserController extends BaseController {
 
     })
 
-    verifyReferral= controllerErrorHandler(async (req: Request, res: Response) => {
-        const { referral_code} = req.body
-        const  getRefferal = await this.service.get({referral_code})
-        if(getRefferal.length == 0){
-           return res.status(400).send({message:"Invalid Referral",success:false})
+    verifyReferral = controllerErrorHandler(async (req: Request, res: Response) => {
+        const { referral_code } = req.body
+        const getRefferal = await this.service.get({ referral_code })
+        if (getRefferal.length == 0) {
+            return res.status(400).send({ message: "Invalid Referral", success: false })
         }
-        res.status(200).send({message:"Valid Referral",success:true})
+        res.status(200).send({ message: "Valid Referral", success: true })
     })
 
     getWithPaginationtemp = controllerErrorHandler(async (req: Request, res: Response) => {
@@ -370,52 +444,57 @@ export default class UserController extends BaseController {
         res.send(resource)
     })
 
+    bookingList = controllerErrorHandler( async (req : Request, res: Response) => {
+        const output1 = await Booking.find().distinct('user_id')
+        const output2 = await User.find({_id : {$in : output1}})
+        res.send(output2)
+    })
 
-    sendNotificationToUsers= controllerErrorHandler(async (req: Request, res: Response) => {
-       const q = req.query
-        const {title,body,type,id,status} = req.body
-        const getUser =  await this.service.getUserswithFilters(q) 
-        if(!title || !body || !type){
+    sendNotificationToUsers = controllerErrorHandler(async (req: Request, res: Response) => {
+        const q = req.query
+        const { title, body, type, id, status } = req.body
+        const getUser = await this.service.getUserswithFilters(q)
+        if (!title || !body || !type) {
             return res.status(400).send("title,body and type are required")
         }
         let message
 
-        if(id==undefined){
-        message = {
-            "notification": {
-                "title": title,
-                "body": body,
-             
-                
-            },
-            "data":{
-                "type":type,
-                click_action: "FLUTTER_NOTIFICATION_CLICK"
-            },
-        }
-    }else{
-        message = {
-            "notification": {
-                "title": title,
-                "body": body,
-            },
-            "data":{
-                "type":type,
-                "id":id,
-                "status":status,
-                click_action: "FLUTTER_NOTIFICATION_CLICK"
+        if (id == undefined) {
+            message = {
+                "notification": {
+                    "title": title,
+                    "body": body,
+
+
+                },
+                "data": {
+                    "type": type,
+                    click_action: "FLUTTER_NOTIFICATION_CLICK"
+                },
+            }
+        } else {
+            message = {
+                "notification": {
+                    "title": title,
+                    "body": body,
+                },
+                "data": {
+                    "type": type,
+                    "id": id,
+                    "status": status,
+                    click_action: "FLUTTER_NOTIFICATION_CLICK"
+                }
             }
         }
-    }
         let tokenList = []
-          getUser.map((e)=>{
-         tokenList =    tokenList.concat(e.fcm_token)
-           
+        getUser.map((e) => {
+            tokenList = tokenList.concat(e.fcm_token)
+
         })
-       let sendNotifcation
+        let sendNotifcation
         try {
-             sendNotifcation =  await sendNotificationToDevice(tokenList,message)
-            
+            sendNotifcation = await sendNotificationToDevice(tokenList, message)
+
         } catch (error) {
             console.log(error)
             return res.status(400).send(error)
@@ -426,33 +505,46 @@ export default class UserController extends BaseController {
         try {
             const photoData: PhotoI = req.body
             //@ts-ignore
-            const _id =  req.userId 
-            const newEvent = await this.service.updateUserphoto(photoData,_id)
-           
+            const _id = req.userId
+            const newEvent = await this.service.updateUserphoto(photoData, _id)
+
             res.send(newEvent)
         } catch (e) {
             logger.error(`User Put Photo ${e.message}`)
-            res.status(403).send(`${e.message}` )
+            res.status(403).send(`${e.message}`)
         }
     }
 
     deleteUser = async (req: Request, res: Response) => {
-    try {
-        let deleteUser
-        const q = req.query
-        if(!q){
-            res.send({message:"please send email in query"})
+        try {
+            let deleteUser
+            const q = req.query
+            if (!q) {
+                res.send({ message: "please send email in query" })
+            }
+            if (q.email) {
+                deleteUser = await this.service.deleteByFilter({ email: q.email })
+            } else if (q.phone) {
+                deleteUser = await this.service.deleteByFilter({ phone: q.phone })
+            }
+            res.send(deleteUser)
+
+        } catch (error) {
+            res.status(400).send(error)
         }
-        if(q.email){
-            deleteUser=await this.service.deleteByFilter({email:q.email})
-        }else if(q.phone){
-            deleteUser = await this.service.deleteByFilter({phone:q.phone})
-        }
-        res.send(deleteUser)
-       
-    } catch (error) {
-        res.status(400).send(error)
     }
+
+    getUserAdmin = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id
+            const getUser = await this.service.getId(id)
+            if (getUser === null) {
+                return res.status(404).send({ message: "User not found" })
+            }
+            res.send(getUser)
+        } catch (error) {
+            res.status(400).send(error)
+        }
     }
 
 }

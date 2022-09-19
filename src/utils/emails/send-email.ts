@@ -116,6 +116,7 @@ export default class SendEmail {
                     SendEmail.logEmailStatus(true, 'booking confirmed', 'salon', salonEmail, data.MessageId)
                 }).catch(
                     function (err) {
+                        
                         SendEmail.logEmailStatus(false, 'booking confirmed', 'salon', salonEmail, err.message)
                     });
         })

@@ -106,6 +106,7 @@ export default class BookingService extends BaseService {
             const b = await this.model.create(booking) as BookingSI
             await BookingRedis.remove(userId,{ type: "getUserBookings" })
              BookingRedis.remove(userId,{ type: REDIS_CONFIG.homePageData })
+             await BookingRedis.remove(userId,{ type: "getUserBookings" })
             if (usedWalletAmount > -1) {
                 const walletTransactionI: WalletTransactionI = {
                     amount: (usedWalletAmount*-1),
@@ -391,8 +392,8 @@ export default class BookingService extends BaseService {
         const keys = Object.keys(q)
         const filters = {}
         const dateFilter = {}
-        dateFilter["start_date"] = moment().format("YYYY-MM-DD")
-        dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
+        // dateFilter["start_date"] = moment().format("YYYY-MM-DD")
+        // dateFilter["end_date"] = moment().add(28, "days").format("YYYY-MM-DD")
         for (const k of keys) {
             switch (k) {
                 case "service_id":
@@ -426,10 +427,10 @@ export default class BookingService extends BaseService {
                 default:
                     filters[k] = q[k]
             }
-            filters["services.service_time"] = {
-                "$gte": dateFilter["start_date"],
-                "$lt": dateFilter["end_date"]
-            }
+            // filters["services.service_time"] = {
+            //     "$gte": dateFilter["start_date"],
+            //     "$lt": dateFilter["end_date"]
+            // }
             //  filters["createdAt"] = {
             //      "$gte": dateFilter["start_date"],
             //      "$lt": dateFilter["end_date"]

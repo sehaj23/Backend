@@ -114,7 +114,6 @@ export default class LoginController extends BaseController {
       })
     }
   })
-
   createRefferal = async (name: string, id: string) => {
     const refferal = name.toUpperCase().substr(0, 4) + id.substr(0, 4)
     return refferal
@@ -264,7 +263,7 @@ export default class LoginController extends BaseController {
           try {
             const referral = await this.referralService.post(referalData) as ReferralSI
                 const walletTransactionI: WalletTransactionI = {
-                          amount: 50,
+                  amount: 100,
                           user_id: referral.referred_to.user.toString(),
                           reference_model: 'referal',
                           reference_id: referral._id,
@@ -384,7 +383,7 @@ export default class LoginController extends BaseController {
           try {
             const referral = await this.referralService.post(referalData) as ReferralSI
                 const walletTransactionI: WalletTransactionI = {
-                          amount: 50,
+                  amount: 100,
                           user_id: referral.referred_to.user.toString(),
                           reference_model: 'referal',
                           reference_id: referral._id,

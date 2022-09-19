@@ -31,6 +31,7 @@ export default class UserService extends BaseService {
 
     getUser = async (userId) => {
         //@ts-ignore
+        // const user2 = await this.getById(userId) 
         const user = await this.model.findOne({ _id: userId })
        // user.password = ""
         return user
@@ -90,11 +91,11 @@ export default class UserService extends BaseService {
     addAddress = async (id: string, d: any) => {
         const user = await this.model.findOne({ _id: id }) as UserSI
         user?.address.push(d)
-
-       const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
-       await  Promise.all([user.save(),redisUser])
-       UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
-      return user.address
+        
+        const redisUser = UserRedis.remove(id, { type: REDIS_CONFIG.userinfo })
+        await Promise.all([user.save(),redisUser])
+        UserRedis.set(id, user, { type: REDIS_CONFIG.userinfo })
+        return user.address
     }
 
     updateAddress = async (userId: string, addressId: string, d: Object) => {
@@ -207,8 +208,32 @@ export default class UserService extends BaseService {
         const notification = sendNotificationToDevice(fcm_token, message)
         return notification
     }
-
-
+    searchUser = async (q)=>{
+        const pageNumber: number = parseInt(q.page_number || 1)
+        let pageLength: number = parseInt(q.page_length || 25)
+        pageLength = (pageLength > 100) ? 100 : pageLength
+        const skipCount = (pageNumber - 1) * pageLength
+        const value = q.phrase
+        const filters = {
+            $or: [
+                {
+                  name: { $regex: '.*' + value + '.*',$options: 'i' } 
+                },
+                {
+                  email: { $regex: '.*' + value + '.*' ,$options: 'i'} 
+                },
+                {
+                    phone: { $regex: '.*' + value + '.*',$options: 'i' } 
+                }
+              ]
+        }
+        const userDetailsReq = this.model.find(filters).skip(skipCount).limit(pageLength).sort('-createdAt')
+        const userPagesReq = this.model.count(filters)
+       
+        const [userDetails, userPages] = await Promise.all([userDetailsReq, userPagesReq])
+        return ({ userDetails, userPages })
+    }
+    //not in use as of 12 july 2022
     searchUsersByEmail = async (q) => {
 
         const pageNumber: number = parseInt(q.page_number || 1)

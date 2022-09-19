@@ -17,4 +17,5 @@ const walletTransactionService: WalletTransactionService = new WalletTransaction
 const walletRazorpayController = new WalletTransactionController(walletTransactionService)
 
 walletTransactionRouter.get("/", verifyToken, walletRazorpayController.getWithPagination)
+walletTransactionRouter.post("/add",walletRazorpayController.addMoneyInWallet)
 export default walletTransactionRouter

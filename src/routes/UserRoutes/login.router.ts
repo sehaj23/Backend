@@ -33,34 +33,6 @@ const referralService = new  ReferralService(Referral)
 const promoCodeService = new PromoCodeService(PromoCode)
 const loginController = new LoginController(loginService, CONFIG.USER_JWT, '365 days', otpService,referralService,promoCodeService,walletTransactionService)
 
-/**
- * @swagger
- * /api/u/login:
- *  post:
- *      tags: [User]
- *      description: To login as user
- *      consumes:
- *          - application/json
- *      requestBody:
- *          description: Optional description in
- *          required: true
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          email:
- *                              type: string
- *                              default: mm@gmail.com
- *                              required: true
- *                          password:
- *                              type: string
- *                              default: 123456
- *                              required: true
- *      responses:
- *          default:
- *              description: Admin Login Response
- */
 loginRouter.post(
   '/',
   [loginLimiter, loginChecks, mySchemaValidator],

@@ -17,7 +17,7 @@ export default class BaseService {
     }
 
     get = async (filters = {}): Promise<any[]> => {
-        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id").sort({'city':1})
+        return await this.model.find(filters).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("photo").populate("photo_id").sort({ 'city': 1 })
     }
     getNopopulate = async (filters = {}): Promise<any[]> => {
         return await this.model.find(filters).select("-password")
@@ -28,10 +28,12 @@ export default class BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
-        
-        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").populate({ path: 'salon_id',
-        model: 'salons',
-        select: { '_id': 1,'temporary_closed':1,"book_service":1},}).sort([['rating', -1], ['createdAt', -1]]).lean()
+
+        const resourceQuery = this.model.find(q, {}, { skip: skipCount, limit: pageLength }).populate("photo_ids").populate("profile_pic").populate("user_id").populate({
+            path: 'salon_id',
+            model: 'salons',
+            select: { '_id': 1, 'temporary_closed': 1, "book_service": 1 },
+        }).sort([['rating', -1], ['createdAt', -1]]).lean()
         const resourceCountQuery = this.model.aggregate([
             { "$count": "count" }
         ])
@@ -59,7 +61,7 @@ export default class BaseService {
      * This is to find by multipleIds
      */
     getByIds = async (ids: string[]) => {
-        return this.model.find({_id:{$in:ids}}).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
+        return this.model.find({ _id: { $in: ids } }).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
     }
     getByObjectIds = async (ids: string[]) => {
         return this.model.find(ids).select("-password").populate("profile_pic").populate("employees").populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("services.employee_id")
@@ -68,8 +70,11 @@ export default class BaseService {
     getId = async (id: string) => {
         return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo").populate("photo_ids").populate("location_id") //.populate({
     }
+    getIdwithVendorPopulate = async (id: string) => {
+        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } }).populate("user_id").populate("salon_id").populate("designer_id").populate("makeup_artist_id").populate("events").populate("salons").populate("services.employee_id").populate("photo").populate("photo_ids").populate("location_id").populate("vendor_id") //.populate({
+    }
     getById = async (id: string) => {
-        return this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } })//.populate({
+        return await this.model.findOne({ _id: mongoose.Types.ObjectId(id) }).select("-password").populate("profile_pic").populate({ path: "employees", populate: { path: 'photo' } })//.populate({
     }
     put = async (_id: string, data: any) => {
         return await this.model.findByIdAndUpdate({ _id }, data, { new: true }) // to return the updated data do - returning: true
@@ -81,8 +86,8 @@ export default class BaseService {
         //@ts-ignore
         return await this.model.findByIdAndUpdate({ _id }, { $push: { photo_ids: photo._id } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
     }
-    removePhoto = async (_id: string, photoId:string) => {
-      
+    removePhoto = async (_id: string, photoId: string) => {
+
         //@ts-ignore
         return await this.model.findByIdAndUpdate({ _id }, { $pull: { photo_ids: photoId } }, { new: true }).populate("photo_ids").exec() // to return the updated data do - returning: true
     }
@@ -97,7 +102,7 @@ export default class BaseService {
         const photo = await Photo.create(photoData)
         // adding it to event
         const newEvent = await this.model.findByIdAndUpdate({ _id }, { profile_pic: photo._id }, { new: true }).populate("profile_pic").exec() // to return the updated data do - returning: true
-       
+
         return newEvent
     }
 
@@ -117,11 +122,8 @@ export default class BaseService {
         return promo
     }
 
-    getAndUpdateByField = async (name: any,data: any) => {
-        const promo = await this.model.findOneAndUpdate(name ,data,{new:true})
+    getAndUpdateByField = async (name: any, data: any) => {
+        const promo = await this.model.findOneAndUpdate(name, data, { new: true })
         return promo
     }
-
-
-
 }

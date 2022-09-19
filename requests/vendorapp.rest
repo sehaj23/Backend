@@ -1,0 +1,65 @@
+@url = http://localhost:8082/main-server/api/vendorapp
+# @url = https://devbackend.zattire.com/main-server/api/vendorapp
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMzM4MWQ4ZTk4MzMzMTczOGFkM2MiLCJpYXQiOjE2NTk5NDQxOTAsImV4cCI6MTY2MjUzNjE5MH0.D71-eFvV9qgJdJ50C2NVKXRq_yX5EZ4mz7J03VO0hzw
+@page = page_length=10&page_number=1
+@salonid = 618a33bed8e983331738ad3e
+
+# booking ####################################
+### booking details
+get {{url}}/booking/?salon_id=618a33bed8e983331738ad3e&status=Completed
+Authorization: Bearer {{token}}
+
+
+# vendor ####################################
+### salon list api
+get {{url}}/vendor/info 
+Authorization: Bearer {{token}}
+
+# explore ###################################
+### get explore list
+get {{url}}/explore/salon/{{salonid}}?{{page}}
+Authorization: Bearer {{token}}
+
+### get explore
+get {{url}}/explore/624aaf4ac05bcc001377678c
+Authorization: Bearer {{token}}
+
+### upload photo to s3
+# main-server/upload is called - call from postman {"upload" : __}
+# gets location and call api/photo -> vendorapp photo upload not configured
+
+### add explore
+post {{url}}/explore
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "salon_id" : "618a33bed8e983331738ad3e",
+    "service_name" : "new explore service",
+    "description" : "new explore description",
+    "photo" : "https://ik.imagekit.io/gn8ff3omop9/tr:w-700,h-700/1649061341031_image_picker_A97F0063-17E9-43EE-A180-631EE21F2C27-1291-000000ABAE25D228.jpg",
+    "color" : [],
+    "tags" : [],
+    "options" : []
+}
+
+
+### update explore
+put {{url}}/explore/624aaf4ac05bcc001377678c
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "service_name" : "explore service 2"
+}
+
+
+# login ###################################
+### login
+post {{url}}/vendor
+Content-Type: application/json
+
+{
+    "email" : "soho@zattire1.com",
+    "password" : "zattire121"
+}

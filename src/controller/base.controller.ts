@@ -55,6 +55,23 @@ export default class BaseController {
     }
   };
 
+  getIdwithVendorPopulate = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+
+      const resource = await this.service.getIdwithVendorPopulate(id);
+      if (resource === null) {
+        const msg = `No data found with this id `;
+        logger.error(msg);
+        res.status(403);
+        res.send(msg);
+        return;
+      }
+      res.send(resource);
+    } catch (e) {
+      res.status(403).send({ message: e.message });
+    }
+  };
   put = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;

@@ -43,7 +43,7 @@ const salonController = new SalonController(salonService, userSearchService,user
  *              description: Salon names and _ids
  */
 salonRouter.get("/names", verifyToken, salonController.getNameIDRatingProfile)
-salonRouter.get("/info/:id",verifyToken,salonController.getId)
+salonRouter.get("/info/:id",verifyToken,salonController.getIdwithVendorPopulate)
 salonRouter.put("/update/:id",verifyToken,salonController.put)
 salonRouter.get("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
 salonRouter.put("/:id/add/photo", verifyToken, salonController.putPhoto)
