@@ -71,19 +71,13 @@ salonInfoRouter.post('/reviews/:id',UserverifyToken,salonController.postSalonRev
 salonInfoRouter.get('/reviews/:id',salonController.getSalonReviews)
 // check if user can Post Reviews
 salonInfoRouter.get('/reviews/check/:id',UserverifyToken,salonController.checkPostReviews)
-// get brands
 salonInfoRouter.get('/brands',salonController.getBrands)
-// get brands by ID
 salonInfoRouter.get('/brand/:id',salonController.getBrandbyId)
-
 salonInfoRouter.post("/report/",UserverifyToken, salonController.reportSalon)
-
 salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
-
 salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
-
 salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
-
+salonInfoRouter.get("/top-brands",salonController.getTopBrands)
 
 
 export default salonInfoRouter 

@@ -1087,4 +1087,13 @@ export default class SalonController extends BaseController {
       res.send(getDistance);
     }
   );
+
+  getTopBrands = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q = req.query;
+      const topBrands = await this.service.getTopBrands();
+      res.send(topBrands);
+    }
+  );
+
 }

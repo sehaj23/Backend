@@ -1193,5 +1193,10 @@ export default class SalonService extends BaseService {
                       return salon
         }
 
-
+        getTopBrands = async ()=>{
+                // logic to get group salons with same names
+                // basically search for a list of names
+                // these names will be taken from admin app
+                return {"data" : "ok"}
+        }
 }
