@@ -1,10 +1,7 @@
 import mongoose from "../database";
 import { BannerSI } from "../interfaces/banner.interface";
 
-
-
 const BannerSchema = new mongoose.Schema({
-
     name:{
         type:String,
         required:true

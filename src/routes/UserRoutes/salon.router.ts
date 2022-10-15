@@ -8,6 +8,7 @@ import Booking from '../../models/booking.model';
 import Brand from '../../models/brands.model';
 import Employee from "../../models/employees.model";
 import Event from "../../models/event.model";
+import FilterHome from '../../models/filterHome.model';
 import Offer from "../../models/offer.model";
 import PromoCode from '../../models/promo-code.model';
 import PromoHomeCode from '../../models/promo-home.model';
@@ -24,7 +25,7 @@ import SalonService from "../../service/salon.service";
 import UserSearchService from '../../service/user-search.service';
 import UserService from '../../service/user.service';
 import { salonInfoChecks } from '../../validators/salon-validator';
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, FilterHome, ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
 
 const userService = new UserService(User,Booking)
@@ -77,7 +78,13 @@ salonInfoRouter.post("/report/",UserverifyToken, salonController.reportSalon)
 salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
 salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
-salonInfoRouter.get("/top-brands",salonController.getTopBrands)
 
+salonInfoRouter.get("/filter-rating/:value",salonController.getFilterRating)
+salonInfoRouter.get("/filter-distance/:value",salonController.getFilterDistance)
+salonInfoRouter.get("/filter-brand/:value",salonController.getFilterBrand)
+salonInfoRouter.get("/filter-category/:value",salonController.getFilterCategory)
+
+salonInfoRouter.get("/top-brands",salonController.getTopBrands)
+salonInfoRouter.post("/location", salonController.getSalonByLocation)
 
 export default salonInfoRouter 

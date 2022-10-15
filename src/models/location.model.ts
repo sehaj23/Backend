@@ -10,15 +10,19 @@ const LocationSchema = new mongoose.Schema({
     },
     state: {
         type: String, 
+        required: true
     },
     city:{
-        type: String,      
+        type: String,   
+        required: true
     },
     subarea:{
-        type: String,   
+        type: String,  
+        required: true
     },
     pincode: {
-        type: Number,   
+        type: Number,  
+        required: true
     }
 }, {
     timestamps: true

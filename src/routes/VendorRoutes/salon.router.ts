@@ -6,6 +6,7 @@ import Booking from '../../models/booking.model';
 import Brand from "../../models/brands.model";
 import Employee from "../../models/employees.model";
 import Event from "../../models/event.model";
+import FilterHome from "../../models/filterHome.model";
 import Offer from "../../models/offer.model";
 import PromoCode from "../../models/promo-code.model";
 import PromoHomeCode from "../../models/promo-home.model";
@@ -24,14 +25,13 @@ import UserService from "../../service/user.service";
 
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand, FilterHome, ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
 const userService = new UserService(User,Booking)
 const promoCodeService = new PromoCodeService(PromoCode)
 const promoHomeService = new PromoHomeService(PromoHomeCode)
 const bannerService = new BannerService(Banner)
 const salonController = new SalonController(salonService, userSearchService,userService,promoCodeService,promoHomeService,bannerService)
-//const ss = new SalonService()
 
 salonRouter.post("/", VendorverifyToken, salonController.postSalon)
 salonRouter.patch("/:id",VendorverifyToken,salonController.patchSalon)

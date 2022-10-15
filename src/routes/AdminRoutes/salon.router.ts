@@ -6,6 +6,7 @@ import Booking from '../../models/booking.model';
 import Brand from "../../models/brands.model";
 import Employee from "../../models/employees.model";
 import Event from "../../models/event.model";
+import FilterHome from "../../models/filterHome.model";
 import Offer from "../../models/offer.model";
 import PromoCode from "../../models/promo-code.model";
 import PromoHomeCode from "../../models/promo-home.model";
@@ -23,7 +24,7 @@ import UserSearchService from "../../service/user-search.service";
 import UserService from "../../service/user.service";
 const salonRouter = Router()
 
-const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, FilterHome, ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
 const userService = new UserService(User, Booking)
 const promoCodeService = new PromoCodeService(PromoCode)
@@ -57,7 +58,10 @@ salonRouter.get("/:id/photo", verifyToken, salonController.getSalonPhoto)
 salonRouter.get("/:id/offer", verifyToken, salonController.getOffer)
 salonRouter.get("/:id/service", verifyToken, salonController.getService)
 salonRouter.post("/:id/offer/:sid", verifyToken, salonController.createOffer)
+salonRouter.get("/brands", verifyToken, salonController.getBrands)
 salonRouter.post("/brand", verifyToken, salonController.addBrand)
+salonRouter.put("/brand/:id", verifyToken, salonController.updateBrand)
+salonRouter.delete("/brand/:id", verifyToken, salonController.deleteBrand)
 salonRouter.get("/reviews/:id",verifyToken,salonController.getSalonReviews)
 salonRouter.post("/unapproved/",verifyToken,salonController.getUnapprovedSalon)
 salonRouter.get("/redis/:id",verifyToken,salonController.clearASalonRedisById)

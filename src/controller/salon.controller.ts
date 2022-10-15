@@ -643,7 +643,7 @@ export default class SalonController extends BaseController {
         const homeReq = this.service.getHomeServiceSalon(q);
         const bannerReq = this.bannerService.getActiveBanners();
         const promoHomeReq = this.promoHomeService.get({ active: true });
-        const version = { ios: "1.2.0", android: "1.0.0",}
+        const version = { ios: "1.2.0", android: "1.0.0", }
         const [recommended, nearby, home, banner, promoHome] =
           await Promise.all([
             recommendedReq,
@@ -654,10 +654,10 @@ export default class SalonController extends BaseController {
           ]);
         SalonRedis.set(
           redisKey,
-          { recommended, nearby, home, banner, promoHome,version },
+          { recommended, nearby, home, banner, promoHome, version },
           filter
         );
-        out = { recommended, nearby, home, banner, promoHome,version };
+        out = { recommended, nearby, home, banner, promoHome, version };
       } else {
         out = JSON.parse(cahceGetSalon);
       }
@@ -856,6 +856,7 @@ export default class SalonController extends BaseController {
     }
     res.send(brand);
   });
+
   getBrandbyId = controllerErrorHandler(async (req: Request, res: Response) => {
     const id = req.params.id;
     const brand = await this.service.getBrandbyId(id);
@@ -877,6 +878,62 @@ export default class SalonController extends BaseController {
     }
     res.send(brand);
   });
+
+  updateBrand = controllerErrorHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const d = req.body;
+    const brand = await this.service.updateBrand(id, d);
+    if (brand === null) {
+      res.status(400);
+      res.send({ message: `Unable to update Brand` });
+      return;
+    }
+    res.send(brand);
+  });
+
+  deleteBrand = controllerErrorHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const brand = await this.service.deleteBrand(id);
+    if (brand === null) {
+      res.status(400);
+      res.send({ message: `Unable to delete Brand` });
+      return;
+    }
+    res.send({ "message": "Brand Deleted Successfully" });
+  });
+
+  getFilterHomes = controllerErrorHandler(async (req: Request, res: Response) => {
+    const filters = await this.service.getFilterHomes();
+    if (filters === null) {
+      res.status(400);
+      res.send({ message: `No FIlters Found` });
+      return;
+    }
+    res.send(filters);
+  });
+
+  addFilterHome = controllerErrorHandler(async (req: Request, res: Response) => {
+    const d = req.body;
+    const filter = await this.service.addFilterHome(d);
+    if (filter === null) {
+      res.status(400);
+      res.send({ message: `Unable to create Filter` });
+      return;
+    }
+    res.send(filter);
+  });
+
+  deleteFilterHome = controllerErrorHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const filter = await this.service.deleteFilterHome(id);
+    if (filter === null) {
+      res.status(400);
+      res.send({ message: `Unable to delete filter` });
+      return;
+    }
+    res.send({ "message": "Filter Deleted Successfully" });
+  });
+
   searchFilter = controllerErrorHandler(async (req: Request, res: Response) => {
     const q = req.query;
 
@@ -1090,10 +1147,73 @@ export default class SalonController extends BaseController {
 
   getTopBrands = controllerErrorHandler(
     async (req: Request, res: Response) => {
-      const q = req.query;
-      const topBrands = await this.service.getTopBrands();
+      const topBrands = await this.service.getBrandSalon();
       res.send(topBrands);
     }
   );
+
+  getSalonByLocation = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q: any = req.body;
+      if (q.city != null) {
+        const salons = await this.service.getSalonByLocation(q);
+        res.send(salons)
+      } else {
+        res.status(400).send({ message: "City is required" });
+      }
+    }
+  );
+
+  getFilterRating = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q: any = req.params;
+      if (q.value != null) {
+        const salons = await this.service.getSalonsByRating(q.value);
+        res.send(salons);
+      } else {
+        res.status(400).send({ message: "Rating is required" });
+      }
+    }
+  )
+
+  getFilterDistance = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      var centerPoint = {};
+      //@ts-ignore
+      centerPoint.lat = req.query.latitude;
+      //@ts-ignore
+      centerPoint.lng = req.query.longitude;
+      const km = (req.params.value || 10).toString();
+      const salonLocation = await this.service.getSalonDistance(
+        centerPoint,
+        km
+      );
+      res.status(200).send(salonLocation);
+    }
+  )
+
+  getFilterBrand = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q: any = req.params;
+      if (q.value != null) {
+        const salons = await this.service.getSalonByBrandName(q.value);
+        res.send(salons)
+      } else {
+        res.status(400).send({ message: "Brand is required" });
+      }
+    }
+  )
+
+  getFilterCategory = controllerErrorHandler(
+    async (req: Request, res: Response) => {
+      const q: any = req.params;
+      if (q.value != null) {
+        const salons = await this.service.getSalonCategory(q.value);
+        res.send(salons);
+      } else {
+        res.status(400).send({ message: "Category is required" });
+      }
+    }
+  )
 
 }

@@ -5,6 +5,7 @@ import Booking from '../../models/booking.model'
 import Brand from "../../models/brands.model"
 import Employee from "../../models/employees.model"
 import Event from "../../models/event.model"
+import FilterHome from "../../models/filterHome.model"
 import Offer from "../../models/offer.model"
 import PromoCode from "../../models/promo-code.model"
 import PromoHomeCode from "../../models/promo-home.model"
@@ -21,7 +22,7 @@ import SalonService from "../../service/salon.service"
 import UserSearchService from "../../service/user-search.service"
 import UserService from "../../service/user.service"
 const searchRouter = Router()
-const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand,ReportSalon)
+const salonService = new SalonService(Salon,Employee,Vendor,Event,Offer,Review,Booking,Brand, FilterHome, ReportSalon)
 const userSearchService = new UserSearchService(UserSearch)
 const userService = new UserService(User,Booking)
 const promoCodeService = new PromoCodeService(PromoCode)

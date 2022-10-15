@@ -2,9 +2,19 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label" : "start:dev",
+            "label" : "start:dev redis-docker",
             "type" : "shell",
             "command" : "sudo systemctl stop redis-server && sudo docker start some-redis && npm run start:dev"
+        },
+        {
+            "label" : "redis start",
+            "type" : "shell",
+            "command" : "sudo service redis-server stop && redis-server"
+        },
+        {
+            "label" : "start:dev",
+            "type" : "shell",
+            "command" : "npm run start:dev"
         }
     ]
 }

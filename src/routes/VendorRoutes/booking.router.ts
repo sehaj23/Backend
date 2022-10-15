@@ -12,6 +12,7 @@ import Employee from "../../models/employees.model";
 import Event from "../../models/event.model";
 import Explore from "../../models/explore.model";
 import Feedback from "../../models/feedback.model";
+import FilterHome from "../../models/filterHome.model";
 import MongoCounter from "../../models/mongo-counter.model";
 import Offer from "../../models/offer.model";
 import PromoCode from "../../models/promo-code.model";
@@ -53,7 +54,7 @@ const walletTransactionService: WalletTransactionService = new WalletTransaction
 const bookingService = new BookingService(Booking, Salon, cartService, mongoCounterService, Referral, walletTransactionService)
 const employeeAbsenteeism = new EmployeeAbsentismService(EmployeeAbsenteeism)
 const employeeService = new EmployeeService(Employee, EmployeeAbsenteeism, Salon, Feedback, ReportVendor, Booking)
-const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, ReportSalon)
+const salonService = new SalonService(Salon, Employee, Vendor, Event, Offer, Review, Booking, Brand, FilterHome, ReportSalon)
 const vendorService = new VendorService(Vendor, EmployeeAbsenteeism, ReportVendor, Feedback)
 const promoUserService = new PromoUserService(PromoUserCode)
 const refundService = new RefundService(Refund, bookingService, walletTransactionService)

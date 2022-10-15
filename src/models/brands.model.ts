@@ -1,26 +1,24 @@
 import mongoose from "../database";
-import salons = require("../seeds/data/salons/salons");
-
 
 const BrandSchema = new mongoose.Schema({
-
     brand_name: {
         required: true,
         type: String,
     },
-    logo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "photos",
-   //     required: true
+    logo_url: {
+        required: true,
+        type: String,
     },
-    salon_id: {
-        type: [{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "salons"  
-        }]
+    active: {
+        required: true,
+        type: Boolean,
     }
-
-
+    // salon_id: {
+    //     type: [{
+    //             type: mongoose.Schema.Types.ObjectId,
+    //             ref: "salons"  
+    //     }]
+    // }
 })
 const Brand = mongoose.model("brand", BrandSchema)
 
