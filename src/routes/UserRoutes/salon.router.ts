@@ -79,6 +79,7 @@ salonInfoRouter.get("/reviews/ratings/:id",salonController.getRatings)
 salonInfoRouter.get("/slots/:id",UserverifyToken,salonController.salonSlots)
 salonInfoRouter.get("/getDistance",UserverifyToken,salonController.getDistanceInPairs)
 
+salonInfoRouter.get('/filter-home', salonController.getFilterHomes)
 salonInfoRouter.get("/filter-rating/:value",salonController.getFilterRating)
 salonInfoRouter.get("/filter-distance/:value",salonController.getFilterDistance)
 salonInfoRouter.get("/filter-brand/:value",salonController.getFilterBrand)
