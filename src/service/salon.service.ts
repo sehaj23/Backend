@@ -1143,7 +1143,7 @@ export default class SalonService extends BaseService {
                 const salon = await this.model.findOne({}).populate({
                         path: 'location_id',
                         match: { city: "i" },
-                }).exec()
+                }).select('name email rating location_id start_price coordinates profile_pic').exec()
                 return salon
         }
 
@@ -1152,24 +1152,40 @@ export default class SalonService extends BaseService {
                 console.log(brands);
                 let output = []
                 for (let i = 0; i < brands.length; i++) {
-                        const salon = await this.model.find({ name: { $regex: '.*' + brands[i].brand_name + '.*' } }).select('name email')
+                        const salon = await this.model.find({ name: { $regex: '.*' + brands[i].brand_name + '.*' } }).select('name email rating location_id start_price coordinates profile_pic')
                         output.push({ 'brand': brands[i], 'salons': salon })
                 }
                 return output
         }
 
-        getSalonByLocation = async (q: any) => {
-                const salon = await this.model.find({}).populate({ path: 'location_id', match: { 'city': q.city } })
-                return salon
+        getPopularAreas = async (q: any) => {
+                // for given q.state find cities with salons
+                const salons = await this.model.find({ location_id : { $exists : true } }).populate({ path: 'location_id', match: { 'state': q.state } }).select('name email rating location_id start_price coordinates profile_pic')
+                let temp = new Array()
+                salons.map( (salon)=>{
+                        if(salon.location_id != null)
+                                temp.push(salon)
+                })
+                var output = {}
+                temp.map(salon => output[salon.location_id.subarea] == undefined
+                        ? output[salon.location_id.subarea] = new Array(salon)
+                        : output[salon.location_id.subarea].push(salon)
+                )
+                return output
         }
 
+        // getSalonByLocation = async (q: any) => {
+        //         const salons = await this.model.find({ }).populate({ path: 'location_id', match: { 'subarea': q.subarea } }).select('name email rating location_id start_price coordinates profile_pic')
+        //         return salons
+        // }
+
         getSalonByBrandName = async (brand_name: any) => {
-                const salons = await this.model.find({ name: { $regex: '.*' + brand_name + '.*' } }).select('name email')
+                const salons = await this.model.find({ name: { $regex: brand_name + '.*' } }).select('name email rating location_id start_price coordinates profile_pic')
                 return salons
         }
 
         getSalonsByRating = async (rating: any) => {
-                const salons = await this.model.find({ rating: { $gte: rating } }).select('name email')
+                const salons = await this.model.find({ rating: { $gte: rating } }).select('name email rating location_id start_price coordinates profile_pic')
                 return salons
         }
 

@@ -1152,17 +1152,30 @@ export default class SalonController extends BaseController {
     }
   );
 
-  getSalonByLocation = controllerErrorHandler(
+  getPopularAreas = controllerErrorHandler(
     async (req: Request, res: Response) => {
-      const q: any = req.body;
-      if (q.city != null) {
-        const salons = await this.service.getSalonByLocation(q);
+      // for given state return areas with their salons list
+      const q: any = req.params;
+      if (q.state != null) {
+        const salons = await this.service.getPopularAreas(q);
         res.send(salons)
       } else {
-        res.status(400).send({ message: "City is required" });
+        res.status(400).send({ message: "state is required" });
       }
     }
   );
+
+  // getSalonByLocation = controllerErrorHandler(
+  //   async (req: Request, res: Response) => {
+  //     const q: any = req.body;
+  //     if (q.subarea != null) {
+  //       const salons = await this.service.getSalonByLocation(q);
+  //       res.send(salons)
+  //     } else {
+  //       res.status(400).send({ message: "City is required" });
+  //     }
+  //   }
+  // );
 
   getFilterRating = controllerErrorHandler(
     async (req: Request, res: Response) => {

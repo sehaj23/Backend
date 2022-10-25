@@ -86,6 +86,7 @@ salonInfoRouter.get("/filter-brand/:value",salonController.getFilterBrand)
 salonInfoRouter.get("/filter-category/:value",salonController.getFilterCategory)
 
 salonInfoRouter.get("/top-brands",salonController.getTopBrands)
-salonInfoRouter.post("/location", salonController.getSalonByLocation)
+salonInfoRouter.get("/popular-areas/:state", salonController.getPopularAreas)
+// salonInfoRouter.get("/from-subarea/:subarea", salonController.getSalonByLocation)
 
 export default salonInfoRouter 
