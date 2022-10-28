@@ -63,7 +63,8 @@ export default class LoginController extends BaseController {
     password = encryptData(password)
     const admin = await this.service.loginAdmin(username, password)
     if (admin === null) throw new ErrorResponse({ message: "Username password does not match" })
-    const token = await jwt.sign(admin.toJSON(), this.jwtKey, {
+    // const token = await jwt.sign(admin.toJSON(), this.jwtKey, {
+    const token = await jwt.sign({ _id: admin._id.toString() }, this.jwtKey, {
       expiresIn: this.jwtValidity,
     })
     res.send({ token })
