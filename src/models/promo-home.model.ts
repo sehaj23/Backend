@@ -21,12 +21,18 @@ const PromoHomeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "promoCodes",
     },
-   
+    priority : {
+        type : Number,
+        required : true
+    },
+    image_url : {
+        type : String,
+        required : true
+    }
 }, {
     timestamps: true
 })
 PromoHomeSchema.index({promo_code_id: 1, })
 
 const PromoHomeCode = mongoose.model<PromoHomeSI>("promoHome", PromoHomeSchema)
-
 export default PromoHomeCode
