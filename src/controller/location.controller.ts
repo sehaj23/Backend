@@ -25,13 +25,10 @@ export default class LocationController extends BaseController {
         if(!req.query.city){
             return res.status(400).send({message:"send city in query"})
         }
-        const city = await this.locationService.get({city:req.query.city})
-        let subarea = []
-        city.map((e)=>{
-            subarea.push(e.city)
-           
-        })
-        res.status(200).send({subarea})
+        const cities = await this.locationService.get({city:req.query.city})
+        let subareas = []
+        cities.map((e)=>{ subareas.push(e.subarea )})
+        res.status(200).send({subarea: subareas})
     })
  
  

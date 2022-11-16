@@ -785,29 +785,20 @@ export default class SalonService extends BaseService {
         }
 
         getSearchservice = async (phrase: string) => {
-                console.log(phrase)
                 const data = await SalonSearchRedis.get(phrase)
                 if (!data) {
                         const data2 = await this.model.aggregate([
-
-                                {
-                                        $lookup:
-                                        {
+                                { $lookup: {
                                                 from: "photos",
                                                 localField: "profile_pic",
                                                 foreignField: "_id",
                                                 as: "profile_pic",
-                                        },
-                                },
-                                {
-                                        $unwind: "$services"
-                                },
-                                {
-                                        $match: {
+                                },      },
+                                { $unwind: "$services" },
+                                { $match: {
                                                 approved: true,
                                                 "services.name": phrase
-                                        }
-                                },
+                                },      },
                                 {
                                         $group: {
                                                 "_id": "$_id",
@@ -815,7 +806,6 @@ export default class SalonService extends BaseService {
                                                 profile_pic: { $first: "$profile_pic" },
                                                 rating: { $first: "$rating" },
                                                 service: { $first: "$services" },
-
                                         }
                                 },
                         ])
@@ -1160,10 +1150,10 @@ export default class SalonService extends BaseService {
 
         getPopularAreas = async (q: any) => {
                 // for given q.state find cities with salons
-                const salons = await this.model.find({ location_id : { $exists : true } }).populate({ path: 'location_id', match: { 'state': q.state } }).select('name email rating location_id start_price coordinates profile_pic')
+                const salons = await this.model.find({ location_id: { $exists: true } }).populate({ path: 'location_id', match: { 'state': q.state } }).select('name email rating location_id start_price coordinates profile_pic')
                 let temp = new Array()
-                salons.map( (salon)=>{
-                        if(salon.location_id != null)
+                salons.map((salon) => {
+                        if (salon.location_id != null)
                                 temp.push(salon)
                 })
                 var output = {}

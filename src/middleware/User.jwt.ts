@@ -6,11 +6,7 @@ import logger from "../utils/logger";
 
 export const userJWTVerification = async (token: string) => {
   try {
-        
-  
-    // verifies secret and checks exp
     const decoded: string | object = await jwt.verify(token,CONFIG.USER_JWT);
-    
     // @ts-ignore
     if (!decoded._id) {
       logger.error("_id not found from decoced token")

@@ -67,36 +67,23 @@ export default class ExploreController extends BaseController {
       res.send({ data: explore });
     }
   );
+
   getExploreByCreatedAt = controllerErrorHandler(
     async (req: Request, res: Response) => {
       let getFavourites;
       let explore;
       const q = req.query;
-      const cachedExplore = await ExploreRedis.get(REDIS_CONFIG.getExplore, q);
-      if (cachedExplore == null) {
-        console.log("not redis")
-        explore = await this.service.filterExplore(q);
-        await ExploreRedis.set(REDIS_CONFIG.getExplore, explore, q);
-      } else {
-        explore = JSON.parse(cachedExplore);
-      }
-      const token =
-        req.headers?.authorization && req.headers?.authorization.split(" ")[1];
+      explore = await this.service.filterExplore(q);
+      const token = req.headers?.authorization && req.headers?.authorization.split(" ")[1];
+  
       if (token) {
         const decoded = await userJWTVerification(token);
         //@ts-ignore
         if (decoded?._id !== undefined) {
           const exploreId = [];
-          explore.explore.map((e) => {
-            exploreId.push(e._id);
-          });
-
-          getFavourites =
-            await this.exploreFavouriteService.getFavouriteForExplore(
-              //@ts-ignore
-              decoded._id,
-              exploreId
-            );
+          explore.explore.map((e) => { exploreId.push(e._id) });
+          //@ts-ignore
+          getFavourites = await this.exploreFavouriteService.getFavouriteForExplore( decoded._id, exploreId);
 
           if (getFavourites.length > 0) {
             let index;
@@ -296,7 +283,7 @@ export default class ExploreController extends BaseController {
   );
 
   getExploreProductByID = controllerErrorHandler(
-    async (req: Request, res: Response) => { 
+    async (req: Request, res: Response) => {
       const out = await this.service.getById(req.params.id);
       res.send(out);
     }

@@ -7,9 +7,9 @@
             "command" : "sudo systemctl stop redis-server && sudo docker start some-redis && npm run start:dev"
         },
         {
-            "label" : "redis start",
+            "label" : "redis fix run",
             "type" : "shell",
-            "command" : "sudo service redis-server stop && redis-server"
+            "command" : "sudo service redis-server stop && redis-server && npm run start:dev"
         },
         {
             "label" : "start:dev",
