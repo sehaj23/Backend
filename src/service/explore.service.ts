@@ -112,7 +112,6 @@ export default class ExploreService extends BaseService {
 
         }
 
-
         const exploreReq = this.model.find(filters, projection).skip(skipCount).limit(pageLength).populate({
             path: 'salon_id',
             model: 'salons',

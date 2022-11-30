@@ -3,13 +3,41 @@
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc0ZmZkZDNkMmIyZDAwMTExZDAwOGYiLCJpYXQiOjE2Njg2MTIyMjgsImV4cCI6MTcwMDE0ODIyOH0.sMetVXjYZCNSYbK_lOpMLaOFBQid8Are8xSIXYiCP7I
 @page = page_length=4&page_number=1
 
-# user info #######3
+# user info ######################################################################
 get {{url}}/user/info
 Authorization: Bearer {{token}}
 
-# explore ###################
-### all
-get {{url}}/explore/all
+### favorites
+get {{url}}/exploreFavourite/home-page
+Authorization: Bearer {{token}}
+
+
+
+
+
+
+# booking ######################################################################
+### get booking
+get {{url}}/booking
+Authorization: Bearer {{token}}
+
+# test
+### get booking by id
+get {{url}}/booking/6376008fcbc213001890bf12
+Authorization: Bearer {{token}}
+
+
+
+
+
+
+# explore/search/filter ###################
+### explore all
+get {{url}}/explore/all?page_number=1&page_length=10
+
+
+### get similar products
+get {{url}}/explore/info/624ab068c05bcc001377679d
 
 ### search
 # get {{url}}/explore/all?service_name=hair
@@ -19,7 +47,6 @@ get {{url}}/explore/all?service_name=hair&subarea=Kirti Nagar
 ### get location
 # get {{url}}/location/cities
 get {{url}}/location/subarea?city=New Delhi
-
 
 ### service that are recommended
 get {{url}}/salon-search?service_name=Bridal HD
@@ -34,9 +61,12 @@ get {{url}}/search/service/?phrase=Hair Botox
 ### else /service - incomplete data
 get {{url}}/search/service/?phrase=Hair do
 
-### ex-favorites
-get {{url}}/exploreFavourite/home-page
-Authorization: Bearer {{token}}
+
+
+
+
+
+
 
 
 # feedback ###################################
@@ -73,6 +103,13 @@ Content-Type: application/json
 delete {{url}}/feedback/delete/5f8481ffd2d5f54728c4be22
 Authorization: Bearer {{token}}
 
+
+
+
+
+
+
+
 # filter ################################
 ### filters
 get {{url}}/salon/filter-home/
@@ -92,6 +129,13 @@ get {{url}}/salon/filter-distance/3.5?latitude=23.8103&longitude=90.4125
 
 
 
+
+
+
+
+
+
+
 # salon ###################################
 ### adw
 get {{url}}/salon/names
@@ -106,7 +150,14 @@ get {{url}}/salon/popular-areas/New Delhi
 ### salon by location
 get {{url}}/salon/from-subarea/Janakpuri
 
-###
+
+
+
+
+
+
+
+
 # login ###################################
 
 post {{url}}/login

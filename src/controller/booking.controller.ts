@@ -1344,6 +1344,7 @@ getHomePageData = controllerErrorHandler(
     }
     res.send(bookings);
   });
+  
   getbookingbyId = controllerErrorHandler(
     async (req: Request, res: Response) => {
       const id = req.params.id;

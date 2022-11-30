@@ -1,7 +1,6 @@
 import { Router } from "express";
 import ExploreController from "../../controller/explore.controller";
 import verifyToken from "../../middleware/jwt";
-
 import Explore from "../../models/explore.model";
 import FavouriteExplore from "../../models/favorite-explore.model";
 import ExploreFavouriteService from "../../service/explore-favourite.service";

@@ -449,7 +449,9 @@ export default class BookingService extends BaseService {
 
     }
     bookingByID = async (id: string) => {
-        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate("salon_id", "name").exec()
+        // TODO : fix here
+        // const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate("salon_id", "name").exec()
+        const booking = await this.model.findById(id).populate({ path: "user_id", populate: { path: 'profile_pic' } }).populate("services.employee_id").populate({ path: "salon_id", populate: { path: 'location_id' } }).exec()
         return booking
     }
 

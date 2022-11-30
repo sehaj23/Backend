@@ -18,12 +18,12 @@ export default class ExploreFavouriteController extends BaseController {
     async (req: Request, res: Response) => {
       const { explore_id } = req.body;
       //@ts-ignore
-     const checkFavourite = await this.service.get({user_id:mongoose.Types.ObjectId(req.userId),explore_id:mongoose.Types.ObjectId(explore_id)})
-     if(checkFavourite.length>0){
-       return res.status(400).send({message:"already in favourites"})
-     }
+      const checkFavourite = await this.service.get({ user_id: mongoose.Types.ObjectId(req.userId), explore_id: mongoose.Types.ObjectId(explore_id) })
+      if (checkFavourite.length > 0) {
+        return res.status(400).send({ message: "already in favourites" })
+      }
       const addToFavourites = await this.service.addToFavourites(
-           //@ts-ignore
+        //@ts-ignore
         req.userId,
         explore_id
       );
@@ -33,9 +33,9 @@ export default class ExploreFavouriteController extends BaseController {
   deleteExploreFavourites = controllerErrorHandler(
     async (req: Request, res: Response) => {
       const { explore_id } = req.body;
-     
+
       const deleteFavourites = await this.service.deleteFavourites(
-           //@ts-ignore
+        //@ts-ignore
         req.userId,
         explore_id
       );
@@ -46,9 +46,9 @@ export default class ExploreFavouriteController extends BaseController {
   getExploreFavourites = controllerErrorHandler(
     async (req: Request, res: Response) => {
       const q = req.query;
-     
+
       const getExploreFavourites = await this.service.getFavourites(
-           //@ts-ignore
+        //@ts-ignore
         req.userId,
         q
       );
@@ -62,9 +62,9 @@ export default class ExploreFavouriteController extends BaseController {
 
       //@ts-ignore
       const getExploreFavouritesReq = this.service.getFavourites(req.userId, q);
-     
+
       const getSalonfavoritesReq = this.userService.getFavourites(
-           //@ts-ignore
+        //@ts-ignore
         req.userId,
         q
       );
@@ -72,11 +72,11 @@ export default class ExploreFavouriteController extends BaseController {
         getExploreFavouritesReq,
         getSalonfavoritesReq,
       ]);
-      if(typeof(exploreFavourites)==='string'){
-        exploreFavourites= JSON.parse(exploreFavourites)
+      if (typeof (exploreFavourites) === 'string') {
+        exploreFavourites = JSON.parse(exploreFavourites)
       }
-      if(typeof(salonfavorites)==='string'){
-        salonfavorites= JSON.parse(salonfavorites)
+      if (typeof (salonfavorites) === 'string') {
+        salonfavorites = JSON.parse(salonfavorites)
       }
       const out = { exploreFavourites, salonfavorites };
       return res.status(200).send(out);

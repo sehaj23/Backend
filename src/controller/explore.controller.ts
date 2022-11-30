@@ -250,7 +250,7 @@ export default class ExploreController extends BaseController {
         }
         await ExploreRedis.set(
           REDIS_CONFIG.getExploreByID,
-          { explore, getSimilarProduct },
+          { explore, similarProducts: getSimilarProduct },
           id
         );
       } else {

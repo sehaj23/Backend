@@ -136,43 +136,44 @@ var fifteenMinsNotificationCron = new CronJob('*/15 * * * *', async function () 
 
 
 var thirtyMinsNotificationCron = new CronJob('*/30 * * * *', async function () {
-    let tokens = []
-    var format = 'hh:mm:ss'
-    const booking = await Booking.find({
-        // last day bookings,1 number of days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
-        createdAt: { $gte: new Date((new Date().getTime() - (1 * 24 * 60 * 60 * 1000))) },
-        status: "Confirmed",
-        // status: "Requested"
-    }).sort({ "createdAt": -1 }).populate('user_id');
+    if (cluster.isMaster) {
+        let tokens = []
+        var format = 'hh:mm:ss'
+        const booking = await Booking.find({
+            // last day bookings,1 number of days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+            createdAt: { $gte: new Date((new Date().getTime() - (1 * 24 * 60 * 60 * 1000))) },
+            status: "Confirmed",
+            // status: "Requested"
+        }).sort({ "createdAt": -1 }).populate('user_id');
 
-
-    booking.forEach(element => {
-        const service_time = moment(element.services[0].service_time, format)
-        const before_time = moment(service_time).subtract(30, 'minute')
-        var time = moment(moment().add(330, 'minutes'), format)
-        let isBw = time.isBetween(before_time, service_time)
-        // console.log({before_time, service_time, time, isBw});
-        if (isBw) {
-            try {
-                var userdata = element.user_id as UserI
-                tokens = tokens.concat(userdata.fcm_token)
-                console.log(`tokens now is ${tokens}`);
-            } catch (error) {
-                console.log("ERROR!! while adding token to array")
+        booking.forEach(element => {
+            const service_time = moment(element.services[0].service_time, format)
+            const before_time = moment(service_time).subtract(30, 'minute')
+            // 330 means 5:30 hours for IST
+            var time = moment(moment().add(330, 'minutes'), format)
+            let isBw = time.isBetween(before_time, service_time)
+            // console.log({before_time, service_time, time, isBw});
+            if (isBw) {
+                try {
+                    var userdata = element.user_id as UserI
+                    tokens = tokens.concat(userdata.fcm_token)
+                    console.log(`tokens now is ${tokens}`);
+                } catch (error) {
+                    console.log("ERROR!! while adding token to array")
+                }
             }
+        });
+
+        var message = {
+            notification: {
+                title: 'ZATTIRE BOOKING',
+                body: 'Hi! You have a booking within 30 minutes. Please reach 5 minutes earlier.'
+            },
+        };
+        if (tokens.length != 0) {
+            const notify = sendNotificationToDevice(tokens, message)
         }
-    });
-
-    var message = {
-        notification: {
-            title: 'ZATTIRE BOOKING',
-            body: 'Hi! You have a booking within 30 minutes. Please reach 5 minutes earlier.'
-        },
-    };
-    if (tokens.length != 0) {
-        const notify = sendNotificationToDevice(tokens, message)
     }
-
 }, null, true);
 
 export {
@@ -181,7 +182,3 @@ export {
     tenMinsNotificationCron,
     fifteenMinsNotificationCron
 };
-
-
-// TODO: Notifications are pushed thrice because all the instances are running crons
-// one solution is to check if cluster.isMaster then only run the crons

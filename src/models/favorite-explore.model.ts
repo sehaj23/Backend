@@ -1,9 +1,6 @@
 import mongoose from "../database";
 import { ExploreFavouriteSI } from "../interfaces/favourite.explore.interface";
 
-
-
-
 const FavouriteExploreSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
