@@ -33,12 +33,12 @@ export default class ExploreService extends BaseService {
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
 
-        getSimilar = await Explore.find({ _id: { $ne: exploreID }, salon_id: salonID, tags: { $in: multipleKeyWords } }).skip(skipCount).limit(pageLength)
+        getSimilar = await Explore.find({ _id: { $ne: exploreID }, salon_id: salonID, tags: { $in: multipleKeyWords } }).populate("salon_id").skip(skipCount).limit(pageLength)
         if (getSimilar.length === 0) {
             const getSalon = await Salon.findById(salonID)
             const getSalonNearLocation = await Salon.findOne({ location_id: getSalon?.location_id, _id: { $ne: salonID } })
             if (getSalonNearLocation !== null) {
-                getSimilar = await Explore.find({ salon_id: getSalonNearLocation._id, tags: { $in: multipleKeyWords } }).skip(skipCount).limit(pageLength)
+                getSimilar = await Explore.find({ salon_id: getSalonNearLocation._id, tags: { $in: multipleKeyWords } }).populate("salon_id").skip(skipCount).limit(pageLength)
             }
         }
         return getSimilar

@@ -9,7 +9,7 @@
         {
             "label" : "run-1",
             "type" : "shell",
-            "command" : "sudo service redis-server stop && redis-server && npm run start:dev"
+            "command" : "killall redis-server && redis-server"
         },
         {
             "label" : "run-2",

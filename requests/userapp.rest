@@ -1,5 +1,5 @@
-# @url = http://localhost:8082/main-server/api/u
-@url = https://devbackend.zattire.com/main-server/api/u
+@url = http://localhost:8082/main-server/api/u
+# @url = https://devbackend.zattire.com/main-server/api/u
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzc0ZmZkZDNkMmIyZDAwMTExZDAwOGYiLCJpYXQiOjE2Njg2MTIyMjgsImV4cCI6MTcwMDE0ODIyOH0.sMetVXjYZCNSYbK_lOpMLaOFBQid8Are8xSIXYiCP7I
 @page = page_length=4&page_number=1
 
@@ -34,7 +34,7 @@ Authorization: Bearer {{token}}
 # explore/search/filter ###################
 ### explore all
 get {{url}}/explore/all?page_number=1&page_length=10
-
+Authorization: Bearer {{token}}
 
 ### get similar products
 get {{url}}/explore/info/624ab068c05bcc001377679d
