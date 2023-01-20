@@ -32,13 +32,21 @@ export default class ExploreService extends BaseService {
         let pageLength: number = parseInt(q.page_length || 25)
         pageLength = (pageLength > 100) ? 100 : pageLength
         const skipCount = (pageNumber - 1) * pageLength
+        const salonPopulateModel = {
+            path: 'salon_id',
+            model: 'salons',
+            select: { '_id': 1, 'temporary_closed': 1, "book_service": 1, "name": 1, "location_id": 1 }, 
+            populate: {
+                path: 'location_id', model: "location"
+            }
+        }
 
-        getSimilar = await Explore.find({ _id: { $ne: exploreID }, salon_id: salonID, tags: { $in: multipleKeyWords } }).populate("salon_id").skip(skipCount).limit(pageLength)
+        getSimilar = await Explore.find({ _id: { $ne: exploreID }, salon_id: salonID, tags: { $in: multipleKeyWords } }).populate(salonPopulateModel).skip(skipCount).limit(pageLength)
         if (getSimilar.length === 0) {
             const getSalon = await Salon.findById(salonID)
             const getSalonNearLocation = await Salon.findOne({ location_id: getSalon?.location_id, _id: { $ne: salonID } })
             if (getSalonNearLocation !== null) {
-                getSimilar = await Explore.find({ salon_id: getSalonNearLocation._id, tags: { $in: multipleKeyWords } }).populate("salon_id").skip(skipCount).limit(pageLength)
+                getSimilar = await Explore.find({ salon_id: getSalonNearLocation._id, tags: { $in: multipleKeyWords } }).populate(salonPopulateModel).skip(skipCount).limit(pageLength)
             }
         }
         return getSimilar
@@ -127,8 +135,5 @@ export default class ExploreService extends BaseService {
         }
         const totalPages = Math.ceil(totalPageNumber / pageLength)
         return { explore, totalPages, pageNumber, pageLength }
-
-
-
     }
 }

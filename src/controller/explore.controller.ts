@@ -234,7 +234,10 @@ export default class ExploreController extends BaseController {
         //@ts-ignore
         if (decoded?._id !== undefined) {
           const exploreId = [];
-          exploreId.push(req.params.id);
+          getSimilarProduct.map((e) => {
+            exploreId.push(e._id);
+          });
+          // exploreId.push(req.params.id);
 
           getFavourites =
             await this.exploreFavouriteService.getFavouriteForExplore(
@@ -244,9 +247,16 @@ export default class ExploreController extends BaseController {
             );
 
           if (getFavourites.length > 0) {
-            explore = explore.toObject();
+            // explore = explore.toObject();
+            let index;
+            getFavourites.map((e) => {
+              index = getSimilarProduct.findIndex(
+                (o) => o._id.toString() === e.explore_id.toString()
+              );
+              getSimilarProduct[index].favourite = true;
+            });
             //@ts-ignore
-            explore.favourite = true;
+            // explore.favourite = true;
           }
         }
       }

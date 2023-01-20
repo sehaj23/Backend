@@ -37,7 +37,9 @@ get {{url}}/explore/all?page_number=1&page_length=10
 Authorization: Bearer {{token}}
 
 ### get similar products
-get {{url}}/explore/info/624ab068c05bcc001377679d
+get {{url}}/explore/info/624aaffce5dd24001430ce47
+Authorization: Bearer {{token}}
+
 
 ### search
 # get {{url}}/explore/all?service_name=hair

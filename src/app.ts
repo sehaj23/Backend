@@ -39,7 +39,18 @@ app.use(bodyParser({
 }))
 
 app.use(cors({
-  origin: ['https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 'http://localhost:3000', 'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", "http://localhost:59688", "https://zattire-vendor-app.web.app", " https://zattire-vendor-app--dev-fno83aco.web.app", "http://localhost:55007/", " https://app.zattire.com", " https://www.zattire.com", "https://zattire.com", "https://zattire.com/home", "https://zattire-qr.web.app"],
+  origin: [
+    // react applications
+    'https://vendors.zattire.com', 'https://dev-vendor.zattire.com', 
+    'https://yumyam.zattire.com', 'https://prod-yamyum.zattire.com', 
+    'https://dev2-vendor.zattire.com', "https://prodyum.zattire.com", "https://devyum.zattire.com", 
+    // localhosts
+    "http://localhost:59688", "http://localhost:55007/", 'http://localhost:3000',
+    // zattire hosted sites
+    "https://zattire-vendor-app.web.app", "https://app.zattire.com", "https://www.zattire.com", 
+    "https://zattire.com", "https://zattire.com/home", "https://zattire-qr.web.app",
+    // zatture dev website
+    "https://zattire-vendor-app--dev-fno83aco.web.app"],
   credentials: true
 }));
 
