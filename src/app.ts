@@ -49,7 +49,7 @@ app.use(cors({
     // zattire hosted sites
     "https://zattire-vendor-app.web.app", "https://app.zattire.com", "https://www.zattire.com", "https://zattire-qr.web.app",
     // zatture dev website
-    "https://zattire-vendor-app--dev-0kd9r7vy.web.app/"],
+    "https://zattire-vendor-app--dev-0kd9r7vy.web.app"],
   credentials: true
 }));
 
