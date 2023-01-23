@@ -47,10 +47,9 @@ app.use(cors({
     // localhosts
     "http://localhost:59688", "http://localhost:55007/", 'http://localhost:3000',
     // zattire hosted sites
-    "https://zattire-vendor-app.web.app", "https://app.zattire.com", "https://www.zattire.com", 
-    "https://zattire.com", "https://zattire.com/home", "https://zattire-qr.web.app",
+    "https://zattire-vendor-app.web.app", "https://app.zattire.com", "https://www.zattire.com", "https://zattire-qr.web.app",
     // zatture dev website
-    "https://zattire-vendor-app--dev-fno83aco.web.app"],
+    "https://zattire-vendor-app--dev-0kd9r7vy.web.app/"],
   credentials: true
 }));
 
