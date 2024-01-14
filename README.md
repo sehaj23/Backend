@@ -28,18 +28,19 @@ bash
 npm run build
 Run the Project:
 
-bash
-
-npm start
+```
+npm run dev
 This command will start the project, and you can access it at http://localhost:3000.
-
+```
+```
 Scripts
 npm run build: Transpiles TypeScript code to JavaScript and outputs it in the dist directory.
-npm start: Starts the local development server.
-npm test: Runs tests.
+npm run dev: Starts the local development server.
+npm run test: Runs tests.
+```
 Project Structure
-plaintext
 
+```
 /
 |-- src/                  # TypeScript source code
 |   |-- controllers/      # Controllers handling route logic
@@ -54,6 +55,7 @@ plaintext
 |-- package.json          # Project metadata and dependencies
 |-- tsconfig.json         # TypeScript configuration file
 |-- README.md             # Project documentation
+```
 Configuration
 The tsconfig.json file contains TypeScript compiler options and project settings.
 Adjust environment-specific configurations in .env files if needed.
